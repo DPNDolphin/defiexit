@@ -9,11 +9,12 @@ import { site } from "./site.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
 
-// 版本号:页脚显示构建时的提交,谁都能去 GitHub 核对线上跑的是哪一版。工作区有没提交的改动就标出来,不冒充干净版本
+// 版本号:页脚显示构建时的提交,谁都能去 GitHub 核对线上跑的是哪一版。会进网站的那几个目录有没提交的改动,就标出来,不冒充干净版本
+// (只看这几个目录:Cloudflare 构建时会在根目录自己生成 package-lock.json,不影响网站内容)
 function version() {
   try {
     const git = (...args) => execFileSync("git", args, { cwd: ROOT, stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
-    return { commit: git("rev-parse", "--short", "HEAD"), dirty: git("status", "--porcelain") !== "" };
+    return { commit: git("rev-parse", "--short", "HEAD"), dirty: git("status", "--porcelain", "--", "src", "recipes", "scripts", "static") !== "" };
   } catch {
     return null;
   }
