@@ -64,7 +64,7 @@ ${script ? `<script type="module" src="/assets/js/${script}"></script>` : ""}
 <main>${body}</main>
 <footer class="foot">
   <p><b>官方网站只有 ${esc(site.domain)}</b>${zhPunct("。我们不收私钥和助记词,不代签,从不先私信你。")}</p>
-  <p>开源 · MIT · <a href="${esc(site.github)}" rel="noopener">GitHub</a> · ${zhPunct("本站只读,不连接钱包,不收集数据")}</p>
+  <p>开源 · MIT · <a href="${esc(site.github)}" rel="noopener">GitHub</a> · ${zhPunct("本站只读,不连接钱包;我们不存任何数据")}</p>
   <p class="fine">${zhPunct("本站内容不构成投资建议。操作前请对照官方页面和核对卡,自己确认每一步。")}</p>
 </footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -87,7 +87,7 @@ function home(recipes) {
   <form id="scan" class="scan" autocomplete="off">
     <label for="addr">钱包地址</label>
     <div class="row"><input id="addr" name="addr" inputmode="text" spellcheck="false" placeholder="0x 开头的 42 位地址"><button type="submit">开始体检</button></div>
-    <p class="hint">${zhPunct("只要地址,不用连钱包。地址只从你的浏览器发给各链的公开接口,不经过我们。")}</p>
+    <p class="hint">${zhPunct("只要地址,不用连钱包。地址只从你的浏览器直接发给协议的官方公开接口(目前是 Hyperliquid),不经过我们;这些接口能看到你的地址和 IP。")}</p>
   </form>
   <div id="results" class="results" hidden></div>
 </section>
