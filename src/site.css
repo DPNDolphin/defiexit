@@ -130,6 +130,41 @@ figcaption { margin-top: 6px; font-size: 15px; }
 .check.arrive h4 { background: var(--brand); color: var(--brand-ink); }
 .check.arrive p { background: var(--brand-soft); color: var(--green-ink); }
 .stuck { display: block; width: 100%; margin-top: 12px; padding: 10px; border: 1px dashed var(--sub); background: transparent; color: var(--sub); border-radius: 10px; font-size: 14px; }
+.stuck[aria-expanded="true"] { border-style: solid; color: var(--ink); }
+
+/* 我卡在这一步:现场诊断 + 常见情况 + 兜底 */
+.help { margin-top: 10px; }
+.help h5 { margin: 14px 0 6px; font-size: 15px; }
+.diag h4 { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin: 4px 0 6px; }
+.diag h4 small { color: var(--sub); font-weight: 500; font-size: 12px; }
+.diag button, .choice button, .follow button { border: 1px solid var(--brand); background: transparent; color: var(--brand); border-radius: 8px; padding: 4px 10px; font-size: 13px; font-weight: 600; }
+.where { font-weight: 600; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 6px 0; }
+.findings { list-style: none; padding: 0; margin: 6px 0; }
+.findings li { margin: 6px 0; padding: 8px 10px; border-radius: 10px; border-left: 4px solid var(--line); background: var(--bg); font-size: 14px; }
+.findings li.ok { border-color: var(--brand); background: var(--brand-soft); }
+.findings li.wait { border-color: var(--amber); background: var(--amber-soft); }
+.findings li.stop { border-color: var(--red); background: var(--red-soft); font-weight: 600; }
+.choice { border: 1.5px solid var(--amber); border-radius: var(--radius); padding: 4px 12px; margin: 10px 0; }
+.choice .opt { padding: 8px 0; border-bottom: 1px dashed var(--line); }
+.choice .opt:last-child { border-bottom: 0; }
+.choice .opt p { margin: 4px 0; font-size: 14px; }
+.choice .warn { padding: 6px 10px !important; }
+.raw { color: var(--sub); font-size: 13px; margin: 6px 0; }
+.raw summary { cursor: pointer; }
+.raw ul { margin: 4px 0; padding-left: 18px; }
+.sit { border: 1px solid var(--line); border-radius: 10px; margin: 6px 0; background: var(--card); }
+.sit summary { padding: 9px 12px; cursor: pointer; font-size: 14px; }
+.sit p { margin: 0; padding: 0 12px 10px; font-size: 14px; }
+.sit.stop[open] { border-color: var(--red); }
+.sit.stop p { color: var(--red); font-weight: 700; }
+.fallback { margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: var(--red-soft); }
+.fallback p { margin: 4px 0; }
+.fallback .official { margin: 8px 0 4px; background: var(--card); }
+.report { display: block; width: 100%; margin-top: 10px; padding: 9px; border: 1px dashed var(--sub); background: var(--card); color: var(--ink); border-radius: 10px; font-size: 14px; }
+.follow { position: fixed; left: 50%; bottom: 76px; transform: translateX(-50%); z-index: 7; width: min(92vw, 560px); display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 12px; background: var(--ink); color: var(--card); font-size: 14px; }
+.follow[hidden] { display: none; }
+.follow span { flex: 1; }
+.follow button { border-color: var(--card); color: var(--card); }
 .pager {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; display: flex; align-items: center; justify-content: space-between; gap: 10px;
   padding: 10px max(16px, env(safe-area-inset-left)) calc(10px + env(safe-area-inset-bottom)); background: var(--card); border-top: 1px solid var(--line);

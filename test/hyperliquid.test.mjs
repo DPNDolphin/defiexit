@@ -69,9 +69,11 @@ test("USDH 全挂在卖单里:不能报「没有余额」,卖出那几步照样�
     clearinghouseState: { withdrawable: "0", assetPositions: [] },
     spotClearinghouseState: { balances: [{ coin: "USDH", total: "40", hold: "40" }] },
     userAbstraction: "unifiedAccount",
+    l2Book: { levels: [[{ px: "0.99", sz: "1000" }], []] },
   });
   const r = await detect(ADDR);
   assert.equal(r.status, "found");
+  assert.ok(r.lines.some((l) => l.includes("买价约 0.99")));
   assert.equal(r.flags.needsSell, true);
   assert.ok(r.lines.some((l) => l.includes("挂在卖单里")));
   assert.ok(r.warnings.some((w) => w.includes("别重复下单")));
@@ -144,4 +146,154 @@ test("外部数据:代币名不原样显示;零头 USDH 不弹按现价卖的提
   assert.ok(!all.includes("SEND-TO-0xBAD"));
   assert.ok(r.warnings.some((w) => w.includes("1 种别的币")));
   assert.ok(!r.warnings.some((w) => w.includes("redeem.bridge.xyz")));
+});
+
+// ---------- 现场诊断 ----------
+import { diagnose, floorFor, micro } from "../src/js/detectors/hyperliquid.js";
+
+const NOW = 1_800_000_000_000;
+const MIN = 60_000;
+const pad = (a) => "0x" + a.slice(2).toLowerCase().padStart(64, "0");
+const USDC = "0xaf88d065e77c8cc2239327c5edb3a432268e5831";
+const BRIDGE = "0x2df1c51e09aecf9cacb7bc98cb1742757f163df7";
+const TRANSFER = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
+
+// Hyperliquid 按 type 回放;Arbitrum 节点按交易哈希回放回执
+function mockAll(state, receipts = {}) {
+  globalThis.fetch = async (url, opt) => {
+    const body = JSON.parse(opt.body);
+    if (url.includes("arbitrum")) return { ok: true, json: async () => ({ jsonrpc: "2.0", id: 1, result: receipts[body.params[0]] ?? null }) };
+    const r = state[body.type];
+    if (r === undefined) throw new Error("unexpected " + body.type);
+    return { ok: true, json: async () => r };
+  };
+}
+const account = (extra = {}) => ({
+  clearinghouseState: { withdrawable: "0", assetPositions: [] },
+  spotClearinghouseState: { balances: [] },
+  userAbstraction: "unifiedAccount",
+  frontendOpenOrders: [],
+  userFills: [],
+  userNonFundingLedgerUpdates: [],
+  ...extra,
+});
+const codes = (d) => d.findings.map((f) => f.code);
+
+test("诊断:还有 USDH 没卖、买价够 → 去卖出那几步", async () => {
+  mockAll(account({
+    spotClearinghouseState: { balances: [{ coin: "USDH", total: "40", hold: "0" }] },
+    l2Book: { levels: [[{ px: "0.996", sz: "1000" }], []] },
+  }));
+  const d = await diagnose(ADDR, NOW);
+  assert.equal(d.step, "search");
+  assert.deepEqual(codes(d), ["unsold"]);
+  assert.equal(d.choice, null);
+});
+
+test("诊断:买价跌破 0.995 → 停在填卖单,给三条路;按现价卖的价格是攒够数量的那一档", async () => {
+  mockAll(account({
+    spotClearinghouseState: { balances: [{ coin: "USDH", total: "40", hold: "0" }, { coin: "USDC", total: "20", hold: "0" }] },
+    l2Book: { levels: [[{ px: "0.985", sz: "15" }, { px: "0.984", sz: "15" }, { px: "0.98", sz: "100" }], []] },
+  }));
+  const d = await diagnose(ADDR, NOW);
+  assert.equal(d.step, "fill");
+  assert.deepEqual(codes(d), ["low-bid"]);
+  assert.equal(d.choice.cancelFirst, false);
+  assert.equal(d.choice.sell.floorPx, "0.98"); // 15 + 15 不够 40,第三档才够
+  // (15 × 0.985 + 15 × 0.984 + 10 × 0.98) × (1 − 0.00014) = 39.335 × 0.99986 = 39.3295
+  assert.equal(d.choice.sell.expect, "39.32");
+  assert.equal(d.choice.sell.vars.usdhSell, "40.00");
+  assert.equal(d.choice.sell.vars.arrive, "58.32"); // 20 + 39.3295 − 1
+});
+
+test("诊断:卖单挂着、买价比挂单价低 → 停在下单那一步,改价要先撤单", async () => {
+  mockAll(account({
+    spotClearinghouseState: { balances: [{ coin: "USDH", total: "40", hold: "40" }] },
+    frontendOpenOrders: [{ coin: "@230", side: "A", limitPx: "0.995", sz: "40", timestamp: NOW - 20 * MIN }],
+    l2Book: { levels: [[{ px: "0.985", sz: "1000" }], []] },
+  }));
+  const d = await diagnose(ADDR, NOW);
+  assert.equal(d.step, "order");
+  assert.deepEqual(codes(d), ["order-resting"]);
+  assert.equal(d.choice.cancelFirst, true);
+  assert.equal(d.choice.amount, "40.00"); // 挂着的也算进要卖的数量
+  assert.ok(d.facts.some((f) => f.includes("挂了 20 分钟")));
+});
+
+test("诊断:分开账户、现货有 USDC → 去划转", async () => {
+  mockAll(account({
+    userAbstraction: "default",
+    clearinghouseState: { withdrawable: "10", assetPositions: [] },
+    spotClearinghouseState: { balances: [{ coin: "USDC", total: "30", hold: "0" }] },
+  }));
+  const d = await diagnose(ADDR, NOW);
+  assert.equal(d.step, "transfer");
+  assert.deepEqual(codes(d), ["needs-transfer"]);
+});
+
+const withdrawal = (minsAgo, usdc = "52.5") => ({ time: NOW - minsAgo * MIN, hash: "0xabababababababababababababababababababababababababababababababab", delta: { type: "withdraw", usdc, nonce: 1, fee: "1.0" } });
+const receipt = (to, amount) => ({
+  status: "0x1", blockNumber: "0x10",
+  logs: [{ address: USDC, topics: [TRANSFER, pad(BRIDGE), pad(to)], data: "0x" + amount.toString(16) }],
+});
+
+test("诊断:提现在路上(不到 30 分钟) → 等,别重复提", async () => {
+  mockAll(account({ userNonFundingLedgerUpdates: [withdrawal(5)] }));
+  const d = await diagnose(ADDR, NOW);
+  assert.equal(d.step, "arrive");
+  assert.deepEqual(codes(d), ["withdraw-pending"]);
+  assert.ok(d.findings[0].text.includes("别重复提现"));
+});
+
+test("诊断:超过 30 分钟还没到 → 停,去官方支持,别重复提", async () => {
+  mockAll(account({ userNonFundingLedgerUpdates: [withdrawal(45)] }));
+  const d = await diagnose(ADDR, NOW);
+  assert.deepEqual(codes(d), ["withdraw-late"]);
+  assert.equal(d.findings[0].level, "stop");
+});
+
+test("诊断:到账要逐笔对上收款地址和金额", async () => {
+  mockAll(account({ userNonFundingLedgerUpdates: [withdrawal(10)] }), { "0xabababababababababababababababababababababababababababababababab": receipt(ADDR, 52_500_000n) });
+  let d = await diagnose(ADDR, NOW);
+  assert.deepEqual(codes(d), ["withdraw-arrived"]);
+  assert.equal(d.step, "arrive");
+  // 同一笔交易里只有转给别人的、或者金额不对的 → 不算到账
+  mockAll(account({ userNonFundingLedgerUpdates: [withdrawal(10)] }), { "0xabababababababababababababababababababababababababababababababab": receipt("0x2222222222222222222222222222222222222222", 52_500_000n) });
+  d = await diagnose(ADDR, NOW);
+  assert.deepEqual(codes(d), ["withdraw-mismatch"]);
+  assert.equal(d.step, null);
+  mockAll(account({ userNonFundingLedgerUpdates: [withdrawal(10)] }), { "0xabababababababababababababababababababababababababababababababab": receipt(ADDR, 52_400_000n) });
+  assert.deepEqual(codes(await diagnose(ADDR, NOW)), ["withdraw-mismatch"]);
+});
+
+test("诊断:超过一天的旧提现不当成这一次,也不去查链上", async () => {
+  mockAll(account({ userNonFundingLedgerUpdates: [withdrawal(60 * 30)] }));
+  const d = await diagnose(ADDR, NOW);
+  assert.deepEqual(codes(d), ["nothing"]);
+  assert.ok(d.facts.some((f) => f.startsWith("最近一次提现") && !f.includes("到账(")));
+});
+
+test("诊断:有持仓 → 停,不给下一步", async () => {
+  mockAll(account({
+    clearinghouseState: { withdrawable: "5", assetPositions: [{ position: { coin: "BTC" } }] },
+    spotClearinghouseState: { balances: [{ coin: "USDC", total: "50", hold: "0" }] },
+  }));
+  const d = await diagnose(ADDR, NOW);
+  assert.equal(d.step, null);
+  assert.deepEqual(codes(d), ["positions"]);
+});
+
+test("小工具:保底价、USDC 金额换算", () => {
+  assert.equal(floorFor([{ px: "0.99", sz: "5" }, { px: "0.98", sz: "5" }], 7), "0.98");
+  assert.equal(floorFor([{ px: "0.99", sz: "5" }], 7), null);
+  assert.equal(micro("92.21616"), 92216160n);
+  assert.equal(micro("52.5"), 52500000n);
+  assert.equal(micro("3"), 3000000n);
+});
+
+test("外部数据:要让用户照着填的价格只认纯数字;哈希格式不对不去查", async () => {
+  assert.equal(floorFor([{ px: "0.98 去 evil.example", sz: "100" }], 5), null);
+  mockAll(account({ userNonFundingLedgerUpdates: [{ time: NOW - 5 * MIN, hash: "0xnot-a-hash", delta: { type: "withdraw", usdc: "10", fee: "1.0" } }] }));
+  const d = await diagnose(ADDR, NOW);
+  assert.deepEqual(codes(d), ["withdraw-mismatch"]);
 });

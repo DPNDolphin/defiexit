@@ -122,18 +122,30 @@ function home(recipes) {
 function guide(r) {
   const V = r.vars;
   const facts = r.facts.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${rich(v, V)}</dd></div>`).join("");
-  const official = r.official.map((o) => `<div class="official"><span>${esc(o.label)}</span><b>${esc(o.domain)}</b><button class="copy" data-copy="${esc(o.url)}">复制网址</button></div>`).join("");
+  const site_ = (o) => `<div class="official"><span>${esc(o.label)}</span><b>${esc(o.domain)}</b><button class="copy" data-copy="${esc(o.url)}">复制网址</button></div>`;
+  const official = r.official.map(site_).join("");
+  const support = r.support ? `${site_(r.support)}<p class="sub">${rich(r.support.note, V)}</p>` : "";
+  const literal = new Set(r.literalVars || []);
   const steps = r.steps.map((s, i) => {
     const imgs = (s.images || []).map((im) => `<figure><img src="img/${esc(im.src)}" alt="" loading="lazy" decoding="async"><figcaption>${marks(rich(im.caption, V))}</figcaption></figure>`).join("");
     const items = s.items ? `<ul class="items">${s.items.map((t) => `<li>${rich(t, V)}</li>`).join("")}</ul>` : "";
-    // 带 {{变量}} 的复制按钮:要等用户填了地址、算出自己的数才显示
-    const copy = s.copy ? `<div class="copies">${s.copy.map((c) => `<button class="copy${c.includes("{{") ? " needs-addr" : ""}" data-copy-var="${esc(c)}">复制 ${rich(c, V)}</button>`).join("")}</div>` : "";
+    // 带 {{变量}} 的复制按钮:要等用户填了地址、算出自己的数才显示(默认值本身就能用的变量除外,比如保底价)
+    const needsAddr = (c) => [...c.matchAll(/\{\{(\w+)\}\}/g)].some((m) => !literal.has(m[1]));
+    const copy = s.copy ? `<div class="copies">${s.copy.map((c) => `<button class="copy${needsAddr(c) ? " needs-addr" : ""}" data-copy-var="${esc(c)}">复制 ${rich(c, V)}</button>`).join("")}</div>` : "";
+    // 卡住时:现场诊断(浏览器里实时查,guide.js 填)+ 常见情况(审过的答案,不用 JS 也能展开)+ 官方支持 + 卡点报告
+    const sits = (s.situations || []).map((x) => `<details class="sit${x.stop ? " stop" : ""}" data-sit="${esc(x.id)}"><summary>${rich(x.see, V)}</summary><p>${rich(x.do, V)}</p></details>`).join("");
+    const help = `<div class="help" hidden>
+    <div class="diag" aria-live="polite"></div>
+    ${sits ? `<h5>选一个最像你的情况</h5><div class="sits">${sits}</div>` : ""}
+    <div class="fallback"><p><b>${zhPunct("都不是:先停下,别签任何东西。")}</b></p>${support}<button class="report" type="button">${zhPunct("复制卡点报告(不含地址)")}</button></div>
+  </div>`;
     const ck = s.check ? `<div class="check${s.check.kind === "arrive" ? " arrive" : ""}"><h4>${rich(s.check.title, V)}</h4><dl>${s.check.rows.map(([k, v]) => `<div><dt>${rich(k, V)}</dt><dd>${rich(v, V)}</dd></div>`).join("")}</dl>${s.check.foot ? `<p>${rich(s.check.foot, V)}</p>` : ""}</div>` : "";
     return `<section class="step" data-step="${i}" data-id="${esc(s.id)}"${s.when ? ` data-when="${esc(s.when)}"` : ""}>
   <header><span class="num">${i + 1}</span><h3>${rich(s.title, V)}${s.note ? `<small>${rich(s.note, V)}</small>` : ""}</h3></header>
   ${s.whenText ? `<p class="when">${rich(s.whenText, V)}</p>` : ""}
   ${items}${imgs}${copy}${ck}
-  <button class="stuck" data-stuck="${esc(s.title)}">我卡在这一步</button>
+  <button class="stuck" type="button" aria-expanded="false">我卡在这一步</button>
+  ${help}
 </section>`;
   }).join("\n");
   const pro = `<div class="pro-card">${r.pro.map((t) => `<p>${rich(t, V)}</p>`).join("")}</div>`;
@@ -206,8 +218,16 @@ function loadRecipes() {
   return readdirSync(dir).filter((d) => existsSync(join(dir, d, "recipe.json"))).map((d) => {
     const r = JSON.parse(readFileSync(join(dir, d, "recipe.json"), "utf8"));
     if (r.id !== d) throw new Error(`配方目录名 ${d} 和 id ${r.id} 不一致`);
-    for (const s of r.steps) for (const im of s.images || []) {
-      if (!existsSync(join(dir, d, "img", im.src))) throw new Error(`${d}: 缺图片 ${im.src}`);
+    for (const s of r.steps) {
+      for (const im of s.images || []) {
+        if (!existsSync(join(dir, d, "img", im.src))) throw new Error(`${d}: 缺图片 ${im.src}`);
+      }
+      const ids = new Set();
+      for (const x of s.situations || []) {
+        if (!x.id || !x.see || !x.do) throw new Error(`${d}/${s.id}: 常见情况缺 id、see 或 do`);
+        if (ids.has(x.id)) throw new Error(`${d}/${s.id}: 常见情况 id 重复 ${x.id}`);
+        ids.add(x.id);
+      }
     }
     return r;
   });

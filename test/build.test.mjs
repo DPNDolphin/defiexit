@@ -16,4 +16,10 @@ test("构建:页面齐全、没有漏填的变量、带安全头", () => {
   const headers = readFileSync("dist/_headers", "utf8");
   assert.match(headers, /script-src 'self'/);
   assert.match(headers, /connect-src 'self' https:\/\/api\.hyperliquid\.xyz/);
+  assert.match(headers, /https:\/\/arb1\.arbitrum\.io\/rpc/);
+  // 每一步都有「我卡在这一步」的帮助面板;常见情况用 details 展开,不靠 JS
+  assert.ok(guide.includes('class="help" hidden'));
+  assert.ok(guide.includes('<details class="sit stop" data-sit="wrong-destination">'));
+  // 保底价是默认就能用的变量:复制按钮不用等填地址
+  assert.ok(/<button class="copy" data-copy-var="\{\{floorPx\}\}">/.test(guide));
 });

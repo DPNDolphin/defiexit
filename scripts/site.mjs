@@ -7,5 +7,6 @@ export const site = {
   // 求助渠道:用户自己发起联系;我们从不先私信。为 null 时页面显示「联系方式即将公布」。
   contact: null,
   // 浏览器只允许连这些公开接口(写进 CSP 的 connect-src);新增检测器时在这里加
-  connect: ["https://api.hyperliquid.xyz"],
+  // Arbitrum 公共节点:现场诊断查提现到没到账(只读 eth_getTransactionReceipt)
+  connect: ["https://api.hyperliquid.xyz", "https://arb1.arbitrum.io/rpc"],
 };
