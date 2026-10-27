@@ -13,6 +13,8 @@ test("构建:页面齐全、没有漏填的变量、带安全头", () => {
     assert.ok(!/<script(?![^>]*\ssrc=)[^>]*>/.test(html), "不允许内联脚本");
   }
   assert.ok(guide.includes('data-when="needsSell"'));
+  // 页脚带版本号,链到 GitHub 上的那次提交
+  assert.match(home, /版本 <a href="https:\/\/github\.com\/DPNDolphin\/defiexit\/commit\/[0-9a-f]{7,}"/);
   const headers = readFileSync("dist/_headers", "utf8");
   assert.match(headers, /script-src 'self'/);
   assert.match(headers, /connect-src 'self' https:\/\/api\.hyperliquid\.xyz/);

@@ -3,10 +3,22 @@
 import { readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync, copyFileSync, existsSync, statSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { execFileSync } from "node:child_process";
 import { site } from "./site.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
+
+// 版本号:页脚显示构建时的提交,谁都能去 GitHub 核对线上跑的是哪一版。工作区有没提交的改动就标出来,不冒充干净版本
+function version() {
+  try {
+    const git = (...args) => execFileSync("git", args, { cwd: ROOT, stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
+    return { commit: git("rev-parse", "--short", "HEAD"), dirty: git("status", "--porcelain") !== "" };
+  } catch {
+    return null;
+  }
+}
+const VER = version();
 
 // ---------- 文字处理 ----------
 
@@ -65,6 +77,7 @@ ${script ? `<script type="module" src="/assets/js/${script}"></script>` : ""}
 <footer class="foot">
   <p><b>官方网站只有 ${esc(site.domain)}</b>${zhPunct("。我们不收私钥和助记词,不代签,从不先私信你。")}</p>
   <p>开源 · MIT · <a href="${esc(site.github)}" rel="noopener">GitHub</a> · ${zhPunct("本站只读,不连接钱包;我们不存任何数据")}</p>
+  ${VER ? `<p class="fine">版本 <a href="${esc(site.github)}/commit/${esc(VER.commit)}" rel="noopener">${esc(VER.commit)}</a>${VER.dirty ? zhPunct("(含未提交的改动,不是正式版本)") : ""}</p>` : ""}
   <p class="fine">${zhPunct("本站内容不构成投资建议。操作前请对照官方页面和核对卡,自己确认每一步。")}</p>
 </footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
