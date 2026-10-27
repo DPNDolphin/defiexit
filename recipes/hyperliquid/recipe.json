@@ -1,0 +1,199 @@
+{
+  "id": "hyperliquid",
+  "title": "Hyperliquid 余额提回钱包",
+  "protocol": "Hyperliquid",
+  "route": "Hyperliquid → Arbitrum",
+  "detector": "hyperliquid",
+  "lastVerified": "2026-10-27",
+  "verified": "2026-10-27 实测一例:照本指南操作,到账金额和预计一致(误差不到 0.01 USDC)",
+  "summary": "Hyperliquid 账户里还有 USDC,或者有已经停发的稳定币 USDH:卖成 USDC,一次提现到你钱包的 Arbitrum 网络。",
+  "facts": [
+    ["签名", "2~3 次,都是签名,不花 gas"],
+    ["手续费", "提现扣 1 USDC"],
+    ["用时", "操作约 10 分钟,提现约 5 分钟到账"],
+    ["要准备", "什么都不用准备;Arbitrum 上不需要有 ETH"]
+  ],
+  "official": [
+    {"label": "Hyperliquid 官网", "domain": "app.hyperliquid.xyz", "url": "https://app.hyperliquid.xyz"}
+  ],
+  "vars": {
+    "addrShort": "你自己的地址",
+    "usdhSell": "你的 USDH 数量(保留两位小数)",
+    "orderMin": "数量 × 0.995",
+    "spotAfter": "卖出所得",
+    "withdrawAmt": "全部余额",
+    "arrive": "提现金额减 1"
+  },
+  "pro": [
+    "**路线**:USDH 已停发 → 现货限价卖成 USDC(价格不低于 0.995)→ Withdraw 到 Arbitrum,扣 1 USDC,约 5 分钟到。",
+    "**账户模式**:统一账户(新默认)直接提;老的分开账户,先用 Perps ⇄ Spot 把现货 USDC 划到 Perps 再提。",
+    "**你的数**:卖 {{usdhSell}} USDH,提现 {{withdrawAmt}} USDC,到账约 {{arrive}} USDC。",
+    "**签名**:2~3 次 EIP-712,全部免 gas。只核两样:域名是 app.hyperliquid.xyz;destination 是你自己的 {{addrShort}}。",
+    "**坑**:搜 USDH 会同时出来 USDHL,别选错;点右侧订单簿会把你填的价格改掉。"
+  ],
+  "steps": [
+    {
+      "id": "open",
+      "title": "在钱包 App 里打开官网",
+      "items": [
+        "打开你的钱包 App(比如币安 App 的「钱包」),确认当前选中的就是有这笔钱的那个钱包。",
+        "用钱包里的 DApp 浏览器打开 `https://app.hyperliquid.xyz`。网址要带 https://,不然会被当成搜索词。",
+        "打开后核对地址栏:域名正好是 **app.hyperliquid.xyz**,多一个字母、少一个点都不行。",
+        "如果页面提示你所在的地区不能使用(restricted jurisdiction),请停下:这份指南不提供绕过地区限制的办法。"
+      ],
+      "copy": ["https://app.hyperliquid.xyz"]
+    },
+    {
+      "id": "connect",
+      "title": "连接钱包",
+      "note": "只是连接,不是签名,不动钱",
+      "images": [
+        {"src": "connect-1.webp", "caption": "① 点右上角 Connect"},
+        {"src": "connect-2.webp", "caption": "① 选 Default Wallet(默认钱包)。钱包弹出连接请求,来源是 app.hyperliquid.xyz 就点「连接」"},
+        {"src": "connect-3.webp", "caption": "① 右上角会显示你的地址(图里已打码),应该是 {{addrShort}} ② 点左边的交易对名称,打开列表"}
+      ]
+    },
+    {
+      "id": "search",
+      "title": "找到 USDH 的交易盘",
+      "when": "needsSell",
+      "whenText": "有 USDH 才需要这一步到第 6 步",
+      "images": [
+        {"src": "search.webp", "caption": "① 搜索框输入 USDH ② 点 USDH/USDC(下面标着 SPOT) ✗ 不要点 USDHL/USDC:那是另一个币,名字只差一个字母"}
+      ]
+    },
+    {
+      "id": "panel",
+      "title": "打开卖出面板,改成限价单",
+      "when": "needsSell",
+      "images": [
+        {"src": "panel-1.webp", "caption": "! 黄框是官方提示:USDH 已经停发,这个盘子的买单会越来越少,越早卖越好"},
+        {"src": "panel-2.webp", "caption": "① 点底部 Trade"},
+        {"src": "panel-3.webp", "caption": "① 点左上角 Market 旁边的小箭头"},
+        {"src": "panel-4.webp", "caption": "① 选 Limit(限价单:只按你填的价,或者比它更好的价成交)"}
+      ]
+    },
+    {
+      "id": "fill",
+      "title": "填卖单",
+      "when": "needsSell",
+      "note": "先填好,下一步再开启交易",
+      "images": [
+        {"src": "fill.webp", "caption": "① 点 Sell ② 价格填 0.995 ③ 数量填 {{usdhSell}}(截图里是示例数字) ④ Order Value 约 {{orderMin}} USDC,这是最少能拿到的数 ⑤ 点 Enable Trading"}
+      ],
+      "items": [
+        "右边绿色数字是别人的买单,你会按这些价格成交(通常比 0.995 好)。**别去点它们**:一点,你填的价格就被改掉。"
+      ],
+      "copy": ["0.995", "{{usdhSell}}"]
+    },
+    {
+      "id": "enable",
+      "title": "开启交易",
+      "when": "needsSell",
+      "note": "第 1 次签名",
+      "images": [
+        {"src": "enable.webp", "caption": "① Stay Connected 不要勾 ② 点 Establish Connection。钱包弹出签名请求,对照下面的核对卡"}
+      ],
+      "check": {
+        "title": "核对卡 · 开启交易",
+        "rows": [
+          ["弹窗来源", "app.hyperliquid.xyz"],
+          ["类型", "签名(Sign),不是转账;不扣任何币"],
+          ["应该看到", "HyperliquidSignTransaction、ApproveAgent、hyperliquidChain: Mainnet"],
+          ["agentAddress", "一串随机地址,每次都不一样,正常:这是网页临时生成的「下单钥匙」"],
+          ["不该看到", "金额、收款地址、Permit、对某个代币的 Approve"],
+          ["这把钥匙", "官方文档:它只能替你在自己账户里下单、撤单,不能把钱转给别人,也不能提现"],
+          ["其他", "chainId 显示 42161 或 56 都正常(跟着钱包当前网络走);verifyingContract 是一串 0 也正常"]
+        ],
+        "foot": "有一项对不上 → 点「拒绝」,停下来问我们"
+      }
+    },
+    {
+      "id": "order",
+      "title": "下单卖出",
+      "when": "needsSell",
+      "note": "这一步不弹钱包",
+      "items": [
+        "签完后页面提示 Established connection,原来写着 Enable Trading 的按钮变成 **Place Order**。",
+        "再核一眼:Sell / 价格 0.995 / 数量 {{usdhSell}}(被清空了就重填)。",
+        "点 Place Order;如果弹出 Confirm Order,核对同样三项后确认。这一步由网页里的下单钥匙签,不弹钱包。",
+        "成交后应看到:提示 Order filled;页面下方 Balances 里 USDH 只剩不到 0.01 的零头,多出约 {{spotAfter}} USDC;Open Orders 是空的。",
+        "如果 Open Orders 里还挂着这一单:说明买价掉到 0.995 以下了。先别改价,停下来问我们。"
+      ]
+    },
+    {
+      "id": "transfer",
+      "title": "把现货的 USDC 挪到合约账户",
+      "when": "needsTransfer",
+      "whenText": "只有老的「分开账户」才需要;统一账户跳过",
+      "note": "第 2 次签名",
+      "items": [
+        "先看 Account 页:标题是 **Unified Account Summary**、只有 Deposit / Withdraw 两个按钮的,是统一账户,**跳过这一步**,直接去提现。"
+      ],
+      "images": [
+        {"src": "unified-1.webp", "caption": "! 看到 Unified Account Summary,就是统一账户(示例图,数字不用看)"},
+        {"src": "unified-2.webp", "caption": "统一账户只有 Deposit / Withdraw:直接点 Withdraw,跳到下一步"},
+        {"src": "transfer-1.webp", "caption": "分开账户会显示 Spot、Perps 两行,是两个账户的钱"},
+        {"src": "transfer-2.webp", "caption": "① 点底部 Account ② 点 Perps ⇄ Spot"},
+        {"src": "transfer-3.webp", "caption": "① 点中间这个按钮,把方向换过来"},
+        {"src": "transfer-4.webp", "caption": "① 确认变成 Spot → Perps ② 点 MAX(截图是卖之前拍的所以是 0.00,你这里应约 {{spotAfter}}) ③ 点 Confirm,钱包弹出签名,对照核对卡"}
+      ],
+      "check": {
+        "title": "核对卡 · 现货划到合约账户",
+        "rows": [
+          ["弹窗来源", "app.hyperliquid.xyz"],
+          ["类型", "签名(Sign),不扣手续费"],
+          ["应该看到", "SendAsset"],
+          ["destination", "**必须是你自己**:{{addrShort}}(大小写不同没关系)"],
+          ["方向", "sourceDex: spot → destinationDex: 空(从现货到合约账户)"],
+          ["token", "USDC:0x6d1e…e054"],
+          ["amount", "约 {{spotAfter}}"]
+        ],
+        "foot": "收款地址不是你自己 → 立刻拒绝"
+      }
+    },
+    {
+      "id": "withdraw",
+      "title": "提现到 Arbitrum",
+      "note": "最后一次签名",
+      "images": [
+        {"src": "withdraw.webp", "caption": "! 官方写明:从提现金额里扣 1 USDC 手续费 ① 资产 USDC、链 Arbitrum,保持不动 ② 点 MAX,应约 {{withdrawAmt}}(截图里是别的数) ③ 点 Withdraw to Arbitrum,钱包弹出签名,对照核对卡"}
+      ],
+      "check": {
+        "title": "核对卡 · 提现到 Arbitrum",
+        "rows": [
+          ["弹窗来源", "app.hyperliquid.xyz"],
+          ["类型", "签名(Sign);不花 gas,Arbitrum 上那笔由 Hyperliquid 代发"],
+          ["应该看到", "Withdraw、hyperliquidChain: Mainnet"],
+          ["destination", "**必须是你自己**:{{addrShort}}"],
+          ["amount", "约 {{withdrawAmt}}(到账 = 这个数减 1)"],
+          ["time", "一串 13 位数字,是时间戳,正常"]
+        ],
+        "foot": "收款地址不是你自己 → 立刻拒绝"
+      }
+    },
+    {
+      "id": "arrive",
+      "title": "到账核对",
+      "check": {
+        "kind": "arrive",
+        "title": "到账核对",
+        "rows": [
+          ["多久", "官方写 5 分钟内到"],
+          ["去哪看", "钱包 App → 资产 → USDC → Arbitrum 那一行"],
+          ["应该看到", "增加约 {{arrive}} USDC"],
+          ["链上记录", "发出方 0x2Df1…3dF7(Hyperliquid 官方跨链桥),收款方是你的地址,币种是 Arbitrum 原生 USDC(0xaf88…5831)"],
+          ["没到怎么办", "30 分钟还没到:别重复提现,截图问我们"]
+        ],
+        "foot": "到账后这笔就结束了"
+      }
+    }
+  ],
+  "sources": [
+    {"label": "Hyperliquid 文档 · How to start trading", "url": "https://hyperliquid.gitbook.io/hyperliquid-docs/onboarding/how-to-start-trading"},
+    {"label": "Hyperliquid 文档 · Bridge / USDC", "url": "https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/bridge2"},
+    {"label": "Hyperliquid 文档 · Account abstraction modes", "url": "https://hyperliquid.gitbook.io/hyperliquid-docs/trading/account-abstraction-modes"},
+    {"label": "Hyperliquid 文档 · Nonces and API wallets", "url": "https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/nonces-and-api-wallets"},
+    {"label": "Bridge 公告 · An update on USDH", "url": "https://bridge.xyz/blog/an-update-on-usdh"}
+  ]
+}
