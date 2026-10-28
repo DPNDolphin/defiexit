@@ -278,7 +278,28 @@ function guide(tx, R) {
   // 带 {{变量}} 的复制按钮:要等用户填了地址、算出自己的数才显示(默认值本身就能用的变量除外,比如保底价)
   const needsAddr = (c) => [...c.matchAll(/\{\{(\w+)\}\}/g)].some((m) => !literal.has(m[1]));
   const copyBtn = (c) => `<button class="copy${needsAddr(c) ? " needs-addr" : ""}" type="button" data-copy-var="${esc(c)}">${ico("copy")}${tx.h("copy")}</button>`;
-  const tipHtml = (k, text) => `<p class="tip${k === "bad" ? " bad" : ""}">${ico(k === "bad" ? "x" : "alert")}<span>${r(text)}</span></p>`;
+  // 配方里要用户复制的原文(网址这类):说明文字里一出现,整段就是复制按钮,点一下就复制
+  const lit = new Set(R.steps.flatMap((s) => s.copy || []).filter((c) => !c.includes("{{")).map(esc));
+  const rc = (s) => r(s).replace(/<code>([^<]*)<\/code>/g, (m, v) => (lit.has(v) ? `<button class="copy code-copy" type="button" data-copy="${v}" aria-label="${tx.attr("copy")} ${v}"><code>${v}</code>${ico("copy")}</button>` : m));
+  const tipHtml = (k, text) => `<p class="tip${k === "bad" ? " bad" : ""}">${ico(k === "bad" ? "x" : "alert")}<span>${rc(text)}</span></p>`;
+  const segsHtml = (segs, inline = () => "") => {
+    let out = "", list = [];
+    const flush = () => { if (list.length) out += `<ol class="marks">${list.join("")}</ol>`; list = []; };
+    for (const g of segs) {
+      if (g.k === "n") list.push(`<li value="${g.n}"><span class="n" aria-hidden="true">${g.n}</span><span class="t">${rc(g.text)}</span>${inline(g.text)}</li>`);
+      else {
+        flush();
+        out += g.k === "plain" ? `<p class="cap">${rc(g.text)}</p>` : tipHtml(g.k, g.text);
+      }
+    }
+    flush();
+    return out;
+  };
+  const shotHtml = (im, inline) => {
+    const size = webpSize(join(ROOT, "recipes", R.id, "img", im.src));
+    const wh = size ? ` width="${size.w}" height="${size.h}"` : "";
+    return `<div class="shot"><figure><img src="/r/${esc(R.id)}/img/${esc(im.src)}" alt="${tx.attr("shotAlt")}"${wh} loading="lazy" decoding="async"></figure>${segsHtml(splitMarks(im.caption), inline)}</div>`;
+  };
 
   const steps = R.steps.map((s) => {
     const copyLeft = new Set(s.copy || []);
@@ -288,31 +309,14 @@ function guide(tx, R) {
       vs.forEach((c) => copyLeft.delete(c));
       return vs.map(copyBtn).join("");
     };
-    const segsHtml = (segs) => {
-      let out = "", list = [];
-      const flush = () => { if (list.length) out += `<ol class="marks">${list.join("")}</ol>`; list = []; };
-      for (const g of segs) {
-        if (g.k === "n") list.push(`<li value="${g.n}"><span class="n" aria-hidden="true">${g.n}</span><span class="t">${r(g.text)}</span>${inlineCopies(g.text)}</li>`);
-        else {
-          flush();
-          out += g.k === "plain" ? `<p class="cap">${r(g.text)}</p>` : tipHtml(g.k, g.text);
-        }
-      }
-      flush();
-      return out;
-    };
     const items = (s.items || []).map((x) => {
       const m = /^(!|✗)\s+/.exec(x);
       return m ? { tip: m[1] === "!" ? "tip" : "bad", text: x.slice(m[0].length) } : { text: x };
     });
     const bullets = items.filter((x) => !x.tip);
     const tips = items.filter((x) => x.tip);
-    const itemsHtml = (bullets.length ? `<ul class="items">${bullets.map((x) => `<li>${r(x.text)}</li>`).join("")}</ul>` : "") + tips.map((x) => tipHtml(x.tip, x.text)).join("");
-    const shots = (s.images || []).map((im) => {
-      const size = webpSize(join(ROOT, "recipes", R.id, "img", im.src));
-      const wh = size ? ` width="${size.w}" height="${size.h}"` : "";
-      return `<div class="shot"><figure><img src="/r/${esc(R.id)}/img/${esc(im.src)}" alt="${tx.attr("shotAlt")}"${wh} loading="lazy" decoding="async"></figure>${segsHtml(splitMarks(im.caption))}</div>`;
-    }).join("");
+    const itemsHtml = (bullets.length ? `<ul class="items">${bullets.map((x) => `<li>${rc(x.text)}</li>`).join("")}</ul>` : "") + tips.map((x) => tipHtml(x.tip, x.text)).join("");
+    const shots = (s.images || []).map((im) => shotHtml(im, inlineCopies)).join("");
     const copyRows = [...copyLeft].map((c) => `<div class="copyrow"><span class="mono">${r(c)}</span>${copyBtn(c)}</div>`).join("");
     // 配方里 images 写在 items 前面,页面上就先图后字(比如「填卖单」的提醒放在截图说明后面)
     const keys = Object.keys(s);
@@ -333,7 +337,7 @@ function guide(tx, R) {
   </section>`;
     }
     // 常见情况(审过的答案):平时藏着,点「遇到问题」时挪进底部弹层
-    const sits = (s.situations || []).map((x) => `<details class="sit${x.stop ? " stop" : ""}" data-sit="${esc(x.id)}"><summary>${r(x.see)}</summary><p>${r(x.do)}</p></details>`).join("");
+    const sits = (s.situations || []).map((x) => `<details class="sit${x.stop ? " stop" : ""}" data-sit="${esc(x.id)}"><summary>${r(x.see)}</summary><p>${rc(x.do)}</p></details>`).join("");
     const attrs = [
       `data-id="${esc(s.id)}"`,
       s.when ? `data-when="${esc(s.when)}"` : "",
@@ -342,6 +346,7 @@ function guide(tx, R) {
     ].filter(Boolean).join(" ");
     return `<section class="step" id="s-${esc(s.id)}" ${attrs}>
   <h2 class="step-title">${r(s.title)}</h2>
+  ${R.screens ? `<button class="lost-btn" type="button" data-lost>${ico("help")}${tx.h("lostBtn")}</button>` : ""}
   ${s.note ? `<p class="step-note">${r(s.note)}</p>` : ""}
   ${s.whenText ? `<p class="when">${r(s.whenText)}</p>` : ""}
   ${content}${copyRows}${check}
@@ -349,10 +354,45 @@ function guide(tx, R) {
 </section>`;
   }).join("\n");
 
+  const support = R.support ? `<a class="btn small" href="${esc(R.support.url)}" rel="noopener noreferrer" target="_blank">${r(R.support.label)}</a>` : "";
+  // 页面图鉴:手机上的页面和指南里的图对不上时,点最像自己手机的那一张,显示审过的答案和该去哪一步
+  const screens = R.screens || [];
+  // 要停手的情况(地区限制、地址被拦、要签名或授权、域名不对)不和普通页面混在一起:单独一个红框放最上面
+  const stops = screens.filter((x) => x.stop).map((x) => `<button class="scr-stop" type="button" data-scr="${esc(x.id)}">${ico("x")}<span>${r(x.name)}</span></button>`).join("");
+  const tiles = screens.filter((x) => !x.stop).map((x) => {
+    const size = x.img && webpSize(join(ROOT, "recipes", R.id, "img", x.img));
+    const pic = x.img
+      ? `<img src="/r/${esc(R.id)}/img/${esc(x.img)}" alt=""${size ? ` width="${size.w}" height="${size.h}"` : ""} loading="lazy" decoding="async">`
+      : `<span class="scr-ic">${ico(x.stop ? "x" : "help")}</span>`;
+    return `<button class="scr${x.stop ? " stop" : ""}" type="button" data-scr="${esc(x.id)}"><span class="scr-pic">${pic}</span><span class="scr-name">${r(x.name)}</span></button>`;
+  }).join("");
+  const answers = screens.map((x) => `<section class="scr-a${x.stop ? " stop" : ""}" data-scr-a="${esc(x.id)}" hidden>
+        <h3>${r(x.name)}</h3>
+        <p>${rc(x.do)}</p>
+        ${(x.images || []).map((im) => shotHtml(im)).join("")}
+        ${!x.stop && (x.goto || x.after) ? `<button class="btn primary block" type="button" data-scr-go="${esc(x.goto || "")}" data-scr-after="${esc(x.after || "")}"></button>` : ""}
+      </section>`).join("");
+  const lostSheet = screens.length ? `<dialog class="sheet" id="lost" aria-labelledby="lostH">
+    <div class="sheet-in">
+      <span class="grip" aria-hidden="true"></span>
+      <div class="sheet-head"><h2 id="lostH">${tx.h("lostH")}</h2><button class="iconbtn" type="button" id="lostClose" aria-label="${tx.attr("close")}">${ico("x")}</button></div>
+      <div id="lostPick">
+        ${stops ? `<div class="scr-stops"><p>${tx.h("lostStopH")}</p>${stops}</div>` : ""}
+        <p class="sub">${tx.h("lostSub")}</p>
+        <div class="scrs">${tiles}</div>
+        ${R.screensVerified ? `<p class="fine">${tx.h("lostAsOf", R.screensVerified)}</p>` : ""}
+      </div>
+      <div id="lostAns" hidden>${answers}<p class="sub" id="lostSkip" hidden>${tx.h("lostSkip")}</p><button class="btn block" type="button" id="lostBack">${ico("arrowLeft")}${tx.h("lostBack")}</button></div>
+      <div class="fallback">
+        <p>${tx.h("lostNone")}</p>
+        <div class="fb-row">${support}<button class="btn small" type="button" id="lostDiag">${tx.h("lostDiag")}</button><button class="btn small" type="button" id="lostReport">${ico("copy")}${tx.h("report")}</button></div>
+        ${R.support ? `<p class="sub">${r(R.support.note)}</p>` : ""}
+      </div>
+    </div>
+  </dialog>` : "";
   const official = R.official.map((o) => `<div class="official"><span>${r(o.label)}</span><b class="mono">${esc(o.domain)}</b><button class="copy" type="button" data-copy="${esc(o.url)}">${ico("copy")}${tx.h("copyUrl")}</button></div>`).join("");
   const facts = R.facts.map(([k, v]) => `<div><dt>${r(k)}</dt><dd>${r(v)}</dd></div>`).join("");
   const sources = R.sources.map((s) => `<li><a href="${esc(s.url)}" rel="noopener nofollow">${esc(s.label)}</a></li>`).join("");
-  const support = R.support ? `<a class="btn small" href="${esc(R.support.url)}" rel="noopener noreferrer" target="_blank">${r(R.support.label)}</a>` : "";
   return page({
     tx, kind: "guide", path: `/r/${R.id}/`, script: "guide.js",
     title: `${R.title} · ${site.name}`, desc: R.summary.replace(/\*\*/g, ""),
@@ -399,6 +439,7 @@ function guide(tx, R) {
       </div>
     </div>
   </dialog>
+  ${lostSheet}
   <div class="follow" id="follow" role="status" hidden><span></span><button class="btn small" type="button" data-goto="">${tx.h("followGo")}</button><button class="iconbtn" type="button" data-follow-x aria-label="${tx.attr("close")}">${ico("x")}</button></div>
 </article>`,
   });
@@ -455,6 +496,10 @@ export function localize(r, o, file) {
     if (!Array.isArray(b) || b.length !== a.length) throw new Error(`${file}: ${path} 应该有 ${a.length} 条`);
     return b;
   };
+  // 截图:写一句话就只换说明;写成 {src, caption} 就连图一起换(官网界面跟着手机语言走,比如 WOOFi 的永续页)
+  const img = (im, y, path) => (typeof y === "string"
+    ? { ...im, caption: need(y, path) }
+    : { ...im, src: need(y?.src, `${path}.src`), caption: need(y?.caption, `${path}.caption`) });
   const L = JSON.parse(JSON.stringify(r));
   for (const k of ["title", "short", "verified", "covers", "summary"]) L[k] = need(o[k], k);
   L.facts = same(r.facts, o.facts, "facts").map((x, i) => [need(x?.[0], `facts[${i}][0]`), need(x?.[1], `facts[${i}][1]`)]);
@@ -471,7 +516,7 @@ export function localize(r, o, file) {
     const S = { ...s, title: need(x.title, `${p}.title`) };
     for (const k of ["note", "whenText", "milestone"]) if (s[k]) S[k] = need(x[k], `${p}.${k}`);
     if (s.items) S.items = same(s.items, x.items, `${p}.items`).map((y, i) => need(y, `${p}.items[${i}]`));
-    if (s.images) S.images = same(s.images, x.images, `${p}.images`).map((y, i) => ({ ...s.images[i], caption: need(y, `${p}.images[${i}]`) }));
+    if (s.images) S.images = same(s.images, x.images, `${p}.images`).map((y, i) => img(s.images[i], y, `${p}.images[${i}]`));
     if (s.situations) {
       S.situations = s.situations.map((y) => {
         const z = x.situations?.[y.id];
@@ -491,6 +536,15 @@ export function localize(r, o, file) {
     }
     return S;
   });
+  if (r.screens) {
+    L.screens = r.screens.map((y) => {
+      const z = o.screens?.[y.id], q = `screens.${y.id}`;
+      const S = { ...y, name: need(z?.name, `${q}.name`), do: need(z?.do, `${q}.do`) };
+      if (z?.img) S.img = z.img;
+      if (y.images) S.images = same(y.images, z?.images, `${q}.images`).map((w, i) => img(y.images[i], w, `${q}.images[${i}]`));
+      return S;
+    });
+  }
   const cjk = JSON.stringify(L).match(/[　-〿一-鿿＀-￯]+/);
   if (cjk) throw new Error(`${file}: 英文版里还有中文「${cjk[0]}」`);
   return L;
@@ -501,10 +555,16 @@ function loadRecipes() {
   return readdirSync(dir).filter((d) => existsSync(join(dir, d, "recipe.json"))).map((d) => {
     const r = JSON.parse(readFileSync(join(dir, d, "recipe.json"), "utf8"));
     if (r.id !== d) throw new Error(`配方目录名 ${d} 和 id ${r.id} 不一致`);
+    const stepIds = new Set(r.steps.map((s) => s.id));
+    const scrIds = new Set();
+    for (const x of r.screens || []) {
+      if (!x.id || !x.name || !x.do) throw new Error(`${d}: 页面图鉴缺 id、name 或 do`);
+      if (scrIds.has(x.id)) throw new Error(`${d}: 页面图鉴 id 重复 ${x.id}`);
+      scrIds.add(x.id);
+      for (const k of ["goto", "after"]) if (x[k] && !stepIds.has(x[k])) throw new Error(`${d}: 页面图鉴 ${x.id} 的 ${k} 指向不存在的步骤 ${x[k]}`);
+      if (x.stop && (x.goto || x.after)) throw new Error(`${d}: 页面图鉴 ${x.id} 是「停下」,不能再带去某一步`);
+    }
     for (const s of r.steps) {
-      for (const im of s.images || []) {
-        if (!existsSync(join(dir, d, "img", im.src))) throw new Error(`${d}: 缺图片 ${im.src}`);
-      }
       const ids = new Set();
       for (const x of s.situations || []) {
         if (!x.id || !x.see || !x.do) throw new Error(`${d}/${s.id}: 常见情况缺 id、see 或 do`);
@@ -515,7 +575,14 @@ function loadRecipes() {
     }
     const enFile = join(dir, d, "i18n", "en.json");
     if (!existsSync(enFile)) throw new Error(`${d}: 缺英文版 i18n/en.json`);
-    return { zh: r, en: localize(r, JSON.parse(readFileSync(enFile, "utf8")), `${d}/i18n/en.json`) };
+    const out = { zh: r, en: localize(r, JSON.parse(readFileSync(enFile, "utf8")), `${d}/i18n/en.json`) };
+    // 中英两套用到的每一张图都要在(英文版可以换成英文界面的截图)
+    for (const L of Object.values(out)) {
+      const srcs = [...L.steps.flatMap((s) => s.images || []), ...(L.screens || []).flatMap((x) => x.images || [])].map((im) => im.src);
+      for (const x of L.screens || []) if (x.img) srcs.push(x.img);
+      for (const src of srcs) if (!existsSync(join(dir, d, "img", src))) throw new Error(`${d}: 缺图片 ${src}`);
+    }
+    return out;
   });
 }
 

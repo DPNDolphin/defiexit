@@ -18,6 +18,7 @@ const steps = [...art.querySelectorAll(".step")];
 const [prevBtn, nextBtn] = pager.querySelectorAll("[data-go]");
 const mine = $("mine"), meForm = $("me"), meInput = $("addr");
 const sheet = $("sheet"), diagBox = $("diag"), sheetSits = $("sheetSits"), sitsH = $("sitsH");
+const lost = $("lost"); // 「页面和图里不一样?」的页面图鉴;配方没有图鉴时没有它
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 let flags = null;     // null:没填地址,所有步骤都显示
@@ -28,6 +29,7 @@ let here = null;      // 正在看的那一步;null 是概况页
 let lastDiag = null, lastAt = 0;
 let sheetFor = null;  // 弹层里现在放的是哪一步的常见情况
 const ticks = new Map(); // 每一步的核对卡勾了哪几项
+const picked = new Set(); // 在页面图鉴里点过哪几张(写进卡点报告)
 
 const titleOf = (s) => s.querySelector(".step-title").textContent;
 const isOpen = () => sheet.hasAttribute("open"); // 不认识 <dialog> 的老浏览器没有 sheet.open
@@ -41,6 +43,7 @@ const clean = (s) => s.replace(/\s+/g, "");
 
 function show(i, { push = true, scroll = true, keepHash = false } = {}) {
   closeSheet();
+  closeLost();
   const vs = visible();
   const k = Math.max(-1, Math.min(i, vs.length - 1));
   here = k >= 0 ? vs[k] : null;
@@ -142,7 +145,7 @@ $("steps").addEventListener("touchend", (e) => {
   else if (dx > 0) prevBtn.click();
 }, { passive: true });
 document.addEventListener("keydown", (e) => {
-  if (!here || isOpen() || e.target.closest("input, textarea, select, [contenteditable]")) return;
+  if (!here || isOpen() || isLostOpen() || e.target.closest("input, textarea, select, [contenteditable]")) return;
   if (e.key === "ArrowRight" && !nextBtn.disabled) nextBtn.click();
   if (e.key === "ArrowLeft") prevBtn.click();
 });
@@ -280,6 +283,71 @@ $("sheetClose").addEventListener("click", closeSheet);
 $("recheck").addEventListener("click", () => runDiag());
 $("stuckBtn").addEventListener("click", () => openSheet());
 
+// ---------- 页面和图里不一样:页面图鉴 ----------
+// 链上查得到账户到了哪一步,查不到用户手机上是哪个页面:让用户点最像的那张,显示审过的答案
+
+function isLostOpen() {
+  return !!lost?.hasAttribute("open");
+}
+function openLost() {
+  if (!lost) return;
+  closeSheet();
+  lostPick();
+  if (typeof lost.showModal === "function") lost.showModal();
+  else lost.setAttribute("open", "");
+}
+function closeLost() {
+  if (!isLostOpen()) return;
+  if (typeof lost.close === "function") lost.close();
+  else lost.removeAttribute("open");
+}
+function lostPick() {
+  $("lostPick").hidden = false;
+  $("lostAns").hidden = true;
+  lost.scrollTop = 0;
+}
+// 图鉴说「去某一步」或「某一步之后的下一步」(按这个账户用得到的步骤算,比如没奖励就直接到解押)
+function lostTarget(b) {
+  if (b.dataset.scrAfter) {
+    const i = steps.findIndex((s) => s.dataset.id === b.dataset.scrAfter);
+    return visible().find((s) => steps.indexOf(s) > i) || null;
+  }
+  return steps.find((s) => s.dataset.id === b.dataset.scrGo) || null;
+}
+function lostShow(id) {
+  const a = [...lost.querySelectorAll("[data-scr-a]")].find((x) => x.dataset.scrA === id);
+  if (!a) return;
+  picked.add(id);
+  for (const x of lost.querySelectorAll("[data-scr-a]")) x.hidden = x !== a;
+  const b = a.querySelector("[data-scr-go]");
+  const s = b && lostTarget(b);
+  // 认出了页面,不等于这个账户要做那一步:按账户用不到的步骤不放出来,只说明一句
+  const unneeded = !!(s && flags && s.dataset.when && !flags[s.dataset.when]);
+  $("lostSkip").hidden = !unneeded;
+  if (b) {
+    b.hidden = !s || unneeded;
+    if (s && !unneeded) {
+      const vs = visible(), list = vs.includes(s) ? vs : steps.filter((x) => vs.includes(x) || x === s);
+      label(b, s === here ? t("lostStay") : t("goStep", list.indexOf(s) + 1, titleOf(s)), s !== here);
+    }
+  }
+  $("lostPick").hidden = true;
+  $("lostAns").hidden = false;
+  lost.scrollTop = 0;
+}
+function lostGo(b) {
+  const s = lostTarget(b);
+  closeLost();
+  if (s && s !== here) gotoStep(s.dataset.id);
+}
+if (lost) {
+  lost.addEventListener("click", (e) => { if (e.target === lost) closeLost(); });
+  $("lostClose").addEventListener("click", closeLost);
+  $("lostBack").addEventListener("click", lostPick);
+  $("lostDiag").addEventListener("click", () => { closeLost(); openSheet(); });
+  $("lostReport").addEventListener("click", () => report(here));
+}
+
 function addrForm() {
   const input = el("input", { class: "input mono", spellcheck: "false", autocapitalize: "off", autocomplete: "off", placeholder: zh(t("addrPlaceholder")), "aria-label": zh(t("addrLabel")) });
   const f = el("form", { class: "form", novalidate: true }, el("p", { class: "sub" }, t("diagNeedAddr")), input, el("button", { class: "btn primary block", type: "submit" }, t("diagAddrBtn")));
@@ -350,11 +418,11 @@ function pick(i) {
   toast(ap.toast, 7000);
 }
 
-async function report() {
-  const s = sheetFor;
+async function report(s = sheetFor) {
   const n = s ? visible().indexOf(s) + 1 : 0;
   const codes = lastDiag ? lastDiag.findings.map((f) => f.code).join(", ") : t("reportNoDiag");
-  const seen = [...sheetSits.querySelectorAll(".sit[open]")].map((x) => x.dataset.sit).join(", ") || t("reportNone");
+  // 看过的常见情况,加上在页面图鉴里点过的页面(screen:编号)
+  const seen = [...[...sheetSits.querySelectorAll(".sit[open]")].map((x) => x.dataset.sit), ...[...picked].map((x) => `screen:${x}`)].join(", ") || t("reportNone");
   // 只有配方、步骤、诊断代码和看过的情况,不含地址和金额
   const ok = await copy(t("reportText", art.dataset.title, n, s ? titleOf(s) : "-", codes, seen));
   toast(ok ? t("reportToast", contact() ? t("reportWhere", contact()) : t("reportSoon")) : t("reportFail"), 7000);
@@ -415,8 +483,19 @@ art.addEventListener("click", async (e) => {
   const c = x.closest(".copy");
   if (c) {
     const text = c.dataset.copy ?? c.dataset.copyVar.replace(/\{\{(\w+)\}\}/g, (_, k) => varText(k));
-    return toast((await copy(text)) ? t("copied", text) : t("copyFail"));
+    const ok = await copy(text);
+    // 按钮本身也变一下色,不只靠底部的提示
+    if (ok) {
+      c.classList.add("ok");
+      setTimeout(() => c.classList.remove("ok"), 1600);
+    }
+    return toast(ok ? t("copied", text) : t("copyFail"));
   }
+  if (x.closest("[data-lost]")) return openLost();
+  const sc = x.closest("[data-scr]");
+  if (sc) return lostShow(sc.dataset.scr);
+  const sg = x.closest("[data-scr-go]");
+  if (sg) return lostGo(sg);
   const tk = x.closest(".tick");
   if (tk) {
     const s = tk.closest(".step"), set = ticks.get(s.dataset.id) || new Set();

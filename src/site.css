@@ -90,6 +90,10 @@ code { font: 0.92em var(--font-mono); background: var(--surface-2); border: 1px 
 .copy { flex: none; height: 36px; padding: 0 12px; display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--hi-border); border-radius: var(--r-s); background: transparent; color: var(--hi); font-size: 14px; font-weight: 700; touch-action: manipulation; }
 .copy:hover { background: var(--hi-soft); }
 .copy .i { width: 16px; height: 16px; }
+/* 说明文字里要复制的网址:整段是按钮,点一下就复制 */
+.copy.code-copy { height: auto; min-height: 40px; max-width: 100%; margin: 2px 0; padding: 4px 10px 4px 4px; vertical-align: middle; background: var(--hi-soft); text-align: left; cursor: pointer; }
+.code-copy code { padding: 2px 6px; border: 0; background: transparent; color: var(--text); font-size: 15px; font-weight: 400; }
+.copy.ok { border-color: var(--ok); background: var(--ok-bg); color: var(--ok); }
 
 /* ---------- 顶栏、页脚 ---------- */
 .top { position: sticky; top: 0; z-index: 20; border-bottom: 1px solid var(--line); background: var(--bg); background: color-mix(in srgb, var(--bg) 90%, transparent); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
@@ -255,6 +259,8 @@ code { font: 0.92em var(--font-mono); background: var(--surface-2); border: 1px 
 .step-title { margin: 0; font: 800 30px/1.2 var(--font-display); }
 .step-note { margin: -6px 0 0; color: var(--sub); font-size: 14px; }
 .paged .step-note { display: none; }
+.lost-btn { align-self: flex-start; min-height: 40px; padding: 0 14px; display: inline-flex; align-items: center; gap: 6px; border: 1.5px dashed var(--warn); border-radius: 999px; background: transparent; color: var(--warn); font-size: 14px; font-weight: 700; touch-action: manipulation; }
+.lost-btn .i { width: 16px; height: 16px; }
 .when { align-self: flex-start; margin: 0; padding: 4px 10px; border-radius: 999px; background: var(--warn-bg); color: var(--warn); font-size: 13px; }
 .guide.personal .when { display: none; }
 .items { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 8px; font-size: 16px; line-height: 1.6; }
@@ -379,6 +385,28 @@ code { font: 0.92em var(--font-mono); background: var(--surface-2); border: 1px 
 .sit p { margin: 0; padding: 0 14px 12px; color: var(--sub); font-size: 15px; line-height: 1.55; }
 .sit.stop[open] { border-color: var(--stop); }
 .sit.stop p { color: var(--stop); font-weight: 700; }
+/* 页面图鉴:两列小图,点最像自己手机的那张 */
+.scr-stops { display: flex; flex-direction: column; gap: 4px; padding: 8px 10px 10px; border: 1.5px solid var(--stop); border-radius: var(--r-m); background: var(--stop-bg); }
+.scr-stops > p { margin: 0 0 2px; color: var(--stop); font-size: 14px; font-weight: 700; }
+.scr-stop { min-height: 44px; padding: 6px 10px; display: flex; align-items: center; gap: 8px; border: 0; border-radius: var(--r-s); background: var(--surface-2); color: var(--text); font-size: 14px; line-height: 1.35; text-align: left; cursor: pointer; touch-action: manipulation; }
+.scr-stop .i { width: 18px; height: 18px; flex: none; color: var(--stop); }
+#lostPick { display: flex; flex-direction: column; gap: 12px; }
+#lostPick .scrs { margin-top: 0; }
+.scrs { margin-top: 10px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.scr { display: flex; flex-direction: column; gap: 6px; padding: 6px; border: 1.5px solid var(--line); border-radius: var(--r-m); background: var(--surface-2); color: var(--text); text-align: left; cursor: pointer; touch-action: manipulation; transition: transform 0.15s, border-color 0.15s; }
+.scr:hover { border-color: var(--hi-border); }
+.scr:active { transform: scale(0.98); }
+.scr-pic { display: block; aspect-ratio: 5 / 6; overflow: hidden; border-radius: 10px; background: #000; }
+.scr-pic img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.scr-ic { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--surface); color: var(--warn); }
+.scr.stop .scr-ic { color: var(--stop); }
+.scr-ic .i { width: 40px; height: 40px; }
+.scr-name { padding: 0 4px 4px; font-size: 14px; font-weight: 700; line-height: 1.35; }
+#lostAns { display: flex; flex-direction: column; gap: 14px; }
+.scr-a { display: flex; flex-direction: column; gap: 12px; }
+.scr-a h3 { margin: 0; font-size: 18px; line-height: 1.35; }
+.scr-a > p { margin: 0; font-size: 16px; line-height: 1.6; }
+.scr-a.stop > p { color: var(--stop); font-weight: 700; }
 .fallback { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: var(--r-m); background: var(--stop-bg); }
 .fallback > p:first-child { margin: 0; color: var(--stop); font-weight: 700; }
 .fb-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }

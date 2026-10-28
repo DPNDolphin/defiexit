@@ -47,6 +47,22 @@
     "from": "发出方是 WOOFi 的官方合约",
     "look": "去哪看:钱包 App → 资产,网络选 Arbitrum。"
   },
+  "screensVerified": "2026-10-29",
+  "screens": [
+    {"id": "perps", "img": "perps-1.webp", "name": "K 线图交易页", "do": "这是 WOOFi 的永续合约交易页,不是质押页。照下面两张图回到质押页:左上角是 Spot / Perps 切换、底部一排里有 Stake,就对了。右上角显示你的地址就接着往下做;显示 Connect Wallet 就再连一次钱包。", "images": [{"src": "perps-1.webp", "caption": "① 点左上角三条横线"}, {"src": "perps-2.webp", "caption": "② 点 **质押**(英文界面叫 Stake)"}], "after": "connect"},
+    {"id": "home", "img": "home.webp", "name": "WOOFi 介绍页(有 LAUNCH APP)", "do": "这是 WOOFi 的介绍页,不是质押页。点顶上的地址栏,重新输入 `https://woofi.com/stake` 打开。", "goto": "open"},
+    {"id": "stake-new", "img": "connect-1.webp", "name": "质押页,还没连钱包", "do": "这就是质押页,只是还没连钱包。照第 2 步连接钱包。", "goto": "connect"},
+    {"id": "wallets", "img": "connect-2.webp", "name": "让你选钱包", "do": "这是选钱包的弹层。选 **Detected Wallet**;在币安 App 里选 **Binance** 也行。钱包弹出连接请求,来源是 woofi.com 就点「连接」。", "goto": "connect"},
+    {"id": "networks", "img": "connect-4.webp", "name": "让你选网络", "do": "这是选网络的菜单。选 **Arbitrum**,钱包弹出切换网络请求就点确认。", "goto": "connect"},
+    {"id": "stake", "img": "claim.webp", "name": "质押页,钱包已连好", "do": "这就是质押页,钱包也连好了。有没领的奖励先点 **Claim**(别点 Compound);再切到 **Unstake** 解押。", "after": "connect"},
+    {"id": "unstake", "img": "unstake-1.webp", "name": "Unstake 页签", "do": "这是解押页签。点输入框右边的数字填满全部,再点 **UNSTAKE**。", "goto": "unstake"},
+    {"id": "earn", "img": "vault-1.webp", "name": "Earn 页的金库列表", "do": "这是金库页。找网络是 Arbitrum 的 ETH 卡片,照「取出金库里的 ETH」那一步做。", "goto": "vault"},
+    {"id": "vault", "img": "vault-3.webp", "name": "金库的 WITHDRAW 页签", "do": "这是金库的取款页签。点 Available for Withdrawals 右边那个小的 **WITHDRAW**,不是下面的大按钮。", "goto": "vault"},
+    {"id": "domain", "name": "地址栏的域名不是 woofi.com", "do": "马上关掉这个页面,什么都别签。自己重新输入 `https://woofi.com/stake`,不要点别人发来的链接。", "stop": true},
+    {"id": "sign", "name": "钱包要你签名一段消息,或者授权(Approve / Permit)", "do": "点「拒绝」。这份指南的每一步都只是普通交易,不用签名消息,也不用授权。关掉页面,回第 1 步重新核对网址。", "stop": true},
+    {"id": "sorry", "name": "WE'RE SORRY,说你的地区不能用", "do": "请停下:WOOFi 不对你所在的地区提供服务,这份指南不提供绕过地区限制的办法。可以去 WOOFi 官方 Discord 问。", "stop": true},
+    {"id": "blocked", "name": "弹出 Blocked Address", "do": "WOOFi 按制裁名单拦下了这个地址,这份指南帮不了。", "stop": true}
+  ],
   "steps": [
     {
       "id": "open",
@@ -68,6 +84,7 @@
     {
       "id": "connect",
       "situations": [
+        {"id": "perps-page", "see": "连好以后看到的是 K 线图交易页,不是质押页", "do": "那是 WOOFi 的永续合约交易页。点左上角三条横线 → **质押**(英文界面叫 Stake),就回到质押页了。右上角显示 Connect Wallet 的话,再连一次钱包。"},
         {"id": "no-popup", "see": "点了 Connect Wallet,钱包没有弹出连接请求", "do": "要在钱包 App 自带的 DApp 浏览器里打开网页(第 1 步)。选 Detected Wallet 没反应,就重新打开页面,换选 Binance 试试。"},
         {"id": "wrong-address", "see": "右上角显示的地址不是有钱的那个", "do": "在钱包 App 里切换到有这笔钱的那个钱包,再重新连接。地址对不上,不要往下做。"},
         {"id": "sign-on-connect", "see": "连接时钱包要你签名一段消息", "do": "点「拒绝」,关掉页面,重新核对网址:WOOFi 连接钱包不需要签名(官网的代码里没有签名请求)。", "stop": true},
@@ -81,11 +98,15 @@
         {"src": "connect-2.webp", "caption": "① 选 **Detected Wallet**:就是你正在用的这个 App 里的钱包 ② 在币安 App 里选 **Binance** 也行。钱包弹出连接请求,来源是 woofi.com 就点「连接」"},
         {"src": "connect-3.webp", "caption": "① 右上角显示你的地址(图里已打码),应该是 {{addrShort}} ② 这个图标是当前网络,点它"},
         {"src": "connect-4.webp", "caption": "① 选 **Arbitrum**,钱包弹出切换网络请求就点确认。已经是 Arbitrum(名字后面有小圆点)就点右上角 × 关掉"}
+      ],
+      "items": [
+        "! 连好以后看到的是 K 线图(底部有「交易」「竞技场」),不是上面这种质押页?那是 WOOFi 的永续合约交易页:点左上角三条横线 → **质押**。左上角变成 Spot / Perps 切换、底部一排里有 Stake,就回到质押页了。"
       ]
     },
     {
       "id": "claim",
       "situations": [
+        {"id": "perps-page", "see": "页面是 K 线图,找不到 Claim", "do": "你在 WOOFi 的永续合约交易页。点左上角三条横线 → **质押**(英文界面叫 Stake),Claim 在质押页里。"},
         {"id": "cancelled", "see": "页面弹出 Cancelled · User denied transaction signature", "do": "说明钱包那边点了拒绝,钱没动。核对好以后再点一次 Claim。"},
         {"id": "insufficient-gas", "see": "按钮变成 INSUFFICIENT GAS", "do": "官网要求钱包 Arbitrum 网络上至少有 0.0002 ETH。先往这个钱包的 Arbitrum 网络转一点 ETH(0.0005 就够),再回来。"},
         {"id": "compound-clicked", "see": "不小心点了 Compound", "do": "奖励会被换成 WOO 存回质押里,钱没丢。下一步解押时会一起取出来。"},

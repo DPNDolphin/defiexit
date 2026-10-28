@@ -118,3 +118,60 @@ test("WOOFi 英文版配方:条目齐全、没有中文", () => {
   const en = JSON.parse(read("recipes/woofi/i18n/en.json"));
   assert.doesNotThrow(() => localize(r, en, "woofi/en.json"));
 });
+
+test("要复制的网址:说明文字里整段就是复制按钮;只出现 https:// 这种片段的不算", () => {
+  for (const [f, url] of [["dist/r/woofi/index.html", "https://woofi.com/stake"], ["dist/en/r/woofi/index.html", "https://woofi.com/stake"], ["dist/r/hyperliquid/index.html", "https://app.hyperliquid.xyz"], ["dist/en/r/hyperliquid/index.html", "https://app.hyperliquid.xyz"]]) {
+    const g = read(f);
+    assert.ok(g.includes(`<button class="copy code-copy" type="button" data-copy="${url}"`), `${f} 的网址不是复制按钮`);
+    assert.ok(!g.includes('data-copy="https://"'), `${f}:「网址要带 https://」里的片段不该变成复制按钮`);
+    if (!f.includes("/en/")) assert.ok(g.includes("<code>https://</code>"), `${f}:「网址要带 https://」里的片段应该照常显示`);
+    // 核对卡的勾选项本身是按钮,里面不能再套按钮
+    assert.ok(!/<button class="tick"[^>]*>(?:(?!<\/button>)[\s\S])*<button/.test(g), `${f} 勾选项里套了按钮`);
+  }
+});
+
+test("页面图鉴:每一步都有「页面和图里不一样?」,点开能选最像自己手机的页面;英文版换英文界面的截图", () => {
+  const zh = read("dist/r/woofi/index.html"), en = read("dist/en/r/woofi/index.html");
+  for (const g of [zh, en]) {
+    assert.equal(g.match(/<button class="lost-btn" type="button" data-lost>/g)?.length, 6);
+    assert.ok(g.includes('<dialog class="sheet" id="lost"'));
+    assert.equal(g.match(/<button class="scr" type="button" data-scr="/g)?.length, 9);
+    // 要停手的情况单独一个红框放最上面,不混在普通页面里
+    assert.equal(g.match(/<button class="scr-stop" type="button" data-scr="/g)?.length, 4);
+    assert.ok(g.indexOf('class="scr-stops"') < g.indexOf('class="scrs"'));
+    assert.equal(g.match(/data-scr-a="/g)?.length, 13);
+    // 停手的答案只让停下,不带去任何一步
+    for (const id of ["domain", "sign", "sorry", "blocked"]) {
+      const a = g.match(new RegExp(`data-scr-a="${id}" hidden>((?:(?!</section>)[\\s\\S])*)</section>`));
+      assert.ok(a, `缺 ${id} 的答案`);
+      assert.ok(!a[1].includes("data-scr-go"), `${id} 不该带去某一步`);
+    }
+    assert.match(g, /data-scr-go="" data-scr-after="connect"/);
+    // 图鉴里也给官方渠道,并写明这些页面哪天核对的
+    const lost = g.slice(g.indexOf('<dialog class="sheet" id="lost"'));
+    assert.ok(lost.includes('href="https://discord.com/invite/woo-854313849591431188"'));
+    assert.ok(lost.includes("2026-10-29"));
+    assert.ok(lost.includes('id="lostSkip" hidden'));
+  }
+  assert.ok(zh.includes('src="/r/woofi/img/perps-1.webp"') && !zh.includes("perps-1-en.webp"));
+  assert.ok(en.includes('src="/r/woofi/img/perps-1-en.webp"') && en.includes("perps-2-en.webp"));
+  // 没有图鉴的配方不放这个按钮
+  for (const f of ["dist/r/hyperliquid/index.html", "dist/en/r/hyperliquid/index.html"]) {
+    const g = read(f);
+    assert.ok(!g.includes("data-lost") && !g.includes('id="lost"'), `${f} 不该有页面图鉴`);
+  }
+});
+
+test("页面图鉴的英文版:缺一条就报错;图可以整张换掉", () => {
+  const r = JSON.parse(read("recipes/woofi/recipe.json"));
+  const en = JSON.parse(read("recipes/woofi/i18n/en.json"));
+  const L = localize(r, en, "woofi/en.json");
+  assert.equal(L.screens.find((x) => x.id === "perps").img, "perps-1-en.webp");
+  assert.equal(L.screens.find((x) => x.id === "stake").img, "claim.webp");
+  const bad = JSON.parse(JSON.stringify(en));
+  delete bad.screens.home.do;
+  assert.throws(() => localize(r, bad, "x.json"), /screens\.home\.do/);
+  const bad2 = JSON.parse(JSON.stringify(en));
+  bad2.screens.perps.images = [bad2.screens.perps.images[0]];
+  assert.throws(() => localize(r, bad2, "x.json"), /screens\.perps\.images/);
+});

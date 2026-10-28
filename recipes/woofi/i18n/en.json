@@ -33,6 +33,21 @@
     "from": "Sent from WOOFi's official contracts",
     "look": "Where to look: your wallet app → Assets, with the network set to Arbitrum."
   },
+  "screens": {
+    "perps": {"img": "perps-1-en.webp", "name": "Price chart trading page", "do": "This is WOOFi's perpetuals trading page, not the staking page. Follow the two pictures below to get back: you're there when the top left shows a Spot / Perps switch and the bar at the bottom includes Stake. Carry on if your address shows at the top right; if it says Connect Wallet, connect again.", "images": [{"src": "perps-1-en.webp", "caption": "① Tap the three lines at the top left"}, {"src": "perps-2-en.webp", "caption": "② Tap **Stake**"}]},
+    "home": {"name": "WOOFi intro page (with LAUNCH APP)", "do": "This is WOOFi's intro page, not the staking page. Tap the address bar at the top and type `https://woofi.com/stake` again."},
+    "stake-new": {"name": "Staking page, wallet not connected", "do": "This is the staking page, you just haven't connected yet. Connect your wallet as in step 2."},
+    "wallets": {"name": "Asks you to pick a wallet", "do": "This is the wallet picker. Pick **Detected Wallet**; in the Binance app, **Binance** works too. When your wallet asks to connect and the request comes from woofi.com, tap Connect."},
+    "networks": {"name": "Asks you to pick a network", "do": "This is the network menu. Pick **Arbitrum** and confirm the network switch in your wallet."},
+    "stake": {"name": "Staking page, wallet connected", "do": "This is the staking page and your wallet is connected. If you have unclaimed rewards, tap **Claim** first (not Compound), then switch to **Unstake**."},
+    "unstake": {"name": "Unstake tab", "do": "This is the Unstake tab. Tap the number to the right of the box to fill in everything, then tap **UNSTAKE**."},
+    "earn": {"name": "Earn page with the vault list", "do": "This is the vault page. Find the ETH card on Arbitrum and follow the step \"Collect the ETH from the vault\"."},
+    "vault": {"name": "Vault WITHDRAW tab", "do": "This is the vault's withdrawal tab. Tap the small **WITHDRAW** to the right of Available for Withdrawals, not the big button below."},
+    "domain": {"name": "The address bar doesn't say woofi.com", "do": "Close the page right away and don't sign anything. Type `https://woofi.com/stake` yourself; don't tap links other people send you."},
+    "sign": {"name": "Your wallet asks you to sign a message, or to approve (Approve / Permit)", "do": "Tap Reject. Every step in this guide is an ordinary transaction: no message signatures, no approvals. Close the page and go back to step 1 to check the address."},
+    "blocked": {"name": "A Blocked Address message appears", "do": "WOOFi blocked this address based on a sanctions list. This guide can't help."},
+    "sorry": {"name": "WE'RE SORRY: your region isn't supported", "do": "Stop here. WOOFi doesn't serve your region, and this guide won't help you get around regional restrictions. You can ask in WOOFi's official Discord."}
+  },
   "steps": {
     "open": {
       "title": "Open the official site in your wallet app",
@@ -58,7 +73,11 @@
         "① Your address shows at the top right (hidden in the screenshot). It should be {{addrShort}} ② This icon is the current network. Tap it",
         "① Pick **Arbitrum** and confirm the network switch in your wallet. If it's already Arbitrum (a small dot after the name), close the menu with the × at the top right"
       ],
+      "items": [
+        "! Connected, but you see a price chart (with Trade and Arena at the bottom) instead of the staking page above? That's WOOFi's perpetuals trading page. Tap the three lines at the top left → **Stake**. You're back on the staking page when the top left shows a Spot / Perps switch and the bar at the bottom includes Stake."
+      ],
       "situations": {
+        "perps-page": {"see": "After connecting, I see a price chart trading page, not the staking page", "do": "That's WOOFi's perpetuals trading page. Tap the three lines at the top left → **Stake** to get back to the staking page. If the top right says Connect Wallet, connect again."},
         "no-popup": {"see": "Tapped Connect Wallet, but the wallet didn't ask to connect", "do": "Open the page inside your wallet app's own DApp browser (step 1). If Detected Wallet does nothing, reopen the page and try Binance."},
         "wrong-address": {"see": "The address at the top right isn't the one with the money", "do": "Switch to the wallet that holds this money in your wallet app, then connect again. Don't continue if the address doesn't match."},
         "sign-on-connect": {"see": "Your wallet asks you to sign a message while connecting", "do": "Tap Reject, close the page and check the address again. WOOFi doesn't need a signature to connect (its site code makes no signature request)."},
@@ -91,6 +110,7 @@
         ]
       },
       "situations": {
+        "perps-page": {"see": "The page is a price chart and there's no Claim", "do": "You're on WOOFi's perpetuals trading page. Tap the three lines at the top left → **Stake**. Claim is on the staking page."},
         "cancelled": {"see": "The page shows Cancelled · User denied transaction signature", "do": "You tapped Reject in your wallet, so nothing moved. Check again, then tap Claim once more."},
         "insufficient-gas": {"see": "The button says INSUFFICIENT GAS", "do": "The official site needs at least 0.0002 ETH on Arbitrum in your wallet. Send a little ETH to this wallet on Arbitrum first (0.0005 is plenty), then come back."},
         "compound-clicked": {"see": "Tapped Compound by mistake", "do": "Your rewards were turned into WOO and added to your stake. Nothing is lost: they come out with the rest when you unstake in the next step."},
