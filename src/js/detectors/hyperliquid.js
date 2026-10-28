@@ -1,6 +1,8 @@
 // Hyperliquid 检测器:只读公开接口 api.hyperliquid.xyz/info,算出能提回多少、要做哪几步。
 // diagnose() 再查挂单、成交、提现记录和 Arbitrum 上的到账,判断用户实际做到了哪一步。
+// 给用户看的话都在 hyperliquid.text.js(中英两套),这里只管算。
 import { postJSON, shortAddr, floorTo, fmt } from "../lib/net.js";
+import { TEXT } from "./hyperliquid.text.js";
 
 const API = "https://api.hyperliquid.xyz/info";
 const ARB_RPC = "https://arb1.arbitrum.io/rpc";
@@ -16,6 +18,7 @@ const SPLIT = ["default"];                             // 分开账户:现货、
 const UNIFIED = ["unifiedAccount", "portfolioMargin"]; // 统一账户:余额都在现货那本账里
 const MIN = 60000, DAY = 86400000;
 
+const text = (lang) => TEXT[lang] || TEXT.zh;
 const info = (body) => postJSON(API, body);
 const num = (x) => Number(x || 0);
 // 接口返回的数字字符串要显示给用户、甚至让用户照着填进官网:只认纯数字,别的一律不用
@@ -53,7 +56,7 @@ export function micro(s) {
 }
 
 // 读账户 + 必要时读 USDH 盘口,算出所有要用的数
-async function load(user) {
+async function load(user, T) {
   // 账户模式查不到就整体报错,不按「分开账户」去猜:猜错会把同一笔钱算两遍
   const [ch, spot, mode] = await Promise.all([
     info({ type: "clearinghouseState", user }),
@@ -70,7 +73,8 @@ async function load(user) {
   const perpRaw = num(ch.withdrawable);
   const anything = positions > 0 || perpRaw > 0 || Object.values(total).some((v) => v > 0);
   const unified = UNIFIED.includes(mode);
-  if (anything && !unified && !SPLIT.includes(mode)) throw new Error(`没认出账户模式(${mode}),先别照指南操作,稍后再试`);
+  // 接口给的模式名原样显示前先过一遍:只认短的英文单词
+  if (anything && !unified && !SPLIT.includes(mode)) throw new Error(T.unknownMode(/^[A-Za-z]{1,32}$/.test(String(mode)) ? mode : "?"));
 
   const usdhSell = floorTo(free("USDH"), 2);
   const usdhHeld = held.USDH || 0;
@@ -95,12 +99,24 @@ async function load(user) {
   };
 }
 
-function balanceLines(a) {
+function balanceLines(a, T) {
   const lines = [];
-  if (a.perp >= 0.01) lines.push(`合约账户 ${fmt(a.perp)} USDC`);
-  if (a.spotUsdc >= 0.01) lines.push(`${a.unified ? "账户" : "现货"} ${fmt(a.spotUsdc)} USDC`);
-  if (a.usdhAll >= 0.01) lines.push(`现货 ${fmt(a.usdhAll)} USDH${a.usdhHeld >= 0.01 ? `(其中 ${fmt(a.usdhHeld)} 挂在卖单里)` : ""}${a.bid ? `(买价约 ${a.bid})` : ""}`);
+  if (a.perp >= 0.01) lines.push(T.line.perp(fmt(a.perp)));
+  if (a.spotUsdc >= 0.01) lines.push(T.line.spot(a.unified, fmt(a.spotUsdc)));
+  if (a.usdhAll >= 0.01) lines.push(T.line.usdh(fmt(a.usdhAll), a.usdhHeld >= 0.01 ? fmt(a.usdhHeld) : null, a.bid));
   return lines;
+}
+
+// 结果页的明细表:一行一个数
+function balanceRows(a, T) {
+  const rows = [];
+  if (a.perp >= 0.01) rows.push({ label: T.row.perp, value: fmt(a.perp) });
+  if (a.spotUsdc >= 0.01) rows.push({ label: T.row.spot(a.unified), value: fmt(a.spotUsdc) });
+  if (a.usdhAll >= 0.01) {
+    const hint = [a.usdhHeld >= 0.01 ? T.row.held(fmt(a.usdhHeld)) : null, a.bid ? T.row.bid(a.bid) : null].filter(Boolean).join(" · ");
+    rows.push({ label: T.row.usdh, value: fmt(a.usdhAll), hint: hint || null });
+  }
+  return rows;
 }
 
 // 买价低于 0.995 时,「按现价卖」amount 个 USDH 要用的数
@@ -112,30 +128,31 @@ function sellNow(a, amount) {
   return { floorPx, expect, min, loss: amount - expect };
 }
 
-export async function detect(address) {
-  const a = await load(address);
+export async function detect(address, lang = "zh") {
+  const T = text(lang);
+  const a = await load(address, T);
   const arrive = a.withdrawAmt - WITHDRAW_FEE;
   const warnings = [];
-  if (a.positions) warnings.push(`你还有 ${a.positions} 个持仓:先在官网平仓,这份指南不包括平仓`);
-  if (a.usdhHeld >= 0.01) warnings.push(`有 ${fmt(a.usdhHeld)} USDH 挂在卖单里还没成交:多半是买价低于你填的价格。别重复下单;预计到账是按它以 0.995 成交算的`);
-  if (a.usdhSell >= 0.01 && a.bid !== null && a.usdhSell * a.bid < MIN_ORDER_USD) warnings.push("USDH 不到 10 美元,可能低于最小下单额,卖不出去");
+  if (a.positions) warnings.push(T.warn.positions(a.positions));
+  if (a.usdhHeld >= 0.01) warnings.push(T.warn.held(fmt(a.usdhHeld)));
+  if (a.usdhSell >= 0.01 && a.bid !== null && a.usdhSell * a.bid < MIN_ORDER_USD) warnings.push(T.warn.tooSmall);
   if (a.usdhSell >= 0.01 && a.bid !== null && a.bid < FLOOR_PRICE && a.usdhSell * a.bid >= MIN_ORDER_USD) {
     const s = sellNow(a, a.usdhSell);
-    const atBid = s ? `按现在的买盘全部卖掉约得 ${fmt(s.expect)} USDC,比 1:1 少约 ${fmt(s.loss)}` : "现在的买盘不够把它全部卖掉";
-    warnings.push(`USDH 现在的买价 ${a.bid} 低于指南的保底价 0.995,先别卖。${atBid}。另一条官方路:Hyperliquid 官网写明,USDH 发行方 Bridge 在 redeem.bridge.xyz 维持 1:1 赎回(要在 Bridge 注册开户)。打开指南,点「我卡在这一步」可以选怎么办。预计到账没算 USDH`);
+    warnings.push(T.warn.lowBid(a.bid, T.warn.atBid(s && { expect: fmt(s.expect), loss: fmt(s.loss) })));
   }
-  if (a.usdhSell >= 0.01 && a.bid === null) warnings.push("USDH 现在没有买单,卖不出去;预计到账没算 USDH");
-  if (a.canSell && a.fill.qty < a.usdhSell - 0.005) warnings.push(`0.995 以上的买单现在只够卖 ${fmt(a.fill.qty)} 个;剩下的会按 0.995 挂着等成交,预计到账只算了能卖掉的部分`);
+  if (a.usdhSell >= 0.01 && a.bid === null) warnings.push(T.warn.noBids);
+  if (a.canSell && a.fill.qty < a.usdhSell - 0.005) warnings.push(T.warn.thin(fmt(a.fill.qty)));
   // 代币名是任何人都能起的,不原样显示(可能是骂人的话,也可能是冒充的提示语),只报数量
-  if (a.others) warnings.push(`现货里还有 ${a.others} 种别的币,这份指南没写怎么卖`);
+  if (a.others) warnings.push(T.warn.others(a.others));
 
   const status = arrive >= 0.2 ? "found" : (a.withdrawAmt > 0.01 || a.usdhAll >= 0.01) ? "dust" : "empty";
   return {
     status,
     usd: Math.max(arrive, 0),
-    lines: balanceLines(a),
+    lines: balanceLines(a, T),
+    rows: balanceRows(a, T),
     warnings,
-    note: status === "dust" ? "有余额,但不够付 1 USDC 提现手续费" : a.unified ? "统一账户:不用划转,卖完直接提" : "分开账户:卖完要先把现货 USDC 划到合约账户",
+    note: status === "dust" ? T.note.dust : a.unified ? T.note.unified : T.note.split,
     // 有挂着的卖单时,卖出那几步照样显示:「下单卖出」那一步写了挂单没成交怎么办
     flags: { needsSell: a.canSell || a.usdhHeld >= 0.01, needsTransfer: !a.unified && a.spotAfter >= 0.01 },
     vars: {
@@ -151,10 +168,10 @@ export async function detect(address) {
 }
 
 // 这笔提现到没到:Arbitrum 上那笔交易里,要有「官方桥 → 用户完整地址、Arbitrum 原生 USDC、金额等于到账净额」的转账
-async function arrivalOf(w, user) {
+async function arrivalOf(w, user, T) {
   if (!/^0x[0-9a-fA-F]{64}$/.test(w.hash || "") || !plain(w.delta?.usdc)) return { state: "mismatch" };
   const r = await postJSON(ARB_RPC, { jsonrpc: "2.0", id: 1, method: "eth_getTransactionReceipt", params: [w.hash] });
-  if (r.error) throw new Error("Arbitrum 节点返回错误");
+  if (r.error) throw new Error(T.rpcError);
   const rc = r.result;
   if (!rc) return { state: "pending" };
   const pad = (a) => "0x" + a.slice(2).toLowerCase().padStart(64, "0");
@@ -171,86 +188,86 @@ const when = (t) => { const d = new Date(t); return `${two(d.getMonth() + 1)}-${
 const ago = (t, now) => Math.max(0, Math.round((now - t) / MIN));
 
 // 现场诊断:用户实际做到了哪一步、卡在哪。
-// 返回 step(应该在的步骤 id,null 表示别往下做)、facts(查到的原始情况)、findings(结论,带代码,卡点报告里只用代码)、choice(要用户自己选的)
-export async function diagnose(address, now = Date.now()) {
+// 返回 step(应该在的步骤 id,null 表示别往下做)、facts(查到的原始情况)、
+// findings(结论,带代码;卡点报告里只用代码)、choice(要用户自己选的)、arrival(24 小时内那笔提现的到账情况)
+export async function diagnose(address, now = Date.now(), lang = "zh") {
+  const T = text(lang);
   const user = address;
   const [a, orders, fills, ledger] = await Promise.all([
-    load(user),
+    load(user, T),
     info({ type: "frontendOpenOrders", user }),
     info({ type: "userFills", user }),
     info({ type: "userNonFundingLedgerUpdates", user, startTime: now - 7 * DAY }),
   ]);
-  const facts = [...balanceLines(a), a.unified ? "账户模式:统一账户" : "账户模式:分开账户"];
+  const facts = [...balanceLines(a, T), T.fact.mode(a.unified)];
   const findings = [];
-  const say = (code, level, text) => findings.push({ code, level, text });
+  const say = (code, level, msg) => findings.push({ code, level, head: T.head[code], text: msg });
   let step = null, choice = null;
 
   const sells = (orders || []).filter((o) => o.coin === USDH_PAIR && o.side === "A");
-  for (const o of sells) facts.push(`挂着的卖单:${fmt(num(o.sz))} USDH,价格 ${shown(o.limitPx)},挂了 ${ago(o.timestamp, now)} 分钟`);
-  if (a.bid) facts.push(`USDH 现在的买一价:${a.bid}`);
+  for (const o of sells) facts.push(T.fact.order(fmt(num(o.sz)), shown(o.limitPx), ago(o.timestamp, now)));
+  if (a.bid) facts.push(T.fact.bid(a.bid));
   const sold = (fills || []).filter((f) => f.coin === USDH_PAIR && f.dir === "Sell" && now - f.time < DAY);
   if (sold.length) {
     const qty = sold.reduce((s, f) => s + num(f.sz), 0), usdc = sold.reduce((s, f) => s + num(f.sz) * num(f.px), 0);
-    facts.push(`24 小时内卖出成交 ${sold.length} 笔,共 ${fmt(qty)} USDH,均价 ${(usdc / qty).toFixed(5)}`);
+    facts.push(T.fact.fills(sold.length, fmt(qty), (usdc / qty).toFixed(5)));
   }
   const withdraws = (ledger || []).filter((u) => u.delta?.type === "withdraw").sort((x, y) => y.time - x.time);
   const last = withdraws[0] || null;
-  const arrival = last && now - last.time < DAY ? await arrivalOf(last, user) : null;
+  const arrival = last && now - last.time < DAY ? await arrivalOf(last, user, T) : null;
   if (last) {
-    const tail = !arrival ? "" : arrival.state === "arrived" ? `,已在 Arbitrum 上到账(区块 ${arrival.block})` : arrival.state === "pending" ? ",Arbitrum 上还没查到到账交易" : ",查到链上交易,但没对上你的到账转账";
-    facts.push(`最近一次提现:${when(last.time)} 提交,到账金额 ${shown(last.delta.usdc)} USDC(手续费 ${shown(last.delta.fee)})${tail}`);
+    const tail = !arrival ? "" : arrival.state === "arrived" ? T.fact.arrived(arrival.block) : arrival.state === "pending" ? T.fact.pending : T.fact.mismatch;
+    facts.push(T.fact.withdraw(when(last.time), shown(last.delta.usdc), shown(last.delta.fee), tail));
   }
 
   // 要卖的数量:没挂单的 + 挂着没成交的(改价要先撤掉原来那一单)
   const lowBid = (cancelFirst) => {
     const amount = floorTo(a.usdhSell + a.usdhHeld, 2);
     const s = sellNow(a, amount);
-    choice = {
-      kind: "lowBid", bid: a.bid, amount: amount.toFixed(2), cancelFirst,
-      sell: s && {
-        floorPx: s.floorPx, min: fmt(s.min), expect: fmt(s.expect), loss: fmt(s.loss),
-        vars: {
-          floorPx: s.floorPx, usdhSell: amount.toFixed(2), orderMin: fmt(amount * num(s.floorPx)),
-          spotAfter: fmt(a.spotUsdc + s.expect), withdrawAmt: fmt(a.now + s.expect), arrive: fmt(Math.max(a.now + s.expect - WITHDRAW_FEE, 0)),
-        },
+    const sell = s && {
+      floorPx: s.floorPx, min: fmt(s.min), expect: fmt(s.expect), loss: fmt(s.loss),
+      vars: {
+        floorPx: s.floorPx, usdhSell: amount.toFixed(2), orderMin: fmt(amount * num(s.floorPx)),
+        spotAfter: fmt(a.spotUsdc + s.expect), withdrawAmt: fmt(a.now + s.expect), arrive: fmt(Math.max(a.now + s.expect - WITHDRAW_FEE, 0)),
       },
     };
+    choice = { kind: "lowBid", bid: a.bid, amount: amount.toFixed(2), cancelFirst, sell, options: options(T, amount.toFixed(2), cancelFirst, sell) };
   };
 
   // 按指南的顺序,找第一件还没做完的事
   if (a.positions) {
-    say("positions", "stop", `你还有 ${a.positions} 个持仓:先在官网平仓。这份指南不包括平仓,平完再回来。`);
+    say("positions", "stop", T.say.positions(a.positions));
   } else if (sells.length || a.usdhHeld >= 0.01) {
     step = "order";
     const px = sells[0] ? num(sells[0].limitPx) : null;
-    if (!sells.length) say("usdh-held", "stop", `有 ${fmt(a.usdhHeld)} USDH 被冻结,但没查到挂着的卖单。先别操作,过一分钟点「再查一次」。`);
+    if (!sells.length) say("usdh-held", "stop", T.say.held(fmt(a.usdhHeld)));
     else if (a.bid !== null && px !== null && a.bid < px) {
-      say("order-resting", "wait", `你的卖单还挂着没成交:你挂的价格是 ${shown(sells[0].limitPx)},现在的买一价 ${a.bid} 比它低。别重复下单。`);
+      say("order-resting", "wait", T.say.restingLow(shown(sells[0].limitPx), a.bid));
       if (a.bid < FLOOR_PRICE) lowBid(true);
-    } else say("order-resting", "wait", "你的卖单还挂着,正在等成交。别重复下单,过一会儿点「再查一次」。");
+    } else say("order-resting", "wait", T.say.resting);
   } else if (a.usdhSell >= 0.01 && a.bid !== null && a.usdhSell * a.bid < MIN_ORDER_USD) {
-    say("usdh-dust", "info", `还剩 ${fmt(a.usdhSell)} USDH,不到 10 美元,卖不掉,可以不管它。`);
+    say("usdh-dust", "info", T.say.dust(fmt(a.usdhSell)));
   } else if (a.usdhSell >= 0.01 && a.bid === null) {
-    say("no-bids", "stop", "USDH 现在没有买单,卖不出去。先别卖;另一条官方路是去发行方 Bridge 1:1 赎回(见下面)。");
-    choice = { kind: "lowBid", bid: null, amount: a.usdhSell.toFixed(2), cancelFirst: false, sell: null };
+    say("no-bids", "stop", T.say.noBids);
+    choice = { kind: "lowBid", bid: null, amount: a.usdhSell.toFixed(2), cancelFirst: false, sell: null, options: options(T, a.usdhSell.toFixed(2), false, null) };
   } else if (a.usdhSell >= 0.01 && a.bid < FLOOR_PRICE) {
     step = "fill";
-    say("low-bid", "stop", `你还有 ${fmt(a.usdhSell)} USDH 没卖,但现在的买一价 ${a.bid} 低于指南的保底价 0.995,按 0.995 挂单不会成交。下面三条路,你自己选。`);
+    say("low-bid", "stop", T.say.lowBid(fmt(a.usdhSell), a.bid));
     lowBid(false);
   } else if (a.usdhSell >= 0.01) {
     step = "search";
-    say("unsold", "ok", `你还有 ${fmt(a.usdhSell)} USDH 没卖。现在的买一价 ${a.bid},按 0.995 挂单会马上成交${a.fill.qty < a.usdhSell - 0.005 ? `(不过 0.995 以上的买单只够卖 ${fmt(a.fill.qty)} 个)` : ""}。`);
+    say("unsold", "ok", T.say.unsold(fmt(a.usdhSell), a.bid, a.fill.qty < a.usdhSell - 0.005 ? fmt(a.fill.qty) : null));
   }
 
   if (!step && !a.positions && !findings.some((f) => f.level === "stop")) {
     if (!a.unified && a.spotUsdc >= 0.01) {
       step = "transfer";
-      say("needs-transfer", "ok", `现货里有 ${fmt(a.spotUsdc)} USDC,还没划到合约账户。划过去才能提现。`);
+      say("needs-transfer", "ok", T.say.transfer(fmt(a.spotUsdc)));
     } else if (a.now >= WITHDRAW_FEE + 0.01) {
       step = "withdraw";
-      say("can-withdraw", "ok", `可以提现了:约 ${fmt(a.now)} USDC,扣 1 USDC 手续费,到账约 ${fmt(a.now - WITHDRAW_FEE)}。`);
+      say("can-withdraw", "ok", T.say.withdraw(fmt(a.now), fmt(a.now - WITHDRAW_FEE)));
     } else if (a.now >= 0.01) {
-      say("too-small", "info", `账户里还有 ${fmt(a.now)} USDC,不够付 1 USDC 提现手续费,提不了。`);
+      say("too-small", "info", T.say.tooSmall(fmt(a.now)));
     }
   }
 
@@ -258,18 +275,41 @@ export async function diagnose(address, now = Date.now()) {
     const mins = ago(last.time, now);
     if (arrival.state === "arrived") {
       if (!step) step = "arrive";
-      say("withdraw-arrived", "ok", `${when(last.time)} 那笔提现已经到账:${shown(last.delta.usdc)} USDC。在钱包里看 Arbitrum 网络下的 USDC。`);
+      // 绿色只给「已经完成」的事:逐笔对上了的到账
+      say("withdraw-arrived", "done", T.say.arrived(when(last.time), shown(last.delta.usdc)));
     } else if (arrival.state === "mismatch") {
       step = null;
-      say("withdraw-mismatch", "stop", "查到了这笔提现的链上交易,但没对上你的到账转账。先别做任何操作,带上截图去 Hyperliquid 官方支持(见下面)。");
+      say("withdraw-mismatch", "stop", T.say.mismatch);
     } else if (mins < 30) {
       if (!step) step = "arrive";
-      say("withdraw-pending", "wait", `提现在路上:${mins} 分钟前提交。官方说 5 分钟内到账。别重复提现,过几分钟点「再查一次」。`);
+      say("withdraw-pending", "wait", T.say.pending(mins));
     } else {
       if (!step) step = "arrive";
-      say("withdraw-late", "stop", `提现已经提交 ${mins} 分钟,Arbitrum 上还没查到到账交易。别重复提现,带上截图去 Hyperliquid 官方支持(见下面)。`);
+      say("withdraw-late", "stop", T.say.late(mins));
     }
   }
-  if (!findings.length) say("nothing", "info", "账户里没查到能提的钱,也没有 24 小时内的提现记录。");
-  return { at: now, step, facts, findings, choice };
+  if (!findings.length) say("nothing", "info", T.say.nothing);
+  // 到账页要用的核对结果:只有逐笔对上了才算 arrived
+  const arrivalInfo = arrival && { state: arrival.state, time: last.time, usdc: shown(last.delta.usdc), fee: shown(last.delta.fee), block: arrival.block ?? null };
+  return { at: now, step, facts, findings, choice, arrival: arrivalInfo };
+}
+
+// 买价跌破保底价时给用户的三条路。apply 告诉页面:选了以后指南里的数和步骤怎么变
+function options(T, amount, cancelFirst, sell) {
+  const C = T.choice;
+  const out = [];
+  if (sell) {
+    out.push({
+      head: C.sellHead(sell.floorPx), body: C.sellBody(amount, sell), warn: cancelFirst ? C.cancelFirst : null, pick: C.sellPick,
+      apply: { vars: sell.vars, flags: { needsSell: true }, goto: "fill", toast: C.sellToast(cancelFirst, sell.floorPx) },
+    });
+  } else {
+    out.push({ head: C.noDepthHead, body: C.noDepthBody });
+  }
+  out.push({
+    head: C.redeemHead, body: C.redeemBody, pick: C.redeemPick,
+    apply: { resetVars: true, flags: { needsSell: false }, goto: null, toast: C.redeemToast },
+  });
+  out.push({ head: C.waitHead, body: C.waitBody });
+  return { title: C.title, list: out };
 }

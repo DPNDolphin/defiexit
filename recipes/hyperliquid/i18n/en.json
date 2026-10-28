@@ -1,0 +1,236 @@
+{
+  "title": "Withdraw your Hyperliquid balance to your wallet",
+  "short": "Hyperliquid to your wallet",
+  "verified": "Tested on a real account on 2026-10-27: following this guide, the amount that arrived matched the estimate to within 0.01 USDC.",
+  "covers": "USDC in your account, and USDH that's no longer issued",
+  "summary": "Still have USDC on Hyperliquid, or some USDH, a stablecoin that's no longer issued? Sell the USDH for USDC, then withdraw everything in one go to your wallet on Arbitrum.",
+  "facts": [
+    ["Signatures", "2–3, all signatures, no gas"],
+    ["Fee", "1 USDC comes out of the withdrawal"],
+    ["Time", "About 10 minutes of steps; the withdrawal lands in about 5"],
+    ["You need", "Nothing. You don't need ETH on Arbitrum"]
+  ],
+  "chips": ["About 10 minutes", "2–3 signatures", "No gas; withdrawing costs 1 USDC"],
+  "support": {
+    "label": "Hyperliquid official support",
+    "note": "Hyperliquid's docs say support only happens through a ticket in the open-ticket channel of its official Discord, or through its official email form. Any \"support\" that DMs you is a scammer."
+  },
+  "official": [{"label": "Hyperliquid official site"}],
+  "vars": {
+    "addrShort": "your own address",
+    "usdhSell": "your USDH amount (2 decimals)",
+    "orderMin": "amount × 0.995",
+    "spotAfter": "what the sale brings in",
+    "withdrawAmt": "your full balance",
+    "arrive": "the withdrawal minus 1"
+  },
+  "pro": [
+    "**Route**: USDH is no longer issued → sell it on spot for USDC with a limit order at {{floorPx}} or better → Withdraw to Arbitrum. 1 USDC fee, lands in about 5 minutes.",
+    "**Account mode**: unified accounts (the new default) withdraw directly. Older separate accounts first move spot USDC to Perps with Perps ⇄ Spot.",
+    "**Your numbers**: sell {{usdhSell}} USDH, withdraw {{withdrawAmt}} USDC, about {{arrive}} USDC arrives.",
+    "**Signatures**: 2–3 EIP-712 signatures, no gas. Check two things: the domain is app.hyperliquid.xyz, and destination is your own {{addrShort}}.",
+    "**Gotchas**: searching USDH also shows USDHL, so pick the right one. Tapping the order book on the right overwrites your price."
+  ],
+  "done": {
+    "where": "on the Arbitrum network in your wallet",
+    "from": "Sent from Hyperliquid's official bridge 0x2Df1…3dF7",
+    "look": "Where to look: your wallet app → Assets → USDC → the Arbitrum line."
+  },
+  "steps": {
+    "open": {
+      "title": "Open the official site in your wallet app",
+      "items": [
+        "Open your wallet app (for example, the Wallet tab in the Binance app) and make sure the wallet holding these funds is the one selected.",
+        "Open `https://app.hyperliquid.xyz` in the wallet's built-in DApp browser. Include https://, or it gets treated as a search.",
+        "Once it loads, check the address bar: the domain must be exactly **app.hyperliquid.xyz**. One extra letter or a missing dot means it isn't the real site.",
+        "✗ If the page says your region can't use it (restricted jurisdiction), stop here. This guide doesn't cover getting around regional restrictions."
+      ],
+      "situations": {
+        "search-instead": {"see": "Typing the address brings up search results", "do": "Type the full address with https:// in front: `https://app.hyperliquid.xyz`."},
+        "restricted": {"see": "The page says your region can't use it (restricted jurisdiction)", "do": "Stop here. This guide doesn't cover getting around regional restrictions."},
+        "not-sure": {"see": "You're not sure it's the official site", "do": "Check the address bar: the domain must be exactly **app.hyperliquid.xyz**. If it isn't, close the page and type the address yourself. Never use a link someone sent you."}
+      }
+    },
+    "connect": {
+      "title": "Connect your wallet",
+      "note": "Connecting only. No signature, and no money moves",
+      "images": [
+        "① Tap **Connect** in the top-right corner",
+        "① Choose **Default Wallet**. Your wallet asks to connect: if the request comes from app.hyperliquid.xyz, tap Connect",
+        "① Your address appears in the top-right (blurred here). It should be {{addrShort}} ② Tap the market name on the left to open the list"
+      ],
+      "situations": {
+        "no-popup": {"see": "You tapped Connect, but your wallet didn't ask to connect", "do": "Open the page in your wallet app's built-in DApp browser (step 1). A regular phone browser can't reach your wallet."},
+        "wrong-address": {"see": "The address in the top-right isn't the one holding the funds", "do": "Switch to the right wallet in your wallet app, then connect again. If the address doesn't match, don't go any further."},
+        "wrong-origin": {"see": "The connection request doesn't come from app.hyperliquid.xyz", "do": "Tap Reject and close the page. It may not be the official site."}
+      }
+    },
+    "search": {
+      "title": "Find the USDH market",
+      "whenText": "Only needed if you have USDH (this step through step 6)",
+      "images": [
+        "① Type USDH in the search box ② Tap **USDH/USDC** (marked SPOT underneath) ✗ Don't tap USDHL/USDC: it's a different coin, one letter apart"
+      ],
+      "situations": {
+        "two-results": {"see": "Both USDH and USDHL show up", "do": "Pick **USDH/USDC**, the one marked SPOT. USDHL is a different coin; the names differ by one letter."},
+        "not-found": {"see": "USDH doesn't show up", "do": "Check the spelling (U-S-D-H). Still nothing? Tap **All** to the right of the search box and search again."}
+      }
+    },
+    "panel": {
+      "title": "Open the sell panel and switch to a limit order",
+      "images": [
+        "! The yellow box is Hyperliquid's own notice: USDH is no longer issued, so buyers on this market will keep thinning out. The sooner you sell, the better",
+        "① Tap **Trade** at the bottom",
+        "① Tap the small arrow next to **Market** in the top-left",
+        "① Choose **Limit** (a limit order only fills at your price or better)"
+      ],
+      "situations": {
+        "no-limit": {"see": "There's no Limit in the drop-down", "do": "Tap the small arrow next to Market in the top-left, where the red box is in the screenshot above."}
+      }
+    },
+    "fill": {
+      "title": "Fill in the sell order",
+      "note": "Fill it in now; you'll enable trading next",
+      "images": [
+        "① Tap **Sell** ② Price: {{floorPx}} ③ Amount: {{usdhSell}} (the screenshot shows sample numbers) ④ Glance at Order Value: about {{orderMin}} USDC, the least you'll get ⑤ Tap **Enable Trading**"
+      ],
+      "items": [
+        "! The green numbers on the right are other people's buy orders. You'll sell into them, usually at better than 0.995. **Don't tap them**: tapping one overwrites the price you entered."
+      ],
+      "situations": {
+        "value-off": {"see": "Order Value is way off from the number here", "do": "The price or amount is probably wrong: price {{floorPx}}, amount {{usdhSell}}. If you tapped the green numbers on the right, your price was overwritten; enter it again."},
+        "not-enough": {"see": "It says your balance isn't enough for that amount", "do": "Some of your USDH may already be locked in an open sell order. The live check above shows how much you can actually sell. If you haven't added your address, add it above first."},
+        "place-order": {"see": "The button already says Place Order, not Enable Trading", "do": "Trading was enabled before. Skip \"Enable trading\" and go straight to \"Place the sell order\"."}
+      }
+    },
+    "enable": {
+      "title": "Enable trading",
+      "note": "Signature 1",
+      "images": [
+        "① Leave **Stay Connected** unticked ② Tap **Establish Connection**. Your wallet asks for a signature: check it against the card below"
+      ],
+      "check": {
+        "title": "Before you sign, check 3 things",
+        "lead": "After you tap Establish Connection, your wallet shows a signature request. Compare it with this card and tick each line as you check it.",
+        "confirm": [
+          {"title": "The request comes from app.hyperliquid.xyz", "sub": "One extra letter or a missing dot makes it a different site"},
+          {"title": "It says ApproveAgent and Mainnet", "sub": "This creates a key that can only place orders. Hyperliquid's docs say it can't send money to anyone or withdraw"},
+          {"title": "A signature only: no amount, no recipient", "sub": "Nothing is spent and no fee is charged"}
+        ],
+        "reject": ["It asks you to send money, or shows an amount", "It mentions Permit, or approving (Approve) a token", "It doesn't come from app.hyperliquid.xyz"],
+        "normal": [
+          "agentAddress is a random address that changes every time: it's the temporary order key the page creates",
+          "chainId may show 42161 or 56. Either is fine; it follows your wallet's current network",
+          "verifyingContract is all zeros. Also fine"
+        ]
+      },
+      "situations": {
+        "no-approve-agent": {"see": "The signature request doesn't mention ApproveAgent", "do": "Tap Reject. If the card doesn't match, don't sign."},
+        "no-change": {"see": "You signed, but nothing changed on the page", "do": "Wait a few seconds. If the button still doesn't say Place Order, refresh the page, reconnect your wallet and tap Establish Connection again. Signing a second time is normal."},
+        "chain-id": {"see": "The request shows chainId 42161 or 56", "do": "That's normal. It follows your wallet's current network and changes nothing."}
+      }
+    },
+    "order": {
+      "title": "Place the sell order",
+      "note": "Your wallet won't pop up for this one",
+      "milestone": "Sell USDH",
+      "items": [
+        "Once you've signed, the page says Established connection, and the Enable Trading button turns into **Place Order**.",
+        "Check once more: Sell / price {{floorPx}} / amount {{usdhSell}} (enter them again if they were cleared).",
+        "Tap Place Order. If a Confirm Order box appears, check the same three things and confirm. The page's order key signs this one, so your wallet stays quiet.",
+        "When it fills, you should see an Order filled message. Under Balances, USDH drops to less than 0.01 and USDC goes up by about {{spotAfter}}. Open Orders is empty.",
+        "! If the order is still sitting under Open Orders, the bid has dropped below {{floorPx}}. Don't place another order. Tap \"Stuck?\" in the top-right for a live check."
+      ],
+      "situations": {
+        "resting": {"see": "The order just sits there and doesn't fill", "do": "The bid is below your price right now. Don't place another order. The live check above works out your options from today's bids."},
+        "too-small": {"see": "It says the order is too small", "do": "Hyperliquid has a minimum order size (about $10). If your USDH is below that, it can't be sold. Leave it and go withdraw your USDC."},
+        "dust-left": {"see": "A tiny bit of USDH is left under Balances after selling", "do": "Amounts only go to two decimals, so less than 0.01 left over is normal. It doesn't affect the withdrawal."}
+      }
+    },
+    "transfer": {
+      "title": "Move your spot USDC to the perps account",
+      "note": "Signature 2",
+      "whenText": "Only for older separate accounts; unified accounts skip this",
+      "milestone": "Transfer",
+      "items": [
+        "! Check the Account page first. If the heading says **Unified Account Summary** and there are only Deposit / Withdraw buttons, you have a unified account: **skip this step** and go straight to the withdrawal."
+      ],
+      "images": [
+        "! If you see Unified Account Summary, it's a unified account (sample image; ignore the numbers)",
+        "A unified account only has Deposit / Withdraw: tap Withdraw and jump to the next step",
+        "Separate accounts show two lines, Spot and Perps: money in two accounts",
+        "① Tap **Account** at the bottom ② Tap **Perps ⇄ Spot**",
+        "① Tap this middle button to flip the direction",
+        "① Make sure it now reads Spot → Perps ② Tap **MAX** (the screenshot was taken before selling, so it shows 0.00; yours should be about {{spotAfter}}) ③ Tap **Confirm**. Your wallet asks for a signature: check it against the card"
+      ],
+      "check": {
+        "title": "Before you sign, check 3 things",
+        "lead": "After you tap Confirm, your wallet shows a signature request. Compare it with this card and tick each line as you check it.",
+        "confirm": [
+          {"title": "The request comes from app.hyperliquid.xyz", "sub": "One extra letter or a missing dot makes it a different site"},
+          {"title": "It says SendAsset, and destination is your own address {{addrShort}}", "sub": "Upper or lower case doesn't matter. If it isn't your address, reject it"},
+          {"title": "From spot to perps, about {{spotAfter}} USDC", "sub": "sourceDex is spot and destinationDex is empty; the token is USDC:0x6d1e…e054"}
+        ],
+        "reject": ["destination isn't your own address", "It mentions Permit, or approving (Approve) a token", "It doesn't come from app.hyperliquid.xyz"],
+        "normal": ["It's a signature only, with no fee"]
+      },
+      "situations": {
+        "no-button": {"see": "There's no Perps ⇄ Spot on the Account page", "do": "If the heading says Unified Account Summary, it's a unified account. No transfer needed; go straight to the withdrawal."},
+        "max-zero": {"see": "MAX shows 0.00", "do": "First make sure the direction is Spot → Perps (the middle button flips it). If it's still 0, there's no USDC left in spot; go straight to the withdrawal."},
+        "wrong-destination": {"see": "The signature request shows a destination that isn't your address", "do": "Tap Reject right away."}
+      }
+    },
+    "withdraw": {
+      "title": "Withdraw to Arbitrum",
+      "note": "Last signature",
+      "milestone": "Withdraw",
+      "images": [
+        "! Hyperliquid says the 1 USDC fee comes out of the withdrawal ① Leave the asset as USDC and the chain as Arbitrum ② Tap **MAX**: it should be about {{withdrawAmt}} (the screenshot shows a different number) ③ Tap **Withdraw to Arbitrum**. Your wallet asks for a signature: check it against the card"
+      ],
+      "check": {
+        "title": "Before you sign, check 3 things",
+        "lead": "After you tap Withdraw to Arbitrum, your wallet shows a signature request. Compare it with this card and tick each line as you check it.",
+        "confirm": [
+          {"title": "The request comes from app.hyperliquid.xyz", "sub": "One extra letter or a missing dot makes it a different site"},
+          {"title": "It says Withdraw, and destination is your own address {{addrShort}}", "sub": "If it isn't your address, reject it"},
+          {"title": "amount is about {{withdrawAmt}}", "sub": "What arrives = this number minus the 1 USDC fee"}
+        ],
+        "reject": ["destination isn't your own address", "It mentions Permit, or approving (Approve) a token", "It doesn't come from app.hyperliquid.xyz"],
+        "normal": ["It's a signature only, with no gas: Hyperliquid sends the Arbitrum transaction for you", "time is a 13-digit number. It's a timestamp"]
+      },
+      "situations": {
+        "less-than-expected": {"see": "MAX shows less than the number here", "do": "Open orders and positions tie up part of your balance. The live check above lists where every part of your money is."},
+        "cannot-click": {"see": "The Withdraw button won't respond", "do": "The withdrawal has to be more than the 1 USDC fee. Smaller amounts can't be withdrawn."},
+        "wrong-destination": {"see": "The signature request shows a destination that isn't your address", "do": "Tap Reject right away."}
+      }
+    },
+    "arrive": {
+      "title": "Check that it arrived",
+      "milestone": "Arrived",
+      "check": {
+        "title": "Arrival check",
+        "rows": [
+          ["How long", "Hyperliquid says within 5 minutes"],
+          ["Where to look", "Your wallet app → Assets → USDC → the Arbitrum line"],
+          ["You should see", "About {{arrive}} USDC more"],
+          ["On-chain record", "Sent from 0x2Df1…3dF7 (Hyperliquid's official bridge) to your address, as native Arbitrum USDC (0xaf88…5831)"],
+          ["Not there?", "After 30 minutes, don't withdraw again. Take a screenshot and ask us"]
+        ],
+        "foot": "Once it arrives, you're done"
+      },
+      "situations": {
+        "not-in-wallet": {"see": "You can't see the USDC in your wallet", "do": "Make sure you're looking at USDC on the **Arbitrum** network. The live check above looks up this withdrawal on Arbitrum directly."},
+        "one-less": {"see": "1 less arrived than you withdrew", "do": "That's the 1 USDC withdrawal fee. Normal."},
+        "late": {"see": "It's been more than 30 minutes and nothing has arrived", "do": "Don't withdraw again. Look at the live check above. If it can't find the arrival, or it doesn't match, take screenshots to Hyperliquid's official support (below)."}
+      }
+    }
+  },
+  "sources": [
+    "Hyperliquid docs · How to start trading",
+    "Hyperliquid docs · Bridge / USDC",
+    "Hyperliquid docs · Account abstraction modes",
+    "Hyperliquid docs · Nonces and API wallets",
+    "Bridge announcement · An update on USDH",
+    "Hyperliquid docs · Support"
+  ]
+}

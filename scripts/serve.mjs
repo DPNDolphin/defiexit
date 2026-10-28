@@ -10,7 +10,7 @@ import { site } from "./site.mjs";
 const DIST = join(dirname(fileURLToPath(import.meta.url)), "..", "dist");
 const PORT = Number(process.argv[2] || 4321);
 const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8",
-  ".svg": "image/svg+xml", ".webp": "image/webp", ".png": "image/png", ".json": "application/json", ".txt": "text/plain; charset=utf-8" };
+  ".svg": "image/svg+xml", ".webp": "image/webp", ".woff2": "font/woff2", ".png": "image/png", ".json": "application/json", ".txt": "text/plain; charset=utf-8" };
 const SEC = headers(site.connect);
 
 createServer((req, res) => {

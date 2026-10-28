@@ -1,4 +1,11 @@
-// 只读网络请求:带超时;失败抛出可读的中文错误。
+// 只读网络请求:带超时;失败抛出带代码的错误(code:http / timeout / network),页面按语言翻译。
+function netError(code, message, status) {
+  const e = new Error(message);
+  e.code = code;
+  if (status) e.status = status;
+  return e;
+}
+
 export async function postJSON(url, body, ms = 12000) {
   const ctl = new AbortController();
   const t = setTimeout(() => ctl.abort(), ms);
@@ -11,10 +18,11 @@ export async function postJSON(url, body, ms = 12000) {
       credentials: "omit",
       referrerPolicy: "no-referrer",
     });
-    if (!r.ok) throw new Error(`接口返回 ${r.status}`);
+    if (!r.ok) throw netError("http", `接口返回 ${r.status}`, r.status);
     return await r.json();
   } catch (e) {
-    throw new Error(e.name === "AbortError" ? "查询超时" : e.message || "网络错误");
+    if (e.code) throw e;
+    throw e.name === "AbortError" ? netError("timeout", "查询超时") : netError("network", "网络错误");
   } finally {
     clearTimeout(t);
   }

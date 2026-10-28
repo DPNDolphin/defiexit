@@ -1,13 +1,19 @@
-// 静态站点生成:recipes/*/recipe.json → dist/。零依赖,只用 Node 自带模块。
+// 静态站点生成:recipes/*/recipe.json(+ i18n/en.json)→ dist/,中文一套、英文一套(/en/)。零依赖,只用 Node 自带模块。
 // 用法:node scripts/build.mjs
 import { readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync, copyFileSync, existsSync, statSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 import { site } from "./site.mjs";
+import { zh as zhPunct } from "../src/js/lib/zh.js";
+import { makeT } from "../src/js/lib/i18n.js";
+import { svgString as ico } from "../src/js/lib/icons.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
+const LANGS = ["zh", "en"];
+const HTML_LANG = { zh: "zh-CN", en: "en" };
+const pre = (lang) => (lang === "en" ? "/en" : "");
 
 // 版本号:页脚显示构建时的提交,谁都能去 GitHub 核对线上跑的是哪一版。会进网站的那几个目录有没提交的改动,就标出来,不冒充干净版本
 // (只看这几个目录:Cloudflare 构建时会在根目录自己生成 package-lock.json,不影响网站内容)
@@ -23,16 +29,15 @@ const VER = version();
 
 // ---------- 文字处理 ----------
 
-import { zh as zhPunct } from "../src/js/lib/zh.js";
-
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const punct = (s, lang) => (lang === "zh" ? zhPunct(s) : String(s));
 
-// 配方里的轻量标记:**粗体**、`代码`、{{变量}}。其余一律转义,配方作者写不进 HTML。
-function rich(text, vars = {}) {
+// 配方和界面文字里的轻量标记:**粗体**、`代码`、{{变量}}。其余一律转义,写不进 HTML。
+function rich(text, vars = {}, lang = "zh") {
   const parts = String(text).split(/(`[^`]*`|\{\{\w+\}\})/);
   // 先在「非代码、非变量」的片段上统一换标点(判断「挨着汉字」时把整句当上下文)
   const masked = parts.map((p) => (p.startsWith("`") || p.startsWith("{{") ? "\u0000".repeat(p.length) : p)).join("");
-  const conv = zhPunct(masked);
+  const conv = punct(masked, lang);
   let pos = 0;
   return parts.map((p) => {
     const seg = conv.slice(pos, pos + p.length);
@@ -41,160 +46,371 @@ function rich(text, vars = {}) {
     if (p.startsWith("{{")) {
       const k = p.slice(2, -2);
       if (!(k in vars)) throw new Error(`未定义的变量 {{${k}}}`);
-      return `<span class="var" data-var="${k}">${esc(vars[k])}</span>`;
+      return `<span class="var" data-var="${k}">${esc(punct(vars[k], lang))}</span>`;
     }
     return esc(seg).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
   }).join("");
 }
+// 纯文字(给 data-*、aria-label、placeholder 用):去掉 ** 标记,换好标点
+const plain = (s, lang) => esc(punct(String(s).replace(/\*\*/g, ""), lang));
 
-// 图片说明里的 ①②③ / ! / ✗ 标成彩色
-const marks = (html) => html
-  .replace(/([①②③④⑤⑥⑦⑧⑨])/g, '<i class="n">$1</i>')
-  .replace(/(^|\s)!(?=\s)/g, '$1<i class="n info">!</i>')
-  .replace(/(^|\s)✗(?=\s)/g, '$1<i class="n bad">✗</i>');
+// 截图说明:「! 提示 ① 点这里 ② 填那个 ✗ 别点这个」拆成一段一段
+const CIRCLED = "①②③④⑤⑥⑦⑧⑨";
+export function splitMarks(caption) {
+  const out = [];
+  const re = /(^|\s)(!|✗)\s+|([①②③④⑤⑥⑦⑧⑨])\s*/g;
+  let last = 0, cur = { k: "plain" }, m;
+  const push = (end) => {
+    const text = caption.slice(last, end).trim();
+    if (text) out.push({ ...cur, text });
+  };
+  while ((m = re.exec(caption))) {
+    push(m.index);
+    cur = m[3] ? { k: "n", n: CIRCLED.indexOf(m[3]) + 1 } : { k: m[2] === "!" ? "tip" : "bad" };
+    last = re.lastIndex;
+  }
+  push(caption.length);
+  return out;
+}
+
+// webp 的宽高(写进 <img>,图片没下载完也先占好位置,页面不跳)
+function webpSize(file) {
+  const b = readFileSync(file);
+  const kind = b.toString("ascii", 12, 16);
+  if (kind === "VP8X") return { w: 1 + b.readUIntLE(24, 3), h: 1 + b.readUIntLE(27, 3) };
+  if (kind === "VP8 ") return { w: b.readUInt16LE(26) & 0x3fff, h: b.readUInt16LE(28) & 0x3fff };
+  if (kind === "VP8L") {
+    const n = b.readUInt32LE(21);
+    return { w: (n & 0x3fff) + 1, h: ((n >> 14) & 0x3fff) + 1 };
+  }
+  return null;
+}
 
 // ---------- 页面框架 ----------
 
-const LOGO = `<svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="currentColor"/><path d="M9 8h9v4h-5v8h5v4H9z" fill="#fff"/><path d="M17 16h8m-3-3.5L25.5 16 22 19.5" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const LOGO = `<svg class="logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="8" fill="currentColor"/><path d="M17 8h7v16h-7" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"/><path d="M7 16h12M15 12l4 4-4 4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-function page({ title, desc, body, script, path = "/" }) {
+function langSwitch(lang, path, tx) {
+  const links = LANGS.map((l) => `<a href="${pre(l)}${path}" hreflang="${HTML_LANG[l]}" lang="${HTML_LANG[l]}" data-lang="${l}"${l === lang ? ' aria-current="page"' : ""}>${l === "zh" ? "中文" : "EN"}</a>`).join("");
+  return `<nav class="langs" aria-label="${tx.attr("langNav")}">${links}</nav>`;
+}
+const themeBtn = (tx) => `<button class="iconbtn theme" type="button" data-theme-toggle aria-pressed="false" aria-label="${tx.attr("lightMode")}">${ico("sun", "i-sun")}${ico("moon", "i-moon")}</button>`;
+
+// 每种语言一套取文字的小工具:t 取原文,h 取成 HTML,attr 取成属性值
+function texts(lang) {
+  const t = makeT(lang);
+  return { lang, t, h: (k, ...a) => rich(t(k, ...a), {}, lang), attr: (k, ...a) => plain(t(k, ...a), lang) };
+}
+
+function page({ tx, kind, path, title, desc, body, script, header, noindex = false }) {
+  const { lang } = tx;
+  const url = (l) => `https://${site.domain}${pre(l)}${path}`;
+  const alt = LANGS.map((l) => `<link rel="alternate" hreflang="${HTML_LANG[l]}" href="${esc(url(l))}">`).join("\n");
+  const tools = kind === "home" || kind === "404";
   return `<!doctype html>
-<html lang="zh-CN">
+<html lang="${HTML_LANG[lang]}" data-page="${kind}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
-<meta name="theme-color" content="#0b7a4b">
+${noindex ? '<meta name="robots" content="noindex">\n' : ""}<meta name="theme-color" content="#0A0F1E">
 <meta name="dx-contact" content="${esc(site.contact || "")}">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="canonical" href="https://${esc(site.domain)}${esc(path)}">
+<link rel="canonical" href="${esc(url(lang))}">
+${alt}
+<link rel="alternate" hreflang="x-default" href="${esc(url("zh"))}">
+<link rel="preload" href="/assets/fonts/atkinson-next.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/barlow-sc-800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site.css">
-${script ? `<script type="module" src="/assets/js/${script}"></script>` : ""}
+<script src="/assets/js/boot.js"></script>
+<script type="module" src="/assets/js/${script}"></script>
 </head>
-<body>
-<header class="top"><a class="brand" href="/">${LOGO}<span>${esc(site.name)}</span><small>${esc(site.nameZh)}</small></a></header>
-<main>${body}</main>
-<footer class="foot">
-  <p><b>官方网站只有 ${esc(site.domain)}</b>${zhPunct("。我们不收私钥和助记词,不代签,从不先私信你。")}</p>
-  <p>开源 · MIT · <a href="${esc(site.github)}" rel="noopener">GitHub</a> · ${zhPunct("本站只读,不连接钱包;我们不存任何数据")}</p>
-  ${VER ? `<p class="fine">版本 <a href="${esc(site.github)}/commit/${esc(VER.commit)}" rel="noopener">${esc(VER.commit)}</a>${VER.dirty ? zhPunct("(含未提交的改动,不是正式版本)") : ""}</p>` : ""}
-  <p class="fine">${zhPunct("本站内容不构成投资建议。操作前请对照官方页面和核对卡,自己确认每一步。")}</p>
-</footer>
+<body class="p-${kind}">
+<a class="skip" href="#main">${tx.h("skip")}</a>
+<header class="top">${header}</header>
+<main id="main">${body}</main>
+<footer class="foot"><div class="wrap">
+  <p>${tx.h("footOfficial")}</p>
+  <p>${tx.h("footOpen")} · <a href="${esc(site.github)}" rel="noopener">GitHub</a> · ${tx.h("footData")}</p>
+  ${VER ? `<p class="fine">${tx.h("footVersion")} <a href="${esc(site.github)}/commit/${esc(VER.commit)}" rel="noopener">${esc(VER.commit)}</a>${VER.dirty ? tx.h("footDirty") : ""}</p>` : ""}
+  <p class="fine">${tx.h("footFine")}</p>
+  ${tools ? "" : `<div class="foot-tools">${langSwitch(lang, path, tx)}${themeBtn(tx)}</div>`}
+</div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>`;
 }
 
+// 首页和 404 的顶栏:品牌、(电脑上)导航、语言、深浅色
+function brandBar(tx, path, nav = false) {
+  const P = pre(tx.lang);
+  const links = nav ? `<nav class="links" aria-label="DeFiExit"><a href="#how">${tx.h("navHow")}</a><a href="#safety">${tx.h("navSafety")}</a><a href="#supported">${tx.h("navSupported")}</a><a href="${esc(site.github)}" rel="noopener">GitHub</a></nav>` : "";
+  return `<div class="wrap bar"><a class="brand" href="${P}/">${LOGO}<span><span class="name">${esc(site.name)}</span><span class="sub">${tx.h("brandSub")}</span></span></a>${links}<div class="tools">${langSwitch(tx.lang, path, tx)}${themeBtn(tx)}</div></div>`;
+}
+
+// 首页的路线:你的地址 → 三站 → 出口
+function heroRoute(tx) {
+  const seg = '<span class="seg dash"></span>';
+  return `<div class="route hero-route" role="img" aria-label="${tx.attr("routeAria")}"><span class="from mono">${tx.h("routeFrom")}</span>${seg}<span class="node ring"></span>${seg}<span class="node ring"></span>${seg}<span class="exit-sign">${ico("exit")}EXIT</span></div>`;
+}
+
 // ---------- 首页 ----------
 
-function home(recipes) {
-  const list = recipes.map((r) => `<li data-id="${esc(r.id)}" data-detector="${esc(r.detector)}" data-protocol="${esc(r.protocol)}" data-route="${esc(r.route)}"><b>${esc(r.protocol)}</b><span>${rich(r.summary)}</span></li>`).join("");
+function home(tx, recipes) {
+  // 核对卡样子:拿第一份配方的第一张签名核对卡,前两项画成已勾
+  const demoR = recipes.find((r) => r.steps.some((s) => s.check?.confirm));
+  const demo = demoR?.steps.find((s) => s.check?.confirm).check;
+  const tick = (x, on) => `<div class="tick demo${on ? " on" : ""}"><span class="box">${ico("check")}</span><span class="tt"><b>${rich(x.title, demoR.vars, tx.lang).replace(/<span class="var"[^>]*>(.*?)<\/span>/g, "$1")}</b></span></div>`;
+  const supported = recipes.map((r) => `<li><span><b>${esc(r.protocol)}</b><span>${rich(r.covers, {}, tx.lang)}</span></span><span class="tag-ok">${ico("check")}${tx.h("tested")}</span></li>`).join("");
   return page({
-    title: `${site.name} · ${site.nameZh}:链上资产体检`,
-    desc: "粘贴钱包地址,免费体检遗忘在链上的资产;查到了,给你一步一图的官方取回路线。只读,不用连钱包,不碰私钥。",
-    script: "home.js",
+    tx, kind: "home", path: "/", script: "home.js",
+    title: tx.t("homeTitle"), desc: tx.t("homeDesc"),
+    header: brandBar(tx, "/", true),
     body: `
-<section class="hero">
-  <h1>${zhPunct("你的钱包里,有没有被遗忘在链上的钱?")}</h1>
-  <p>${zhPunct("粘贴钱包地址,免费体检。查到了,就给你一步一图的官方路线,你在自己钱包里签名,钱直接回到你的地址。")}</p>
-  <form id="scan" class="scan" autocomplete="off">
-    <label for="addr">钱包地址</label>
-    <div class="row"><input id="addr" name="addr" inputmode="text" spellcheck="false" placeholder="0x 开头的 42 位地址"><button type="submit">开始体检</button></div>
-    <p class="hint">${zhPunct("只要地址,不用连钱包。地址只从你的浏览器直接发给协议的官方公开接口(目前是 Hyperliquid),不经过我们;这些接口能看到你的地址和 IP。")}</p>
-  </form>
-  <div id="results" class="results" hidden></div>
+<section class="hero grid-bg">
+  <div class="wrap hero-in">
+    <div class="hero-text">
+      <span class="badge"><span class="dot"></span>${tx.h("heroBadge")}</span>
+      <h1 class="display">${tx.h("heroH1a")} <span class="hl">${tx.h("heroH1b")}</span></h1>
+      <p class="lead">${tx.h("heroLead")}</p>
+      ${heroRoute(tx)}
+    </div>
+    <form id="scan" class="card form scan" autocomplete="off" novalidate>
+      <label for="addr">${tx.h("addrLabel")}</label>
+      <input id="addr" name="addr" class="input mono" spellcheck="false" autocapitalize="off" autocorrect="off" placeholder="${tx.attr("addrPlaceholder")}" aria-describedby="addrHint">
+      <p class="err" id="addrErr" role="alert" hidden></p>
+      <button class="btn primary block" type="submit">${tx.h("checkFree")}${ico("arrowRight")}</button>
+      <p class="hint" id="addrHint">${tx.h("addrHint")}</p>
+    </form>
+    <ul class="feats">
+      <li>${ico("eye")}<span>${tx.h("feat1")}</span></li>
+      <li>${ico("unlink")}<span>${tx.h("feat2")}</span></li>
+      <li>${ico("lock")}<span>${tx.h("feat3")}</span></li>
+    </ul>
+  </div>
 </section>
-<section class="card">
-  <h2>目前能查的</h2>
-  <ul class="supported" id="supported">${list}</ul>
-  <p class="sub">${zhPunct("更多协议陆续加入。先做被问得最多的。")}</p>
+<section class="sec" id="how">
+  <div class="wrap">
+    <h2>${tx.h("stepsH")}</h2>
+    <ol class="tri">
+      <li><span class="mk"><span class="num">1</span><span class="rail"></span></span><span class="tx"><h3>${tx.h("s1t")}</h3><p>${tx.h("s1d")}</p></span></li>
+      <li><span class="mk"><span class="num">2</span><span class="rail"></span></span><span class="tx"><h3>${tx.h("s2t")}</h3><p>${tx.h("s2d")}</p></span></li>
+      <li><span class="mk"><span class="num exit">${ico("exit")}</span></span><span class="tx"><h3>${tx.h("s3t")}</h3><p>${tx.h("s3d")}</p></span></li>
+    </ol>
+  </div>
 </section>
-<section class="card promise">
-  <h2>我们的承诺</h2>
-  <ul>
-    <li><b>只读</b>${zhPunct(":体检只要地址,本站不连接钱包,也没有任何签名请求。")}</li>
-    <li><b>不碰私钥</b>${zhPunct(":任何人向你要私钥或助记词,都是骗子,包括冒充我们的人。")}</li>
-    <li><b>你自己签</b>${zhPunct(":每一步都在官方网站上,由你自己的钱包签名。签名前,有核对卡告诉你弹窗里应该看到什么。")}</li>
-    <li><b>开源免费</b>${zhPunct(":代码和每份指南都公开,谁都能查;不收任何费用。")}</li>
-    <li><b>不先私信</b>${zhPunct(":我们从不主动私信任何人。")}</li>
-  </ul>
+${demo ? `<section class="sec showcase" id="safety">
+  <div class="wrap two">
+    <div class="card demo-card" aria-hidden="true">
+      <p class="demo-h">${rich(demo.title, {}, tx.lang)}</p>
+      ${demo.confirm.map((x, i) => tick(x, i < 2)).join("")}
+      <p class="demo-no">${tx.h("cardDemoNo")}</p>
+    </div>
+    <div class="showcase-text">
+      <h2>${tx.h("cardH")}</h2>
+      <p>${tx.h("cardP1")}</p>
+      <p>${tx.h("cardP2")}</p>
+    </div>
+  </div>
+</section>` : ""}
+<section class="sec" id="promise">
+  <div class="wrap">
+    <h2>${tx.h("promH")}</h2>
+    <div class="promises">
+      <div class="promise">${ico("shield")}<h3>${tx.h("p1t")}</h3><p>${tx.h("p1d")}</p></div>
+      <div class="promise">${ico("pen")}<h3>${tx.h("p2t")}</h3><p>${tx.h("p2d")}</p></div>
+      <div class="promise">${ico("tag")}<h3>${tx.h("p3t")}</h3><p>${tx.h("p3d")}</p></div>
+      <div class="promise">${ico("nodm")}<h3>${tx.h("p4t")}</h3><p>${tx.h("p4d")}</p></div>
+    </div>
+  </div>
 </section>
-<section class="card how">
-  <h2>怎么用</h2>
-  <ol>
-    <li>${zhPunct("粘贴地址,体检看有没有能取回的仓位。")}</li>
-    <li>${zhPunct("打开对应的指南,按你的账户算好的数字,一页一步做。")}</li>
-    <li>${zhPunct("每次签名先对照核对卡;最后按到账核对确认钱到了。")}</li>
-  </ol>
-</section>`,
+<section class="sec" id="supported">
+  <div class="wrap">
+    <h2>${tx.h("supH")}</h2>
+    <ul class="supported">${supported}</ul>
+    <p class="sub">${tx.h("supMore")}</p>
+  </div>
+</section>
+<div class="wrap"><p class="banner">${ico("alert")}<span>${tx.h("banner")}</span></p></div>`,
+  });
+}
+
+// ---------- 检查结果页 ----------
+
+function checkPage(tx, recipes) {
+  const P = pre(tx.lang);
+  const list = recipes.map((r) => {
+    const milestones = r.steps.filter((s) => s.milestone).map((s) => ({ label: punct(s.milestone, tx.lang), when: s.when || null }));
+    const chips = (r.chips || []).map((c) => ({ icon: c.icon, text: punct(c.text, tx.lang) }));
+    return `<li data-id="${esc(r.id)}" data-detector="${esc(r.detector)}" data-protocol="${esc(r.protocol)}" data-route="${esc(r.route)}" data-milestones="${esc(JSON.stringify(milestones))}" data-chips="${esc(JSON.stringify(chips))}"></li>`;
+  }).join("");
+  return page({
+    tx, kind: "check", path: "/check/", script: "check.js", noindex: true,
+    title: `${tx.t("checkTitle")} · ${site.name}`, desc: tx.t("checkDesc"),
+    header: `<div class="wrap narrow bar"><a class="iconbtn" href="${P}/" aria-label="${tx.attr("backHome")}">${ico("arrowLeft")}</a><span class="bar-title">${tx.h("checkTitle")}</span><span class="chip mono" id="addrChip" hidden></span></div>`,
+    body: `
+<div class="wrap narrow">
+  <h1 class="sr-only">${tx.h("checkTitle")}</h1>
+  <section class="sum" id="sum" aria-live="polite">
+    <span class="badge" id="sumBadge"><span class="spin" aria-hidden="true"></span>${tx.h("checking")}</span>
+    <p class="sub" id="sumLine"></p>
+    <p class="big" id="sumBig" hidden></p>
+    <p class="sub" id="sumNote" hidden></p>
+  </section>
+  <div id="cards" class="cards"></div>
+  <p class="fine resfoot">${tx.h("resultsFoot")}</p>
+  <ul id="recipes" hidden>${list}</ul>
+</div>`,
   });
 }
 
 // ---------- 指南页 ----------
 
-function guide(r) {
-  const V = r.vars;
-  const facts = r.facts.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${rich(v, V)}</dd></div>`).join("");
-  const site_ = (o) => `<div class="official"><span>${esc(o.label)}</span><b>${esc(o.domain)}</b><button class="copy" data-copy="${esc(o.url)}">复制网址</button></div>`;
-  const official = r.official.map(site_).join("");
-  const support = r.support ? `${site_(r.support)}<p class="sub">${rich(r.support.note, V)}</p>` : "";
-  const literal = new Set(r.literalVars || []);
-  const steps = r.steps.map((s, i) => {
-    const imgs = (s.images || []).map((im) => `<figure><img src="img/${esc(im.src)}" alt="" loading="lazy" decoding="async"><figcaption>${marks(rich(im.caption, V))}</figcaption></figure>`).join("");
-    const items = s.items ? `<ul class="items">${s.items.map((t) => `<li>${rich(t, V)}</li>`).join("")}</ul>` : "";
-    // 带 {{变量}} 的复制按钮:要等用户填了地址、算出自己的数才显示(默认值本身就能用的变量除外,比如保底价)
-    const needsAddr = (c) => [...c.matchAll(/\{\{(\w+)\}\}/g)].some((m) => !literal.has(m[1]));
-    const copy = s.copy ? `<div class="copies">${s.copy.map((c) => `<button class="copy${needsAddr(c) ? " needs-addr" : ""}" data-copy-var="${esc(c)}">复制 ${rich(c, V)}</button>`).join("")}</div>` : "";
-    // 卡住时:现场诊断(浏览器里实时查,guide.js 填)+ 常见情况(审过的答案,不用 JS 也能展开)+ 官方支持 + 卡点报告
-    const sits = (s.situations || []).map((x) => `<details class="sit${x.stop ? " stop" : ""}" data-sit="${esc(x.id)}"><summary>${rich(x.see, V)}</summary><p>${rich(x.do, V)}</p></details>`).join("");
-    const help = `<div class="help" hidden>
-    <div class="diag" aria-live="polite"></div>
-    ${sits ? `<h5>选一个最像你的情况</h5><div class="sits">${sits}</div>` : ""}
-    <div class="fallback"><p><b>${zhPunct("都不是:先停下,别签任何东西。")}</b></p>${support}<button class="report" type="button">${zhPunct("复制卡点报告(不含地址)")}</button></div>
-  </div>`;
-    const ck = s.check ? `<div class="check${s.check.kind === "arrive" ? " arrive" : ""}"><h4>${rich(s.check.title, V)}</h4><dl>${s.check.rows.map(([k, v]) => `<div><dt>${rich(k, V)}</dt><dd>${rich(v, V)}</dd></div>`).join("")}</dl>${s.check.foot ? `<p>${rich(s.check.foot, V)}</p>` : ""}</div>` : "";
-    return `<section class="step" data-step="${i}" data-id="${esc(s.id)}"${s.when ? ` data-when="${esc(s.when)}"` : ""}>
-  <header><span class="num">${i + 1}</span><h3>${rich(s.title, V)}${s.note ? `<small>${rich(s.note, V)}</small>` : ""}</h3></header>
-  ${s.whenText ? `<p class="when">${rich(s.whenText, V)}</p>` : ""}
-  ${items}${imgs}${copy}${ck}
-  <button class="stuck" type="button" aria-expanded="false">我卡在这一步</button>
-  ${help}
+function guide(tx, R) {
+  const { lang } = tx;
+  const P = pre(lang);
+  const V = R.vars;
+  const literal = new Set(R.literalVars || []);
+  // 没填地址时变量显示的是说明文字(「你的 USDH 数量」),标成 ph,样式上和真数字区分开
+  const r = (s) => rich(s, V, lang).replace(/<span class="var" data-var="(\w+)">/g, (m, k) => (literal.has(k) ? m : `<span class="var ph" data-var="${k}">`));
+  // 带 {{变量}} 的复制按钮:要等用户填了地址、算出自己的数才显示(默认值本身就能用的变量除外,比如保底价)
+  const needsAddr = (c) => [...c.matchAll(/\{\{(\w+)\}\}/g)].some((m) => !literal.has(m[1]));
+  const copyBtn = (c) => `<button class="copy${needsAddr(c) ? " needs-addr" : ""}" type="button" data-copy-var="${esc(c)}">${ico("copy")}${tx.h("copy")}</button>`;
+  const tipHtml = (k, text) => `<p class="tip${k === "bad" ? " bad" : ""}">${ico(k === "bad" ? "x" : "alert")}<span>${r(text)}</span></p>`;
+
+  const steps = R.steps.map((s) => {
+    const copyLeft = new Set(s.copy || []);
+    // 说明里出现了要复制的 {{变量}},复制按钮就放在那一行后面
+    const inlineCopies = (text) => {
+      const vs = [...text.matchAll(/\{\{(\w+)\}\}/g)].map((m) => `{{${m[1]}}}`).filter((c) => copyLeft.has(c));
+      vs.forEach((c) => copyLeft.delete(c));
+      return vs.map(copyBtn).join("");
+    };
+    const segsHtml = (segs) => {
+      let out = "", list = [];
+      const flush = () => { if (list.length) out += `<ol class="marks">${list.join("")}</ol>`; list = []; };
+      for (const g of segs) {
+        if (g.k === "n") list.push(`<li value="${g.n}"><span class="n" aria-hidden="true">${g.n}</span><span class="t">${r(g.text)}</span>${inlineCopies(g.text)}</li>`);
+        else {
+          flush();
+          out += g.k === "plain" ? `<p class="cap">${r(g.text)}</p>` : tipHtml(g.k, g.text);
+        }
+      }
+      flush();
+      return out;
+    };
+    const items = (s.items || []).map((x) => {
+      const m = /^(!|✗)\s+/.exec(x);
+      return m ? { tip: m[1] === "!" ? "tip" : "bad", text: x.slice(m[0].length) } : { text: x };
+    });
+    const bullets = items.filter((x) => !x.tip);
+    const tips = items.filter((x) => x.tip);
+    const itemsHtml = (bullets.length ? `<ul class="items">${bullets.map((x) => `<li>${r(x.text)}</li>`).join("")}</ul>` : "") + tips.map((x) => tipHtml(x.tip, x.text)).join("");
+    const shots = (s.images || []).map((im) => {
+      const size = webpSize(join(ROOT, "recipes", R.id, "img", im.src));
+      const wh = size ? ` width="${size.w}" height="${size.h}"` : "";
+      return `<div class="shot"><figure><img src="/r/${esc(R.id)}/img/${esc(im.src)}" alt="${tx.attr("shotAlt")}"${wh} loading="lazy" decoding="async"></figure>${segsHtml(splitMarks(im.caption))}</div>`;
+    }).join("");
+    const copyRows = [...copyLeft].map((c) => `<div class="copyrow"><span class="mono">${r(c)}</span>${copyBtn(c)}</div>`).join("");
+    // 配方里 images 写在 items 前面,页面上就先图后字(比如「填卖单」的提醒放在截图说明后面)
+    const keys = Object.keys(s);
+    const content = s.images && s.items && keys.indexOf("images") < keys.indexOf("items") ? shots + itemsHtml : itemsHtml + shots;
+    const c = s.check;
+    let check = "";
+    if (c?.kind === "arrive") {
+      check = `<section class="card arrive"><h3>${r(c.title)}</h3><dl>${c.rows.map(([k, v]) => `<div><dt>${r(k)}</dt><dd>${r(v)}</dd></div>`).join("")}</dl>${c.foot ? `<p class="sub">${r(c.foot)}</p>` : ""}</section>`;
+    } else if (c) {
+      check = `<section class="check" aria-labelledby="ck-${esc(s.id)}">
+    <div class="check-head"><span class="ic">${ico("shield")}</span><h3 id="ck-${esc(s.id)}">${r(c.title)}</h3></div>
+    <p class="sub">${r(c.lead)}</p>
+    <div class="ticks">${c.confirm.map((x, k) => `<button class="tick" type="button" data-k="${k}" aria-pressed="false"><span class="box">${ico("check")}</span><span class="tt"><b>${r(x.title)}</b><span>${r(x.sub)}</span></span></button>`).join("")}</div>
+    <div class="reject"><p>${tx.h("rejectH")}</p><ul>${c.reject.map((x) => `<li>${ico("x")}<span>${r(x)}</span></li>`).join("")}</ul></div>
+    ${c.normal?.length ? `<details class="normal"><summary>${tx.h("normalH")}</summary><ul>${c.normal.map((x) => `<li>${r(x)}</li>`).join("")}</ul></details>` : ""}
+    <button class="link-stop" type="button" data-open-sheet>${tx.h("checkStop")}</button>
+  </section>`;
+    }
+    // 常见情况(审过的答案):平时藏着,点「遇到问题」时挪进底部弹层
+    const sits = (s.situations || []).map((x) => `<details class="sit${x.stop ? " stop" : ""}" data-sit="${esc(x.id)}"><summary>${r(x.see)}</summary><p>${r(x.do)}</p></details>`).join("");
+    const attrs = [
+      `data-id="${esc(s.id)}"`,
+      s.when ? `data-when="${esc(s.when)}"` : "",
+      c?.confirm ? `data-checks="${c.confirm.length}"` : "",
+      s.note ? `data-note="${plain(s.note, lang)}"` : "",
+    ].filter(Boolean).join(" ");
+    return `<section class="step" id="s-${esc(s.id)}" ${attrs}>
+  <h2 class="step-title">${r(s.title)}</h2>
+  ${s.note ? `<p class="step-note">${r(s.note)}</p>` : ""}
+  ${s.whenText ? `<p class="when">${r(s.whenText)}</p>` : ""}
+  ${content}${copyRows}${check}
+  <div class="help" hidden>${sits}</div>
 </section>`;
   }).join("\n");
-  const pro = `<div class="pro-card">${r.pro.map((t) => `<p>${rich(t, V)}</p>`).join("")}</div>`;
-  const sources = r.sources.map((s) => `<li><a href="${esc(s.url)}" rel="noopener nofollow">${esc(s.label)}</a></li>`).join("");
+
+  const official = R.official.map((o) => `<div class="official"><span>${r(o.label)}</span><b class="mono">${esc(o.domain)}</b><button class="copy" type="button" data-copy="${esc(o.url)}">${ico("copy")}${tx.h("copyUrl")}</button></div>`).join("");
+  const facts = R.facts.map(([k, v]) => `<div><dt>${r(k)}</dt><dd>${r(v)}</dd></div>`).join("");
+  const sources = R.sources.map((s) => `<li><a href="${esc(s.url)}" rel="noopener nofollow">${esc(s.label)}</a></li>`).join("");
+  const support = R.support ? `<a class="btn small" href="${esc(R.support.url)}" rel="noopener noreferrer" target="_blank">${r(R.support.label)}</a>` : "";
   return page({
-    title: `${r.title} · ${site.name}`,
-    desc: r.summary,
-    script: "guide.js",
-    path: `/r/${r.id}/`,
+    tx, kind: "guide", path: `/r/${R.id}/`, script: "guide.js",
+    title: `${R.title} · ${site.name}`, desc: R.summary.replace(/\*\*/g, ""),
+    header: `<div class="wrap narrow bar"><a class="iconbtn" id="exit" href="${P}/" aria-label="${tx.attr("exitGuide")}">${ico("x")}</a><span class="bar-title">${r(R.short)}</span><button class="pill-warn" type="button" id="stuckBtn">${ico("help")}${tx.h("stuck")}</button></div>`,
     body: `
-<article class="guide" data-recipe="${esc(r.id)}" data-detector="${esc(r.detector)}" data-title="${esc(r.title)}">
-  <a class="back" href="/">← 体检首页</a>
-  <h1>${esc(r.title)}</h1>
-  <p class="lead">${rich(r.summary, V)}</p>
-  <dl class="facts">${facts}</dl>
-  ${official}
-  <form id="me" class="me" autocomplete="off">
-    <label for="addr">${zhPunct("填你的地址,下面的数字和步骤会按你的账户算好(可不填)")}</label>
-    <div class="row"><input id="addr" name="addr" spellcheck="false" placeholder="0x 开头的 42 位地址"><button type="submit">按我的账户算</button></div>
-  </form>
-  <div id="mine" class="mine" hidden></div>
-  <div class="tabs" role="tablist">
-    <button role="tab" aria-selected="true" data-mode="novice">新手版 · 一页一步</button>
-    <button role="tab" aria-selected="false" data-mode="pro">老司机版 · 一张卡</button>
+<article class="guide wrap narrow" id="guide" data-recipe="${esc(R.id)}" data-detector="${esc(R.detector)}" data-title="${plain(R.short, lang)}">
+  <div class="route-bar" id="routeBar" hidden>
+    <div class="route" id="route" role="img"></div>
+    <div class="route-cap"><span class="pos" id="routePos"></span><span id="routeLeft"></span></div>
   </div>
-  <div class="mode" data-mode="novice">
-    <div class="steps" id="steps">${steps}</div>
-    <nav class="pager" id="pager" hidden><button data-go="-1">上一步</button><span id="pos"></span><button data-go="1">下一步</button></nav>
-  </div>
-  <div class="mode" data-mode="pro" hidden>${pro}</div>
-  <section class="meta">
-    <p>${zhPunct(`最后核验:${r.lastVerified}。${r.verified}`)}</p>
-    <h4>依据</h4><ul>${sources}</ul>
+  <section class="intro" id="intro">
+    <h1 class="display">${esc(punct(R.title, lang))}</h1>
+    <p class="lead">${r(R.summary)}</p>
+    <dl class="facts">${facts}</dl>
+    ${official}
+    <form id="me" class="card form" autocomplete="off" novalidate>
+      <label for="addr">${tx.h("meLabel")}</label>
+      <input id="addr" name="addr" class="input mono" spellcheck="false" autocapitalize="off" autocorrect="off" placeholder="${tx.attr("addrPlaceholder")}">
+      <button class="btn" type="submit">${tx.h("meBtn")}</button>
+    </form>
+    <div id="mine" class="card mine" hidden></div>
+    <button class="btn primary block" type="button" id="start">${tx.h("startGuide")}${ico("arrowRight")}</button>
+    <details class="pro"><summary>${tx.h("proToggle")}</summary><div class="pro-card">${R.pro.map((p) => `<p>${r(p)}</p>`).join("")}</div></details>
+    <section class="meta">
+      <p>${rich(tx.t("lastVerified", R.lastVerified, R.verified), {}, lang)}</p>
+      <h2>${tx.h("sourcesH")}</h2>
+      <ul>${sources}</ul>
+    </section>
   </section>
+  <div class="steps" id="steps">${steps}</div>
+  <section class="done" id="done" hidden data-where="${plain(R.done.where, lang)}" data-from="${plain(R.done.from, lang)}" data-look="${plain(R.done.look, lang)}"></section>
+  <nav class="pager" id="pager" aria-label="${tx.attr("pagerNav")}" hidden><div class="wrap narrow pager-in"><button class="btn" type="button" data-go="-1">${tx.h("prev")}</button><button class="btn primary" type="button" data-go="1">${tx.h("next")}${ico("arrowRight")}</button></div></nav>
+  <dialog class="sheet" id="sheet" aria-labelledby="sheetH">
+    <div class="sheet-in">
+      <span class="grip" aria-hidden="true"></span>
+      <div class="sheet-head"><h2 id="sheetH">${tx.h("diagH")}</h2><button class="btn small" type="button" id="recheck">${ico("refresh")}${tx.h("recheck")}</button><button class="iconbtn" type="button" id="sheetClose" aria-label="${tx.attr("close")}">${ico("x")}</button></div>
+      <div class="diag" id="diag" aria-live="polite"></div>
+      <h3 class="sits-h" id="sitsH">${tx.h("sitsH")}</h3>
+      <div class="sits" id="sheetSits"></div>
+      <div class="fallback">
+        <p>${tx.h("fallback")}</p>
+        <div class="fb-row">${support}<button class="btn small" type="button" id="report">${ico("copy")}${tx.h("report")}</button></div>
+        ${R.support ? `<p class="sub">${r(R.support.note)}</p>` : ""}
+      </div>
+    </div>
+  </dialog>
+  <div class="follow" id="follow" role="status" hidden><span></span><button class="btn small" type="button" data-goto="">${tx.h("followGo")}</button><button class="iconbtn" type="button" data-follow-x aria-label="${tx.attr("close")}">${ico("x")}</button></div>
 </article>`,
+  });
+}
+
+// ---------- 找不到页面(中英都放) ----------
+
+function notFound() {
+  const zh = texts("zh"), en = texts("en");
+  return page({
+    tx: zh, kind: "404", path: "/", script: "site.js", noindex: true,
+    title: `${zh.t("nfTitle")} · ${site.name}`, desc: "",
+    header: brandBar(zh, "/"),
+    body: `<section class="wrap narrow nf"><h1 class="display">${zh.h("nfTitle")}</h1><p lang="en">${en.h("nfTitle")}</p><p><a class="btn primary" href="/">${zh.h("nfBack")}</a> <a class="btn" href="/en/" lang="en">${en.h("nfBack")}</a></p></section>`,
   });
 }
 
@@ -216,7 +432,7 @@ export function headers(connect) {
   };
 }
 
-// ---------- 主流程 ----------
+// ---------- 配方:读取、校验、出英文版 ----------
 
 function copyDir(src, dst) {
   mkdirSync(dst, { recursive: true });
@@ -225,6 +441,56 @@ function copyDir(src, dst) {
     if (statSync(s).isDirectory()) copyDir(s, d);
     else copyFileSync(s, d);
   }
+}
+
+// 英文版:按 i18n/en.json 换掉每一处给人看的文字。缺一条、条数对不上、还混着汉字,都直接报错
+export function localize(r, o, file) {
+  const need = (v, path) => {
+    if (typeof v !== "string" || !v.trim()) throw new Error(`${file}: 缺 ${path}`);
+    return v;
+  };
+  const same = (a, b, path) => {
+    if (!Array.isArray(b) || b.length !== a.length) throw new Error(`${file}: ${path} 应该有 ${a.length} 条`);
+    return b;
+  };
+  const L = JSON.parse(JSON.stringify(r));
+  for (const k of ["title", "short", "verified", "covers", "summary"]) L[k] = need(o[k], k);
+  L.facts = same(r.facts, o.facts, "facts").map((x, i) => [need(x?.[0], `facts[${i}][0]`), need(x?.[1], `facts[${i}][1]`)]);
+  L.chips = same(r.chips || [], o.chips || [], "chips").map((x, i) => ({ ...r.chips[i], text: need(x, `chips[${i}]`) }));
+  if (r.support) L.support = { ...r.support, label: need(o.support?.label, "support.label"), note: need(o.support?.note, "support.note") };
+  L.official = same(r.official, o.official, "official").map((x, i) => ({ ...r.official[i], label: need(x?.label, `official[${i}].label`) }));
+  for (const k of Object.keys(r.vars)) if (!(r.literalVars || []).includes(k)) L.vars[k] = need(o.vars?.[k], `vars.${k}`);
+  L.pro = same(r.pro, o.pro, "pro").map((x, i) => need(x, `pro[${i}]`));
+  L.done = { where: need(o.done?.where, "done.where"), from: need(o.done?.from, "done.from"), look: need(o.done?.look, "done.look") };
+  L.sources = same(r.sources, o.sources, "sources").map((x, i) => ({ ...r.sources[i], label: need(x, `sources[${i}]`) }));
+  L.steps = r.steps.map((s) => {
+    const x = o.steps?.[s.id] || {};
+    const p = `steps.${s.id}`;
+    const S = { ...s, title: need(x.title, `${p}.title`) };
+    for (const k of ["note", "whenText", "milestone"]) if (s[k]) S[k] = need(x[k], `${p}.${k}`);
+    if (s.items) S.items = same(s.items, x.items, `${p}.items`).map((y, i) => need(y, `${p}.items[${i}]`));
+    if (s.images) S.images = same(s.images, x.images, `${p}.images`).map((y, i) => ({ ...s.images[i], caption: need(y, `${p}.images[${i}]`) }));
+    if (s.situations) {
+      S.situations = s.situations.map((y) => {
+        const z = x.situations?.[y.id];
+        return { ...y, see: need(z?.see, `${p}.situations.${y.id}.see`), do: need(z?.do, `${p}.situations.${y.id}.do`) };
+      });
+    }
+    if (s.check) {
+      const c = s.check, d = x.check || {}, q = `${p}.check`;
+      S.check = { ...c, title: need(d.title, `${q}.title`) };
+      if (c.lead) S.check.lead = need(d.lead, `${q}.lead`);
+      if (c.confirm) S.check.confirm = same(c.confirm, d.confirm, `${q}.confirm`).map((y, i) => ({ title: need(y?.title, `${q}.confirm[${i}].title`), sub: need(y?.sub, `${q}.confirm[${i}].sub`) }));
+      if (c.reject) S.check.reject = same(c.reject, d.reject, `${q}.reject`).map((y, i) => need(y, `${q}.reject[${i}]`));
+      if (c.normal) S.check.normal = same(c.normal, d.normal, `${q}.normal`).map((y, i) => need(y, `${q}.normal[${i}]`));
+      if (c.rows) S.check.rows = same(c.rows, d.rows, `${q}.rows`).map((y, i) => [need(y?.[0], `${q}.rows[${i}][0]`), need(y?.[1], `${q}.rows[${i}][1]`)]);
+      if (c.foot) S.check.foot = need(d.foot, `${q}.foot`);
+    }
+    return S;
+  });
+  const cjk = JSON.stringify(L).match(/[　-〿一-鿿＀-￯]+/);
+  if (cjk) throw new Error(`${file}: 英文版里还有中文「${cjk[0]}」`);
+  return L;
 }
 
 function loadRecipes() {
@@ -242,8 +508,11 @@ function loadRecipes() {
         if (ids.has(x.id)) throw new Error(`${d}/${s.id}: 常见情况 id 重复 ${x.id}`);
         ids.add(x.id);
       }
+      if (s.check && s.check.kind !== "arrive" && !(s.check.confirm?.length && s.check.reject?.length)) throw new Error(`${d}/${s.id}: 核对卡缺 confirm 或 reject`);
     }
-    return r;
+    const enFile = join(dir, d, "i18n", "en.json");
+    if (!existsSync(enFile)) throw new Error(`${d}: 缺英文版 i18n/en.json`);
+    return { zh: r, en: localize(r, JSON.parse(readFileSync(enFile, "utf8")), `${d}/i18n/en.json`) };
   });
 }
 
@@ -252,19 +521,26 @@ export function build() {
   rmSync(DIST, { recursive: true, force: true });
   mkdirSync(join(DIST, "assets"), { recursive: true });
   copyDir(join(ROOT, "src"), join(DIST, "assets"));
+  copyDir(join(ROOT, "static", "fonts"), join(DIST, "assets", "fonts"));
   copyFileSync(join(ROOT, "static", "favicon.svg"), join(DIST, "favicon.svg"));
-  writeFileSync(join(DIST, "index.html"), home(recipes));
-  for (const r of recipes) {
-    const out = join(DIST, "r", r.id);
-    mkdirSync(out, { recursive: true });
-    writeFileSync(join(out, "index.html"), guide(r));
-    copyDir(join(ROOT, "recipes", r.id, "img"), join(out, "img"));
+  const write = (rel, html) => {
+    const f = join(DIST, rel);
+    mkdirSync(dirname(f), { recursive: true });
+    writeFileSync(f, html);
+  };
+  for (const lang of LANGS) {
+    const tx = texts(lang);
+    const rs = recipes.map((r) => r[lang]);
+    write(`${pre(lang)}/index.html`, home(tx, rs));
+    write(`${pre(lang)}/check/index.html`, checkPage(tx, rs));
+    for (const R of rs) write(`${pre(lang)}/r/${R.id}/index.html`, guide(tx, R));
   }
-  writeFileSync(join(DIST, "404.html"), page({ title: `找不到页面 · ${site.name}`, desc: "", body: `<section class="card"><h1>找不到这个页面</h1><p><a href="/">回到体检首页</a></p></section>` }));
+  for (const r of recipes) copyDir(join(ROOT, "recipes", r.zh.id, "img"), join(DIST, "r", r.zh.id, "img"));
+  write("404.html", notFound());
   const h = headers(site.connect);
-  writeFileSync(join(DIST, "_headers"), "/*\n" + Object.entries(h).map(([k, v]) => `  ${k}: ${v}`).join("\n") + "\n");
-  writeFileSync(join(DIST, "robots.txt"), "User-agent: *\nAllow: /\n");
-  console.log(`built ${recipes.length} recipe(s) → dist/`);
+  write("_headers", "/*\n" + Object.entries(h).map(([k, v]) => `  ${k}: ${v}`).join("\n") + "\n");
+  write("robots.txt", "User-agent: *\nAllow: /\n");
+  console.log(`built ${recipes.length} recipe(s) × ${LANGS.length} languages → dist/`);
 }
 
 // 直接运行时才构建(被 serve.mjs 引用时不构建)

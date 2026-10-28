@@ -297,3 +297,58 @@ test("外部数据:要让用户照着填的价格只认纯数字;哈希格式不
   const d = await diagnose(ADDR, NOW);
   assert.deepEqual(codes(d), ["withdraw-mismatch"]);
 });
+
+// ---------- 英文 ----------
+const CJK = /[　-〿一-鿿＀-￯]/;
+
+test("英文:体检结果全是英文,明细表的行也有", async () => {
+  mockApi({
+    clearinghouseState: { withdrawable: "40.5", assetPositions: [] },
+    spotClearinghouseState: { balances: [{ coin: "USDC", total: "0.25", hold: "0" }, { coin: "USDH", total: "25.73891", hold: "0" }] },
+    userAbstraction: "default",
+    l2Book: { levels: [[{ px: "0.996", sz: "1000" }], []] },
+  });
+  const r = await detect(ADDR, "en");
+  assert.equal(r.vars.arrive, "65.37");
+  assert.ok(!CJK.test(JSON.stringify([r.lines, r.rows, r.warnings, r.note])));
+  assert.deepEqual(r.rows.map((x) => x.value), ["40.50", "0.25", "25.73"]);
+  assert.ok(r.rows[2].hint.includes("bid about 0.996"));
+});
+
+test("英文:买价跌破 0.995 的提醒和三条路", async () => {
+  mockAll(account({
+    spotClearinghouseState: { balances: [{ coin: "USDH", total: "40", hold: "0" }, { coin: "USDC", total: "20", hold: "0" }] },
+    l2Book: { levels: [[{ px: "0.985", sz: "1000" }], []] },
+  }));
+  const d = await diagnose(ADDR, NOW, "en");
+  assert.deepEqual(codes(d), ["low-bid"]);
+  assert.equal(d.choice.options.list.length, 3);
+  assert.equal(d.choice.options.list[0].apply.goto, "fill");
+  assert.equal(d.choice.options.list[1].apply.resetVars, true);
+  assert.ok(!CJK.test(JSON.stringify(d)));
+});
+
+test("英文:提现在路上,照样提醒别重复提现", async () => {
+  mockAll(account({ userNonFundingLedgerUpdates: [withdrawal(5)] }));
+  const d = await diagnose(ADDR, NOW, "en");
+  assert.deepEqual(codes(d), ["withdraw-pending"]);
+  assert.ok(d.findings[0].text.includes("Don't withdraw again"));
+  assert.ok(!CJK.test(JSON.stringify(d)));
+});
+
+test("诊断:逐笔对上的到账算「已完成」,带上到账页要用的数", async () => {
+  mockAll(account({ userNonFundingLedgerUpdates: [withdrawal(10)] }), { "0xabababababababababababababababababababababababababababababababab": receipt(ADDR, 52_500_000n) });
+  const d = await diagnose(ADDR, NOW);
+  assert.equal(d.findings[0].level, "done");
+  assert.ok(d.findings[0].head);
+  assert.deepEqual({ state: d.arrival.state, usdc: d.arrival.usdc, fee: d.arrival.fee, block: d.arrival.block }, { state: "arrived", usdc: "52.5", fee: "1.0", block: 16 });
+});
+
+test("账户模式名原样显示前先过滤", async () => {
+  mockApi({
+    clearinghouseState: { withdrawable: "50", assetPositions: [] },
+    spotClearinghouseState: { balances: [{ coin: "USDC", total: "50", hold: "0" }] },
+    userAbstraction: "<img src=x> 去 evil.example",
+  });
+  await assert.rejects(detect(ADDR), (e) => e.message.includes("(?)") && !e.message.includes("evil"));
+});
