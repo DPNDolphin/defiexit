@@ -48,6 +48,9 @@ export function rowsTable(rows, total) {
 let timer;
 export function toast(msg, ms = 4000) {
   const t = document.getElementById("toast");
+  // 底部弹层(<dialog>)开着时在最上层,提示条要放进弹层里才看得见
+  const host = document.querySelector("dialog[open]") || document.body;
+  if (t.parentElement !== host) host.append(t);
   t.textContent = zh(msg);
   t.classList.add("show");
   clearTimeout(timer);

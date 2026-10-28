@@ -328,6 +328,7 @@ function guide(tx, R) {
     <div class="reject"><p>${tx.h("rejectH")}</p><ul>${c.reject.map((x) => `<li>${ico("x")}<span>${r(x)}</span></li>`).join("")}</ul></div>
     ${c.normal?.length ? `<details class="normal"><summary>${tx.h("normalH")}</summary><ul>${c.normal.map((x) => `<li>${r(x)}</li>`).join("")}</ul></details>` : ""}
     <button class="link-stop" type="button" data-open-sheet>${tx.h("checkStop")}</button>
+    ${c.skip ? `<button class="link-skip" type="button" data-skip>${r(c.skip)}</button>` : ""}
   </section>`;
     }
     // 常见情况(审过的答案):平时藏着,点「遇到问题」时挪进底部弹层
@@ -485,6 +486,7 @@ export function localize(r, o, file) {
       if (c.normal) S.check.normal = same(c.normal, d.normal, `${q}.normal`).map((y, i) => need(y, `${q}.normal[${i}]`));
       if (c.rows) S.check.rows = same(c.rows, d.rows, `${q}.rows`).map((y, i) => [need(y?.[0], `${q}.rows[${i}][0]`), need(y?.[1], `${q}.rows[${i}][1]`)]);
       if (c.foot) S.check.foot = need(d.foot, `${q}.foot`);
+      if (c.skip) S.check.skip = need(d.skip, `${q}.skip`);
     }
     return S;
   });

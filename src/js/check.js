@@ -111,6 +111,9 @@ async function run(list) {
   render();
 }
 
+// 同一个标签页里只改了 # 后面的地址:整页重新查,不让旧账户的结果挂着新地址
+window.addEventListener("hashchange", () => location.reload());
+
 cards.addEventListener("click", (e) => {
   const b = e.target.closest("[data-retry]");
   if (b) run(recipes.filter((r) => r.id === b.dataset.retry));

@@ -144,6 +144,7 @@
       "check": {
         "title": "签名前,先核对 3 件事",
         "lead": "点 Establish Connection 后,钱包会弹出签名请求。对照着看,核对完一项就点一下。",
+        "skip": "之前开启过交易,按钮已经是 Place Order?跳过这一步",
         "confirm": [
           {"title": "弹窗来源是 app.hyperliquid.xyz", "sub": "多一个字母、少一个点都不行"},
           {"title": "写着 ApproveAgent 和 Mainnet", "sub": "这是在开一把「只能下单」的钥匙:官方文档写明它不能把钱转给别人,也不能提现"},
@@ -202,6 +203,7 @@
       "check": {
         "title": "签名前,先核对 3 件事",
         "lead": "点 Confirm 后,钱包会弹出签名请求。对照着看,核对完一项就点一下。",
+        "skip": "统一账户(Account 页没有 Perps ⇄ Spot)?跳过这一步",
         "confirm": [
           {"title": "弹窗来源是 app.hyperliquid.xyz", "sub": "多一个字母、少一个点都不行"},
           {"title": "写着 SendAsset,destination 是你自己的地址 {{addrShort}}", "sub": "大小写不同没关系;不是你自己的地址,立刻拒绝"},

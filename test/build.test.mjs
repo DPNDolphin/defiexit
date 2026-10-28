@@ -43,6 +43,8 @@ test("指南页:核对卡要逐项打勾、常见情况不靠 JS 也在页面里
     // 开启交易、划转、提现三张签名核对卡,每张 3 项
     assert.equal(guide.match(/data-checks="3"/g)?.length, 3);
     assert.equal(guide.match(/<button class="tick" type="button"/g)?.length, 9);
+    // 开启交易、划转这两步有时用不到:明说可以跳过,不用假装打勾
+    assert.equal(guide.match(/data-skip>/g)?.length, 2);
     // 截图标了宽高,图片没下载完也不会挤动页面
     assert.match(guide, /<img src="\/r\/hyperliquid\/img\/fill\.webp" alt="[^"]+" width="\d+" height="\d+"/);
   }

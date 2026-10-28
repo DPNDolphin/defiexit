@@ -23,20 +23,23 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 let flags = null;     // null:没填地址,所有步骤都显示
 let base = null;      // 按账户算出来的原始数和开关(用户在现场诊断里改了选择,能退回来)
 let addr = null;      // 用户填的地址:只在这一页的内存和 # 后面,不会发给我们
-let pending = null;   // 正在按哪个地址算
+let pending = null;   // 正在算的那个地址和它的结果:{ a, done }(浏览器换 # 时会连着来两个事件,第二个要等第一个算完)
 let here = null;      // 正在看的那一步;null 是概况页
 let lastDiag = null, lastAt = 0;
 let sheetFor = null;  // 弹层里现在放的是哪一步的常见情况
 const ticks = new Map(); // 每一步的核对卡勾了哪几项
 
 const titleOf = (s) => s.querySelector(".step-title").textContent;
+const isOpen = () => sheet.hasAttribute("open"); // 不认识 <dialog> 的老浏览器没有 sheet.open
+// 「已经出来了」只认:到账逐笔对上了,而且诊断说前面没有别的事要做(账户里没剩能提的钱)
+const finished = (d) => d?.arrival?.state === "arrived" && d.step === "arrive";
 const hhmm = (ms) => new Date(ms).toTimeString().slice(0, 5);
 const visible = () => steps.filter((s) => !flags || !s.dataset.when || flags[s.dataset.when]);
 const clean = (s) => s.replace(/\s+/g, "");
 
 // ---------- 一页一步 ----------
 
-function show(i, { push = true, scroll = true } = {}) {
+function show(i, { push = true, scroll = true, keepHash = false } = {}) {
   closeSheet();
   const vs = visible();
   const k = Math.max(-1, Math.min(i, vs.length - 1));
@@ -50,7 +53,7 @@ function show(i, { push = true, scroll = true } = {}) {
     drawRoute(vs, k);
     updatePager();
   }
-  writeHash(here?.dataset.id, push);
+  if (!keepHash) writeHash(here?.dataset.id, push);
   if (scroll) window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
 }
 
@@ -105,7 +108,7 @@ async function finish() {
     const d = await diagnose(addr, Date.now(), lang);
     lastDiag = d;
     lastAt = Date.now();
-    if (d.arrival?.state === "arrived") return showDone(d);
+    if (finished(d)) return showDone(d);
     openSheet(d);
   } catch {
     openSheet();
@@ -139,7 +142,7 @@ $("steps").addEventListener("touchend", (e) => {
   else if (dx > 0) prevBtn.click();
 }, { passive: true });
 document.addEventListener("keydown", (e) => {
-  if (!here || sheet.open || e.target.closest("input, textarea, select, [contenteditable]")) return;
+  if (!here || isOpen() || e.target.closest("input, textarea, select, [contenteditable]")) return;
   if (e.key === "ArrowRight" && !nextBtn.disabled) nextBtn.click();
   if (e.key === "ArrowLeft") prevBtn.click();
 });
@@ -158,9 +161,13 @@ function writeHash(stepId, push) {
 async function applyHash() {
   const p = new URLSearchParams(location.hash.slice(1));
   const a = clean(p.get("a") || "");
-  if (isEvmAddress(a) && a !== addr && a !== pending) {
+  if (isEvmAddress(a) && a !== addr) {
+    const job = pending?.a === a ? pending : (pending = { a, done: personalize(a) });
     meInput.value = a;
-    await personalize(a);
+    const ok = await job.done;
+    if (pending === job) pending = null;
+    // 查不成:停在概况页,让用户看到为什么(检测器可能在说「先别照指南操作」),# 里的地址也留着
+    if (!ok) return show(-1, { push: false, keepHash: true });
   }
   if (p.get("go")) return show(0, { push: false });
   const s = p.get("s");
@@ -174,8 +181,28 @@ function setVars(vars) {
   for (const [k, v] of Object.entries(vars)) for (const n of art.querySelectorAll(`[data-var="${k}"]`)) n.textContent = v;
 }
 
+// 页面上变量的原始说明文字(「你的 USDH 数量」这类),查不成时换回来
+const defaults = [...art.querySelectorAll("[data-var]")].map((n) => [n, n.textContent]);
+
+// 按新地址查不成:之前那个地址算出来的数和开关全部作废,回到通用步骤
+function unpersonalize() {
+  addr = null;
+  base = null;
+  flags = null;
+  for (const [n, v] of defaults) n.textContent = v;
+  art.classList.remove("personal");
+  $("exit").href = `${P}/`;
+  resetTicks();
+  refresh();
+}
+
+// 核对卡上的数(地址、金额)变了,之前打的勾就不算数,要重新核对
+function resetTicks() {
+  ticks.clear();
+  for (const b of art.querySelectorAll('.tick[aria-pressed="true"]')) b.setAttribute("aria-pressed", "false");
+}
+
 async function personalize(a) {
-  pending = a;
   mine.hidden = false;
   mine.replaceChildren(el("p", { class: "sub" }, el("span", { class: "spin", "aria-hidden": "true" }), " ", t("calcing")));
   try {
@@ -184,6 +211,7 @@ async function personalize(a) {
     base = { vars: res.vars, flags: res.flags };
     flags = { ...res.flags };
     setVars(res.vars);
+    resetTicks();
     art.classList.add("personal");
     $("exit").href = `${P}/check/#a=${a}`;
     const skipped = steps.length - visible().length;
@@ -198,10 +226,9 @@ async function personalize(a) {
     refresh();
     return true;
   } catch (err) {
+    unpersonalize();
     mine.replaceChildren(el("p", { class: "err" }, t("calcFail", errText(t, err))));
     return false;
-  } finally {
-    pending = null;
   }
 }
 
@@ -215,7 +242,7 @@ meForm.addEventListener("submit", async (e) => {
 // ---------- 遇到问题:底部弹层 ----------
 
 function openSheet(preloaded = null) {
-  if (sheet.open) return preloaded && paintDiag(preloaded);
+  if (isOpen()) return preloaded && paintDiag(preloaded);
   sheetFor = here;
   // 把这一步的常见情况挪进弹层,关的时候放回去
   const help = here?.querySelector(".help");
@@ -236,7 +263,7 @@ function restoreSits() {
   sheetFor = null;
 }
 function closeSheet() {
-  if (!sheet.open) return;
+  if (!isOpen()) return;
   restoreSits();
   if (typeof sheet.close === "function") sheet.close();
   else sheet.removeAttribute("open");
@@ -287,13 +314,13 @@ function renderDiag(d) {
   for (const f of d.findings) {
     out.push(el("div", { class: `finding ${f.level}` }, el("span", { class: "mk" }, icon(MARK[f.level] || "info")), el("div", {}, f.head ? el("b", {}, f.head) : null, el("p", {}, f.text))));
   }
-  if (d.arrival?.state === "arrived") out.push(el("button", { class: "btn primary block", type: "button", "data-done": "" }, t("seeDone"), icon("arrowRight")));
+  if (finished(d)) out.push(el("button", { class: "btn primary block", type: "button", "data-done": "" }, t("seeDone"), icon("arrowRight")));
   const target = d.step && reveal(d.step);
   if (target) {
     refresh(); // 被跳过的步骤放出来了,当前这一步的编号可能变了
     const vs = visible(), n = vs.indexOf(target) + 1;
     out.push(el("div", { class: "where" }, route(vs.length, n - 1), el("p", {}, target === sheetFor ? t("whereHere") : t("whereAt", n, titleOf(target)))));
-    if (target !== sheetFor && d.arrival?.state !== "arrived") out.push(el("button", { class: "btn primary block", type: "button", "data-goto": target.dataset.id }, t("goStep", n, titleOf(target)), icon("arrowRight")));
+    if (target !== sheetFor && !finished(d)) out.push(el("button", { class: "btn primary block", type: "button", "data-goto": target.dataset.id }, t("goStep", n, titleOf(target)), icon("arrowRight")));
   }
   if (d.choice?.options) out.push(renderChoice(d.choice.options));
   out.push(el("details", { class: "raw" }, el("summary", {}, t("rawFacts")), el("ul", {}, d.facts.map((x) => el("li", {}, x)))));
@@ -310,6 +337,7 @@ function pick(i) {
   const ap = lastDiag?.choice?.options?.list[i]?.apply;
   if (!ap || !base) return;
   setVars(ap.resetVars ? base.vars : ap.vars);
+  resetTicks();
   flags = { ...base.flags, ...ap.flags };
   if (ap.goto) gotoStep(ap.goto);
   else show(0);
@@ -387,6 +415,8 @@ art.addEventListener("click", async (e) => {
     return;
   }
   if (x.closest("[data-open-sheet]")) return openSheet();
+  // 这一步用不到(比如统一账户不用划转):明说跳过,不用假装打勾
+  if (x.closest("[data-skip]")) return show(visible().indexOf(here) + 1);
   const go = x.closest("[data-goto]");
   if (go?.dataset.goto) return gotoStep(go.dataset.goto);
   if (x.closest("[data-follow-x]")) {
@@ -395,14 +425,17 @@ art.addEventListener("click", async (e) => {
   }
   const p = x.closest("[data-pick]");
   if (p) return pick(Number(p.dataset.pick));
-  if (x.closest("[data-done]") && lastDiag) return showDone(lastDiag);
+  if (x.closest("[data-done]") && finished(lastDiag)) return showDone(lastDiag);
   if (x.closest("[data-share]")) return share();
   if (x.closest("#report")) return report();
 });
 
 // 从官网切回这一页时,自己再查一次;发现该换一步了,只提示,用户点了才翻
 document.addEventListener("visibilitychange", async () => {
-  if (document.visibilityState !== "visible" || !addr || !diagnose || !here || sheet.open || Date.now() - lastAt < 15000) return;
+  if (document.visibilityState !== "visible" || !addr || !diagnose || Date.now() - lastAt < 15000) return;
+  // 弹层开着:就在弹层里重新查一遍
+  if (isOpen()) return runDiag();
+  if (!here) return;
   lastAt = Date.now();
   try {
     const d = await diagnose(addr, Date.now(), lang);

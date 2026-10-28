@@ -112,6 +112,7 @@
       "check": {
         "title": "Before you sign, check 3 things",
         "lead": "After you tap Establish Connection, your wallet shows a signature request. Compare it with this card and tick each line as you check it.",
+        "skip": "Trading already enabled, and the button says Place Order? Skip this step",
         "confirm": [
           {"title": "The request comes from app.hyperliquid.xyz", "sub": "One extra letter or a missing dot makes it a different site"},
           {"title": "It says ApproveAgent and Mainnet", "sub": "This creates a key that can only place orders. Hyperliquid's docs say it can't send money to anyone or withdraw"},
@@ -166,6 +167,7 @@
       "check": {
         "title": "Before you sign, check 3 things",
         "lead": "After you tap Confirm, your wallet shows a signature request. Compare it with this card and tick each line as you check it.",
+        "skip": "Unified account (no Perps ⇄ Spot on the Account page)? Skip this step",
         "confirm": [
           {"title": "The request comes from app.hyperliquid.xyz", "sub": "One extra letter or a missing dot makes it a different site"},
           {"title": "It says SendAsset, and destination is your own address {{addrShort}}", "sub": "Upper or lower case doesn't matter. If it isn't your address, reject it"},
