@@ -19,13 +19,13 @@
   "vars": {
     "addrShort": "your own address",
     "woo": "your staked WOO",
-    "usdc": "your unclaimed USDC",
+    "rewards": "your unclaimed rewards",
     "eth": "the ETH you can collect from the vault"
   },
   "pro": [
     "**Route**: woofi.com/stake → **Claim** the rewards → **Unstake** everything → **Earn** at the bottom → My vaults → the ETH card on Arbitrum → WITHDRAW tab → **WITHDRAW** next to Available for Withdrawals.",
     "**Three transactions**: claimRewards to 0xa9E2…24Fb; unstake (all) to 0x2CFa…d8e2; withdraw to 0xE77A…Ad6a. All send 0 ETH, need no approval and no message signature.",
-    "**Your numbers**: claim {{usdc}} USDC, unstake {{woo}} WOO, collect {{eth}} ETH from the vault.",
+    "**Your numbers**: claim {{rewards}}, unstake {{woo}} WOO, collect {{eth}} ETH from the vault.",
     "**Gotchas**: don't tap Compound or auto-compound. For the vault, tap the small WITHDRAW, not the big button. With less than 0.0002 ETH on Arbitrum, the official site won't let you continue."
   ],
   "done": {
@@ -72,7 +72,7 @@
       "note": "Transaction 1",
       "milestone": "Claim",
       "images": [
-        "① Tap **Claim** (USDC reward above is what you haven't claimed. It's hidden in the screenshot and should be about {{usdc}}) ✗ Don't tap Compound: it turns the rewards into WOO and stakes them again, the opposite of what you want"
+        "① Tap **Claim** (USDC reward above is what you haven't claimed. It's hidden in the screenshot and should be about {{rewards}}) ✗ Don't tap Compound: it turns the rewards into WOO and stakes them again, the opposite of what you want"
       ],
       "check": {
         "title": "Before you confirm, check 3 things",
@@ -105,7 +105,7 @@
       "milestone": "Unstake",
       "images": [
         "① Tap **Unstake** ② Tap the number on the right of the input (all of your staked WOO, hidden in the screenshot). It fills in the full amount",
-        "① With the amount filled in (it should be {{woo}}), tap **UNSTAKE**",
+        "① With the amount filled in (about {{woo}}; the official site shows a few more decimals), tap **UNSTAKE**",
         "① In Unstake Confirmation, check the amount and tap **UNSTAKE**. Your wallet asks you to confirm a transaction: check it against the card below ! It says your XP (points) will be removed. XP can't be traded and doesn't affect the money you get back"
       ],
       "check": {
@@ -175,8 +175,8 @@
         "rows": [
           ["How long", "A few seconds after each transaction confirms"],
           ["Where to look", "Your wallet app → Assets, with the network set to Arbitrum"],
-          ["What you should see", "About {{woo}} WOO, {{usdc}} USDC and {{eth}} ETH more (whichever of these you had)"],
-          ["On-chain record", "WOO comes from WOOFi's staking contract 0x2CFa…d8e2, USDC from WOOFi's reward contract, ETH from WOOFi's vault withdrawal contract 0xE77A…Ad6a. Your address receives all of them"],
+          ["What you should see", "About {{woo}} WOO, {{rewards}} and {{eth}} ETH more (whichever of these you had)"],
+          ["On-chain record", "WOO comes from WOOFi's staking contract 0x2CFa…d8e2, reward tokens from WOOFi's reward contracts, ETH from WOOFi's vault withdrawal contract 0xE77A…Ad6a. Your address receives all of them"],
           ["If it hasn't arrived", "Tap Stuck? at the top right for a live check. If the transaction succeeded but you can't see the WOO, add the token in your wallet"]
         ],
         "foot": "Once it arrives, you're done. WOO is an ordinary token: keep it or swap it in your wallet"

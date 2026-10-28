@@ -33,13 +33,13 @@
   "vars": {
     "addrShort": "你自己的地址",
     "woo": "你质押的 WOO 数量",
-    "usdc": "你没领的 USDC 奖励",
+    "rewards": "你没领的奖励",
     "eth": "你在金库里能取的 ETH"
   },
   "pro": [
     "**路线**:woofi.com/stake → **Claim** 领奖励 → **Unstake** 全部 → 底部 **Earn** → My vaults → Arbitrum 的 ETH 卡片 → WITHDRAW 页签 → Available for Withdrawals 旁边的 **WITHDRAW**。",
     "**三笔交易**:claimRewards 发给 0xa9E2…24Fb;unstake(全部)发给 0x2CFa…d8e2;withdraw 发给 0xE77A…Ad6a。都是 0 ETH、不用授权、不签名消息。",
-    "**你的数**:领 {{usdc}} USDC,解押 {{woo}} WOO,金库取 {{eth}} ETH。",
+    "**你的数**:领 {{rewards}},解押 {{woo}} WOO,金库取 {{eth}} ETH。",
     "**坑**:别点 Compound 和自动复投;金库那笔点小的 WITHDRAW,不是大按钮;钱包 Arbitrum 上的 ETH 少于 0.0002,官网不让点。"
   ],
   "done": {
@@ -98,7 +98,7 @@
       "note": "第 1 笔交易",
       "milestone": "领奖励",
       "images": [
-        {"src": "claim.webp", "caption": "① 点 **Claim**(上面的 USDC reward 是你没领的奖励,图里已打码,应约 {{usdc}}) ✗ 不要点 Compound:它会把奖励换成 WOO 再存回去,方向反了"}
+        {"src": "claim.webp", "caption": "① 点 **Claim**(上面的 USDC reward 是你没领的奖励,图里已打码,应约 {{rewards}}) ✗ 不要点 Compound:它会把奖励换成 WOO 再存回去,方向反了"}
       ],
       "check": {
         "title": "确认前,先核对 3 件事",
@@ -133,7 +133,7 @@
       "milestone": "解押",
       "images": [
         {"src": "unstake-1.webp", "caption": "① 点 **Unstake** ② 点输入框右边的数字(就是你质押的全部 WOO,图里已打码),会自动填满"},
-        {"src": "unstake-2.webp", "caption": "① 数量填好后(应是 {{woo}}),点 **UNSTAKE**"},
+        {"src": "unstake-2.webp", "caption": "① 数量填好后(约 {{woo}},官网会多显示几位小数),点 **UNSTAKE**"},
         {"src": "unstake-3.webp", "caption": "① 弹出 Unstake Confirmation,核对数量后点 **UNSTAKE**,钱包弹出交易确认,对照下面的核对卡 ! 它说会清掉你的 XP(积分):XP 不能交易,对取回的钱没有影响"}
       ],
       "check": {
@@ -205,8 +205,8 @@
         "rows": [
           ["多久", "交易确认后几秒钟就到"],
           ["去哪看", "钱包 App → 资产,网络选 Arbitrum"],
-          ["应该看到", "多出约 {{woo}} WOO、{{usdc}} USDC、{{eth}} ETH(你有哪几样就多哪几样)"],
-          ["链上记录", "WOO 来自 WOOFi 质押合约 0x2CFa…d8e2;USDC 来自 WOOFi 奖励合约;ETH 来自 WOOFi 金库取款合约 0xE77A…Ad6a。收款都是你的地址"],
+          ["应该看到", "多出约 {{woo}} WOO、{{rewards}}、{{eth}} ETH(你有哪几样就多哪几样)"],
+          ["链上记录", "WOO 来自 WOOFi 质押合约 0x2CFa…d8e2;奖励币来自 WOOFi 奖励合约;ETH 来自 WOOFi 金库取款合约 0xE77A…Ad6a。收款都是你的地址"],
           ["没到怎么办", "先点右上角「遇到问题」看现场诊断;交易成功了钱包里还看不到 WOO,就手动添加代币"]
         ],
         "foot": "到账后这笔就结束了。WOO 是普通代币,留着或者在钱包里兑换都行"
