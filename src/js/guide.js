@@ -139,7 +139,7 @@ $("steps").addEventListener("touchend", (e) => {
   else if (dx > 0) prevBtn.click();
 }, { passive: true });
 document.addEventListener("keydown", (e) => {
-  if (!here || sheet.open || e.target.closest("input, textarea, select, button, a, summary")) return;
+  if (!here || sheet.open || e.target.closest("input, textarea, select, [contenteditable]")) return;
   if (e.key === "ArrowRight" && !nextBtn.disabled) nextBtn.click();
   if (e.key === "ArrowLeft") prevBtn.click();
 });
@@ -227,21 +227,21 @@ function openSheet(preloaded = null) {
   if (preloaded) paintDiag(preloaded);
   else runDiag();
 }
-function onSheetClosed() {
-  const help = sheetFor?.querySelector(".help");
+// 常见情况放回原来那一步(关弹层时马上放回;按返回键关掉的,在 close 事件里放回。放过一次就不再放)
+function restoreSits() {
+  if (!sheetFor) return;
+  const help = sheetFor.querySelector(".help");
   if (help) help.append(...sheetSits.children);
   sheetSits.replaceChildren();
   sheetFor = null;
 }
 function closeSheet() {
   if (!sheet.open) return;
+  restoreSits();
   if (typeof sheet.close === "function") sheet.close();
-  else {
-    sheet.removeAttribute("open");
-    onSheetClosed();
-  }
+  else sheet.removeAttribute("open");
 }
-sheet.addEventListener("close", onSheetClosed);
+sheet.addEventListener("close", restoreSits);
 sheet.addEventListener("click", (e) => { if (e.target === sheet) closeSheet(); });
 $("sheetClose").addEventListener("click", closeSheet);
 $("recheck").addEventListener("click", () => runDiag());
