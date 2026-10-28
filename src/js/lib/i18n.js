@@ -28,7 +28,7 @@ export const STR = {
     addrLabel: "钱包地址",
     addrPlaceholder: "0x 开头,一共 42 位",
     checkFree: "免费检查",
-    addrHint: "地址只从你的浏览器发给协议的官方公开接口(目前是 Hyperliquid),不经过我们;这些接口能看到你的地址和 IP。",
+    addrHint: "地址只从你的浏览器发给协议的官方公开接口和公共区块链节点(目前是 Hyperliquid 和 Arbitrum),不经过我们;这些接口和节点能看到你的地址和 IP。",
     badAddr: "地址格式不对:应该是 0x 开头,一共 42 位。",
     feat1: "只读,\n只看不动",
     feat2: "不用\n连钱包",
@@ -50,6 +50,9 @@ export const STR = {
     tested: "已实测",
     untested: "页面已核对,待实测",
     supMore: "更多协议陆续加入,先做被问得最多的。",
+    // 只写有链上记录的实测;没有外部用户案例就明说,不放累计金额(精确金额能反查到地址)
+    supProof: "作者本人已经用这套方法实测取回 4 次:OpenEden、BEVM、Hyperliquid、WOOFi,其中 Hyperliquid 和 WOOFi 做成了网页指南。目前还没有经过核实的其他用户案例。",
+    testsH: "实测记录",
     banner: "官方网站只有 defiexit.com。任何私信你、自称客服的人都是骗子。",
 
     // 检查结果
@@ -198,7 +201,7 @@ export const STR = {
     addrLabel: "Wallet address",
     addrPlaceholder: "Starts with 0x, 42 characters",
     checkFree: "Check for free",
-    addrHint: "Your address goes straight from your browser to the protocol's public API (Hyperliquid for now), never through us. That API can see your address and IP.",
+    addrHint: "Your address goes straight from your browser to the protocols' public APIs and public blockchain nodes (Hyperliquid and Arbitrum for now), never through us. They can see your address and IP.",
     badAddr: "That doesn't look like a wallet address. It should start with 0x and be 42 characters long.",
     feat1: "Read-only.\nWe only look.",
     feat2: "No wallet\nconnection",
@@ -220,6 +223,8 @@ export const STR = {
     tested: "Tested",
     untested: "Screens checked, live test pending",
     supMore: "More protocols are coming, starting with the most requested.",
+    supProof: "The author has used this approach to recover funds from their own accounts 4 times: OpenEden, BEVM, Hyperliquid and WOOFi. Hyperliquid and WOOFi are now web guides. There are no verified cases from other users yet.",
+    testsH: "Real-world tests",
     banner: "The only official site is defiexit.com. Anyone who messages you claiming to be support is a scammer.",
 
     checkTitle: "Results",

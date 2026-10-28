@@ -7,6 +7,9 @@
   "detector": "hyperliquid",
   "lastVerified": "2026-10-27",
   "verified": "2026-10-27 实测一例:照本指南操作,到账金额和预计一致(误差不到 0.01 USDC)",
+  "fieldTests": [
+    {"date": "2026-10-27", "text": "用币安钱包照这份指南提现,到账和预计一致。中途弹出 Account Type Update(统一账户),确认后不用划转、直接提现,指南已写成分支。"}
+  ],
   "covers": "账户里的 USDC、已停发的 USDH",
   "summary": "Hyperliquid 账户里还有 USDC,或者有已经停发的稳定币 USDH:卖成 USDC,一次提现到你钱包的 Arbitrum 网络。",
   "facts": [

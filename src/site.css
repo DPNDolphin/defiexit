@@ -417,6 +417,15 @@ code { font: 0.92em var(--font-mono); background: var(--surface-2); border: 1px 
 .scr-a > p { margin: 0; font-size: 16px; line-height: 1.6; }
 .scr-a.stop > p { color: var(--stop); font-weight: 700; }
 .fallback { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: var(--r-m); background: var(--stop-bg); }
+/* 首页:作者本人的实测;指南:实测记录 */
+.proof { margin: 0; display: flex; gap: 8px; align-items: flex-start; color: var(--sub); font-size: 14px; line-height: 1.55; }
+.proof .i { width: 16px; height: 16px; flex: none; margin-top: 3px; color: var(--ok); }
+.tests { padding: 12px 14px; border: 1px solid var(--ok-line); border-radius: var(--r-m); background: var(--ok-bg); }
+.tests h2 { margin: 0 0 6px; color: var(--ok); font-size: 14px; }
+.tests ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.tests li { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; line-height: 1.55; }
+.tests li .i { width: 16px; height: 16px; flex: none; margin-top: 3px; color: var(--ok); }
+.tests b { margin-right: 4px; }
 .fallback > p:first-child { margin: 0; color: var(--stop); font-weight: 700; }
 .fb-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
 .fb-row .btn { background: var(--surface-2); }

@@ -230,6 +230,7 @@ ${demo ? `<section class="sec showcase" id="safety">
   <div class="wrap">
     <h2>${tx.h("supH")}</h2>
     <ul class="supported">${supported}</ul>
+    <p class="proof">${ico("check")}<span>${tx.h("supProof")}</span></p>
     <p class="sub">${tx.h("supMore")}</p>
   </div>
 </section>
@@ -396,6 +397,8 @@ function guide(tx, R) {
   </dialog>` : "";
   const official = R.official.map((o) => `<div class="official"><span>${r(o.label)}</span><b class="mono">${esc(o.domain)}</b><button class="copy" type="button" data-copy="${esc(o.url)}">${ico("copy")}${tx.h("copyUrl")}</button></div>`).join("");
   const facts = R.facts.map(([k, v]) => `<div><dt>${r(k)}</dt><dd>${r(v)}</dd></div>`).join("");
+  // 实测记录:哪天、用什么钱包、卡在哪、指南怎么补的。不写金额和地址
+  const tests = R.fieldTests?.length ? `<section class="tests"><h2>${tx.h("testsH")}</h2><ul>${R.fieldTests.map((t) => `<li>${ico("check")}<span><b class="mono">${esc(t.date)}</b> ${r(t.text)}</span></li>`).join("")}</ul></section>` : "";
   const sources = R.sources.map((s) => `<li><a href="${esc(s.url)}" rel="noopener nofollow">${esc(s.label)}</a></li>`).join("");
   return page({
     tx, kind: "guide", path: `/r/${R.id}/`, script: "guide.js",
@@ -411,6 +414,7 @@ function guide(tx, R) {
     <h1 class="display">${esc(punct(R.title, lang))}</h1>
     <p class="lead">${r(R.summary)}</p>
     <dl class="facts">${facts}</dl>
+    ${tests}
     ${official}
     <form id="me" class="card form" autocomplete="off" novalidate>
       <label for="addr">${tx.h("meLabel")}</label>
@@ -514,6 +518,7 @@ export function localize(r, o, file) {
   L.pro = same(r.pro, o.pro, "pro").map((x, i) => need(x, `pro[${i}]`));
   L.done = { where: need(o.done?.where, "done.where"), from: need(o.done?.from, "done.from"), look: need(o.done?.look, "done.look") };
   L.sources = same(r.sources, o.sources, "sources").map((x, i) => ({ ...r.sources[i], label: need(x, `sources[${i}]`) }));
+  if (r.fieldTests) L.fieldTests = same(r.fieldTests, o.fieldTests, "fieldTests").map((x, i) => ({ ...r.fieldTests[i], text: need(x, `fieldTests[${i}]`) }));
   L.steps = r.steps.map((s) => {
     const x = o.steps?.[s.id] || {};
     const p = `steps.${s.id}`;
@@ -564,6 +569,7 @@ function loadRecipes() {
     const r = JSON.parse(readFileSync(join(dir, d, "recipe.json"), "utf8"));
     if (r.id !== d) throw new Error(`配方目录名 ${d} 和 id ${r.id} 不一致`);
     const stepIds = new Set(r.steps.map((s) => s.id));
+    for (const t of r.fieldTests || []) if (!/^\d{4}-\d{2}-\d{2}$/.test(t.date || "") || !t.text) throw new Error(`${d}: 实测记录要有日期(YYYY-MM-DD)和说明`);
     const scrIds = new Set();
     for (const x of r.screens || []) {
       if (!x.id || !x.name || !x.do) throw new Error(`${d}: 页面图鉴缺 id、name 或 do`);

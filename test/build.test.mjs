@@ -194,3 +194,15 @@ test("WOOFi 第 3–5 步:一下点击一张图,编号在这一步里接着数;�
   assert.ok(zh.includes('src="/r/woofi/img/perps-earn.webp"') && !zh.includes("perps-earn-en.webp"));
   assert.ok(enHtml.includes('src="/r/woofi/img/perps-earn-en.webp"'));
 });
+
+test("首页如实写作者本人的实测、不放累计金额;每份指南有实测记录;隐私说明列全查询的地方", () => {
+  const zh = read("dist/index.html"), en = read("dist/en/index.html");
+  assert.match(zh, /<p class="proof">[\s\S]*?实测取回 4 次[\s\S]*?目前还没有经过核实的其他用户案例/);
+  assert.match(en, /<p class="proof">[\s\S]*?4 times[\s\S]*?no verified cases from other users yet/);
+  assert.ok(!/\$\s?\d[\d,.]*\s*(?:USD)?[^<]*累计|累计[^<]*\$\d/.test(zh), "首页不该有累计美元金额");
+  assert.match(zh, /Hyperliquid 和 Arbitrum/);
+  for (const [f, date] of [["dist/r/woofi/index.html", "2026-10-29"], ["dist/en/r/woofi/index.html", "2026-10-29"], ["dist/r/hyperliquid/index.html", "2026-10-27"], ["dist/en/r/hyperliquid/index.html", "2026-10-27"]]) {
+    const g = read(f);
+    assert.match(g, new RegExp(`<section class="tests">[\\s\\S]*?<b class="mono">${date}</b>`), `${f} 缺实测记录`);
+  }
+});

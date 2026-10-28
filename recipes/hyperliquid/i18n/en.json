@@ -2,6 +2,9 @@
   "title": "Withdraw your Hyperliquid balance to your wallet",
   "short": "Hyperliquid to your wallet",
   "verified": "Tested on a real account on 2026-10-27: following this guide, the amount that arrived matched the estimate to within 0.01 USDC.",
+  "fieldTests": [
+    "Withdrew with the Binance wallet following this guide; the amount that arrived matched the estimate. An Account Type Update (Unified Account) window appeared midway. After confirming it, no transfer was needed, and the guide now covers that branch."
+  ],
   "covers": "USDC in your account, and USDH that's no longer issued",
   "summary": "Still have USDC on Hyperliquid, or some USDH, a stablecoin that's no longer issued? Sell the USDH for USDC, then withdraw everything in one go to your wallet on Arbitrum.",
   "facts": [

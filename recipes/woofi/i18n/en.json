@@ -2,6 +2,9 @@
   "title": "Get your WOOFi stake and vault back to your wallet",
   "short": "WOOFi to your wallet",
   "verified": "Tested on 2026-10-29 with the author's own account in the Binance wallet, following this guide: the claim, the unstake and the vault withdrawal each went to the contract and carried the data shown on the check cards, and all three arrived. The screens were checked on the official site on 2026-10-28 with a read-only test wallet.",
+  "fieldTests": [
+    "Recovered with the Binance wallet following this guide; all three transactions arrived. After connecting you may land on the price chart trading page, and the two boxes showing 0 on the vault page are easy to misread. Both are now covered in the guide."
+  ],
   "covers": "WOO staked on Arbitrum, unclaimed rewards, and settled ETH waiting in a vault",
   "summary": "WOO staked on WOOFi (Arbitrum), USDC rewards you never claimed, money in the ETH vault that was settled but never collected: three taps on the official site, each one an ordinary transaction, and the money goes straight back to your wallet.",
   "facts": [
