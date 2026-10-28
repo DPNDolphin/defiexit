@@ -8,6 +8,7 @@ test("挨着汉字的标点换成全角", () => {
   assert.equal(zh("提现手续费 1 USDC;USDH 卖出"), "提现手续费 1 USDC；USDH 卖出");
   assert.equal(zh("**路线**:USDH 已停发"), "**路线**：USDH 已停发");
   assert.equal(zh("有没有被遗忘的钱?"), "有没有被遗忘的钱？");
+  assert.equal(zh("按钮已经是 Place Order?跳过这一步"), "按钮已经是 Place Order？跳过这一步");
 });
 
 test("图片说明开头的 ! 标记不动", () => {

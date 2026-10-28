@@ -15,7 +15,7 @@ export function zh(s) {
     if (ch === "," && (isCjk(prev) || isCjk(next) || (zhLine && !(/\d/.test(prev) && /\d/.test(next))))) out[i] = "，";
     else if (ch === ";" && (zhLine || isCjk(prev) || isCjk(next))) out[i] = "；";
     else if (ch === ":" && (isCjk(prev) || isCjk(next))) out[i] = "：";
-    else if (ch === "?" && isCjk(prev)) out[i] = "？";
+    else if (ch === "?" && (isCjk(prev) || isCjk(next))) out[i] = "？";
     else if (ch === "!" && isCjk(prev)) out[i] = "！";
   }
   const stack = [];
