@@ -239,6 +239,7 @@ code { font: 0.92em var(--font-mono); background: var(--surface-2); border: 1px 
 .official b { font-size: 15px; }
 .official .copy { margin-left: auto; }
 .mine { display: flex; flex-direction: column; gap: 10px; }
+.mine > .btn { align-self: flex-start; }
 .mine-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .mine-h h2 { margin: 0; font-size: 18px; }
 .pro { border: 1px solid var(--line); border-radius: var(--r-m); }

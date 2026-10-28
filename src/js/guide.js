@@ -215,12 +215,18 @@ async function personalize(a) {
     art.classList.add("personal");
     $("exit").href = `${P}/check/#a=${a}`;
     const skipped = steps.length - visible().length;
+    // 账户已经空了(多半是刚提完):不说「跳过了几步」「统一账户」这些,直接指去核对到账
+    const empty = res.status === "empty";
+    const toArrive = empty ? el("button", { class: "btn small", type: "button" }, t("toArrive"), icon("arrowRight")) : null;
+    toArrive?.addEventListener("click", () => gotoStep("arrive"));
     mine.replaceChildren(...[
       el("div", { class: "mine-h" }, el("h2", {}, t("yourAccount")), el("span", { class: "chip mono" }, shortAddr(a))),
-      res.rows.length ? rowsTable(res.rows, res.status === "found" ? { label: t("expected"), value: `${res.vars.arrive} USDC` } : null) : el("p", { class: "sub" }, t("noBalance")),
+      res.rows.length ? rowsTable(res.rows, res.status === "found" ? { label: t("expected"), value: `${res.vars.arrive} USDC` } : null) : el("p", { class: "sub" }, empty ? t("emptyAcct") : t("noBalance")),
       res.warnings.length ? el("ul", { class: "warns" }, res.warnings.map((w) => el("li", {}, icon("alert"), el("span", {}, w)))) : null,
-      res.note ? el("p", { class: "sub" }, res.note) : null,
-      skipped ? el("p", { class: "sub" }, t("skipped", skipped)) : null,
+      res.note && !empty ? el("p", { class: "sub" }, res.note) : null,
+      skipped && !empty ? el("p", { class: "sub" }, t("skipped", skipped)) : null,
+      empty ? el("p", { class: "sub" }, t("emptyArrive")) : null,
+      toArrive,
       el("p", { class: "sub" }, t("stuckHint")),
     ].filter(Boolean));
     refresh();
