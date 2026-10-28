@@ -1,0 +1,223 @@
+{
+  "id": "woofi",
+  "title": "WOOFi 质押和金库取回钱包",
+  "short": "WOOFi 取回钱包",
+  "protocol": "WOOFi",
+  "route": "WOOFi → Arbitrum",
+  "detector": "woofi",
+  "lastVerified": "2026-10-28",
+  "verified": "2026-10-28 用作者自己的账户在官网逐屏核对了页面,以及每一笔交易发给谁、带什么数据(用只读假钱包,没有真的发出交易)。实测取回待补",
+  "tested": false,
+  "covers": "Arbitrum 上质押的 WOO、没领的奖励、ETH 金库里已结算待取的钱",
+  "summary": "WOOFi 在 Arbitrum 上质押的 WOO、没领的 USDC 奖励、ETH 金库里已经结算好却一直没取的钱:在官网上点三下,每一下是一笔普通交易,钱直接回到你的钱包。",
+  "facts": [
+    ["交易", "1~3 笔(看你有哪几样),都是普通交易,不用授权"],
+    ["手续费", "三笔合计约 0.00002 ETH,几美分,从钱包 Arbitrum 上的 ETH 里扣"],
+    ["用时", "约 5 分钟,不用等结算"],
+    ["要准备", "钱包 Arbitrum 网络上至少有 0.0002 ETH:少于这个数,官网不让点"]
+  ],
+  "chips": [
+    {"icon": "clock", "text": "约 5 分钟"},
+    {"icon": "pen", "text": "交易 1~3 笔,不用授权"},
+    {"icon": "tag", "text": "手续费几美分"}
+  ],
+  "support": {
+    "label": "WOOFi 官方 Discord",
+    "domain": "discord.com",
+    "url": "https://discord.com/invite/woo-854313849591431188",
+    "note": "WOOFi 官网底部列的官方渠道是 Discord 和 X(@_WOOFi)。官方不会先私信你,私信你的「客服」都是骗子。"
+  },
+  "official": [
+    {"label": "WOOFi 官网", "domain": "woofi.com", "url": "https://woofi.com/stake"}
+  ],
+  "vars": {
+    "addrShort": "你自己的地址",
+    "woo": "你质押的 WOO 数量",
+    "usdc": "你没领的 USDC 奖励",
+    "eth": "你在金库里能取的 ETH"
+  },
+  "pro": [
+    "**路线**:woofi.com/stake → **Claim** 领奖励 → **Unstake** 全部 → 底部 **Earn** → My vaults → Arbitrum 的 ETH 卡片 → WITHDRAW 页签 → Available for Withdrawals 旁边的 **WITHDRAW**。",
+    "**三笔交易**:claimRewards 发给 0xa9E2…24Fb;unstake(全部)发给 0x2CFa…d8e2;withdraw 发给 0xE77A…Ad6a。都是 0 ETH、不用授权、不签名消息。",
+    "**你的数**:领 {{usdc}} USDC,解押 {{woo}} WOO,金库取 {{eth}} ETH。",
+    "**坑**:别点 Compound 和自动复投;金库那笔点小的 WITHDRAW,不是大按钮;钱包 Arbitrum 上的 ETH 少于 0.0002,官网不让点。"
+  ],
+  "done": {
+    "where": "在你钱包的 Arbitrum 网络",
+    "from": "发出方是 WOOFi 的官方合约",
+    "look": "去哪看:钱包 App → 资产,网络选 Arbitrum。"
+  },
+  "steps": [
+    {
+      "id": "open",
+      "situations": [
+        {"id": "search-instead", "see": "输入网址后出来的是搜索结果", "do": "网址前面要带 `https://`,完整输入 `https://woofi.com/stake`。"},
+        {"id": "restricted", "see": "弹出 WE'RE SORRY,说你所在的地区不能使用", "do": "请停下:WOOFi 不对你所在的地区提供服务,这份指南不提供绕过地区限制的办法。可以去 WOOFi 官方 Discord 问(见下面)。", "stop": true},
+        {"id": "not-sure", "see": "不确定打开的是不是官网", "do": "看地址栏:域名必须正好是 **woofi.com**。对不上就关掉页面,自己重新输入网址;不要点别人发给你的链接。"},
+        {"id": "old-domain", "see": "收藏夹里存的是 fi.woo.org", "do": "那是 WOOFi 的旧网址,现在会自动跳到 woofi.com。以地址栏最后显示的 woofi.com 为准。"}
+      ],
+      "title": "在钱包 App 里打开官网",
+      "items": [
+        "打开你的钱包 App(比如币安 App 的「钱包」),确认当前选中的就是有这笔钱的那个钱包。",
+        "用钱包里的 DApp 浏览器打开 `https://woofi.com/stake`。网址要带 https://,不然会被当成搜索词。",
+        "打开后核对地址栏:域名正好是 **woofi.com**,多一个字母、少一个点都不行。",
+        "✗ 如果连接钱包时弹出 WE'RE SORRY(你所在的地区不能使用),请停下:这份指南不提供绕过地区限制的办法。"
+      ],
+      "copy": ["https://woofi.com/stake"]
+    },
+    {
+      "id": "connect",
+      "situations": [
+        {"id": "no-popup", "see": "点了 Connect Wallet,钱包没有弹出连接请求", "do": "要在钱包 App 自带的 DApp 浏览器里打开网页(第 1 步)。选 Detected Wallet 没反应,就重新打开页面,换选 Binance 试试。"},
+        {"id": "wrong-address", "see": "右上角显示的地址不是有钱的那个", "do": "在钱包 App 里切换到有这笔钱的那个钱包,再重新连接。地址对不上,不要往下做。"},
+        {"id": "sign-on-connect", "see": "连接时钱包要你签名一段消息", "do": "点「拒绝」,关掉页面,重新核对网址:WOOFi 连接钱包不需要签名(官网的代码里没有签名请求)。", "stop": true},
+        {"id": "wrong-network", "see": "页面顶上提示 Wrong Network", "do": "点右上角的网络图标,选 **Arbitrum**,钱包弹出切换网络请求就点确认。"},
+        {"id": "blocked-address", "see": "弹出 Blocked Address", "do": "WOOFi 按制裁名单拦下了这个地址,这份指南帮不了。", "stop": true}
+      ],
+      "title": "连接钱包,切到 Arbitrum",
+      "note": "只是连接,不是签名,不动钱",
+      "images": [
+        {"src": "connect-1.webp", "caption": "① 点 **Connect Wallet**(右上角那个也行)"},
+        {"src": "connect-2.webp", "caption": "① 选 **Detected Wallet**:就是你正在用的这个 App 里的钱包 ② 在币安 App 里选 **Binance** 也行。钱包弹出连接请求,来源是 woofi.com 就点「连接」"},
+        {"src": "connect-3.webp", "caption": "① 右上角显示你的地址(图里已打码),应该是 {{addrShort}} ② 这个图标是当前网络,点它"},
+        {"src": "connect-4.webp", "caption": "① 选 **Arbitrum**,钱包弹出切换网络请求就点确认。已经是 Arbitrum(名字后面有小圆点)就点右上角 × 关掉"}
+      ]
+    },
+    {
+      "id": "claim",
+      "situations": [
+        {"id": "cancelled", "see": "页面弹出 Cancelled · User denied transaction signature", "do": "说明钱包那边点了拒绝,钱没动。核对好以后再点一次 Claim。"},
+        {"id": "insufficient-gas", "see": "按钮变成 INSUFFICIENT GAS", "do": "官网要求钱包 Arbitrum 网络上至少有 0.0002 ETH。先往这个钱包的 Arbitrum 网络转一点 ETH(0.0005 就够),再回来。"},
+        {"id": "compound-clicked", "see": "不小心点了 Compound", "do": "奖励会被换成 WOO 存回质押里,钱没丢。下一步解押时会一起取出来。"},
+        {"id": "auto-compound", "see": "交易失败,提示 !COMPOUND", "do": "说明开着自动复投:开着的时候领不了奖励,而且开启后 7 天内关不掉。先点右上角「遇到问题」看你的情况;拿不准就去 WOOFi 官方 Discord 问。"},
+        {"id": "wrong-to", "see": "弹窗里发给的地址不是 0xa9E2…24Fb", "do": "立刻点「拒绝」。", "stop": true}
+      ],
+      "title": "领奖励",
+      "when": "needsClaim",
+      "whenText": "有没领的奖励才需要这一步",
+      "note": "第 1 笔交易",
+      "milestone": "领奖励",
+      "images": [
+        {"src": "claim.webp", "caption": "① 点 **Claim**(上面的 USDC reward 是你没领的奖励,图里已打码,应约 {{usdc}}) ✗ 不要点 Compound:它会把奖励换成 WOO 再存回去,方向反了"}
+      ],
+      "check": {
+        "title": "确认前,先核对 3 件事",
+        "lead": "点 Claim 后,钱包会弹出交易确认。对照着看,核对完一项就点一下。",
+        "skip": "奖励已经领过了(USDC reward 是 0)?跳过这一步",
+        "confirm": [
+          {"title": "弹窗来源是 woofi.com,网络是 Arbitrum", "sub": "多一个字母、少一个点都不行"},
+          {"title": "发给 0xa9E2…24Fb(WOOFi 质押合约)", "sub": "看「合约 / To / 交互地址」那一行,前 6 位、后 4 位对上"},
+          {"title": "转出金额是 0,只扣一点手续费(约 0.000006 ETH)", "sub": "这一笔是把奖励领给你,不用你付任何币"}
+        ],
+        "reject": ["要你转出代币,或者金额不是 0", "写着授权(Approve)或者 Permit", "要你签名一段消息(Sign)", "来源不是 woofi.com"],
+        "normal": [
+          "钱包可能写「合约交互」或者 claimRewards",
+          "手续费从 Arbitrum 上的 ETH 里扣,一般不到 1 美分",
+          "钱包可能提示这是合约交互、请注意风险:来源和地址都对得上,可以继续"
+        ]
+      }
+    },
+    {
+      "id": "unstake",
+      "situations": [
+        {"id": "amount-not-full", "see": "填的数量不是全部", "do": "点输入框右边的数字,会自动填满全部;自己手输容易留零头。"},
+        {"id": "insufficient-balance", "see": "按钮变成 INSUFFICIENT BALANCE", "do": "填的数量比质押的多了。点输入框右边的数字重新填。"},
+        {"id": "xp", "see": "确认框说会清掉 XP", "do": "XP 是 WOOFi 的积分,不能交易,清掉不影响你取回的钱。"},
+        {"id": "cancelled", "see": "页面弹出 Cancelled · User denied transaction signature", "do": "说明钱包那边点了拒绝,钱没动。核对好以后再点一次 UNSTAKE。"},
+        {"id": "wrong-to", "see": "弹窗里发给的地址不是 0x2CFa…d8e2", "do": "立刻点「拒绝」。", "stop": true}
+      ],
+      "title": "解押 WOO",
+      "when": "needsUnstake",
+      "whenText": "有质押的 WOO 才需要这一步",
+      "note": "第 2 笔交易",
+      "milestone": "解押",
+      "images": [
+        {"src": "unstake-1.webp", "caption": "① 点 **Unstake** ② 点输入框右边的数字(就是你质押的全部 WOO,图里已打码),会自动填满"},
+        {"src": "unstake-2.webp", "caption": "① 数量填好后(应是 {{woo}}),点 **UNSTAKE**"},
+        {"src": "unstake-3.webp", "caption": "① 弹出 Unstake Confirmation,核对数量后点 **UNSTAKE**,钱包弹出交易确认,对照下面的核对卡 ! 它说会清掉你的 XP(积分):XP 不能交易,对取回的钱没有影响"}
+      ],
+      "check": {
+        "title": "确认前,先核对 3 件事",
+        "lead": "点 UNSTAKE 后,钱包会弹出交易确认。对照着看,核对完一项就点一下。",
+        "skip": "没有质押的 WOO?跳过这一步",
+        "confirm": [
+          {"title": "弹窗来源是 woofi.com,网络是 Arbitrum", "sub": "多一个字母、少一个点都不行"},
+          {"title": "发给 0x2CFa…d8e2(WOOFi 质押合约)", "sub": "和上一步领奖励的地址不一样,这是正常的"},
+          {"title": "转出金额是 0,只扣一点手续费(约 0.000008 ETH)", "sub": "WOO 是从合约里取回给你,不用你付任何币"}
+        ],
+        "reject": ["要你转出代币,或者金额不是 0", "写着授权(Approve)或者 Permit", "要你签名一段消息(Sign)", "来源不是 woofi.com"],
+        "normal": [
+          "钱包可能写「合约交互」或者 unstake",
+          "解押没有锁定期,也不收解押费"
+        ]
+      }
+    },
+    {
+      "id": "vault",
+      "situations": [
+        {"id": "no-available", "see": "Available for Withdrawals 是 0", "do": "说明这一笔已经取过了,或者还没结算。点右上角「遇到问题」,看现场诊断。"},
+        {"id": "big-button", "see": "大按钮 REQUEST WITHDRAWAL 点不了", "do": "正常:你不用点它。要点的是 Available for Withdrawals 右边那个小的 **WITHDRAW**。"},
+        {"id": "shares-left", "see": "My Deposits 比 Available for Withdrawals 多", "do": "说明金库里还有没申请取出的钱。这份指南暂时只写了「已结算、等你取」这一种。剩下的可以在 WITHDRAW 页签用 Instant Withdraw(马上到,扣 1%),或者 REQUEST WITHDRAWAL(免费,要等到下周二)。"},
+        {"id": "cancelled", "see": "页面弹出 Cancelled · User denied transaction signature", "do": "说明钱包那边点了拒绝,钱没动。核对好以后再点一次 WITHDRAW。"},
+        {"id": "wrong-to", "see": "弹窗里发给的地址不是 0xE77A…Ad6a", "do": "立刻点「拒绝」。", "stop": true}
+      ],
+      "title": "取出金库里的 ETH",
+      "when": "needsVault",
+      "whenText": "ETH 金库里有已经结算、等你取的钱才需要这一步",
+      "note": "第 3 笔交易",
+      "milestone": "取金库",
+      "images": [
+        {"src": "vault-1.webp", "caption": "① 点底部 **Earn** ② 点 **My vaults**(只看你存过的) ③ 点网络是 Arbitrum 的 **ETH** 那张卡片(My Deposits 是你的数,图里已打码)"},
+        {"src": "vault-2.webp", "caption": "① 卡片展开后,点 **WITHDRAW** 页签"},
+        {"src": "vault-3.webp", "caption": "① 往下翻到 Available for Withdrawals(你能取的数,图里已打码,应约 {{eth}} ETH),点它右边的 **WITHDRAW** ✗ 上面的 UNSTAKE 和 REQUEST WITHDRAWAL 都不用点"}
+      ],
+      "items": [
+        "! 结算好的钱不会自动打到钱包,要自己点这一下。很多人就差这一步。"
+      ],
+      "check": {
+        "title": "确认前,先核对 3 件事",
+        "lead": "点 WITHDRAW 后,钱包会弹出交易确认。对照着看,核对完一项就点一下。",
+        "skip": "金库里没有等你取的钱?跳过这一步",
+        "confirm": [
+          {"title": "弹窗来源是 woofi.com,网络是 Arbitrum", "sub": "多一个字母、少一个点都不行"},
+          {"title": "发给 0xE77A…Ad6a(WOOFi 金库取款合约)", "sub": "三步的地址各不相同,这是正常的"},
+          {"title": "转出金额是 0,只扣一点手续费(约 0.000002 ETH)", "sub": "取出来的是 ETH,直接回到你的钱包"}
+        ],
+        "reject": ["要你转出代币,或者金额不是 0", "写着授权(Approve)或者 Permit", "要你签名一段消息(Sign)", "来源不是 woofi.com"],
+        "normal": [
+          "钱包可能写「合约交互」或者 withdraw",
+          "到账的是原生 ETH,不是 WETH"
+        ]
+      }
+    },
+    {
+      "id": "arrive",
+      "situations": [
+        {"id": "no-woo", "see": "钱包里看不到 WOO", "do": "有的钱包不会自动显示新代币:在钱包里搜 WOO(Arbitrum),或者用合约地址 `0xcafcd85d8ca7ad1e1c6f82f651fa15e33aefd07b` 手动添加。"},
+        {"id": "eth-not-weth", "see": "多出来的是 ETH,不是 WETH", "do": "正常:金库取款合约会把 WETH 换成原生 ETH 再打给你。"},
+        {"id": "want-usdc", "see": "想把 WOO 换成 USDC", "do": "WOO 已经在你自己的钱包里了,可以用钱包自带的兑换。这份指南不包括兑换;兑换前看清楚报价和滑点。"}
+      ],
+      "title": "到账核对",
+      "milestone": "到账",
+      "check": {
+        "kind": "arrive",
+        "title": "到账核对",
+        "rows": [
+          ["多久", "交易确认后几秒钟就到"],
+          ["去哪看", "钱包 App → 资产,网络选 Arbitrum"],
+          ["应该看到", "多出约 {{woo}} WOO、{{usdc}} USDC、{{eth}} ETH(你有哪几样就多哪几样)"],
+          ["链上记录", "WOO 来自 WOOFi 质押合约 0x2CFa…d8e2;USDC 来自 WOOFi 奖励合约;ETH 来自 WOOFi 金库取款合约 0xE77A…Ad6a。收款都是你的地址"],
+          ["没到怎么办", "先点右上角「遇到问题」看现场诊断;交易成功了钱包里还看不到 WOO,就手动添加代币"]
+        ],
+        "foot": "到账后这笔就结束了。WOO 是普通代币,留着或者在钱包里兑换都行"
+      }
+    }
+  ],
+  "sources": [
+    {"label": "WOOFi 文档 · Earn 金库怎么存取", "url": "https://learn.woo.org/woofi/earn"},
+    {"label": "WOOFi 文档 · Arbitrum 上的合约地址", "url": "https://learn.woo.org/dev-docs/references/readme/arbitrum-one"},
+    {"label": "WOOFi 文档存档 · WOO 质押(原页面已下线)", "url": "https://web.archive.org/web/20260710172840/https://learn.woo.org/woofi/woo-stake.md"},
+    {"label": "Chainlink · WOO/USD 喂价(Arbitrum)", "url": "https://data.chain.link/feeds/arbitrum/mainnet/woo-usd"},
+    {"label": "WOOFi 官方 Discord", "url": "https://discord.com/invite/woo-854313849591431188"}
+  ]
+}

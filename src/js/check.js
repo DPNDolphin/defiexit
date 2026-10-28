@@ -35,7 +35,7 @@ function foundCard(r, res) {
   const guide = `${P}/r/${r.id}/#a=${addr}&go=1`;
   return el("article", { class: "rcard" },
     el("div", { class: "rcard-h" }, el("h2", {}, r.protocol), el("span", { class: "chip mono" }, r.route)),
-    rowsTable(res.rows, { label: t("expected"), value: `${res.vars.arrive} USDC` }),
+    rowsTable(res.rows, res.total || { label: t("expected"), value: `${res.vars.arrive} USDC` }),
     miniRoute(r, res.flags),
     res.warnings.length ? el("ul", { class: "warns" }, res.warnings.map((w) => el("li", {}, icon("alert"), el("span", {}, w)))) : null,
     r.chips.length ? el("ul", { class: "chips" }, r.chips.map((c) => el("li", {}, icon(c.icon), el("span", {}, c.text)))) : null,
@@ -44,7 +44,7 @@ function foundCard(r, res) {
 
 function dustCard(r, res) {
   return el("article", { class: "rcard" },
-    el("div", { class: "rcard-h" }, el("h2", {}, r.protocol), el("span", { class: "chip" }, t("dustBadge"))),
+    el("div", { class: "rcard-h" }, el("h2", {}, r.protocol), el("span", { class: "chip" }, res.badge || t("dustBadge"))),
     res.rows.length ? rowsTable(res.rows) : null,
     res.note ? el("p", { class: "sub" }, res.note) : null,
     res.warnings.length ? el("ul", { class: "warns" }, res.warnings.map((w) => el("li", {}, icon("alert"), el("span", {}, w)))) : null,

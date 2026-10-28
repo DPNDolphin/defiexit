@@ -185,6 +185,8 @@ code { font: 0.92em var(--font-mono); background: var(--surface-2); border: 1px 
 .supported li > span:first-child span { color: var(--sub); font-size: 14px; }
 .tag-ok { flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--ok-bg); color: var(--ok); font-size: 13px; font-weight: 700; }
 .tag-ok .i { width: 14px; height: 14px; stroke-width: 3; }
+.tag-wait { flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--sub); font-size: 13px; font-weight: 700; }
+.tag-wait .i { width: 14px; height: 14px; stroke-width: 2.6; }
 .banner { margin: 24px 0 0; display: flex; gap: 10px; align-items: flex-start; padding: 14px 16px; border-radius: var(--r-l); background: var(--stop-bg); color: var(--stop); font-size: 15px; line-height: 1.55; font-weight: 600; }
 .banner .i { margin-top: 1px; }
 
@@ -316,6 +318,10 @@ code { font: 0.92em var(--font-mono); background: var(--surface-2); border: 1px 
 .amount { margin: 0; display: flex; align-items: baseline; gap: 8px; }
 .amount b { font: 800 62px/1 var(--font-display); font-variant-numeric: tabular-nums; }
 .amount span { color: var(--sub); font-size: 20px; font-weight: 700; }
+.amounts { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.amounts li { display: flex; align-items: baseline; gap: 8px; }
+.amounts b { font: 800 40px/1.05 var(--font-display); font-variant-numeric: tabular-nums; }
+.amounts span { color: var(--sub); font-size: 17px; font-weight: 700; }
 .verified { display: flex; flex-direction: column; gap: 10px; }
 .verified h2 { margin: 0; font-size: 16px; }
 .verified ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 15px; line-height: 1.45; }

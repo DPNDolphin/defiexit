@@ -13,6 +13,7 @@
 | 配方 | 能处理什么 | 最后核验 |
 |---|---|---|
 | [Hyperliquid](recipes/hyperliquid/recipe.json) | 账户里的 USDC、已停发的 USDH,提回 Arbitrum | 2026-10-27 |
+| [WOOFi](recipes/woofi/recipe.json) | Arbitrum 上质押的 WOO、没领的奖励、ETH 金库里已结算待取的钱(还没实测取回) | 2026-10-28 |
 
 更多协议陆续加入,先做被问得最多的。
 

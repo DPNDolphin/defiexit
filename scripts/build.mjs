@@ -162,7 +162,8 @@ function home(tx, recipes) {
   const demoR = recipes.find((r) => r.steps.some((s) => s.check?.confirm));
   const demo = demoR?.steps.find((s) => s.check?.confirm).check;
   const tick = (x, on) => `<div class="tick demo${on ? " on" : ""}"><span class="box">${ico("check")}</span><span class="tt"><b>${rich(x.title, demoR.vars, tx.lang).replace(/<span class="var"[^>]*>(.*?)<\/span>/g, "$1")}</b></span></div>`;
-  const supported = recipes.map((r) => `<li><span><b>${esc(r.protocol)}</b><span>${rich(r.covers, {}, tx.lang)}</span></span><span class="tag-ok">${ico("check")}${tx.h("tested")}</span></li>`).join("");
+  // 「已实测」只给真按指南取回过一次的配方;还没实测的如实标出来
+  const supported = recipes.map((r) => `<li><span><b>${esc(r.protocol)}</b><span>${rich(r.covers, {}, tx.lang)}</span></span>${r.tested === false ? `<span class="tag-wait">${ico("clock")}${tx.h("untested")}</span>` : `<span class="tag-ok">${ico("check")}${tx.h("tested")}</span>`}</li>`).join("");
   return page({
     tx, kind: "home", path: "/", script: "home.js",
     title: tx.t("homeTitle"), desc: tx.t("homeDesc"),
@@ -540,7 +541,11 @@ export function build() {
   for (const r of recipes) copyDir(join(ROOT, "recipes", r.zh.id, "img"), join(DIST, "r", r.zh.id, "img"));
   write("404.html", notFound());
   const h = headers(site.connect);
-  write("_headers", "/*\n" + Object.entries(h).map(([k, v]) => `  ${k}: ${v}`).join("\n") + "\n");
+  // 网页本身加 no-transform:Cloudflare 就不会往页面里插它的访问统计脚本,也不会改动页面内容
+  // (官方文档:带 no-transform 的响应不做自动注入,也不压缩;网页只有几十 KB,不压缩也快)
+  const pages = ["/", "/en/", "/check/", "/en/check/", ...recipes.flatMap((r) => [`/r/${r.zh.id}/`, `/en/r/${r.zh.id}/`]), "/404.html"];
+  const noTransform = pages.map((p) => `${p}\n  Cache-Control: public, max-age=0, must-revalidate, no-transform`).join("\n");
+  write("_headers", "/*\n" + Object.entries(h).map(([k, v]) => `  ${k}: ${v}`).join("\n") + "\n" + noTransform + "\n");
   write("robots.txt", "User-agent: *\nAllow: /\n");
   console.log(`built ${recipes.length} recipe(s) × ${LANGS.length} languages → dist/`);
 }

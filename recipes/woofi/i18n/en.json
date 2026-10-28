@@ -1,0 +1,198 @@
+{
+  "title": "Get your WOOFi stake and vault back to your wallet",
+  "short": "WOOFi to your wallet",
+  "verified": "Checked on 2026-10-28 with the author's own account: every screen on the official site, and for each transaction where it goes and what data it carries (using a read-only test wallet; nothing was actually sent). A real withdrawal test is still to come.",
+  "covers": "WOO staked on Arbitrum, unclaimed rewards, and settled ETH waiting in a vault",
+  "summary": "WOO staked on WOOFi (Arbitrum), USDC rewards you never claimed, money in the ETH vault that was settled but never collected: three taps on the official site, each one an ordinary transaction, and the money goes straight back to your wallet.",
+  "facts": [
+    ["Transactions", "1–3 (depending on what you have). Ordinary transactions, no approvals"],
+    ["Fee", "About 0.00002 ETH for all three, a few cents, paid from the ETH in your wallet on Arbitrum"],
+    ["Time", "About 5 minutes, no waiting for a settlement"],
+    ["You need", "At least 0.0002 ETH on Arbitrum in your wallet. Below that, the official site won't let you continue"]
+  ],
+  "chips": ["About 5 minutes", "1–3 transactions, no approvals", "A few cents in fees"],
+  "support": {
+    "label": "WOOFi official Discord",
+    "note": "The official channels listed at the bottom of WOOFi's site are Discord and X (@_WOOFi). WOOFi never DMs you first. Any \"support\" that DMs you is a scammer."
+  },
+  "official": [{"label": "WOOFi official site"}],
+  "vars": {
+    "addrShort": "your own address",
+    "woo": "your staked WOO",
+    "usdc": "your unclaimed USDC",
+    "eth": "the ETH you can collect from the vault"
+  },
+  "pro": [
+    "**Route**: woofi.com/stake → **Claim** the rewards → **Unstake** everything → **Earn** at the bottom → My vaults → the ETH card on Arbitrum → WITHDRAW tab → **WITHDRAW** next to Available for Withdrawals.",
+    "**Three transactions**: claimRewards to 0xa9E2…24Fb; unstake (all) to 0x2CFa…d8e2; withdraw to 0xE77A…Ad6a. All send 0 ETH, need no approval and no message signature.",
+    "**Your numbers**: claim {{usdc}} USDC, unstake {{woo}} WOO, collect {{eth}} ETH from the vault.",
+    "**Gotchas**: don't tap Compound or auto-compound. For the vault, tap the small WITHDRAW, not the big button. With less than 0.0002 ETH on Arbitrum, the official site won't let you continue."
+  ],
+  "done": {
+    "where": "on the Arbitrum network in your wallet",
+    "from": "Sent from WOOFi's official contracts",
+    "look": "Where to look: your wallet app → Assets, with the network set to Arbitrum."
+  },
+  "steps": {
+    "open": {
+      "title": "Open the official site in your wallet app",
+      "items": [
+        "Open your wallet app (for example, Wallet in the Binance app) and make sure the selected wallet is the one that holds this money.",
+        "Use the wallet's DApp browser to open `https://woofi.com/stake`. Include https://, or it's treated as a search.",
+        "Check the address bar: the domain must be exactly **woofi.com**. One extra letter or a missing dot means stop.",
+        "✗ If a WE'RE SORRY message says your region isn't supported when you connect, stop here. This guide won't help you get around regional restrictions."
+      ],
+      "situations": {
+        "search-instead": {"see": "Typing the address brings up search results", "do": "Include `https://` and type the full address: `https://woofi.com/stake`."},
+        "restricted": {"see": "A WE'RE SORRY message says your region isn't supported", "do": "Stop here. WOOFi doesn't serve your region, and this guide won't help you get around regional restrictions. You can ask in WOOFi's official Discord (see below)."},
+        "not-sure": {"see": "Not sure this is the official site", "do": "Look at the address bar: the domain must be exactly **woofi.com**. If it isn't, close the page and type the address yourself. Don't tap links other people send you."},
+        "old-domain": {"see": "Your bookmark says fi.woo.org", "do": "That's WOOFi's old address and it now redirects to woofi.com. Go by what the address bar ends up showing: woofi.com."}
+      }
+    },
+    "connect": {
+      "title": "Connect your wallet and switch to Arbitrum",
+      "note": "Just connecting. No signature, no money moves",
+      "images": [
+        "① Tap **Connect Wallet** (the one at the top right works too)",
+        "① Pick **Detected Wallet**: that's the wallet in the app you're using right now ② In the Binance app, **Binance** works too. When your wallet asks to connect and the request comes from woofi.com, tap Connect",
+        "① Your address shows at the top right (hidden in the screenshot). It should be {{addrShort}} ② This icon is the current network. Tap it",
+        "① Pick **Arbitrum** and confirm the network switch in your wallet. If it's already Arbitrum (a small dot after the name), close the menu with the × at the top right"
+      ],
+      "situations": {
+        "no-popup": {"see": "Tapped Connect Wallet, but the wallet didn't ask to connect", "do": "Open the page inside your wallet app's own DApp browser (step 1). If Detected Wallet does nothing, reopen the page and try Binance."},
+        "wrong-address": {"see": "The address at the top right isn't the one with the money", "do": "Switch to the wallet that holds this money in your wallet app, then connect again. Don't continue if the address doesn't match."},
+        "sign-on-connect": {"see": "Your wallet asks you to sign a message while connecting", "do": "Tap Reject, close the page and check the address again. WOOFi doesn't need a signature to connect (its site code makes no signature request)."},
+        "wrong-network": {"see": "The page says Wrong Network at the top", "do": "Tap the network icon at the top right, pick **Arbitrum** and confirm the switch in your wallet."},
+        "blocked-address": {"see": "A Blocked Address message appears", "do": "WOOFi blocked this address based on a sanctions list. This guide can't help."}
+      }
+    },
+    "claim": {
+      "title": "Claim your rewards",
+      "whenText": "Only needed if you have unclaimed rewards",
+      "note": "Transaction 1",
+      "milestone": "Claim",
+      "images": [
+        "① Tap **Claim** (USDC reward above is what you haven't claimed. It's hidden in the screenshot and should be about {{usdc}}) ✗ Don't tap Compound: it turns the rewards into WOO and stakes them again, the opposite of what you want"
+      ],
+      "check": {
+        "title": "Before you confirm, check 3 things",
+        "lead": "After you tap Claim, your wallet asks you to confirm a transaction. Check it against this list and tap each item once it matches.",
+        "skip": "Already claimed (USDC reward is 0)? Skip this step",
+        "confirm": [
+          {"title": "The request comes from woofi.com, on Arbitrum", "sub": "One extra letter or a missing dot means stop"},
+          {"title": "It goes to 0xa9E2…24Fb (WOOFi's staking contract)", "sub": "Look at the contract / To line. The first 6 and last 4 characters must match"},
+          {"title": "It sends 0, plus a small fee (about 0.000006 ETH)", "sub": "This sends your rewards to you. You don't pay any tokens"}
+        ],
+        "reject": ["It asks you to send tokens, or the amount isn't 0", "It says Approve or Permit", "It asks you to sign a message (Sign)", "It doesn't come from woofi.com"],
+        "normal": [
+          "Your wallet may show \"contract interaction\" or claimRewards",
+          "The fee comes out of your ETH on Arbitrum, usually less than a cent",
+          "Your wallet may warn that this is a contract interaction. If the site and the address both match, it's fine to continue"
+        ]
+      },
+      "situations": {
+        "cancelled": {"see": "The page shows Cancelled · User denied transaction signature", "do": "You tapped Reject in your wallet, so nothing moved. Check again, then tap Claim once more."},
+        "insufficient-gas": {"see": "The button says INSUFFICIENT GAS", "do": "The official site needs at least 0.0002 ETH on Arbitrum in your wallet. Send a little ETH to this wallet on Arbitrum first (0.0005 is plenty), then come back."},
+        "compound-clicked": {"see": "Tapped Compound by mistake", "do": "Your rewards were turned into WOO and added to your stake. Nothing is lost: they come out with the rest when you unstake in the next step."},
+        "auto-compound": {"see": "The transaction failed with !COMPOUND", "do": "Auto-compound is on. While it's on you can't claim, and it can't be turned off for 7 days after you turn it on. Tap Stuck? at the top right to see your situation. If you're unsure, ask in WOOFi's official Discord."},
+        "wrong-to": {"see": "The request goes to an address other than 0xa9E2…24Fb", "do": "Tap Reject right away."}
+      }
+    },
+    "unstake": {
+      "title": "Unstake your WOO",
+      "whenText": "Only needed if you have staked WOO",
+      "note": "Transaction 2",
+      "milestone": "Unstake",
+      "images": [
+        "① Tap **Unstake** ② Tap the number on the right of the input (all of your staked WOO, hidden in the screenshot). It fills in the full amount",
+        "① With the amount filled in (it should be {{woo}}), tap **UNSTAKE**",
+        "① In Unstake Confirmation, check the amount and tap **UNSTAKE**. Your wallet asks you to confirm a transaction: check it against the card below ! It says your XP (points) will be removed. XP can't be traded and doesn't affect the money you get back"
+      ],
+      "check": {
+        "title": "Before you confirm, check 3 things",
+        "lead": "After you tap UNSTAKE, your wallet asks you to confirm a transaction. Check it against this list and tap each item once it matches.",
+        "skip": "No staked WOO? Skip this step",
+        "confirm": [
+          {"title": "The request comes from woofi.com, on Arbitrum", "sub": "One extra letter or a missing dot means stop"},
+          {"title": "It goes to 0x2CFa…d8e2 (WOOFi's staking contract)", "sub": "It's a different address from the claim step. That's normal"},
+          {"title": "It sends 0, plus a small fee (about 0.000008 ETH)", "sub": "Your WOO comes back to you from the contract. You don't pay any tokens"}
+        ],
+        "reject": ["It asks you to send tokens, or the amount isn't 0", "It says Approve or Permit", "It asks you to sign a message (Sign)", "It doesn't come from woofi.com"],
+        "normal": [
+          "Your wallet may show \"contract interaction\" or unstake",
+          "Unstaking has no lock-up period and no fee"
+        ]
+      },
+      "situations": {
+        "amount-not-full": {"see": "The amount isn't everything", "do": "Tap the number on the right of the input to fill in the full amount. Typing it yourself tends to leave some behind."},
+        "insufficient-balance": {"see": "The button says INSUFFICIENT BALANCE", "do": "The amount is more than you have staked. Tap the number on the right of the input to fill it in again."},
+        "xp": {"see": "The confirmation says your XP will be removed", "do": "XP is WOOFi's points system. It can't be traded, and losing it doesn't affect the money you get back."},
+        "cancelled": {"see": "The page shows Cancelled · User denied transaction signature", "do": "You tapped Reject in your wallet, so nothing moved. Check again, then tap UNSTAKE once more."},
+        "wrong-to": {"see": "The request goes to an address other than 0x2CFa…d8e2", "do": "Tap Reject right away."}
+      }
+    },
+    "vault": {
+      "title": "Collect the ETH from the vault",
+      "whenText": "Only needed if settled money is waiting for you in the ETH vault",
+      "note": "Transaction 3",
+      "milestone": "Vault",
+      "images": [
+        "① Tap **Earn** at the bottom ② Tap **My vaults** (only vaults you've used) ③ Tap the **ETH** card on Arbitrum (My Deposits is your number, hidden in the screenshot)",
+        "① When the card opens, tap the **WITHDRAW** tab",
+        "① Scroll down to Available for Withdrawals (what you can collect, hidden in the screenshot, about {{eth}} ETH) and tap **WITHDRAW** next to it ✗ You don't need UNSTAKE or REQUEST WITHDRAWAL above it"
+      ],
+      "items": [
+        "! Settled money isn't sent to your wallet automatically. You have to tap this yourself, and this is the step many people miss."
+      ],
+      "check": {
+        "title": "Before you confirm, check 3 things",
+        "lead": "After you tap WITHDRAW, your wallet asks you to confirm a transaction. Check it against this list and tap each item once it matches.",
+        "skip": "Nothing waiting in the vault? Skip this step",
+        "confirm": [
+          {"title": "The request comes from woofi.com, on Arbitrum", "sub": "One extra letter or a missing dot means stop"},
+          {"title": "It goes to 0xE77A…Ad6a (WOOFi's vault withdrawal contract)", "sub": "Each of the three steps uses a different address. That's normal"},
+          {"title": "It sends 0, plus a small fee (about 0.000002 ETH)", "sub": "What comes out is ETH, straight back to your wallet"}
+        ],
+        "reject": ["It asks you to send tokens, or the amount isn't 0", "It says Approve or Permit", "It asks you to sign a message (Sign)", "It doesn't come from woofi.com"],
+        "normal": [
+          "Your wallet may show \"contract interaction\" or withdraw",
+          "You receive native ETH, not WETH"
+        ]
+      },
+      "situations": {
+        "no-available": {"see": "Available for Withdrawals is 0", "do": "Either it's already been collected or it hasn't settled yet. Tap Stuck? at the top right for a live check."},
+        "big-button": {"see": "The big REQUEST WITHDRAWAL button can't be tapped", "do": "That's expected: you don't need it. Tap the small **WITHDRAW** to the right of Available for Withdrawals."},
+        "shares-left": {"see": "My Deposits is more than Available for Withdrawals", "do": "Some of your money in the vault hasn't been requested yet. For now this guide only covers settled money waiting to be collected. For the rest, use Instant Withdraw on the WITHDRAW tab (arrives right away, 1% fee) or REQUEST WITHDRAWAL (free, but you wait until next Tuesday)."},
+        "cancelled": {"see": "The page shows Cancelled · User denied transaction signature", "do": "You tapped Reject in your wallet, so nothing moved. Check again, then tap WITHDRAW once more."},
+        "wrong-to": {"see": "The request goes to an address other than 0xE77A…Ad6a", "do": "Tap Reject right away."}
+      }
+    },
+    "arrive": {
+      "title": "Check that it arrived",
+      "milestone": "Arrived",
+      "check": {
+        "title": "Check that it arrived",
+        "rows": [
+          ["How long", "A few seconds after each transaction confirms"],
+          ["Where to look", "Your wallet app → Assets, with the network set to Arbitrum"],
+          ["What you should see", "About {{woo}} WOO, {{usdc}} USDC and {{eth}} ETH more (whichever of these you had)"],
+          ["On-chain record", "WOO comes from WOOFi's staking contract 0x2CFa…d8e2, USDC from WOOFi's reward contract, ETH from WOOFi's vault withdrawal contract 0xE77A…Ad6a. Your address receives all of them"],
+          ["If it hasn't arrived", "Tap Stuck? at the top right for a live check. If the transaction succeeded but you can't see the WOO, add the token in your wallet"]
+        ],
+        "foot": "Once it arrives, you're done. WOO is an ordinary token: keep it or swap it in your wallet"
+      },
+      "situations": {
+        "no-woo": {"see": "Can't see WOO in the wallet", "do": "Some wallets don't show new tokens on their own. Search for WOO (Arbitrum) in your wallet, or add it with the contract address `0xcafcd85d8ca7ad1e1c6f82f651fa15e33aefd07b`."},
+        "eth-not-weth": {"see": "What arrived is ETH, not WETH", "do": "That's normal: the vault withdrawal contract unwraps WETH and sends you native ETH."},
+        "want-usdc": {"see": "Want to swap the WOO for USDC", "do": "The WOO is already in your own wallet, so you can use your wallet's built-in swap. This guide doesn't cover swapping. Check the quote and slippage before you swap."}
+      }
+    }
+  },
+  "sources": [
+    "WOOFi docs · How Earn vaults work",
+    "WOOFi docs · Contract addresses on Arbitrum",
+    "WOOFi docs archive · WOO staking (original page is offline)",
+    "Chainlink · WOO/USD price feed (Arbitrum)",
+    "WOOFi official Discord"
+  ]
+}

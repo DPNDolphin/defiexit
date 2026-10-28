@@ -221,7 +221,7 @@ async function personalize(a) {
     toArrive?.addEventListener("click", () => gotoStep("arrive"));
     mine.replaceChildren(...[
       el("div", { class: "mine-h" }, el("h2", {}, t("yourAccount")), el("span", { class: "chip mono" }, shortAddr(a))),
-      res.rows.length ? rowsTable(res.rows, res.status === "found" ? { label: t("expected"), value: `${res.vars.arrive} USDC` } : null) : el("p", { class: "sub" }, empty ? t("emptyAcct") : t("noBalance")),
+      res.rows.length ? rowsTable(res.rows, res.status === "found" ? res.total || { label: t("expected"), value: `${res.vars.arrive} USDC` } : null) : el("p", { class: "sub" }, empty ? t("emptyAcct") : t("noBalance")),
       res.warnings.length ? el("ul", { class: "warns" }, res.warnings.map((w) => el("li", {}, icon("alert"), el("span", {}, w)))) : null,
       res.note && !empty ? el("p", { class: "sub" }, res.note) : null,
       skipped && !empty ? el("p", { class: "sub" }, t("skipped", skipped)) : null,
@@ -367,6 +367,13 @@ function showDone(d) {
   const a = d.arrival, vs = visible(), ds = doneBox.dataset;
   const fee = Number(a.fee), net = Number(a.usdc);
   const total = Number.isFinite(fee) ? String(+(net + fee).toFixed(6)) : "?";
+  // 一笔 USDC(Hyperliquid):大数字 + 三行核对;好几种币(WOOFi):每种一个数,逐笔列出从哪个合约来
+  const amount = a.items
+    ? el("ul", { class: "amounts" }, a.items.map((x) => el("li", {}, el("b", {}, x.amount), el("span", {}, x.sym))))
+    : el("p", { class: "amount" }, el("b", {}, floorTo(net, 2).toFixed(2)), el("span", {}, "USDC"));
+  const checked = a.items
+    ? [...a.items.map((x) => x.text), t("doneTo", shortAddr(addr))]
+    : [ds.from, t("doneTo", shortAddr(addr)), t("doneSum", total, Number.isFinite(fee) ? String(fee) : "?", String(net))];
   here = null;
   intro.hidden = bar.hidden = pager.hidden = follow.hidden = true;
   for (const s of steps) s.hidden = true;
@@ -376,11 +383,11 @@ function showDone(d) {
     r,
     el("span", { class: "badge ok" }, icon("check"), el("span", {}, t("arrivedBadge"))),
     el("h1", { class: "display" }, t("doneH")),
-    el("p", { class: "amount" }, el("b", {}, floorTo(net, 2).toFixed(2)), el("span", {}, "USDC")),
+    amount,
     el("p", { class: "sub" }, ds.where),
     el("section", { class: "card verified" },
       el("h2", {}, t("doneChecked")),
-      el("ul", {}, [ds.from, t("doneTo", shortAddr(addr)), t("doneSum", total, Number.isFinite(fee) ? String(fee) : "?", String(net))].map((x) => el("li", {}, icon("check"), el("span", {}, x)))),
+      el("ul", {}, checked.map((x) => el("li", {}, icon("check"), el("span", {}, x)))),
       el("p", { class: "sub" }, ds.look)),
     el("div", { class: "acts" },
       el("a", { class: "btn primary block", href: `${P}/` }, t("another2")),

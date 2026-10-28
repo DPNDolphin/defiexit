@@ -48,6 +48,7 @@ export const STR = {
     p4t: "从不先私信", p4d: "私信你的「客服」都是假的。",
     supH: "目前能查",
     tested: "已实测",
+    untested: "页面已核对,待实测",
     supMore: "更多协议陆续加入,先做被问得最多的。",
     banner: "官方网站只有 defiexit.com。任何私信你、自称客服的人都是骗子。",
 
@@ -207,6 +208,7 @@ export const STR = {
     p4t: "We never DM you first", p4d: "Any \"support\" that messages you is fake.",
     supH: "Supported now",
     tested: "Tested",
+    untested: "Screens checked, live test pending",
     supMore: "More protocols are coming, starting with the most requested.",
     banner: "The only official site is defiexit.com. Anyone who messages you claiming to be support is a scammer.",
 
