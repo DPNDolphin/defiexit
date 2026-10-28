@@ -1,7 +1,7 @@
 {
   "title": "Get your WOOFi stake and vault back to your wallet",
   "short": "WOOFi to your wallet",
-  "verified": "Checked on 2026-10-28 with the author's own account: every screen on the official site, and for each transaction where it goes and what data it carries (using a read-only test wallet; nothing was actually sent). A real withdrawal test is still to come.",
+  "verified": "Tested on 2026-10-29 with the author's own account in the Binance wallet, following this guide: the claim, the unstake and the vault withdrawal each went to the contract and carried the data shown on the check cards, and all three arrived. The screens were checked on the official site on 2026-10-28 with a read-only test wallet.",
   "covers": "WOO staked on Arbitrum, unclaimed rewards, and settled ETH waiting in a vault",
   "summary": "WOO staked on WOOFi (Arbitrum), USDC rewards you never claimed, money in the ETH vault that was settled but never collected: three taps on the official site, each one an ordinary transaction, and the money goes straight back to your wallet.",
   "facts": [
@@ -100,18 +100,19 @@
       ],
       "check": {
         "title": "Before you confirm, check 3 things",
-        "lead": "After you tap Claim, your wallet asks you to confirm a transaction. Check it against this list and tap each item once it matches.",
+        "lead": "After you tap Claim, your wallet asks you to confirm a transaction (in the Binance wallet it's titled Contract call). Check it against this list and tap each item once it matches.",
         "skip": "Already claimed (USDC reward is 0)? Skip this step",
         "confirm": [
-          {"title": "The request comes from woofi.com, on Arbitrum", "sub": "One extra letter or a missing dot means stop"},
-          {"title": "It goes to 0xa9E2…24Fb (WOOFi's staking contract)", "sub": "Look at the contract / To line. The first 6 and last 4 characters must match"},
-          {"title": "It sends 0, plus a small fee (about 0.000006 ETH)", "sub": "This sends your rewards to you. You don't pay any tokens"}
+          {"title": "The request comes from woofi.com, on Arbitrum", "sub": "The Binance wallet says Arbitrum One. One extra letter or a missing dot in the site means stop"},
+          {"title": "The contract is 0xa9E2…24Fb (WOOFi's staking contract)", "sub": "In the Binance wallet it's the contract line (other wallets may say To). The first 6 and last 4 characters must match"},
+          {"title": "You pay nothing but a small network fee", "sub": "The Binance wallet shows a plus amount you'll receive: your rewards (about {{rewards}}). The network fee is under a cent"}
         ],
-        "reject": ["It asks you to send tokens, or the amount isn't 0", "It says Approve or Permit", "It asks you to sign a message (Sign)", "It doesn't come from woofi.com"],
+        "reject": ["It asks you to send any tokens (an amount with a minus sign, or the words send or pay)", "It says Approve or Permit", "It asks you to sign a message (Sign)", "It doesn't come from woofi.com"],
         "normal": [
-          "Your wallet may show \"contract interaction\" or claimRewards",
-          "The fee comes out of your ETH on Arbitrum, usually less than a cent",
-          "Your wallet may warn that this is a contract interaction. If the site and the address both match, it's fine to continue"
+          "The action line usually says claimRewards",
+          "The amount you'll receive also lists a little USDC.e and ARB: this pays out several reward tokens at once (Binance's history shows 3 balance changes)",
+          "The network fee comes out of your ETH on Arbitrum, under a cent",
+          "Your wallet may warn that this is a contract call. If the site and the address both match, it's fine to continue"
         ]
       },
       "situations": {
@@ -144,16 +145,16 @@
       ],
       "check": {
         "title": "Before you confirm, check 3 things",
-        "lead": "After you tap UNSTAKE, your wallet asks you to confirm a transaction. Check it against this list and tap each item once it matches.",
+        "lead": "After you tap UNSTAKE, your wallet asks you to confirm a transaction (in the Binance wallet it's titled Contract call). Check it against this list and tap each item once it matches.",
         "skip": "No staked WOO? Skip this step",
         "confirm": [
-          {"title": "The request comes from woofi.com, on Arbitrum", "sub": "One extra letter or a missing dot means stop"},
-          {"title": "It goes to 0x2CFa…d8e2 (WOOFi's staking contract)", "sub": "It's a different address from the claim step. That's normal"},
-          {"title": "It sends 0, plus a small fee (about 0.000008 ETH)", "sub": "Your WOO comes back to you from the contract. You don't pay any tokens"}
+          {"title": "The request comes from woofi.com, on Arbitrum", "sub": "The Binance wallet says Arbitrum One. One extra letter or a missing dot in the site means stop"},
+          {"title": "The contract is 0x2CFa…d8e2 (WOOFi's staking contract)", "sub": "It's a different address from the claim step. That's normal"},
+          {"title": "You pay nothing but a small network fee", "sub": "The Binance wallet shows a plus amount you'll receive: your WOO coming back (about {{woo}}). The network fee is under a cent"}
         ],
-        "reject": ["It asks you to send tokens, or the amount isn't 0", "It says Approve or Permit", "It asks you to sign a message (Sign)", "It doesn't come from woofi.com"],
+        "reject": ["It asks you to send any tokens (an amount with a minus sign, or the words send or pay)", "It says Approve or Permit", "It asks you to sign a message (Sign)", "It doesn't come from woofi.com"],
         "normal": [
-          "Your wallet may show \"contract interaction\" or unstake",
+          "The action line usually says unstake",
           "Unstaking has no lock-up period and no fee"
         ]
       },
@@ -190,17 +191,17 @@
       ],
       "check": {
         "title": "Before you confirm, check 3 things",
-        "lead": "After you tap WITHDRAW, your wallet asks you to confirm a transaction. Check it against this list and tap each item once it matches.",
+        "lead": "After you tap WITHDRAW, your wallet asks you to confirm a transaction (in the Binance wallet it's titled Contract call). Check it against this list and tap each item once it matches.",
         "skip": "Nothing waiting in the vault? Skip this step",
         "confirm": [
-          {"title": "The request comes from woofi.com, on Arbitrum", "sub": "One extra letter or a missing dot means stop"},
-          {"title": "It goes to 0xE77A…Ad6a (WOOFi's vault withdrawal contract)", "sub": "Each of the three steps uses a different address. That's normal"},
-          {"title": "It sends 0, plus a small fee (about 0.000002 ETH)", "sub": "What comes out is ETH, straight back to your wallet"}
+          {"title": "The request comes from woofi.com, on Arbitrum", "sub": "The Binance wallet says Arbitrum One. One extra letter or a missing dot in the site means stop"},
+          {"title": "The contract is 0xE77A…Ad6a (WOOFi's vault withdrawal contract)", "sub": "Each of the three steps uses a different address. That's normal"},
+          {"title": "You pay nothing but a small network fee", "sub": "The Binance wallet shows a plus amount you'll receive: the ETH coming out (about {{eth}}). The network fee is under a cent"}
         ],
-        "reject": ["It asks you to send tokens, or the amount isn't 0", "It says Approve or Permit", "It asks you to sign a message (Sign)", "It doesn't come from woofi.com"],
+        "reject": ["It asks you to send any tokens (an amount with a minus sign, or the words send or pay)", "It says Approve or Permit", "It asks you to sign a message (Sign)", "It doesn't come from woofi.com"],
         "normal": [
-          "Your wallet may show \"contract interaction\" or withdraw",
-          "You receive native ETH, not WETH"
+          "The action line says withdraw, and the raw data starts with 0x3ccfd60b",
+          "You receive native ETH, not WETH. Binance's history calls it a redemption"
         ]
       },
       "situations": {

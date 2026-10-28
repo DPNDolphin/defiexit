@@ -89,7 +89,7 @@ test("英文版配方:缺一条或者混着中文,构建直接报错", () => {
   assert.throws(() => localize(r, mixed, "en.json"), /中文/);
 });
 
-test("WOOFi 指南:三笔交易各一张核对卡、都能明说跳过;首页如实标「待实测」", () => {
+test("WOOFi 指南:三笔交易各一张核对卡、都能明说跳过;10-29 实测取回过,首页标「已实测」", () => {
   for (const f of ["dist/r/woofi/index.html", "dist/en/r/woofi/index.html"]) {
     const g = read(f);
     for (const w of ["needsClaim", "needsUnstake", "needsVault"]) assert.ok(g.includes(`data-when="${w}"`), `${f} 缺 ${w}`);
@@ -100,7 +100,7 @@ test("WOOFi 指南:三笔交易各一张核对卡、都能明说跳过;首页如
   }
   const home = read("dist/index.html");
   assert.match(home, /<b>Hyperliquid<\/b>[\s\S]*?<span class="tag-ok">/);
-  assert.match(home, /<b>WOOFi<\/b>[\s\S]*?<span class="tag-wait">[\s\S]*?页面已核对[,，]待实测/);
+  assert.match(home, /<b>WOOFi<\/b>[\s\S]*?<span class="tag-ok">/);
 });
 
 test("每个网页都带 no-transform:Cloudflare 不往页面里插统计脚本", () => {
