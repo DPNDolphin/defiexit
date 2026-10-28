@@ -49,7 +49,7 @@ export function floorFor(bids, amount) {
   return null;
 }
 
-// "92.21616" → 92216160n(USDC 6 位小数,按字符串换算,不经过浮点)
+// "12.345678" → 12345678n(USDC 6 位小数,按字符串换算,不经过浮点)
 export function micro(s) {
   const [i, f = ""] = String(s).split(".");
   return BigInt(i || 0) * 1000000n + BigInt((f + "000000").slice(0, 6));

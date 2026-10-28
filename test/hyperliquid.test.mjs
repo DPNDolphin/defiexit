@@ -286,7 +286,7 @@ test("诊断:有持仓 → 停,不给下一步", async () => {
 test("小工具:保底价、USDC 金额换算", () => {
   assert.equal(floorFor([{ px: "0.99", sz: "5" }, { px: "0.98", sz: "5" }], 7), "0.98");
   assert.equal(floorFor([{ px: "0.99", sz: "5" }], 7), null);
-  assert.equal(micro("92.21616"), 92216160n);
+  assert.equal(micro("12.345678"), 12345678n);
   assert.equal(micro("52.5"), 52500000n);
   assert.equal(micro("3"), 3000000n);
 });
