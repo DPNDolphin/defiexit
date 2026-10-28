@@ -98,9 +98,6 @@
         {"src": "connect-2.webp", "caption": "① 选 **Detected Wallet**:就是你正在用的这个 App 里的钱包 ② 在币安 App 里选 **Binance** 也行。钱包弹出连接请求,来源是 woofi.com 就点「连接」"},
         {"src": "connect-3.webp", "caption": "① 右上角显示你的地址(图里已打码),应该是 {{addrShort}} ② 这个图标是当前网络,点它"},
         {"src": "connect-4.webp", "caption": "① 选 **Arbitrum**,钱包弹出切换网络请求就点确认。已经是 Arbitrum(名字后面有小圆点)就点右上角 × 关掉"}
-      ],
-      "items": [
-        "! 连好以后看到的是 K 线图(底部有「交易」「竞技场」),不是上面这种质押页?那是 WOOFi 的永续合约交易页:点左上角三条横线 → **质押**。左上角变成 Spot / Perps 切换、底部一排里有 Stake,就回到质押页了。"
       ]
     },
     {
@@ -118,8 +115,16 @@
       "whenText": "有没领的奖励才需要这一步",
       "note": "第 1 笔交易",
       "milestone": "领奖励",
+      "detour": {
+        "see": "页面是 K 线图(左上角是三条横线)?先点两下回到质押页",
+        "thumb": "perps-1.webp",
+        "images": [
+          {"src": "perps-1.webp", "caption": "① 点左上角三条横线"},
+          {"src": "perps-2.webp", "caption": "② 点 **质押**(英文界面叫 Stake),回到质押页,再接着往下做"}
+        ]
+      },
       "images": [
-        {"src": "claim.webp", "caption": "① 点 **Claim**(上面的 USDC reward 是你没领的奖励,图里已打码,应约 {{rewards}}) ✗ 不要点 Compound:它会把奖励换成 WOO 再存回去,方向反了"}
+        {"src": "claim.webp", "caption": "往下滑到 Stake / Unstake 这一块。① 点 **Claim**(上面的 USDC reward 是你没领的奖励,图里已打码,应约 {{rewards}}) ✗ 不要点 Compound:它会把奖励换成 WOO 再存回去,方向反了"}
       ],
       "check": {
         "title": "确认前,先核对 3 件事",
@@ -152,10 +157,19 @@
       "whenText": "有质押的 WOO 才需要这一步",
       "note": "第 2 笔交易",
       "milestone": "解押",
+      "detour": {
+        "see": "页面是 K 线图(左上角是三条横线)?先点两下回到质押页",
+        "thumb": "perps-1.webp",
+        "images": [
+          {"src": "perps-1.webp", "caption": "① 点左上角三条横线"},
+          {"src": "perps-2.webp", "caption": "② 点 **质押**(英文界面叫 Stake),回到质押页,再接着往下做"}
+        ]
+      },
       "images": [
-        {"src": "unstake-1.webp", "caption": "① 点 **Unstake** ② 点输入框右边的数字(就是你质押的全部 WOO,图里已打码),会自动填满"},
-        {"src": "unstake-2.webp", "caption": "① 数量填好后(约 {{woo}},官网会多显示几位小数),点 **UNSTAKE**"},
-        {"src": "unstake-3.webp", "caption": "① 弹出 Unstake Confirmation,核对数量后点 **UNSTAKE**,钱包弹出交易确认,对照下面的核对卡 ! 它说会清掉你的 XP(积分):XP 不能交易,对取回的钱没有影响"}
+        {"src": "unstake-1.webp", "caption": "① 在质押页点 **Unstake** 页签"},
+        {"src": "unstake-2.webp", "caption": "② 点输入框右边的数字(就是你质押的全部 WOO,图里已打码),会自动填满"},
+        {"src": "unstake-3.webp", "caption": "③ 数量填好后(约 {{woo}},官网会多显示几位小数),点 **UNSTAKE**"},
+        {"src": "unstake-4.webp", "caption": "④ 弹出 Unstake Confirmation,核对数量后点 **UNSTAKE**,钱包会弹出交易确认,对照下面的核对卡 ! 它说会清掉你的 XP(积分):XP 不能交易,对取回的钱没有影响"}
       ],
       "check": {
         "title": "确认前,先核对 3 件事",
@@ -187,10 +201,20 @@
       "whenText": "ETH 金库里有已经结算、等你取的钱才需要这一步",
       "note": "第 3 笔交易",
       "milestone": "取金库",
+      "detour": {
+        "see": "页面是 K 线图(左上角是三条横线)?先点两下到 Earn 页",
+        "thumb": "perps-1.webp",
+        "images": [
+          {"src": "perps-1.webp", "caption": "① 点左上角三条横线"},
+          {"src": "perps-earn.webp", "caption": "② 点 **赚取**(英文界面叫 Earn)。到了 Earn 页,从下面第 2 张图接着做"}
+        ]
+      },
       "images": [
-        {"src": "vault-1.webp", "caption": "① 点底部 **Earn** ② 点 **My vaults**(只看你存过的) ③ 点网络是 Arbitrum 的 **ETH** 那张卡片(My Deposits 是你的数,图里已打码)"},
-        {"src": "vault-2.webp", "caption": "① 卡片展开后,点 **WITHDRAW** 页签"},
-        {"src": "vault-3.webp", "caption": "① 往下翻到 Available for Withdrawals(你能取的数,图里已打码,应约 {{eth}} ETH),点它右边的 **WITHDRAW** ✗ 上面的 UNSTAKE 和 REQUEST WITHDRAWAL 都不用点"}
+        {"src": "vault-1.webp", "caption": "① 在质押页最底下一排,点 **Earn**"},
+        {"src": "vault-2.webp", "caption": "② 往下滑一点,点 **My vaults**(只显示你存过钱的金库)"},
+        {"src": "vault-3.webp", "caption": "③ 点网络是 Arbitrum 的 **ETH** 那张卡片(My Deposits 是你的数,图里已打码)"},
+        {"src": "vault-4.webp", "caption": "④ 卡片展开后先显示的是 DEPOSIT(存钱),点旁边的 **WITHDRAW** 页签"},
+        {"src": "vault-5.webp", "caption": "⑤ 往下滑到最后一行 Available for Withdrawals(你能取的数,图里已打码;网页只显示 4 位小数,应约 {{eth}} ETH),点它右边的 **WITHDRAW** ✗ 中间两个写着 0 的输入框、橙色的 UNSTAKE、灰色的 REQUEST WITHDRAWAL 都不用管"}
       ],
       "items": [
         "! 结算好的钱不会自动打到钱包,要自己点这一下。很多人就差这一步。"

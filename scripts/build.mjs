@@ -338,6 +338,10 @@ function guide(tx, R) {
     }
     // 常见情况(审过的答案):平时藏着,点「遇到问题」时挪进底部弹层
     const sits = (s.situations || []).map((x) => `<details class="sit${x.stop ? " stop" : ""}" data-sit="${esc(x.id)}"><summary>${r(x.see)}</summary><p>${rc(x.do)}</p></details>`).join("");
+    // 岔路:用户可能停在别的页面(比如 WOOFi 的 K 线交易页),先点这几下回到这一步的起点。默认收起,小图对照着认
+    const dt = s.detour;
+    const thumbSize = dt && webpSize(join(ROOT, "recipes", R.id, "img", dt.thumb));
+    const detour = dt ? `<details class="detour"><summary><img src="/r/${esc(R.id)}/img/${esc(dt.thumb)}" alt=""${thumbSize ? ` width="${thumbSize.w}" height="${thumbSize.h}"` : ""} loading="lazy" decoding="async"><span>${r(dt.see)}</span></summary>${dt.images.map((im) => shotHtml(im)).join("")}</details>` : "";
     const attrs = [
       `data-id="${esc(s.id)}"`,
       s.when ? `data-when="${esc(s.when)}"` : "",
@@ -349,7 +353,7 @@ function guide(tx, R) {
   ${R.screens ? `<button class="lost-btn" type="button" data-lost>${ico("help")}${tx.h("lostBtn")}</button>` : ""}
   ${s.note ? `<p class="step-note">${r(s.note)}</p>` : ""}
   ${s.whenText ? `<p class="when">${r(s.whenText)}</p>` : ""}
-  ${content}${copyRows}${check}
+  ${detour}${content}${copyRows}${check}
   <div class="help" hidden>${sits}</div>
 </section>`;
   }).join("\n");
@@ -517,6 +521,10 @@ export function localize(r, o, file) {
     for (const k of ["note", "whenText", "milestone"]) if (s[k]) S[k] = need(x[k], `${p}.${k}`);
     if (s.items) S.items = same(s.items, x.items, `${p}.items`).map((y, i) => need(y, `${p}.items[${i}]`));
     if (s.images) S.images = same(s.images, x.images, `${p}.images`).map((y, i) => img(s.images[i], y, `${p}.images[${i}]`));
+    if (s.detour) {
+      const d = x.detour || {}, q = `${p}.detour`;
+      S.detour = { ...s.detour, see: need(d.see, `${q}.see`), thumb: d.thumb || s.detour.thumb, images: same(s.detour.images, d.images, `${q}.images`).map((y, i) => img(s.detour.images[i], y, `${q}.images[${i}]`)) };
+    }
     if (s.situations) {
       S.situations = s.situations.map((y) => {
         const z = x.situations?.[y.id];
@@ -572,13 +580,15 @@ function loadRecipes() {
         ids.add(x.id);
       }
       if (s.check && s.check.kind !== "arrive" && !(s.check.confirm?.length && s.check.reject?.length)) throw new Error(`${d}/${s.id}: 核对卡缺 confirm 或 reject`);
+      if (s.detour && !(s.detour.see && s.detour.thumb && s.detour.images?.length)) throw new Error(`${d}/${s.id}: 岔路缺 see、thumb 或 images`);
     }
     const enFile = join(dir, d, "i18n", "en.json");
     if (!existsSync(enFile)) throw new Error(`${d}: 缺英文版 i18n/en.json`);
     const out = { zh: r, en: localize(r, JSON.parse(readFileSync(enFile, "utf8")), `${d}/i18n/en.json`) };
     // 中英两套用到的每一张图都要在(英文版可以换成英文界面的截图)
     for (const L of Object.values(out)) {
-      const srcs = [...L.steps.flatMap((s) => s.images || []), ...(L.screens || []).flatMap((x) => x.images || [])].map((im) => im.src);
+      const srcs = [...L.steps.flatMap((s) => [...(s.images || []), ...(s.detour?.images || [])]), ...(L.screens || []).flatMap((x) => x.images || [])].map((im) => im.src);
+      for (const s of L.steps) if (s.detour) srcs.push(s.detour.thumb);
       for (const x of L.screens || []) if (x.img) srcs.push(x.img);
       for (const src of srcs) if (!existsSync(join(dir, d, "img", src))) throw new Error(`${d}: 缺图片 ${src}`);
     }

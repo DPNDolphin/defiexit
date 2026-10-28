@@ -261,6 +261,15 @@ code { font: 0.92em var(--font-mono); background: var(--surface-2); border: 1px 
 .paged .step-note { display: none; }
 .lost-btn { align-self: flex-start; min-height: 40px; padding: 0 14px; display: inline-flex; align-items: center; gap: 6px; border: 1.5px dashed var(--warn); border-radius: 999px; background: transparent; color: var(--warn); font-size: 14px; font-weight: 700; touch-action: manipulation; }
 .lost-btn .i { width: 16px; height: 16px; }
+/* 岔路:页面停在别处时先点这几下回来,默认收起,小图对照着认 */
+.detour { border: 1.5px solid var(--warn); border-radius: var(--r-m); background: var(--warn-bg); }
+.detour summary { min-height: 56px; padding: 8px 12px 8px 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; list-style: none; color: var(--warn); font-size: 15px; font-weight: 700; line-height: 1.4; }
+.detour summary::-webkit-details-marker { display: none; }
+.detour summary img { width: 48px; height: 58px; flex: none; object-fit: cover; object-position: top left; border-radius: 6px; background: #000; }
+.detour summary span { flex: 1; }
+.detour summary::after { content: ""; width: 8px; height: 8px; flex: none; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); transition: transform 0.15s; }
+.detour[open] summary::after { transform: rotate(45deg); }
+.detour .shot { padding: 0 12px 12px; }
 .when { align-self: flex-start; margin: 0; padding: 4px 10px; border-radius: 999px; background: var(--warn-bg); color: var(--warn); font-size: 13px; }
 .guide.personal .when { display: none; }
 .items { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 8px; font-size: 16px; line-height: 1.6; }

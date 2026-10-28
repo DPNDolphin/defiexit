@@ -175,3 +175,22 @@ test("页面图鉴的英文版:缺一条就报错;图可以整张换掉", () => 
   bad2.screens.perps.images = [bad2.screens.perps.images[0]];
   assert.throws(() => localize(r, bad2, "x.json"), /screens\.perps\.images/);
 });
+
+test("WOOFi 第 3–5 步:一下点击一张图,编号在这一步里接着数;页面停在 K 线图时有岔路先回来", () => {
+  const r = JSON.parse(read("recipes/woofi/recipe.json"));
+  const en = localize(r, JSON.parse(read("recipes/woofi/i18n/en.json")), "woofi/en.json");
+  const nums = (c) => [...c].filter((ch) => "①②③④⑤⑥⑦⑧⑨".includes(ch)).map((ch) => "①②③④⑤⑥⑦⑧⑨".indexOf(ch) + 1);
+  for (const L of [r, en]) {
+    for (const id of ["claim", "unstake", "vault"]) {
+      const s = L.steps.find((x) => x.id === id);
+      const seq = s.images.map((im) => nums(im.caption));
+      for (const n of seq) assert.equal(n.length, 1, `${id}:一张图只该有一个要点的地方`);
+      assert.deepEqual(seq.flat(), seq.map((_, i) => i + 1), `${id}:编号要从 1 接着数`);
+      assert.ok(s.detour?.images.length === 2, `${id} 缺岔路`);
+    }
+  }
+  const zh = read("dist/r/woofi/index.html"), enHtml = read("dist/en/r/woofi/index.html");
+  assert.equal(zh.match(/<details class="detour">/g)?.length, 3);
+  assert.ok(zh.includes('src="/r/woofi/img/perps-earn.webp"') && !zh.includes("perps-earn-en.webp"));
+  assert.ok(enHtml.includes('src="/r/woofi/img/perps-earn-en.webp"'));
+});

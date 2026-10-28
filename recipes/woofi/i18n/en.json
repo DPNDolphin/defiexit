@@ -73,9 +73,6 @@
         "① Your address shows at the top right (hidden in the screenshot). It should be {{addrShort}} ② This icon is the current network. Tap it",
         "① Pick **Arbitrum** and confirm the network switch in your wallet. If it's already Arbitrum (a small dot after the name), close the menu with the × at the top right"
       ],
-      "items": [
-        "! Connected, but you see a price chart (with Trade and Arena at the bottom) instead of the staking page above? That's WOOFi's perpetuals trading page. Tap the three lines at the top left → **Stake**. You're back on the staking page when the top left shows a Spot / Perps switch and the bar at the bottom includes Stake."
-      ],
       "situations": {
         "perps-page": {"see": "After connecting, I see a price chart trading page, not the staking page", "do": "That's WOOFi's perpetuals trading page. Tap the three lines at the top left → **Stake** to get back to the staking page. If the top right says Connect Wallet, connect again."},
         "no-popup": {"see": "Tapped Connect Wallet, but the wallet didn't ask to connect", "do": "Open the page inside your wallet app's own DApp browser (step 1). If Detected Wallet does nothing, reopen the page and try Binance."},
@@ -90,8 +87,16 @@
       "whenText": "Only needed if you have unclaimed rewards",
       "note": "Transaction 1",
       "milestone": "Claim",
+      "detour": {
+        "see": "Seeing a price chart (three lines at the top left)? Two taps to get back to the staking page",
+        "thumb": "perps-1-en.webp",
+        "images": [
+          {"src": "perps-1-en.webp", "caption": "① Tap the three lines at the top left"},
+          {"src": "perps-2-en.webp", "caption": "② Tap **Stake** to get back to the staking page, then carry on below"}
+        ]
+      },
       "images": [
-        "① Tap **Claim** (USDC reward above is what you haven't claimed. It's hidden in the screenshot and should be about {{rewards}}) ✗ Don't tap Compound: it turns the rewards into WOO and stakes them again, the opposite of what you want"
+        "Scroll down to the Stake / Unstake box. ① Tap **Claim** (USDC reward above is what you haven't claimed. It's hidden in the screenshot and should be about {{rewards}}) ✗ Don't tap Compound: it turns the rewards into WOO and stakes them again, the opposite of what you want"
       ],
       "check": {
         "title": "Before you confirm, check 3 things",
@@ -123,10 +128,19 @@
       "whenText": "Only needed if you have staked WOO",
       "note": "Transaction 2",
       "milestone": "Unstake",
+      "detour": {
+        "see": "Seeing a price chart (three lines at the top left)? Two taps to get back to the staking page",
+        "thumb": "perps-1-en.webp",
+        "images": [
+          {"src": "perps-1-en.webp", "caption": "① Tap the three lines at the top left"},
+          {"src": "perps-2-en.webp", "caption": "② Tap **Stake** to get back to the staking page, then carry on below"}
+        ]
+      },
       "images": [
-        "① Tap **Unstake** ② Tap the number on the right of the input (all of your staked WOO, hidden in the screenshot). It fills in the full amount",
-        "① With the amount filled in (about {{woo}}; the official site shows a few more decimals), tap **UNSTAKE**",
-        "① In Unstake Confirmation, check the amount and tap **UNSTAKE**. Your wallet asks you to confirm a transaction: check it against the card below ! It says your XP (points) will be removed. XP can't be traded and doesn't affect the money you get back"
+        "① On the staking page, tap the **Unstake** tab",
+        "② Tap the number on the right of the input (all of your staked WOO, hidden in the screenshot). It fills in the full amount",
+        "③ With the amount filled in (about {{woo}}; the official site shows a few more decimals), tap **UNSTAKE**",
+        "④ In Unstake Confirmation, check the amount and tap **UNSTAKE**. Your wallet asks you to confirm a transaction: check it against the card below ! It says your XP (points) will be removed. XP can't be traded and doesn't affect the money you get back"
       ],
       "check": {
         "title": "Before you confirm, check 3 things",
@@ -156,10 +170,20 @@
       "whenText": "Only needed if settled money is waiting for you in the ETH vault",
       "note": "Transaction 3",
       "milestone": "Vault",
+      "detour": {
+        "see": "Seeing a price chart (three lines at the top left)? Two taps to get to the Earn page",
+        "thumb": "perps-1-en.webp",
+        "images": [
+          {"src": "perps-1-en.webp", "caption": "① Tap the three lines at the top left"},
+          {"src": "perps-earn-en.webp", "caption": "② Tap **Earn**. Once you're on the Earn page, carry on from picture 2 below"}
+        ]
+      },
       "images": [
-        "① Tap **Earn** at the bottom ② Tap **My vaults** (only vaults you've used) ③ Tap the **ETH** card on Arbitrum (My Deposits is your number, hidden in the screenshot)",
-        "① When the card opens, tap the **WITHDRAW** tab",
-        "① Scroll down to Available for Withdrawals (what you can collect, hidden in the screenshot, about {{eth}} ETH) and tap **WITHDRAW** next to it ✗ You don't need UNSTAKE or REQUEST WITHDRAWAL above it"
+        "① At the very bottom of the staking page, tap **Earn**",
+        "② Scroll down a little and tap **My vaults** (only the vaults you've put money in)",
+        "③ Tap the **ETH** card on Arbitrum (My Deposits is your number, hidden in the screenshot)",
+        "④ The card opens on DEPOSIT. Tap the **WITHDRAW** tab next to it",
+        "⑤ Scroll to the last line, Available for Withdrawals (what you can collect, hidden in the screenshot; the page shows 4 decimals, about {{eth}} ETH), and tap **WITHDRAW** to its right ✗ Leave the two boxes showing 0, the orange UNSTAKE and the grey REQUEST WITHDRAWAL alone"
       ],
       "items": [
         "! Settled money isn't sent to your wallet automatically. You have to tap this yourself, and this is the step many people miss."
