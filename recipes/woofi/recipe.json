@@ -73,14 +73,24 @@
         {"id": "search-instead", "see": "输入网址后出来的是搜索结果", "do": "网址前面要带 `https://`,完整输入 `https://woofi.com/stake`。"},
         {"id": "restricted", "see": "弹出 WE'RE SORRY,说你所在的地区不能使用", "do": "请停下:WOOFi 不对你所在的地区提供服务,这份指南不提供绕过地区限制的办法。可以去 WOOFi 官方 Discord 问(见下面)。", "stop": true},
         {"id": "not-sure", "see": "不确定打开的是不是官网", "do": "看地址栏:域名必须正好是 **woofi.com**。对不上就关掉页面,自己重新输入网址;不要点别人发给你的链接。"},
-        {"id": "old-domain", "see": "收藏夹里存的是 fi.woo.org", "do": "那是 WOOFi 的旧网址,现在会自动跳到 woofi.com。以地址栏最后显示的 woofi.com 为准。"}
+        {"id": "old-domain", "see": "收藏夹里存的是 fi.woo.org", "do": "那是 WOOFi 的旧网址,现在会自动跳到 woofi.com。以地址栏最后显示的 woofi.com 为准。"},
+        {"id": "history", "see": "点了「历史记录」里的 WOOFi,打开的是介绍页(大字 SWAP AND EARN,中间一个 LAUNCH APP)", "do": "点中间橙色的 **LAUNCH APP**,会先进到 K 线交易页;再点左上角三条横线 → **质押**,就到了质押页。下次直接粘贴完整网址,别点历史记录。"},
+        {"id": "no-paste", "see": "长按搜索框,没有出现「粘贴」", "do": "回到这一页,再点一下网址复制;苹果手机要在弹窗里点「允许粘贴」。还是不行,就照着手动输入 `https://woofi.com/stake`。"}
       ],
       "title": "在钱包 App 里打开官网",
       "items": [
-        "打开你的钱包 App(比如币安 App 的「钱包」),确认当前选中的就是有这笔钱的那个钱包。",
-        "用钱包里的 DApp 浏览器打开 `https://woofi.com/stake`。网址要带 https://,不然会被当成搜索词。",
-        "打开后核对地址栏:域名正好是 **woofi.com**,多一个字母、少一个点都不行。",
-        "✗ 如果连接钱包时弹出 WE'RE SORRY(你所在的地区不能使用),请停下:这份指南不提供绕过地区限制的办法。"
+        "先点一下这个网址,复制下来:`https://woofi.com/stake`",
+        "下面是币安钱包里的走法,一下一张图。用别的钱包,就在它的 DApp 浏览器里粘贴这个网址打开。"
+      ],
+      "images": [
+        {"src": "bn-wallet.webp", "caption": "① 打开币安 App,点顶上的 **钱包**(图里的余额已打码)"},
+        {"src": "bn-discover.webp", "caption": "② 点底部的 **发现**。左上角选中的要是有这笔钱的那个钱包(比如 Wallet1),不是就点它切换"},
+        {"src": "bn-search.webp", "caption": "③ 点顶上的搜索框「搜索 DApp 或输入网址」"},
+        {"src": "bn-allow.webp", "caption": "④ 苹果手机会问能不能粘贴,点 **允许粘贴**(安卓手机没有这一步)"},
+        {"src": "bn-paste.webp", "caption": "⑤ 长按搜索框,点 **粘贴**"},
+        {"src": "bn-go.webp", "caption": "⑥ 点下面出现的那一行 **woofi.com/stake**"},
+        {"src": "bn-history.webp", "caption": "✗ 别点「历史记录」里的 WOOFi:那一条只记了首页,点了会先到介绍页,还得多点三下"},
+        {"src": "bn-stake.webp", "caption": "⑦ 打开就是质押页。核对顶上写的是 **woofi.com**:多一个字母、少一个点都不行"}
       ],
       "copy": ["https://woofi.com/stake"]
     },
@@ -101,7 +111,8 @@
         {"src": "connect-2.webp", "caption": "① 选 **Detected Wallet**:就是你正在用的这个 App 里的钱包 ② 在币安 App 里选 **Binance** 也行。钱包弹出连接请求,来源是 woofi.com 就点「连接」"},
         {"src": "connect-3.webp", "caption": "① 右上角显示你的地址(图里已打码),应该是 {{addrShort}} ② 这个图标是当前网络,点它"},
         {"src": "connect-4.webp", "caption": "① 选 **Arbitrum**,钱包弹出切换网络请求就点确认。已经是 Arbitrum(名字后面有小圆点)就点右上角 × 关掉"}
-      ]
+      ],
+      "items": ["✗ 如果连接钱包时弹出 WE'RE SORRY(你所在的地区不能使用),请停下:这份指南不提供绕过地区限制的办法。"]
     },
     {
       "id": "claim",

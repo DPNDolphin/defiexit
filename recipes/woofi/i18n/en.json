@@ -55,16 +55,26 @@
     "open": {
       "title": "Open the official site in your wallet app",
       "items": [
-        "Open your wallet app (for example, Wallet in the Binance app) and make sure the selected wallet is the one that holds this money.",
-        "Use the wallet's DApp browser to open `https://woofi.com/stake`. Include https://, or it's treated as a search.",
-        "Check the address bar: the domain must be exactly **woofi.com**. One extra letter or a missing dot means stop.",
-        "✗ If a WE'RE SORRY message says your region isn't supported when you connect, stop here. This guide won't help you get around regional restrictions."
+        "First tap this address to copy it: `https://woofi.com/stake`",
+        "Below is how it goes in the Binance wallet, one picture per tap. The pictures show the Chinese Binance app; the English one has the same layout. In another wallet, paste this address into its DApp browser."
+      ],
+      "images": [
+        "① Open the Binance app and tap **Wallet** at the top (the balance in the picture is hidden)",
+        "② Tap **Discover** at the bottom. The wallet selected at the top left must be the one holding this money (for example Wallet1). If it isn't, tap it to switch",
+        "③ Tap the search box at the top (Search DApp or enter URL)",
+        "④ An iPhone asks whether to allow pasting: tap **Allow Paste** (Android phones skip this)",
+        "⑤ Press and hold the search box, then tap **Paste**",
+        "⑥ Tap the row that appears below: **woofi.com/stake**",
+        "✗ Don't tap WOOFi under History: it only saved the home page, which opens the intro page and costs you three extra taps",
+        "⑦ It opens straight on the staking page. Check that the top says **woofi.com**: one extra letter or a missing dot means stop"
       ],
       "situations": {
         "search-instead": {"see": "Typing the address brings up search results", "do": "Include `https://` and type the full address: `https://woofi.com/stake`."},
         "restricted": {"see": "A WE'RE SORRY message says your region isn't supported", "do": "Stop here. WOOFi doesn't serve your region, and this guide won't help you get around regional restrictions. You can ask in WOOFi's official Discord (see below)."},
         "not-sure": {"see": "Not sure this is the official site", "do": "Look at the address bar: the domain must be exactly **woofi.com**. If it isn't, close the page and type the address yourself. Don't tap links other people send you."},
-        "old-domain": {"see": "Your bookmark says fi.woo.org", "do": "That's WOOFi's old address and it now redirects to woofi.com. Go by what the address bar ends up showing: woofi.com."}
+        "old-domain": {"see": "Your bookmark says fi.woo.org", "do": "That's WOOFi's old address and it now redirects to woofi.com. Go by what the address bar ends up showing: woofi.com."},
+        "history": {"see": "You tapped WOOFi under History and got the intro page (big SWAP AND EARN headline, a LAUNCH APP button)", "do": "Tap the orange **LAUNCH APP** in the middle. It opens the price chart trading page first; then tap the three lines at the top left → **Stake** to reach the staking page. Next time, paste the full address instead of using History."},
+        "no-paste": {"see": "Holding the search box doesn't show Paste", "do": "Come back to this page and tap the address again to copy it. On an iPhone, tap Allow Paste when asked. If it still doesn't work, type `https://woofi.com/stake` by hand."}
       }
     },
     "connect": {
@@ -76,6 +86,7 @@
         "① Your address shows at the top right (hidden in the screenshot). It should be {{addrShort}} ② This icon is the current network. Tap it",
         "① Pick **Arbitrum** and confirm the network switch in your wallet. If it's already Arbitrum (a small dot after the name), close the menu with the × at the top right"
       ],
+      "items": ["✗ If a WE'RE SORRY message says your region isn't supported when you connect, stop here. This guide won't help you get around regional restrictions."],
       "situations": {
         "perps-page": {"see": "After connecting, I see a price chart trading page, not the staking page", "do": "That's WOOFi's perpetuals trading page. Tap the three lines at the top left → **Stake** to get back to the staking page. If the top right says Connect Wallet, connect again."},
         "no-popup": {"see": "Tapped Connect Wallet, but the wallet didn't ask to connect", "do": "Open the page inside your wallet app's own DApp browser (step 1). If Detected Wallet does nothing, reopen the page and try Binance."},

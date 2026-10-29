@@ -195,6 +195,30 @@ test("WOOFi 第 3–5 步:一下点击一张图,编号在这一步里接着数;�
   assert.ok(enHtml.includes('src="/r/woofi/img/perps-earn-en.webp"'));
 });
 
+test("WOOFi 第 1 步:币安钱包里一下一张图(录屏)——先复制,发现 → 搜索框 → 允许粘贴 → 粘贴 → 点那一行;别点历史记录", () => {
+  // 10-29 老板两段录屏:点历史记录里的 WOOFi 只会打开首页(→ 介绍页 → LAUNCH APP → K 线页);粘贴完整网址再点那一行,直接是质押页
+  const r = JSON.parse(read("recipes/woofi/recipe.json"));
+  const en = localize(r, JSON.parse(read("recipes/woofi/i18n/en.json")), "woofi/en.json");
+  const nums = (c) => [...c].filter((ch) => "①②③④⑤⑥⑦⑧⑨".includes(ch)).map((ch) => "①②③④⑤⑥⑦⑧⑨".indexOf(ch) + 1);
+  for (const L of [r, en]) {
+    const s = L.steps.find((x) => x.id === "open");
+    assert.deepEqual(s.images.map((im) => im.src), ["bn-wallet.webp", "bn-discover.webp", "bn-search.webp", "bn-allow.webp", "bn-paste.webp", "bn-go.webp", "bn-history.webp", "bn-stake.webp"]);
+    const taps = s.images.filter((im) => !im.caption.startsWith("✗"));
+    assert.deepEqual(taps.map((im) => nums(im.caption)).flat(), [1, 2, 3, 4, 5, 6, 7], "编号要从 1 接着数,一张图一个");
+    assert.ok(s.images.find((im) => im.src === "bn-history.webp").caption.startsWith("✗"), "历史记录那张是「别点」");
+    assert.ok(s.items[0].includes("https://woofi.com/stake"), "第一句就让人先复制网址");
+    for (const id of ["history", "no-paste"]) assert.ok(s.situations.find((x) => x.id === id), `缺常见情况 ${id}`);
+    // 地区限制的提醒放在连接那一步的图后面
+    const c = L.steps.find((x) => x.id === "connect");
+    assert.ok(c.items?.some((x) => x.startsWith("✗") && x.includes("WE'RE SORRY")), "连接那一步缺地区限制的提醒");
+  }
+  const zh = read("dist/r/woofi/index.html");
+  const step1 = zh.slice(zh.indexOf('id="s-open"'), zh.indexOf('id="s-connect"'));
+  // 「点下面那一行」写的是 woofi.com/stake,不能变成复制按钮;第一句里的完整网址才是
+  assert.equal((step1.match(/data-copy="https:\/\/woofi\.com\/stake"/g) || []).length >= 1, true);
+  assert.ok(step1.indexOf("bn-wallet.webp") > step1.indexOf("https://woofi.com/stake"), "先复制,再看图");
+});
+
 test("首页如实写作者本人的实测、不放累计金额;每份指南有实测记录;隐私说明列全查询的地方", () => {
   const zh = read("dist/index.html"), en = read("dist/en/index.html");
   assert.match(zh, /<p class="proof">[\s\S]*?实测取回 4 次[\s\S]*?目前还没有经过核实的其他用户案例/);
