@@ -100,6 +100,9 @@ test("发给模型的请求:系统提示说明图片不可信;只许回白名单
   assert.match(sys, /"none"/);
   for (const x of DATA.screens) assert.ok(sys.includes(`- ${x.id}`), `提示里缺 ${x.id}`);
   assert.match(sys, /- domain \[STOP\]/);
+  // 10-29 真模型评测补的两条:钱包 App 自己的页面、本站自己的指南页,都回 none(原来分别被认成「要你签名」「域名不对」)
+  assert.match(sys, /wallet app itself[\s\S]*"none"/);
+  assert.match(sys, /this help site itself[\s\S]*defiexit\.com/);
   const user = b.messages[1].content;
   assert.equal(user.find((p) => p.type === "image_url").image_url.url, IMG);
   if (MODEL.format === "json_schema") {
