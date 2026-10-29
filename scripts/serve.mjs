@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 import { headers } from "./build.mjs";
 import { site } from "./site.mjs";
 import { onRequest as see } from "../functions/api/see.js";
+import { handle as assets } from "../functions/api/assets.js";
 
 const DIST = join(dirname(fileURLToPath(import.meta.url)), "..", "dist");
 const PORT = Number(process.argv[2] || 4321);
@@ -40,8 +41,26 @@ const fakeEnv = {
   SEE_TIMEOUT_MS: process.env.DX_FAKE_TIMEOUT_MS || "",
 };
 
+// /api/assets 用假 Zerion:DX_FAKE_ZERION=ok(编的数据,test/fixtures/zerion-positions.json)/ empty / busy / error;不设就当没配密钥(off)
+const FIXTURE = join(dirname(fileURLToPath(import.meta.url)), "..", "test", "fixtures", "zerion-positions.json");
+async function fakeZerion() {
+  const mode = process.env.DX_FAKE_ZERION;
+  await new Promise((r) => setTimeout(r, 600));
+  if (mode === "busy") return new Response("{}", { status: 429 });
+  if (mode === "error") return new Response("{}", { status: 500 });
+  return new Response(mode === "empty" ? '{"data":[]}' : readFileSync(FIXTURE), { status: 200, headers: { "Content-Type": "application/json" } });
+}
+
 createServer(async (req, res) => {
   const url = new URL(req.url, `http://127.0.0.1:${PORT}`);
+  if (url.pathname === "/api/assets") {
+    const chunks = [];
+    for await (const c of req) chunks.push(c);
+    const body = ["GET", "HEAD"].includes(req.method) ? undefined : Buffer.concat(chunks);
+    const r = await assets(new Request(url, { method: req.method, headers: req.headers, body }), { ZERION_API_KEY: process.env.DX_FAKE_ZERION ? "fake" : "" }, fakeZerion);
+    res.writeHead(r.status, Object.fromEntries(r.headers));
+    return res.end(Buffer.from(await r.arrayBuffer()));
+  }
   if (url.pathname === "/api/see") {
     const chunks = [];
     for await (const c of req) chunks.push(c);

@@ -10,12 +10,15 @@ const recipes = [...document.querySelectorAll("#recipes li")].map((li) => ({
   ...li.dataset,
   milestones: JSON.parse(li.dataset.milestones || "[]"),
   chips: JSON.parse(li.dataset.chips || "[]"),
+  zerion: JSON.parse(li.dataset.zerion || "null"),
 }));
 const usd = (x) => floorTo(x, 2).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const $ = (id) => document.getElementById(id);
 const badge = $("sumBadge"), line = $("sumLine"), big = $("sumBig"), note = $("sumNote"), cards = $("cards");
 const addr = (new URLSearchParams(location.hash.slice(1)).get("a") || "").trim();
 const results = new Map(); // 配方 id → { res } 或 { err }
+let assetsState = "pending"; // 全部资产:pending / ok / empty / off / error
+let assetsRes = null; // 全部资产查到东西时的结果
 
 // 结果卡里的小路线:你在这里 → 这个账户要走的几站 → 出口(最后一站「到账」就是出口)
 function miniRoute(r, flags) {
@@ -73,6 +76,18 @@ function render() {
     setText(big, t("about", usd(found.reduce((s, x) => s + x.res.usd, 0))));
     setText(note, t("calcNote"));
     big.hidden = note.hidden = false;
+  } else if (assetsRes?.defi.length) {
+    // 我们有指南的项目里没查到,但别的项目里存着钱:先报这个,别让用户以为地址里没钱
+    const guided = assetsRes.defi.filter(recipeFor).length;
+    setText(line, t("defiN", assetsRes.defi.length));
+    setText(big, t("about", usd(assetsRes.totals.defi)));
+    setText(note, guided ? t("defiGuided", guided) : t("defiNoGuide"));
+    big.hidden = note.hidden = false;
+  } else if (assetsRes?.wallet.length && !failed.length) {
+    setText(line, t("walletOnly"));
+    setText(big, t("about", usd(assetsRes.totals.wallet)));
+    setText(note, t("walletOnlyNote"));
+    big.hidden = note.hidden = false;
   } else if (failed.length) {
     setText(line, t("someFailed"));
   } else {
@@ -84,12 +99,13 @@ function render() {
     ...failed.map((x) => lineRow(x.r, t("failRow", errText(t, x.err)), true)),
     ...empty.map((x) => lineRow(x.r, t("noneRow"))),
   ];
-  if (!found.length && !dust.length && !failed.length) {
-    // 只说这次查了哪几个项目:没查到不等于钱包里没钱
+  if (!found.length && !dust.length && !failed.length && !assetsRes) {
+    // 只说这次查了哪几个项目:没查到不等于钱包里没钱。下面查了全部资产的,就指过去;没查成才叫用户自己去 DeBank 看
+    const all = assetsState === "ok" || assetsState === "empty";
     nodes.push(el("section", { class: "nothing" },
       el("h2", {}, t("nothingH", recipes.length)),
-      el("p", { class: "sub" }, t("nothingP", recipes.map((r) => r.protocol).join(lang === "en" ? ", " : "、"))),
-      el("p", { class: "sub" }, t("nothingTip")),
+      all ? el("p", { class: "sub" }, t("nothingP2")) : el("p", { class: "sub" }, t("nothingP", recipes.map((r) => r.protocol).join(lang === "en" ? ", " : "、"))),
+      all ? null : el("p", { class: "sub" }, t("nothingTip")),
       el("a", { class: "btn primary block", href: `${P}/` }, t("another"))));
   }
   cards.replaceChildren(...nodes);
@@ -114,6 +130,65 @@ async function run(list) {
   render();
 }
 
+// ---------- 全部资产:经本站接口交给 Zerion 查各条链上的余额和项目仓位;接口没配好(off)这一块就不出现 ----------
+
+const assetsBox = $("assets");
+const qty = (x) => (x >= 1000 ? Math.round(x).toLocaleString("en-US") : String(Number(x.toPrecision(6))));
+// Zerion 查到的项目,项目名和链都对上我们的配方(配方 JSON 的 zerion 字段)才算有指南;同名项目在别的链上不算
+const recipeFor = (g) => recipes.find((r) => r.zerion?.chains.includes(g.chain) && r.zerion.apps.some((a) => g.app.toLowerCase().includes(a.toLowerCase())));
+
+async function loadAssets() {
+  assetsBox.hidden = false;
+  assetsBox.replaceChildren(el("h2", {}, t("assetsH")), el("p", { class: "sub" }, el("span", { class: "spin", "aria-hidden": "true" }), " ", t("assetsLoading")));
+  let res = null;
+  try {
+    const r = await fetch("/api/assets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ a: addr }), credentials: "omit", cache: "no-store", referrerPolicy: "no-referrer" });
+    res = await r.json();
+  } catch { /* 当没查成 */ }
+  paintAssets(res);
+  render(); // 「没查到」那段的说法跟着变
+}
+
+function defiCard(g) {
+  const r = recipeFor(g);
+  const rows = g.items.map((x) => ({
+    label: `${t("assetType", x.type)} · ${x.sym}`,
+    hint: x.usd === null ? t("assetsUnknown") : `${qty(x.qty)} ${x.sym}`,
+    value: x.usd === null ? `${qty(x.qty)} ${x.sym}` : `$${usd(x.usd)}`,
+  }));
+  return el("article", { class: "rcard" },
+    el("div", { class: "rcard-h" }, el("h4", {}, g.app), el("span", { class: "chip" }, g.chain)),
+    rowsTable(rows),
+    g.debt > 0 ? el("ul", { class: "warns" }, el("li", {}, icon("alert"), el("span", {}, t("assetsDebt", usd(g.debt))))) : null,
+    r ? el("a", { class: "btn primary block", href: `${P}/r/${r.id}/#a=${addr}&go=1` }, t("assetsHasGuide"), icon("arrowRight"))
+      : el("p", { class: "sub" }, t("assetsNoGuide")));
+}
+
+function walletRow(g) {
+  const list = g.tokens.map((x) => `${x.sym} ${qty(x.qty)}`).join(" · ") + (g.more ? ` · ${t("assetsMore", g.more)}` : "");
+  return el("div", { class: "aw" }, el("b", {}, g.chain), el("span", { class: "mono" }, `$${usd(g.usd)}`), el("small", {}, list));
+}
+
+function paintAssets(res) {
+  const s = res?.status;
+  assetsState = s === "ok" || s === "empty" || s === "off" ? s : "error";
+  assetsRes = s === "ok" ? res : null;
+  if (s === "off") return void (assetsBox.hidden = true);
+  const head = [el("h2", {}, t("assetsH")), el("p", { class: "sub" }, t("assetsSub"))];
+  const priv = el("p", { class: "fine" }, t("assetsPriv"));
+  if (s === "empty") return assetsBox.replaceChildren(...head, el("p", { class: "sub" }, t("assetsEmpty")), priv);
+  if (s !== "ok") {
+    const b = el("button", { class: "btn small", type: "button" }, icon("refresh"), t("retry"));
+    b.addEventListener("click", loadAssets);
+    return assetsBox.replaceChildren(...head, el("p", { class: "sub" }, t(s === "busy" ? "assetsBusy" : "assetsFail")), b);
+  }
+  assetsBox.replaceChildren(...head,
+    ...(res.defi.length ? [el("h3", {}, t("assetsDefiH", usd(res.totals.defi))), el("p", { class: "sub" }, t("assetsDefiP")), ...res.defi.map(defiCard)] : []),
+    ...(res.wallet.length ? [el("h3", {}, t("assetsWalletH", usd(res.totals.wallet))), el("p", { class: "sub" }, t("assetsWalletP")), el("div", { class: "awallet" }, ...res.wallet.map(walletRow))] : []),
+    res.dust ? el("p", { class: "fine" }, t("assetsDust", res.dust)) : null,
+    priv);
+}
+
 // 同一个标签页里只改了 # 后面的地址:整页重新查,不让旧账户的结果挂着新地址
 window.addEventListener("hashchange", () => location.reload());
 
@@ -131,4 +206,5 @@ if (!isEvmAddress(addr)) {
   chip.textContent = shortAddr(addr);
   chip.hidden = false;
   run(recipes);
+  loadAssets();
 }

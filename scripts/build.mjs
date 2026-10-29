@@ -247,7 +247,7 @@ function checkPage(tx, recipes) {
   const list = recipes.map((r) => {
     const milestones = r.steps.filter((s) => s.milestone).map((s) => ({ label: punct(s.milestone, tx.lang), when: s.when || null }));
     const chips = (r.chips || []).map((c) => ({ icon: c.icon, text: punct(c.text, tx.lang) }));
-    return `<li data-id="${esc(r.id)}" data-detector="${esc(r.detector)}" data-protocol="${esc(r.protocol)}" data-route="${esc(r.route)}" data-milestones="${esc(JSON.stringify(milestones))}" data-chips="${esc(JSON.stringify(chips))}"></li>`;
+    return `<li data-id="${esc(r.id)}" data-detector="${esc(r.detector)}" data-protocol="${esc(r.protocol)}" data-route="${esc(r.route)}" data-milestones="${esc(JSON.stringify(milestones))}" data-chips="${esc(JSON.stringify(chips))}" data-zerion="${esc(JSON.stringify(r.zerion || null))}"></li>`;
   }).join("");
   return page({
     tx, kind: "check", path: "/check/", script: "check.js", noindex: true,
@@ -263,6 +263,7 @@ function checkPage(tx, recipes) {
     <p class="sub" id="sumNote" hidden></p>
   </section>
   <div id="cards" class="cards"></div>
+  <section id="assets" class="assets" aria-live="polite" hidden></section>
   <p class="fine resfoot">${tx.h("resultsFoot")}</p>
   <ul id="recipes" hidden>${list}</ul>
 </div>`,

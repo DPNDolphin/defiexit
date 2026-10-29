@@ -5,6 +5,7 @@
   "protocol": "WOOFi",
   "route": "WOOFi → Arbitrum",
   "detector": "woofi",
+  "zerion": { "apps": ["WOOFi"], "chains": ["Arbitrum"] },
   "lastVerified": "2026-10-29",
   "verified": "2026-10-29 作者用自己的账户,在币安钱包里照这份指南实测取回:领奖励、解押、取金库三笔交易发给的合约和带的数据都和核对卡一致,三样全部到账。页面是 10-28 在官网逐屏核对的(只读假钱包)",
   "tested": true,

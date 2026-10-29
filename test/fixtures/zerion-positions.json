@@ -1,0 +1,735 @@
+{
+ "links": {
+  "self": "https://api.zerion.io/v1/wallets/0x0/positions/"
+ },
+ "data": [
+  {
+   "type": "positions",
+   "id": "p1",
+   "attributes": {
+    "name": "Asset",
+    "position_type": "wallet",
+    "quantity": {
+     "int": "0",
+     "decimals": 18,
+     "float": 0.5,
+     "numeric": "0.5"
+    },
+    "value": 1500.0,
+    "price": 3000.0,
+    "fungible_info": {
+     "name": "ETH",
+     "symbol": "ETH",
+     "icon": null,
+     "flags": {
+      "verified": true
+     },
+     "implementations": []
+    },
+    "flags": {
+     "displayable": true,
+     "is_trash": false
+    },
+    "application_metadata": {}
+   },
+   "relationships": {
+    "chain": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "chains",
+      "id": "ethereum"
+     }
+    },
+    "fungible": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "fungibles",
+      "id": "eth"
+     }
+    }
+   }
+  },
+  {
+   "type": "positions",
+   "id": "p2",
+   "attributes": {
+    "name": "Asset",
+    "position_type": "wallet",
+    "quantity": {
+     "int": "0",
+     "decimals": 18,
+     "float": 20.0,
+     "numeric": "20.0"
+    },
+    "value": 20.0,
+    "price": 1.0,
+    "fungible_info": {
+     "name": "USDC",
+     "symbol": "USDC",
+     "icon": null,
+     "flags": {
+      "verified": true
+     },
+     "implementations": []
+    },
+    "flags": {
+     "displayable": true,
+     "is_trash": false
+    },
+    "application_metadata": {}
+   },
+   "relationships": {
+    "chain": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "chains",
+      "id": "base"
+     }
+    },
+    "fungible": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "fungibles",
+      "id": "usdc"
+     }
+    }
+   }
+  },
+  {
+   "type": "positions",
+   "id": "p3",
+   "attributes": {
+    "name": "Asset",
+    "position_type": "wallet",
+    "quantity": {
+     "int": "0",
+     "decimals": 18,
+     "float": 0.25,
+     "numeric": "0.25"
+    },
+    "value": 28.0,
+    "price": 112.0,
+    "fungible_info": {
+     "name": "OKB",
+     "symbol": "OKB",
+     "icon": null,
+     "flags": {
+      "verified": true
+     },
+     "implementations": []
+    },
+    "flags": {
+     "displayable": true,
+     "is_trash": false
+    },
+    "application_metadata": {}
+   },
+   "relationships": {
+    "chain": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "chains",
+      "id": "okbchain"
+     }
+    },
+    "fungible": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "fungibles",
+      "id": "okb"
+     }
+    }
+   }
+  },
+  {
+   "type": "positions",
+   "id": "p4",
+   "attributes": {
+    "name": "Asset",
+    "position_type": "wallet",
+    "quantity": {
+     "int": "0",
+     "decimals": 18,
+     "float": 0.01,
+     "numeric": "0.01"
+    },
+    "value": 6.5,
+    "price": 650.0,
+    "fungible_info": {
+     "name": "BNB",
+     "symbol": "BNB",
+     "icon": null,
+     "flags": {
+      "verified": true
+     },
+     "implementations": []
+    },
+    "flags": {
+     "displayable": true,
+     "is_trash": false
+    },
+    "application_metadata": {}
+   },
+   "relationships": {
+    "chain": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "chains",
+      "id": "binance-smart-chain"
+     }
+    },
+    "fungible": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "fungibles",
+      "id": "bnb"
+     }
+    }
+   }
+  },
+  {
+   "type": "positions",
+   "id": "p5",
+   "attributes": {
+    "name": "Asset",
+    "position_type": "wallet",
+    "quantity": {
+     "int": "0",
+     "decimals": 18,
+     "float": 3.0,
+     "numeric": "3.0"
+    },
+    "value": 0.004,
+    "price": 0.0013333333333333333,
+    "fungible_info": {
+     "name": "DUST",
+     "symbol": "DUST",
+     "icon": null,
+     "flags": {
+      "verified": true
+     },
+     "implementations": []
+    },
+    "flags": {
+     "displayable": true,
+     "is_trash": false
+    },
+    "application_metadata": {}
+   },
+   "relationships": {
+    "chain": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "chains",
+      "id": "polygon"
+     }
+    },
+    "fungible": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "fungibles",
+      "id": "dust"
+     }
+    }
+   }
+  },
+  {
+   "type": "positions",
+   "id": "p6",
+   "attributes": {
+    "name": "Asset",
+    "position_type": "wallet",
+    "quantity": {
+     "int": "0",
+     "decimals": 18,
+     "float": 100.0,
+     "numeric": "100.0"
+    },
+    "value": 100.0,
+    "price": 1.0,
+    "fungible_info": {
+     "name": "aEthUSDC",
+     "symbol": "aEthUSDC",
+     "icon": null,
+     "flags": {
+      "verified": true
+     },
+     "implementations": []
+    },
+    "flags": {
+     "displayable": false,
+     "is_trash": false
+    },
+    "application_metadata": {}
+   },
+   "relationships": {
+    "chain": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "chains",
+      "id": "ethereum"
+     }
+    },
+    "fungible": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "fungibles",
+      "id": "aethusdc"
+     }
+    }
+   }
+  },
+  {
+   "type": "positions",
+   "id": "p7",
+   "attributes": {
+    "name": "Asset",
+    "position_type": "staked",
+    "quantity": {
+     "int": "0",
+     "decimals": 18,
+     "float": 500.0,
+     "numeric": "500.0"
+    },
+    "value": 40.0,
+    "price": 0.08,
+    "fungible_info": {
+     "name": "WOO",
+     "symbol": "WOO",
+     "icon": null,
+     "flags": {
+      "verified": true
+     },
+     "implementations": []
+    },
+    "flags": {
+     "displayable": true,
+     "is_trash": false
+    },
+    "application_metadata": {
+     "name": "WOOFi",
+     "url": "https://example.invalid/"
+    },
+    "protocol": "WOOFi"
+   },
+   "relationships": {
+    "chain": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "chains",
+      "id": "arbitrum"
+     }
+    },
+    "fungible": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "fungibles",
+      "id": "woo"
+     }
+    }
+   }
+  },
+  {
+   "type": "positions",
+   "id": "p8",
+   "attributes": {
+    "name": "Asset",
+    "position_type": "reward",
+    "quantity": {
+     "int": "0",
+     "decimals": 18,
+     "float": 1.5,
+     "numeric": "1.5"
+    },
+    "value": 1.5,
+    "price": 1.0,
+    "fungible_info": {
+     "name": "USDC",
+     "symbol": "USDC",
+     "icon": null,
+     "flags": {
+      "verified": true
+     },
+     "implementations": []
+    },
+    "flags": {
+     "displayable": true,
+     "is_trash": false
+    },
+    "application_metadata": {
+     "name": "WOOFi",
+     "url": "https://example.invalid/"
+    },
+    "protocol": "WOOFi"
+   },
+   "relationships": {
+    "chain": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "chains",
+      "id": "arbitrum"
+     }
+    },
+    "fungible": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "fungibles",
+      "id": "usdc"
+     }
+    }
+   }
+  },
+  {
+   "type": "positions",
+   "id": "p9",
+   "attributes": {
+    "name": "Asset",
+    "position_type": "deposit",
+    "quantity": {
+     "int": "0",
+     "decimals": 18,
+     "float": 100.0,
+     "numeric": "100.0"
+    },
+    "value": 100.0,
+    "price": 1.0,
+    "fungible_info": {
+     "name": "USDC",
+     "symbol": "USDC",
+     "icon": null,
+     "flags": {
+      "verified": true
+     },
+     "implementations": []
+    },
+    "flags": {
+     "displayable": true,
+     "is_trash": false
+    },
+    "application_metadata": {
+     "name": "Aave V3",
+     "url": "https://example.invalid/"
+    },
+    "protocol": "Aave V3"
+   },
+   "relationships": {
+    "chain": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "chains",
+      "id": "ethereum"
+     }
+    },
+    "fungible": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "fungibles",
+      "id": "usdc"
+     }
+    }
+   }
+  },
+  {
+   "type": "positions",
+   "id": "p10",
+   "attributes": {
+    "name": "Asset",
+    "position_type": "loan",
+    "quantity": {
+     "int": "0",
+     "decimals": 18,
+     "float": 30.0,
+     "numeric": "30.0"
+    },
+    "value": 30.0,
+    "price": 1.0,
+    "fungible_info": {
+     "name": "USDT",
+     "symbol": "USDT",
+     "icon": null,
+     "flags": {
+      "verified": true
+     },
+     "implementations": []
+    },
+    "flags": {
+     "displayable": true,
+     "is_trash": false
+    },
+    "application_metadata": {
+     "name": "Aave V3",
+     "url": "https://example.invalid/"
+    },
+    "protocol": "Aave V3"
+   },
+   "relationships": {
+    "chain": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "chains",
+      "id": "ethereum"
+     }
+    },
+    "fungible": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "fungibles",
+      "id": "usdt"
+     }
+    }
+   }
+  },
+  {
+   "type": "positions",
+   "id": "p11",
+   "attributes": {
+    "name": "Asset",
+    "position_type": "deposit",
+    "quantity": {
+     "int": "0",
+     "decimals": 18,
+     "float": 0.01,
+     "numeric": "0.01"
+    },
+    "value": 30.0,
+    "price": 3000.0,
+    "fungible_info": {
+     "name": "WETH",
+     "symbol": "WETH",
+     "icon": null,
+     "flags": {
+      "verified": true
+     },
+     "implementations": []
+    },
+    "flags": {
+     "displayable": true,
+     "is_trash": false
+    },
+    "application_metadata": {
+     "name": "Uniswap V3",
+     "url": "https://example.invalid/"
+    },
+    "protocol": "Uniswap V3"
+   },
+   "relationships": {
+    "chain": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "chains",
+      "id": "base"
+     }
+    },
+    "fungible": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "fungibles",
+      "id": "weth"
+     }
+    }
+   }
+  },
+  {
+   "type": "positions",
+   "id": "p12",
+   "attributes": {
+    "name": "Asset",
+    "position_type": "deposit",
+    "quantity": {
+     "int": "0",
+     "decimals": 18,
+     "float": 30.0,
+     "numeric": "30.0"
+    },
+    "value": 30.0,
+    "price": 1.0,
+    "fungible_info": {
+     "name": "USDC",
+     "symbol": "USDC",
+     "icon": null,
+     "flags": {
+      "verified": true
+     },
+     "implementations": []
+    },
+    "flags": {
+     "displayable": true,
+     "is_trash": false
+    },
+    "application_metadata": {
+     "name": "Uniswap V3",
+     "url": "https://example.invalid/"
+    },
+    "protocol": "Uniswap V3"
+   },
+   "relationships": {
+    "chain": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "chains",
+      "id": "base"
+     }
+    },
+    "fungible": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "fungibles",
+      "id": "usdc"
+     }
+    }
+   }
+  },
+  {
+   "type": "positions",
+   "id": "p13",
+   "attributes": {
+    "name": "Asset",
+    "position_type": "deposit",
+    "quantity": {
+     "int": "0",
+     "decimals": 18,
+     "float": 10.0,
+     "numeric": "10.0"
+    },
+    "value": null,
+    "price": null,
+    "fungible_info": {
+     "name": "XLP",
+     "symbol": "XLP",
+     "icon": null,
+     "flags": {
+      "verified": true
+     },
+     "implementations": []
+    },
+    "flags": {
+     "displayable": true,
+     "is_trash": false
+    },
+    "application_metadata": {
+     "name": "ExampleSwap",
+     "url": "https://example.invalid/"
+    },
+    "protocol": "ExampleSwap"
+   },
+   "relationships": {
+    "chain": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "chains",
+      "id": "okbchain"
+     }
+    },
+    "fungible": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "fungibles",
+      "id": "xlp"
+     }
+    }
+   }
+  },
+  {
+   "type": "positions",
+   "id": "p14",
+   "attributes": {
+    "name": "Asset",
+    "position_type": "wallet",
+    "quantity": {
+     "int": "0",
+     "decimals": 18,
+     "float": 1000.0,
+     "numeric": "1000.0"
+    },
+    "value": 9999.0,
+    "price": 9.999,
+    "fungible_info": {
+     "name": "SCAM",
+     "symbol": "SCAM",
+     "icon": null,
+     "flags": {
+      "verified": true
+     },
+     "implementations": []
+    },
+    "flags": {
+     "displayable": true,
+     "is_trash": true
+    },
+    "application_metadata": {}
+   },
+   "relationships": {
+    "chain": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "chains",
+      "id": "ethereum"
+     }
+    },
+    "fungible": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "fungibles",
+      "id": "scam"
+     }
+    }
+   }
+  }
+ ]
+}
