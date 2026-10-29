@@ -250,7 +250,14 @@ meForm.addEventListener("submit", async (e) => {
   if (!isEvmAddress(a)) return toast(t("badAddr"));
   if (await personalize(a)) writeHash(here?.dataset.id, false);
 });
-mountWalletRead(meInput, t);
+// 在钱包里打开、链接里也没带地址:自动读钱包地址,直接按这个账户算好数字和步骤
+mountWalletRead(meInput, t, {
+  auto: !isEvmAddress(clean(new URLSearchParams(location.hash.slice(1)).get("a") || "")),
+  onAddress: async (a) => {
+    if (addr === a) return;
+    if (await personalize(a)) writeHash(here?.dataset.id, false);
+  },
+});
 
 // ---------- 遇到问题:底部弹层 ----------
 
@@ -380,7 +387,7 @@ function addrForm() {
     setText(sitsH, t("sitsH"));
     runDiag();
   });
-  mountWalletRead(input, t);
+  mountWalletRead(input, t, { onAddress: () => f.requestSubmit() });
   return f;
 }
 
