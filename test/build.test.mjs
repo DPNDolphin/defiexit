@@ -196,7 +196,7 @@ test("WOOFi 第 3–5 步:一下点击一张图,编号在这一步里接着数;�
 });
 
 test("WOOFi 第 1 步:币安钱包里一下一张图(录屏)——先复制,发现 → 搜索框 → 允许粘贴 → 粘贴 → 点那一行;别点历史记录", () => {
-  // 10-29 老板两段录屏:点历史记录里的 WOOFi 只会打开首页(→ 介绍页 → LAUNCH APP → K 线页);粘贴完整网址再点那一行,直接是质押页
+  // 10-29 两段手机录屏:点历史记录里的 WOOFi 只会打开首页(→ 介绍页 → LAUNCH APP → K 线页);粘贴完整网址再点那一行,直接是质押页
   const r = JSON.parse(read("recipes/woofi/recipe.json"));
   const en = localize(r, JSON.parse(read("recipes/woofi/i18n/en.json")), "woofi/en.json");
   const nums = (c) => [...c].filter((ch) => "①②③④⑤⑥⑦⑧⑨".includes(ch)).map((ch) => "①②③④⑤⑥⑦⑧⑨".indexOf(ch) + 1);
