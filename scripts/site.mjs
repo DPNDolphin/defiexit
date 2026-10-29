@@ -12,5 +12,5 @@ export const site = {
   // 截图求助(页面图鉴里的「发截图给 AI 认」,服务端是 functions/api/see.js)。关掉就改成 false,页面上不出现这个入口
   shotAI: true,
   // Cloudflare 人机验证(Turnstile)的站点密钥:后台建好后填进来;服务端同时要配 TURNSTILE_SECRET。null 时两边都不启用
-  turnstile: null,
+  turnstile: "0x4AAAAAAFrRJ1KeCd4glj7F",
 };

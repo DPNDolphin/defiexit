@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { build, splitMarks, localize } from "../scripts/build.mjs";
 import { STR } from "../src/js/lib/i18n.js";
+import { site } from "../scripts/site.mjs";
 
 const read = (f) => readFileSync(f, "utf8");
 const PAGES = ["dist/index.html", "dist/en/index.html", "dist/check/index.html", "dist/en/check/index.html", "dist/r/hyperliquid/index.html", "dist/en/r/hyperliquid/index.html", "dist/r/woofi/index.html", "dist/en/r/woofi/index.html", "dist/404.html"];
@@ -260,7 +261,17 @@ test("截图求助:只在有图鉴的指南里出现;每张普通页面都有 2�
   const h = read("dist/_headers");
   assert.match(h, /img-src 'self' data: blob:/);
   assert.ok(!h.includes("unsafe-eval") && !h.includes("unsafe-inline"));
-  assert.ok(!h.includes("challenges.cloudflare.com"), "没配人机验证时不放开它的脚本");
+  // 人机验证:配了站点密钥,每张页面都带上它,CSP 只在脚本和小窗口两处放开 challenges.cloudflare.com;没配就哪儿都不放
+  const ts = h.match(/https:\/\/challenges\.cloudflare\.com/g)?.length ?? 0;
+  if (site.turnstile) {
+    assert.equal(ts, 2);
+    assert.match(h, /script-src 'self' https:\/\/challenges\.cloudflare\.com;/);
+    assert.match(h, /frame-src https:\/\/challenges\.cloudflare\.com;/);
+    for (const f of PAGES) assert.ok(read(f).includes(`<meta name="dx-turnstile" content="${site.turnstile}">`), `${f} 缺站点密钥`);
+  } else {
+    assert.equal(ts, 0, "没配人机验证时不放开它的脚本");
+    for (const f of PAGES) assert.ok(!read(f).includes("dx-turnstile"), `${f} 不该带站点密钥`);
+  }
 });
 
 test("图鉴答案只带路:质押页、Unstake 页签、金库取款页签不再直接叫人点 Claim / UNSTAKE / WITHDRAW", () => {
