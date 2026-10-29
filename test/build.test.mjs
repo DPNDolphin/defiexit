@@ -251,6 +251,29 @@ test("图鉴答案只带路:质押页、Unstake 页签、金库取款页签不�
   }
 });
 
+test("截图求助:停手的页面都给 AI 写了判定条件(普通交易确认弹窗不算要你签名);介绍页的答案走 LAUNCH APP → 三条横线 → 质押", () => {
+  // 10-29 真模型评测:没写判定条件时,币安的交易确认弹窗被认成「要你签名」、币安发现页被认成「域名不对」
+  const data = JSON.parse(read("dist/r/woofi/screens.json"));
+  for (const x of data.screens.filter((y) => y.stop)) assert.ok(typeof x.ai === "string" && x.ai.length > 20, `${x.id} 缺判定条件`);
+  assert.match(data.screens.find((x) => x.id === "sign").ai, /Contract call[\s\S]*answer none/);
+  assert.match(data.screens.find((x) => x.id === "domain").ai, /no address bar/);
+  // 判定条件只给服务端,页面上不出现
+  for (const f of ["dist/r/woofi/index.html", "dist/en/r/woofi/index.html"]) assert.ok(!read(f).includes("Only when") && !read(f).includes("answer none"), f);
+  // 币安钱包里点历史记录、或只开 woofi.com 会先落到介绍页,地址栏改不了网址:按录屏走通的路带回质押页
+  const zh = read("dist/r/woofi/index.html"), en = read("dist/en/r/woofi/index.html");
+  const home = (g) => g.match(/data-scr-a="home" hidden>((?:(?!<\/section>)[\s\S])*)<\/section>/)?.[1] || "";
+  assert.ok(/LAUNCH APP/.test(home(zh)) && !/地址栏/.test(home(zh)), "中文介绍页答案");
+  for (const [g, imgs] of [[zh, ["home-launch.webp", "perps-1.webp", "perps-2.webp"]], [en, ["home-launch.webp", "perps-1-en.webp", "perps-2-en.webp"]]]) {
+    const h = home(g);
+    let at = -1;
+    for (const im of imgs) {
+      const k = h.indexOf(im);
+      assert.ok(k > at, `介绍页答案的图顺序不对:${im}`);
+      at = k;
+    }
+  }
+});
+
 test("页面图鉴的英文版:文字特征条数要和中文一样", () => {
   const r = JSON.parse(read("recipes/woofi/recipe.json"));
   const en = JSON.parse(read("recipes/woofi/i18n/en.json"));

@@ -53,7 +53,7 @@
   "screensVerified": "2026-10-29",
   "screens": [
     {"id": "perps", "img": "perps-1.webp", "name": "K 线图交易页", "features": ["页面中间是一大张 K 线图(红绿蜡烛)", "左上角写着 ETH,下面有个 100x", "图上面有「图表 / 交易 / 数据」三个页签"], "do": "这是 WOOFi 的永续合约交易页,不是质押页。照下面两张图回到质押页:左上角是 Spot / Perps 切换、底部一排里有 Stake,就对了。右上角显示你的地址就接着往下做;显示 Connect Wallet 就再连一次钱包。", "images": [{"src": "perps-1.webp", "caption": "① 点左上角三条横线"}, {"src": "perps-2.webp", "caption": "② 点 **质押**(英文界面叫 Stake)"}], "after": "connect"},
-    {"id": "home", "img": "home.webp", "name": "WOOFi 介绍页(有 LAUNCH APP)", "features": ["大字标题 SWAP AND EARN ON REAL-WORLD ASSETS", "中间一个橙色的 LAUNCH APP 按钮", "往下有几个大数字,比如 Spot volume、Perps volume"], "do": "这是 WOOFi 的介绍页,不是质押页。点顶上的地址栏,重新输入 `https://woofi.com/stake` 打开。", "goto": "open"},
+    {"id": "home", "img": "home.webp", "name": "WOOFi 介绍页(有 LAUNCH APP)", "features": ["大字标题 SWAP AND EARN ON REAL-WORLD ASSETS", "中间一个橙色的 LAUNCH APP 按钮", "往下有几个大数字,比如 Spot volume、Perps volume"], "do": "这是 WOOFi 的介绍页,不是质押页。照下面三张图回到质押页:先点 **LAUNCH APP**(会先进到 K 线交易页),再点左上角三条横线 → **质押**。右上角显示你的地址就接着往下做;显示 Connect Wallet 就再连一次钱包。", "images": [{"src": "home-launch.webp", "caption": "① 点中间橙色的 **LAUNCH APP**"}, {"src": "perps-1.webp", "caption": "① 进到 K 线页后,点左上角三条横线"}, {"src": "perps-2.webp", "caption": "② 点 **质押**(英文界面叫 Stake)"}], "after": "connect"},
     {"id": "stake-new", "img": "connect-1.webp", "name": "质押页,还没连钱包", "features": ["左上角是 Spot / Perps 切换", "写着 Weekly rewards", "一个橙色的 Connect Wallet 按钮"], "do": "这就是质押页,只是还没连钱包。照第 2 步连接钱包。", "goto": "connect"},
     {"id": "wallets", "img": "connect-2.webp", "name": "让你选钱包", "features": ["标题写着 Connect your wallet", "一排钱包图标:Detected Wallet、Binance、Coinbase Wallet……", "最下面写着 powered by thirdweb"], "do": "这是选钱包的弹层。选 **Detected Wallet**;在币安 App 里选 **Binance** 也行。钱包弹出连接请求,来源是 woofi.com 就点「连接」。", "goto": "connect"},
     {"id": "networks", "img": "connect-4.webp", "name": "让你选网络", "features": ["标题写着 Switch Network", "Mainnet 下面两列网络:Ethereum、Arbitrum、Base……", "右上角有个 ×"], "do": "这是选网络的菜单。选 **Arbitrum**,钱包弹出切换网络请求就点确认。", "goto": "connect"},
@@ -61,10 +61,10 @@
     {"id": "unstake", "img": "unstake-2.webp", "name": "Unstake 页签", "features": ["Stake / Unstake 两个页签,Unstake 是橙色的", "输入框里写着 0 WOO,右边是 UNSTAKE 按钮", "下面同样有 Claim 和 Compound"], "do": "这是解押页签。点下面的按钮去「解押 WOO」那一步,照那一步的图和核对卡做。", "goto": "unstake"},
     {"id": "earn", "img": "vault-2.webp", "name": "Earn 页的金库列表", "features": ["写着 My earnings,下面有 Holdings、Monthly Profits、Average APR", "有 All vaults / My vaults 两个页签", "一个搜索框,里面写着 Try \"USDT\""], "do": "这是金库页。找网络是 Arbitrum 的 ETH 卡片,照「取出金库里的 ETH」那一步做。", "goto": "vault"},
     {"id": "vault", "img": "vault-5.webp", "name": "金库的 WITHDRAW 页签", "features": ["有 STEP 1、STEP 2 两段英文说明", "一个灰色的 REQUEST WITHDRAWAL 按钮", "最下面一行 Available for Withdrawals,右边一个小的 WITHDRAW"], "do": "这是金库的取款页签。点下面的按钮去「取出金库里的 ETH」那一步,照那一步的图和核对卡做。", "goto": "vault"},
-    {"id": "domain", "name": "地址栏的域名不是 woofi.com", "do": "马上关掉这个页面,什么都别签。自己重新输入 `https://woofi.com/stake`,不要点别人发来的链接。", "stop": true},
-    {"id": "sign", "name": "钱包要你签名一段消息,或者授权(Approve / Permit)", "do": "点「拒绝」。这份指南的每一步都只是普通交易,不用签名消息,也不用授权。关掉页面,回第 1 步重新核对网址。", "stop": true},
-    {"id": "sorry", "name": "WE'RE SORRY,说你的地区不能用", "do": "请停下:WOOFi 不对你所在的地区提供服务,这份指南不提供绕过地区限制的办法。可以去 WOOFi 官方 Discord 问。", "stop": true},
-    {"id": "blocked", "name": "弹出 Blocked Address", "do": "WOOFi 按制裁名单拦下了这个地址,这份指南帮不了。", "stop": true}
+    {"id": "domain", "ai": "The page itself looks like WOOFi (WOOFi logo, its menus or its staking page), but the browser address bar at the top shows a domain that is not exactly woofi.com. Not for wallet-app screens that have no address bar, and not for pages that do not look like WOOFi: those are none.", "name": "地址栏的域名不是 woofi.com", "do": "马上关掉这个页面,什么都别签。自己重新输入 `https://woofi.com/stake`,不要点别人发来的链接。", "stop": true},
+    {"id": "sign", "ai": "A wallet popup asking to sign a message (Signature request, Sign message, 签名请求, 消息签名) or to approve token spending (Approve, Permit, 授权, allowance). A normal transaction confirmation (Contract call, 合约调用, Confirm transaction, showing an amount you will receive and Confirm / 确认 buttons) is NOT this: answer none.", "name": "钱包要你签名一段消息,或者授权(Approve / Permit)", "do": "点「拒绝」。这份指南的每一步都只是普通交易,不用签名消息,也不用授权。关掉页面,回第 1 步重新核对网址。", "stop": true},
+    {"id": "sorry", "ai": "A WOOFi notice titled WE'RE SORRY saying the service is not available in your region.", "name": "WE'RE SORRY,说你的地区不能用", "do": "请停下:WOOFi 不对你所在的地区提供服务,这份指南不提供绕过地区限制的办法。可以去 WOOFi 官方 Discord 问。", "stop": true},
+    {"id": "blocked", "ai": "A WOOFi notice saying Blocked Address.", "name": "弹出 Blocked Address", "do": "WOOFi 按制裁名单拦下了这个地址,这份指南帮不了。", "stop": true}
   ],
   "steps": [
     {

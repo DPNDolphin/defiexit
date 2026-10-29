@@ -598,6 +598,7 @@ export function localize(r, o, file) {
     L.screens = r.screens.map((y) => {
       const z = o.screens?.[y.id], q = `screens.${y.id}`;
       const S = { ...y, name: need(z?.name, `${q}.name`), do: need(z?.do, `${q}.do`) };
+      delete S.ai; // 只给 AI 看的判定条件(里面夹着中文界面上的词),服务端从中文配方里取,英文版页面用不到
       if (z?.img) S.img = z.img;
       if (y.features) S.features = same(y.features, z?.features, `${q}.features`).map((w, i) => need(w, `${q}.features[${i}]`));
       if (y.images) S.images = same(y.images, z?.images, `${q}.images`).map((w, i) => img(y.images[i], w, `${q}.images[${i}]`));
@@ -626,6 +627,8 @@ function loadRecipes() {
       // 截图求助:AI 认出一页后,用户要逐条核对这几条看得见的文字特征;停手的页面不核对,直接让停下
       if (x.stop) {
         if (x.features) throw new Error(`${d}: 页面图鉴 ${x.id} 是「停下」,不用写文字特征`);
+        // 停手的页面直接让人停下,不再核对:所以要给 AI 写清什么时候算、什么时候不算,免得把普通页面认成停手
+        if (typeof x.ai !== "string" || !x.ai.trim()) throw new Error(`${d}: 页面图鉴 ${x.id} 是「停下」,要写 ai(只给 AI 看的英文判定条件:什么时候算、什么时候不算)`);
       } else {
         if (!x.img) throw new Error(`${d}: 页面图鉴 ${x.id} 缺小图 img(截图求助要拿它和用户的截图对照)`);
         if (!Array.isArray(x.features) || x.features.length < 2 || x.features.length > 3 || x.features.some((f) => typeof f !== "string" || !f.trim())) throw new Error(`${d}: 页面图鉴 ${x.id} 要有 2–3 条文字特征 features`);
@@ -664,6 +667,7 @@ export function shotData(r) {
     const e = r.en.screens[i];
     const o = { id: x.id, stop: !!x.stop, name: { zh: txt(x.name), en: txt(e.name) } };
     if (x.features) o.features = { zh: x.features.map(txt), en: e.features.map(txt) };
+    if (x.ai) o.ai = txt(x.ai);
     return o;
   });
   const body = { recipe: r.zh.id, site: r.zh.official[0].domain, screens };
