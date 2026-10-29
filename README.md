@@ -2,7 +2,7 @@
 
 **链上资产体检 + 取回指南。** 粘贴钱包地址,看看有没有被遗忘在链上的钱;查到了,就给你一步一图的官方路线。签名在你自己的钱包里完成,钱直接回到你自己的地址。
 
-- **只读**:体检只要地址。本站不连接钱包,也不发任何签名请求。
+- **只读**:体检只要地址,可以粘贴;在钱包里打开时,也可以点一下从钱包读取(只请钱包告诉本页地址)。本站从不发起签名、代币授权或交易。
 - **不碰私钥**:任何人向你要私钥或助记词,都是骗子,包括冒充我们的人。
 - **你自己签**:每一步都在官方网站上操作。签名前,核对卡会告诉你弹窗里应该看到什么。
 - **开源免费**:代码和每份指南都公开,不收任何费用。
@@ -55,7 +55,7 @@ npm test         # 跑测试
 
 ## English
 
-DeFiExit is a free, open-source, read-only checkup for forgotten on-chain positions. It gives step-by-step guides through each protocol's **official** interface, with a check card before every signature. It never asks for keys, never connects to your wallet, and never DMs you first. The only official domain is **defiexit.com**.
+DeFiExit is a free, open-source, read-only checkup for forgotten on-chain positions. It gives step-by-step guides through each protocol's **official** interface, with a check card before every signature. It never asks for keys, never starts a signature, token approval or transaction (it can read your address from your wallet if you tap the button), and never DMs you first. The only official domain is **defiexit.com**.
 
 ## 许可证
 

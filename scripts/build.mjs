@@ -184,6 +184,7 @@ function home(tx, recipes) {
       <p class="err" id="addrErr" role="alert" hidden></p>
       <button class="btn primary block" type="submit">${tx.h("checkFree")}${ico("arrowRight")}</button>
       <p class="hint" id="addrHint">${tx.h("addrHint")}</p>
+      <p class="hint">${tx.h("scopeNow", recipes.map((r) => r.protocol).join(tx.lang === "en" ? ", " : "、"))}</p>
     </form>
     <ul class="feats">
       <li>${ico("eye")}<span>${tx.h("feat1")}</span></li>

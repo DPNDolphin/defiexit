@@ -3,6 +3,7 @@ import "./site.js";
 import { isEvmAddress } from "./lib/net.js";
 import { setText } from "./lib/ui.js";
 import { makeT, pageLang, prefix } from "./lib/i18n.js";
+import { mountWalletRead } from "./lib/wallet.js";
 
 const lang = pageLang(), t = makeT(lang);
 const form = document.getElementById("scan");
@@ -26,3 +27,5 @@ input.addEventListener("input", () => {
   err.hidden = true;
   input.removeAttribute("aria-invalid");
 });
+// 在钱包里打开时:点一下从钱包读取地址(只读),省得退出去复制
+mountWalletRead(input, t);

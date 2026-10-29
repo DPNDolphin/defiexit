@@ -65,8 +65,9 @@ function render() {
   const pending = all.filter((x) => !x.res && !x.err);
 
   if (pending.length) return;
-  badge.replaceChildren(icon("check"), el("span", {}, t("checked")));
-  badge.className = "badge ok";
+  // 有没查成的:不说「查完了」,免得被当成整个钱包都查过了
+  badge.replaceChildren(icon(failed.length ? "alert" : "check"), el("span", {}, t(failed.length ? "checkedPart" : "checked")));
+  badge.className = failed.length ? "badge" : "badge ok";
   if (found.length) {
     setText(line, t("foundN", found.length));
     setText(big, t("about", usd(found.reduce((s, x) => s + x.res.usd, 0))));
@@ -84,9 +85,11 @@ function render() {
     ...empty.map((x) => lineRow(x.r, t("noneRow"))),
   ];
   if (!found.length && !dust.length && !failed.length) {
+    // 只说这次查了哪几个项目:没查到不等于钱包里没钱
     nodes.push(el("section", { class: "nothing" },
-      el("h2", {}, t("nothingH")),
+      el("h2", {}, t("nothingH", recipes.length)),
       el("p", { class: "sub" }, t("nothingP", recipes.map((r) => r.protocol).join(lang === "en" ? ", " : "、"))),
+      el("p", { class: "sub" }, t("nothingTip")),
       el("a", { class: "btn primary block", href: `${P}/` }, t("another"))));
   }
   cards.replaceChildren(...nodes);

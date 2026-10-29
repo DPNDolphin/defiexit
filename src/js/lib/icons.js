@@ -23,6 +23,7 @@ export const ICONS = {
   moon: [["path", { d: "M20.5 13.5A8.5 8.5 0 1110.5 3.5a6.5 6.5 0 0010 10z" }]],
   share: [["path", { d: "M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7M12 3v13M7 8l5-5 5 5" }]],
   image: [["rect", { x: "3", y: "5", width: "18", height: "14", rx: "2" }], ["circle", { cx: "8.5", cy: "10", r: "1.5" }], ["path", { d: "M21 16l-5-5-8 8" }]],
+  wallet: [["path", { d: "M4 7.5A1.5 1.5 0 015.5 6H19a1 1 0 011 1v11a1 1 0 01-1 1H5.5A1.5 1.5 0 014 17.5v-10z" }], ["path", { d: "M4 7.5L15 4l1 2" }], ["path", { d: "M20 11h-4a1.5 1.5 0 000 3h4" }]],
 };
 
 export function svgString(name, cls = "") {

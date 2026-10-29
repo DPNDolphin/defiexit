@@ -241,6 +241,8 @@ export function setupShot({ t, lang, picked, showAnswer }) {
       if (tsWidget === null) {
         tsWidget = window.turnstile.render(holder, {
           sitekey, language: lang === "en" ? "en" : "zh-cn",
+          // 跟网站的深浅色走;宽度铺满(不小于 300px)
+          theme: document.documentElement.dataset.theme === "light" ? "light" : "dark", size: "flexible",
           callback: (tok) => { tsToken = tok; updateGo(); },
           "expired-callback": () => { tsToken = ""; updateGo(); },
           "error-callback": () => { tsToken = ""; updateGo(); },

@@ -8,6 +8,7 @@ import { el, icon, route, rowsTable, toast, copy, contact, setText } from "./lib
 import { makeT, pageLang, prefix, errText } from "./lib/i18n.js";
 import { zh } from "./lib/zh.js";
 import { setupShot } from "./shot.js";
+import { mountWalletRead } from "./lib/wallet.js";
 
 const lang = pageLang(), t = makeT(lang), P = prefix(lang);
 const $ = (id) => document.getElementById(id);
@@ -249,6 +250,7 @@ meForm.addEventListener("submit", async (e) => {
   if (!isEvmAddress(a)) return toast(t("badAddr"));
   if (await personalize(a)) writeHash(here?.dataset.id, false);
 });
+mountWalletRead(meInput, t);
 
 // ---------- 遇到问题:底部弹层 ----------
 
@@ -378,6 +380,7 @@ function addrForm() {
     setText(sitsH, t("sitsH"));
     runDiag();
   });
+  mountWalletRead(input, t);
   return f;
 }
 
