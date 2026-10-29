@@ -4,6 +4,7 @@ import { readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync, copyFileSy
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { site } from "./site.mjs";
 import { zh as zhPunct } from "../src/js/lib/zh.js";
 import { makeT } from "../src/js/lib/i18n.js";
@@ -16,11 +17,11 @@ const HTML_LANG = { zh: "zh-CN", en: "en" };
 const pre = (lang) => (lang === "en" ? "/en" : "");
 
 // 版本号:页脚显示构建时的提交,谁都能去 GitHub 核对线上跑的是哪一版。会进网站的那几个目录有没提交的改动,就标出来,不冒充干净版本
-// (只看这几个目录:Cloudflare 构建时会在根目录自己生成 package-lock.json,不影响网站内容)
+// (只看这几个目录和文件:Cloudflare 构建时会在根目录自己生成 package-lock.json,不影响网站内容)
 function version() {
   try {
     const git = (...args) => execFileSync("git", args, { cwd: ROOT, stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
-    return { commit: git("rev-parse", "--short", "HEAD"), dirty: git("status", "--porcelain", "--", "src", "recipes", "scripts", "static") !== "" };
+    return { commit: git("rev-parse", "--short", "HEAD"), dirty: git("status", "--porcelain", "--", "src", "recipes", "scripts", "static", "functions", "wrangler.toml") !== "" };
   } catch {
     return null;
   }
@@ -115,7 +116,7 @@ function page({ tx, kind, path, title, desc, body, script, header, noindex = fal
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 ${noindex ? '<meta name="robots" content="noindex">\n' : ""}<meta name="theme-color" content="#0A0F1E">
-<meta name="dx-contact" content="${esc(site.contact || "")}">
+<meta name="dx-contact" content="${esc(site.contact || "")}">${site.turnstile ? `\n<meta name="dx-turnstile" content="${esc(site.turnstile)}">` : ""}
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="canonical" href="${esc(url(lang))}">
 ${alt}
@@ -269,7 +270,7 @@ function checkPage(tx, recipes) {
 
 // ---------- 指南页 ----------
 
-function guide(tx, R) {
+function guide(tx, R, shot) {
   const { lang } = tx;
   const P = pre(lang);
   const V = R.vars;
@@ -377,6 +378,45 @@ function guide(tx, R) {
         ${(x.images || []).map((im) => shotHtml(im)).join("")}
         ${!x.stop && (x.goto || x.after) ? `<button class="btn primary block" type="button" data-scr-go="${esc(x.goto || "")}" data-scr-after="${esc(x.after || "")}"></button>` : ""}
       </section>`).join("");
+  // 截图求助:选图 → 竖向裁剪 → 手机里重新生成一张新图 → 放大预览 + 两个勾 → 发给 AI。
+  // AI 只回编号;认出来后并排放「你的截图」和「我们审过的图」,用户逐条核对文字特征(放在 <template> 里)才显示审过的答案
+  const shotOn = !!(site.shotAI && shot && screens.length);
+  const agree = (text, attr) => `<label class="agree"><input type="checkbox" ${attr}><span class="box">${ico("check")}</span><span>${text}</span></label>`;
+  const shotView = shotOn ? `<div id="lostShot" class="shot-ai" hidden data-r="${esc(R.id)}" data-v="${esc(shot.v)}">
+        <h3>${tx.h("shotH")}</h3>
+        <section class="shot-p" id="shotPick">
+          <p class="sub">${tx.h("shotIntro")}</p>
+          <input class="sr-only" type="file" id="shotFile" accept="image/*" tabindex="-1" aria-hidden="true">
+          <button class="btn primary block" type="button" id="shotChoose">${ico("image")}${tx.h("shotChoose")}</button>
+        </section>
+        <section class="shot-p" id="shotCrop" hidden>
+          <p class="sub">${tx.h("shotCropSub")}</p>
+          <div class="crop-wrap"><div class="crop" id="shotCropBox"><canvas id="shotCv" width="1" height="1"></canvas><span class="crop-sh top"></span><span class="crop-sh bot"></span><button class="crop-h top" type="button" role="slider" aria-label="${tx.attr("shotTop")}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></button><button class="crop-h bot" type="button" role="slider" aria-label="${tx.attr("shotBottom")}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><span></span></button></div></div>
+          <div class="shot-row"><button class="btn" type="button" data-shot-again>${tx.h("shotAgain")}</button><button class="btn primary" type="button" id="shotUse">${tx.h("shotUse")}</button></div>
+        </section>
+        <section class="shot-p" id="shotSend" hidden>
+          <p class="shot-lead">${tx.h("shotPrevH")}</p>
+          <figure class="shot-prev"><img id="shotPrev" alt="${tx.attr("shotPrevAlt")}"></figure>
+          <p class="fine">${tx.h("shotPrivacy")}</p>
+          ${agree(tx.h("shotAgree1"), "data-agree")}
+          ${agree(tx.h("shotAgree2"), "data-agree")}
+          <div id="shotTs" hidden></div>
+          <div class="shot-row"><button class="btn" type="button" data-shot-again>${tx.h("shotAgain")}</button><button class="btn primary" type="button" id="shotGo" disabled>${tx.h("shotSend")}</button></div>
+        </section>
+        <section class="shot-p" id="shotWait" hidden><p class="sub" role="status"><span class="spin" aria-hidden="true"></span> ${tx.h("shotWait")}</p></section>
+        <section class="shot-p" id="shotMatch" hidden>
+          <p class="shot-lead">${tx.h("shotMatchH")}</p>
+          <div class="pair"><figure><img id="shotMine" alt=""><figcaption>${tx.h("shotMine")}</figcaption></figure><figure><img id="shotOurs" alt=""><figcaption>${tx.h("shotOurs")}</figcaption></figure></div>
+          <p class="sub">${tx.h("shotFeatH")}</p>
+          <div class="feats-ck" id="shotFeats"></div>
+          <button class="btn primary block" type="button" id="shotYes" disabled>${tx.h("shotYes")}${ico("arrowRight")}</button>
+          <button class="btn block" type="button" id="shotNo">${tx.h("shotNo")}</button>
+        </section>
+        <section class="shot-p shot-warn" id="shotMiss" hidden><p id="shotMissMsg"></p><button class="btn block" type="button" data-shot-again>${tx.h("shotRetry")}</button></section>
+        <section class="shot-p shot-warn" id="shotSecret" hidden><p>${tx.h("shotSecret")}</p><button class="btn block" type="button" data-shot-again>${tx.h("shotRetry")}</button></section>
+        <button class="btn block" type="button" id="shotBack">${ico("arrowLeft")}${tx.h("shotBack")}</button>
+        ${screens.filter((x) => !x.stop).map((x) => `<template data-feat="${esc(x.id)}">${x.features.map((f) => agree(r(f), "data-feat-ck")).join("")}</template>`).join("")}
+      </div>` : "";
   const lostSheet = screens.length ? `<dialog class="sheet" id="lost" aria-labelledby="lostH">
     <div class="sheet-in">
       <span class="grip" aria-hidden="true"></span>
@@ -385,9 +425,11 @@ function guide(tx, R) {
         ${stops ? `<div class="scr-stops"><p>${tx.h("lostStopH")}</p>${stops}</div>` : ""}
         <p class="sub">${tx.h("lostSub")}</p>
         <div class="scrs">${tiles}</div>
+        ${shotOn ? `<button class="btn block shot-open" type="button" id="shotOpen">${ico("image")}${tx.h("shotOpen")}</button>` : ""}
         ${R.screensVerified ? `<p class="fine">${tx.h("lostAsOf", R.screensVerified)}</p>` : ""}
       </div>
       <div id="lostAns" hidden>${answers}<p class="sub" id="lostSkip" hidden>${tx.h("lostSkip")}</p><button class="btn block" type="button" id="lostBack">${ico("arrowLeft")}${tx.h("lostBack")}</button></div>
+      ${shotView}
       <div class="fallback">
         <p>${tx.h("lostNone")}</p>
         <div class="fb-row">${support}<button class="btn small" type="button" id="lostDiag">${tx.h("lostDiag")}</button><button class="btn small" type="button" id="lostReport">${ico("copy")}${tx.h("report")}</button></div>
@@ -467,11 +509,14 @@ function notFound() {
 
 // ---------- 安全响应头(Cloudflare Pages 读 _headers;本地预览也用同一份) ----------
 
-export function headers(connect) {
+// img-src 的 blob::截图求助在手机里裁好的那张图,预览和对照都直接显示它(不经过网络)。
+// 配了 Turnstile 人机验证才放开它的脚本和小窗口(challenges.cloudflare.com),没配就不放
+export function headers(connect, { turnstile = null } = {}) {
+  const ts = turnstile ? " https://challenges.cloudflare.com" : "";
   return {
     "Content-Security-Policy": [
-      "default-src 'self'", "script-src 'self'", "style-src 'self'", "img-src 'self' data:", "font-src 'self'",
-      `connect-src 'self' ${connect.join(" ")}`, "object-src 'none'", "base-uri 'none'", "form-action 'none'", "frame-ancestors 'none'",
+      "default-src 'self'", `script-src 'self'${ts}`, "style-src 'self'", "img-src 'self' data: blob:", "font-src 'self'",
+      `connect-src 'self' ${connect.join(" ")}`, ...(ts ? [`frame-src${ts}`] : []), "object-src 'none'", "base-uri 'none'", "form-action 'none'", "frame-ancestors 'none'",
     ].join("; "),
     "X-Content-Type-Options": "nosniff",
     "Referrer-Policy": "no-referrer",
@@ -554,6 +599,7 @@ export function localize(r, o, file) {
       const z = o.screens?.[y.id], q = `screens.${y.id}`;
       const S = { ...y, name: need(z?.name, `${q}.name`), do: need(z?.do, `${q}.do`) };
       if (z?.img) S.img = z.img;
+      if (y.features) S.features = same(y.features, z?.features, `${q}.features`).map((w, i) => need(w, `${q}.features[${i}]`));
       if (y.images) S.images = same(y.images, z?.images, `${q}.images`).map((w, i) => img(y.images[i], w, `${q}.images[${i}]`));
       return S;
     });
@@ -577,6 +623,13 @@ function loadRecipes() {
       scrIds.add(x.id);
       for (const k of ["goto", "after"]) if (x[k] && !stepIds.has(x[k])) throw new Error(`${d}: 页面图鉴 ${x.id} 的 ${k} 指向不存在的步骤 ${x[k]}`);
       if (x.stop && (x.goto || x.after)) throw new Error(`${d}: 页面图鉴 ${x.id} 是「停下」,不能再带去某一步`);
+      // 截图求助:AI 认出一页后,用户要逐条核对这几条看得见的文字特征;停手的页面不核对,直接让停下
+      if (x.stop) {
+        if (x.features) throw new Error(`${d}: 页面图鉴 ${x.id} 是「停下」,不用写文字特征`);
+      } else {
+        if (!x.img) throw new Error(`${d}: 页面图鉴 ${x.id} 缺小图 img(截图求助要拿它和用户的截图对照)`);
+        if (!Array.isArray(x.features) || x.features.length < 2 || x.features.length > 3 || x.features.some((f) => typeof f !== "string" || !f.trim())) throw new Error(`${d}: 页面图鉴 ${x.id} 要有 2–3 条文字特征 features`);
+      }
     }
     for (const s of r.steps) {
       const ids = new Set();
@@ -602,8 +655,24 @@ function loadRecipes() {
   });
 }
 
+// 截图求助的候选页面:中英两套的编号、名字、文字特征。服务端从这份静态文件取白名单(和页面上的图鉴是同一版),
+// 版本号 v 跟着内容变:页面带着 v 发请求,对不上说明手机上开着的是旧页面
+export function shotData(r) {
+  if (!r.zh.screens?.length) return null;
+  const txt = (s) => String(s).replace(/\*\*|`/g, "");
+  const screens = r.zh.screens.map((x, i) => {
+    const e = r.en.screens[i];
+    const o = { id: x.id, stop: !!x.stop, name: { zh: txt(x.name), en: txt(e.name) } };
+    if (x.features) o.features = { zh: x.features.map(txt), en: e.features.map(txt) };
+    return o;
+  });
+  const body = { recipe: r.zh.id, site: r.zh.official[0].domain, screens };
+  return { v: createHash("sha256").update(JSON.stringify(body)).digest("hex").slice(0, 12), ...body };
+}
+
 export function build() {
   const recipes = loadRecipes();
+  const shots = new Map(recipes.map((r) => [r.zh.id, shotData(r)]));
   rmSync(DIST, { recursive: true, force: true });
   mkdirSync(join(DIST, "assets"), { recursive: true });
   copyDir(join(ROOT, "src"), join(DIST, "assets"));
@@ -619,11 +688,14 @@ export function build() {
     const rs = recipes.map((r) => r[lang]);
     write(`${pre(lang)}/index.html`, home(tx, rs));
     write(`${pre(lang)}/check/index.html`, checkPage(tx, rs));
-    for (const R of rs) write(`${pre(lang)}/r/${R.id}/index.html`, guide(tx, R));
+    for (const R of rs) write(`${pre(lang)}/r/${R.id}/index.html`, guide(tx, R, shots.get(R.id)));
   }
   for (const r of recipes) copyDir(join(ROOT, "recipes", r.zh.id, "img"), join(DIST, "r", r.zh.id, "img"));
+  for (const [id, s] of shots) if (s) write(`r/${id}/screens.json`, JSON.stringify(s));
+  // 只有 /api/* 走 Pages Functions;网页、图片、图鉴数据都是静态文件,不占函数的调用次数
+  write("_routes.json", JSON.stringify({ version: 1, include: ["/api/*"], exclude: [] }));
   write("404.html", notFound());
-  const h = headers(site.connect);
+  const h = headers(site.connect, site);
   // 网页本身加 no-transform:Cloudflare 就不会往页面里插它的访问统计脚本,也不会改动页面内容
   // (官方文档:带 no-transform 的响应不做自动注入,也不压缩;网页只有几十 KB,不压缩也快)
   const pages = ["/", "/en/", "/check/", "/en/check/", ...recipes.flatMap((r) => [`/r/${r.zh.id}/`, `/en/r/${r.zh.id}/`]), "/404.html"];

@@ -1,0 +1,15 @@
+# Cloudflare Pages 项目配置(有了这个文件,Pages 以它为准,后台对应的栏目变成只读)。
+# 构建命令照旧在 Cloudflare 后台:node scripts/build.mjs,输出 dist。
+# 唯一的绑定是 Workers AI(截图求助 /api/see 用)。正式环境和预览环境各写一遍,不靠「会不会继承」。
+name = "defiexit"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-10-01"
+
+[ai]
+binding = "AI"
+
+[env.preview.ai]
+binding = "AI"
+
+[env.production.ai]
+binding = "AI"

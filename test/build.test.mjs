@@ -206,3 +206,57 @@ test("首页如实写作者本人的实测、不放累计金额;每份指南有�
     assert.match(g, new RegExp(`<section class="tests">[\\s\\S]*?<b class="mono">${date}</b>`), `${f} 缺实测记录`);
   }
 });
+
+test("截图求助:只在有图鉴的指南里出现;每张普通页面都有 2–3 条要用户逐条核对的文字特征;发出去前两个勾", () => {
+  for (const f of ["dist/r/woofi/index.html", "dist/en/r/woofi/index.html"]) {
+    const g = read(f);
+    assert.ok(g.includes('<button class="btn block shot-open" type="button" id="shotOpen">'), `${f} 缺入口`);
+    // 入口放在图鉴小图后面:先自己比对,拿不准再发图
+    assert.ok(g.indexOf('class="scrs"') < g.indexOf('id="shotOpen"'));
+    assert.ok(g.indexOf('class="scr-stops"') < g.indexOf('id="shotOpen"'));
+    assert.match(g, /<input class="sr-only" type="file" id="shotFile" accept="image\/\*"/);
+    assert.equal(g.match(/<input type="checkbox" data-agree>/g)?.length, 2);
+    assert.ok(/<button class="btn primary" type="button" id="shotGo" disabled>/.test(g), "发送按钮默认不能点");
+    const tpls = [...g.matchAll(/<template data-feat="([a-z-]+)">((?:(?!<\/template>)[\s\S])*)<\/template>/g)];
+    assert.deepEqual(tpls.map((m) => m[1]), ["perps", "home", "stake-new", "wallets", "networks", "stake", "unstake", "earn", "vault"]);
+    for (const [, id, body] of tpls) {
+      const n = body.match(/data-feat-ck/g)?.length;
+      assert.ok(n >= 2 && n <= 3, `${id} 的文字特征 ${n} 条`);
+    }
+  }
+  for (const f of ["dist/r/hyperliquid/index.html", "dist/en/r/hyperliquid/index.html"]) {
+    assert.ok(!read(f).includes("lostShot"), `${f} 没有图鉴,不该有截图求助`);
+  }
+  // 页面带的版本号和服务端读的候选页面数据是同一版
+  const data = JSON.parse(read("dist/r/woofi/screens.json"));
+  for (const f of ["dist/r/woofi/index.html", "dist/en/r/woofi/index.html"]) {
+    assert.ok(read(f).includes(`<div id="lostShot" class="shot-ai" hidden data-r="woofi" data-v="${data.v}">`), `${f} 的版本对不上`);
+  }
+  assert.deepEqual(JSON.parse(read("dist/_routes.json")), { version: 1, include: ["/api/*"], exclude: [] });
+  const h = read("dist/_headers");
+  assert.match(h, /img-src 'self' data: blob:/);
+  assert.ok(!h.includes("unsafe-eval") && !h.includes("unsafe-inline"));
+  assert.ok(!h.includes("challenges.cloudflare.com"), "没配人机验证时不放开它的脚本");
+});
+
+test("图鉴答案只带路:质押页、Unstake 页签、金库取款页签不再直接叫人点 Claim / UNSTAKE / WITHDRAW", () => {
+  for (const f of ["dist/r/woofi/index.html", "dist/en/r/woofi/index.html"]) {
+    const g = read(f);
+    for (const id of ["stake", "unstake", "vault"]) {
+      const a = g.match(new RegExp(`data-scr-a="${id}" hidden>\\s*<h3>[\\s\\S]*?</h3>\\s*<p>([\\s\\S]*?)</p>`));
+      assert.ok(a, `${f} 缺 ${id} 的答案`);
+      assert.ok(!/Claim|UNSTAKE|WITHDRAW/.test(a[1]), `${f} ${id} 的答案还写着按钮:${a[1]}`);
+      assert.match(g, new RegExp(`data-scr-a="${id}" hidden>(?:(?!</section>)[\\s\\S])*data-scr-(go|after)=`), `${id} 要带去对应那一步`);
+    }
+  }
+});
+
+test("页面图鉴的英文版:文字特征条数要和中文一样", () => {
+  const r = JSON.parse(read("recipes/woofi/recipe.json"));
+  const en = JSON.parse(read("recipes/woofi/i18n/en.json"));
+  const L = localize(r, en, "woofi/en.json");
+  assert.equal(L.screens.find((x) => x.id === "vault").features.length, r.screens.find((x) => x.id === "vault").features.length);
+  const bad = JSON.parse(JSON.stringify(en));
+  bad.screens.vault.features = bad.screens.vault.features.slice(1);
+  assert.throws(() => localize(r, bad, "x.json"), /screens\.vault\.features/);
+});

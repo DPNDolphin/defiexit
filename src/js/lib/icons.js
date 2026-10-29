@@ -22,6 +22,7 @@ export const ICONS = {
   sun: [["circle", { cx: "12", cy: "12", r: "4" }], ["path", { d: "M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" }]],
   moon: [["path", { d: "M20.5 13.5A8.5 8.5 0 1110.5 3.5a6.5 6.5 0 0010 10z" }]],
   share: [["path", { d: "M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7M12 3v13M7 8l5-5 5 5" }]],
+  image: [["rect", { x: "3", y: "5", width: "18", height: "14", rx: "2" }], ["circle", { cx: "8.5", cy: "10", r: "1.5" }], ["path", { d: "M21 16l-5-5-8 8" }]],
 };
 
 export function svgString(name, cls = "") {

@@ -9,4 +9,8 @@ export const site = {
   // 浏览器只允许连这些公开接口(写进 CSP 的 connect-src);新增检测器时在这里加
   // Arbitrum 公共节点:现场诊断查提现到没到账(只读 eth_getTransactionReceipt)
   connect: ["https://api.hyperliquid.xyz", "https://arb1.arbitrum.io/rpc"],
+  // 截图求助(页面图鉴里的「发截图给 AI 认」,服务端是 functions/api/see.js)。关掉就改成 false,页面上不出现这个入口
+  shotAI: true,
+  // Cloudflare 人机验证(Turnstile)的站点密钥:后台建好后填进来;服务端同时要配 TURNSTILE_SECRET。null 时两边都不启用
+  turnstile: null,
 };

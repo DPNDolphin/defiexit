@@ -7,6 +7,7 @@ import { isEvmAddress, shortAddr, floorTo } from "./lib/net.js";
 import { el, icon, route, rowsTable, toast, copy, contact, setText } from "./lib/ui.js";
 import { makeT, pageLang, prefix, errText } from "./lib/i18n.js";
 import { zh } from "./lib/zh.js";
+import { setupShot } from "./shot.js";
 
 const lang = pageLang(), t = makeT(lang), P = prefix(lang);
 const $ = (id) => document.getElementById(id);
@@ -19,6 +20,7 @@ const [prevBtn, nextBtn] = pager.querySelectorAll("[data-go]");
 const mine = $("mine"), meForm = $("me"), meInput = $("addr");
 const sheet = $("sheet"), diagBox = $("diag"), sheetSits = $("sheetSits"), sitsH = $("sitsH");
 const lost = $("lost"); // 「页面和图里不一样?」的页面图鉴;配方没有图鉴时没有它
+const shotView = $("lostShot"); // 图鉴里的「发截图给 AI 认」;没开这个功能时没有它
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 let flags = null;     // null:没填地址,所有步骤都显示
@@ -304,6 +306,7 @@ function closeLost() {
 function lostPick() {
   $("lostPick").hidden = false;
   $("lostAns").hidden = true;
+  if (shotView) shotView.hidden = true;
   lost.scrollTop = 0;
 }
 // 图鉴说「去某一步」或「某一步之后的下一步」(按这个账户用得到的步骤算,比如没奖励就直接到解押)
@@ -333,6 +336,7 @@ function lostShow(id) {
   }
   $("lostPick").hidden = true;
   $("lostAns").hidden = false;
+  if (shotView) shotView.hidden = true;
   lost.scrollTop = 0;
 }
 function lostGo(b) {
@@ -346,6 +350,19 @@ if (lost) {
   $("lostBack").addEventListener("click", lostPick);
   $("lostDiag").addEventListener("click", () => { closeLost(); openSheet(); });
   $("lostReport").addEventListener("click", () => report(here));
+  // 发截图给 AI 认:认出来的页面照样走 lostShow(审过的答案 + 去第几步);关掉弹层时原图、新图都丢掉
+  const shot = setupShot({ t, lang, picked, showAnswer: lostShow });
+  if (shot) {
+    $("shotOpen").addEventListener("click", () => {
+      shot.open();
+      $("lostPick").hidden = true;
+      $("lostAns").hidden = true;
+      shotView.hidden = false;
+      lost.scrollTop = 0;
+    });
+    $("shotBack").addEventListener("click", lostPick);
+    lost.addEventListener("close", shot.close);
+  }
 }
 
 function addrForm() {
