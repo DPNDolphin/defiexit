@@ -262,8 +262,7 @@ function checkPage(tx, recipes) {
     <p class="big" id="sumBig" hidden></p>
     <p class="sub" id="sumNote" hidden></p>
   </section>
-  <div id="cards" class="cards"></div>
-  <section id="assets" class="assets" aria-live="polite" hidden></section>
+  <div id="cards" class="cards" aria-live="polite"></div>
   <p class="fine resfoot">${tx.h("resultsFoot")}</p>
   <ul id="recipes" hidden>${list}</ul>
 </div>`,

@@ -319,10 +319,9 @@ test("页面图鉴的英文版:文字特征条数要和中文一样", () => {
   assert.throws(() => localize(r, bad, "x.json"), /screens\.vault\.features/);
 });
 
-test("体检结果页:「全部资产」先留空位、默认不显示;WOOFi 配方写明在 Zerion 里对应的项目名和链", () => {
+test("体检结果页:WOOFi 配方写明在 Zerion 里对应的项目名和链;Hyperliquid 不对应", () => {
   for (const f of ["dist/check/index.html", "dist/en/check/index.html"]) {
     const h = read(f);
-    assert.ok(h.includes('<section id="assets" class="assets" aria-live="polite" hidden></section>'), f);
     const li = h.match(/<li data-id="woofi"[^>]*>/)?.[0] || "";
     assert.ok(/data-zerion="[^"]*WOOFi[^"]*Arbitrum[^"]*"/.test(li), li);
     const hl = h.match(/<li data-id="hyperliquid"[^>]*>/)?.[0] || "";

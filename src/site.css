@@ -532,11 +532,9 @@ code { font: 0.92em var(--font-mono); background: var(--surface-2); border: 1px 
 .wallet-pick .hint { flex-basis: 100%; }
 .wallet-read .hint:empty { display: none; }
 
-/* 体检结果页:这个地址上的全部资产(经本站接口交给 Zerion 查) */
-.assets { display: flex; flex-direction: column; gap: 12px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line); }
-.assets h2 { margin: 0; font: 800 24px/1.2 var(--font-display); }
-.assets h3 { margin: 12px 0 0; font-size: 17px; }
-.assets .rcard-h h4 { margin: 0; font-size: 20px; }
+/* 体检结果页:「存在项目里的」「钱包里的」两段清单(我们的检测器 + 经本站接口交给 Zerion 查的全部资产) */
+.cards > .list-h { margin: 12px 0 -6px; font-size: 18px; }
+.rcard-h h4 { margin: 0; font-size: 22px; }
 .awallet { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: var(--r-l); background: var(--surface); }
 .aw { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 12px 16px; border-bottom: 1px solid var(--line-2); }
 .aw:last-child { border-bottom: 0; }
