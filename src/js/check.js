@@ -196,7 +196,8 @@ function paintAssets(res) {
   const s = res?.status;
   assetsState = s === "ok" || s === "empty" || s === "off" ? s : "error";
   assetsRes = s === "ok" ? res : null;
-  if (s === "off") return void (assetsBox.hidden = true);
+  assetsBox.hidden = s === "off";
+  if (s === "off") return;
   const head = [el("h2", {}, t("assetsH")), el("p", { class: "sub" }, t("assetsSub"))];
   const priv = el("p", { class: "fine" }, t("assetsPriv"));
   if (s === "empty") return assetsBox.replaceChildren(...head, el("p", { class: "sub" }, t("assetsEmpty")), priv);
