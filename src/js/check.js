@@ -1,12 +1,15 @@
-// 检查结果页:# 后面的地址 → 两路一起查,合成一张清单:「存在项目里的」「钱包里的」。
+// 检查结果页:# 后面的地址 → 三路一起查,合成一张清单:「存在项目里的」「钱包里的」。
 //   ① 我们有指南的项目:各检测器在浏览器里直接只读查官方接口,查到就给一步一图的指南;
-//   ② 全部资产:经本站接口交给 Zerion 查 40 多条链上的钱包余额和项目仓位。
+//   ② 全部资产:经本站接口交给 Zerion 查 40 多条链上的钱包余额和项目仓位;
+//   ③ Zerion 查不到的链(X Layer、Merlin):浏览器直接只读查公共节点的钱包余额。
 // 只列查到的,没查到的项目不列:只显示有什么。查不成的照实说,给「重试」。
+// 每一张都有「取回」:有指南的进指南;没有的打开取回弹层,按仓位类型给通用取法,钱包里的币说怎么转出、手续费够不够。
 import "./site.js";
 import { detectors } from "./detectors/index.js";
 import { isEvmAddress, shortAddr, floorTo } from "./lib/net.js";
-import { el, icon, rowsTable, setText } from "./lib/ui.js";
+import { el, icon, rowsTable, setText, copy, toast } from "./lib/ui.js";
 import { makeT, pageLang, prefix, errText } from "./lib/i18n.js";
+import { chainLogo, chainKey, gasSym, EXTRA } from "./lib/chains.js";
 
 const lang = pageLang(), t = makeT(lang), P = prefix(lang);
 const recipes = [...document.querySelectorAll("#recipes li")].map((li) => ({
@@ -16,15 +19,19 @@ const recipes = [...document.querySelectorAll("#recipes li")].map((li) => ({
   zerion: JSON.parse(li.dataset.zerion || "null"),
 }));
 const usd = (x) => floorTo(x, 2).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const qty = (x) => (x >= 1000 ? Math.round(x).toLocaleString("en-US") : String(Number(x.toPrecision(6))));
+const qty = (x) => (x >= 1000 ? Math.round(x).toLocaleString("en-US") : x.toLocaleString("en-US", { maximumSignificantDigits: 6 }));
 const $ = (id) => document.getElementById(id);
 const badge = $("sumBadge"), line = $("sumLine"), big = $("sumBig"), note = $("sumNote"), cards = $("cards");
+const sheet = $("exitSheet"), sheetH = $("exitH"), sheetBody = $("exitBody");
 const addr = (new URLSearchParams(location.hash.slice(1)).get("a") || "").trim();
 const results = new Map(); // 配方 id → { res } 或 { err }
+const extra = new Map(); // Zerion 查不到的链:链编号 → { res } 或 { err }
 let assets = { state: "pending", res: null }; // 全部资产:pending / ok / empty / off / busy / error
+let lists = { defi: [], wallet: [] }; // 清单上正显示的,「取回」按钮按序号找
 
 // Zerion 查到的项目,项目名和链都对上我们的配方(配方 JSON 的 zerion 字段)才算有指南;同名项目在别的链上不算
 const recipeFor = (g) => recipes.find((r) => r.zerion?.chains.includes(g.chain) && r.zerion.apps.some((a) => g.app.toLowerCase().includes(a.toLowerCase())));
+const chainChip = (cid, name, text = name) => el("span", { class: "chip" }, chainLogo(cid, name), text);
 
 // ---------- 卡片 ----------
 
@@ -46,44 +53,47 @@ function miniRoute(r, flags) {
 function foundCard(r, res) {
   const guide = `${P}/r/${r.id}/#a=${addr}&go=1`;
   return el("article", { class: "rcard" },
-    el("div", { class: "rcard-h" }, el("h4", {}, r.protocol), el("span", { class: "chip mono" }, r.route)),
+    el("div", { class: "rcard-h" }, el("h4", {}, r.protocol), chainChip(r.chain, r.chain, r.route)),
     rowsTable(res.rows, res.total || { label: t("expected"), value: `${res.vars.arrive} USDC` }),
     miniRoute(r, res.flags),
     res.warnings.length ? el("ul", { class: "warns" }, res.warnings.map((w) => el("li", {}, icon("alert"), el("span", {}, w)))) : null,
     r.chips.length ? el("ul", { class: "chips" }, r.chips.map((c) => el("li", {}, icon(c.icon), el("span", {}, c.text)))) : null,
-    el("a", { class: "btn primary block", href: guide }, t("startGuide"), icon("arrowRight")));
+    el("a", { class: "btn primary block", href: guide }, icon("exit"), t("exitGuideBtn")));
 }
 
-// 我们有指南、查到了但太少(比如低于最小提现额)
+// 我们有指南、查到了但太少(比如低于最小提现额):指南里写了门槛和办法
 function dustCard(r, res) {
   return el("article", { class: "rcard" },
-    el("div", { class: "rcard-h" }, el("h4", {}, r.protocol), el("span", { class: "chip" }, res.badge || t("dustBadge"))),
+    el("div", { class: "rcard-h" }, el("h4", {}, r.protocol), chainChip(r.chain, r.chain, res.badge || t("dustBadge"))),
     res.rows.length ? rowsTable(res.rows) : null,
     res.note ? el("p", { class: "sub" }, res.note) : null,
     res.warnings.length ? el("ul", { class: "warns" }, res.warnings.map((w) => el("li", {}, icon("alert"), el("span", {}, w)))) : null,
-    el("a", { class: "btn block", href: `${P}/r/${r.id}/#a=${addr}` }, t("seeGuide")));
+    el("a", { class: "btn block", href: `${P}/r/${r.id}/#a=${addr}` }, icon("exit"), t("exitBtn")));
 }
+
+const itemRows = (g) => g.items.map((x) => ({
+  label: `${t("assetType", x.type)} · ${x.sym}`,
+  hint: x.usd === null ? t("assetsUnknown") : `${qty(x.qty)} ${x.sym}`,
+  value: x.usd === null ? `${qty(x.qty)} ${x.sym}` : `$${usd(x.usd)}`,
+}));
 
 // Zerion 查到的项目仓位
-function defiCard(g) {
+function defiCard(g, i) {
   const r = recipeFor(g);
-  const rows = g.items.map((x) => ({
-    label: `${t("assetType", x.type)} · ${x.sym}`,
-    hint: x.usd === null ? t("assetsUnknown") : `${qty(x.qty)} ${x.sym}`,
-    value: x.usd === null ? `${qty(x.qty)} ${x.sym}` : `$${usd(x.usd)}`,
-  }));
   return el("article", { class: "rcard" },
-    el("div", { class: "rcard-h" }, el("h4", {}, g.app), el("span", { class: "chip" }, g.chain)),
-    rowsTable(rows),
+    el("div", { class: "rcard-h" }, el("h4", {}, g.app), chainChip(g.cid, g.chain)),
+    rowsTable(itemRows(g)),
     g.debt > 0 ? el("ul", { class: "warns" }, el("li", {}, icon("alert"), el("span", {}, t("assetsDebt", usd(g.debt))))) : null,
-    r ? el("a", { class: "btn primary block", href: `${P}/r/${r.id}/#a=${addr}&go=1` }, t("assetsHasGuide"), icon("arrowRight"))
-      : el("p", { class: "sub" }, t("assetsNoGuide")));
+    r ? el("a", { class: "btn primary block", href: `${P}/r/${r.id}/#a=${addr}&go=1` }, icon("exit"), t("exitGuideBtn"))
+      : el("button", { class: "btn primary block", type: "button", "data-exit": `d${i}` }, icon("exit"), t("exitBtn")));
 }
 
-// Zerion 查到的钱包余额,一条链一行
-function walletRow(g) {
+// 钱包余额,一条链一行
+function walletRow(g, i) {
   const list = g.tokens.map((x) => `${x.sym} ${qty(x.qty)}`).join(" · ") + (g.more ? ` · ${t("assetsMore", g.more)}` : "");
-  return el("div", { class: "aw" }, el("b", {}, g.chain), el("span", { class: "mono" }, `$${usd(g.usd)}`), el("small", {}, list));
+  return el("div", { class: "aw" }, chainLogo(g.cid, g.chain), el("b", {}, g.chain), el("span", { class: "mono" }, `$${usd(g.usd)}`),
+    el("button", { class: "btn small", type: "button", "data-exit": `w${i}` }, t("exitBtn")),
+    el("small", {}, list));
 }
 
 // 查不成的一行:哪一路、为什么、重试
@@ -92,25 +102,45 @@ function failRow(name, text, retry) {
     el("button", { class: "btn small", type: "button", "data-retry": retry }, icon("refresh"), t("retry")));
 }
 
+// Zerion 的钱包余额 + 我们自己查的两条链。同一条链两边都有:只补 Zerion 没有的币
+function mergeWallet(z, more) {
+  const out = z.map((g) => ({ ...g, tokens: [...g.tokens] }));
+  const key = (x) => (x.native ? "native" : x.addr || x.sym);
+  for (const x of more) {
+    const same = out.find((g) => chainKey(g.cid, g.chain) === chainKey(x.cid, x.chain));
+    if (!same) {
+      out.push(x);
+      continue;
+    }
+    const has = new Set(same.tokens.map(key));
+    for (const tk of x.tokens) if (!has.has(key(tk))) { same.tokens.push(tk); same.usd += tk.usd || 0; }
+    if (!same.gas) same.gas = x.gas;
+  }
+  return out.sort((a, b) => b.usd - a.usd);
+}
+
 // ---------- 合成一张清单 ----------
 
 function paint() {
   const recipesDone = recipes.every((r) => results.has(r.id));
   const assetsDone = assets.state !== "pending";
-  const done = recipesDone && assetsDone;
+  const extraDone = EXTRA.every((c) => extra.has(c.cid));
+  const done = recipesDone && assetsDone && extraDone;
   const all = recipes.map((r) => ({ r, ...results.get(r.id) }));
   const found = all.filter((x) => x.res?.status === "found");
   const dust = all.filter((x) => x.res?.status === "dust");
   const failed = all.filter((x) => x.err);
+  const xFailed = EXTRA.filter((c) => extra.get(c.cid)?.err);
   // Zerion 里和我们配方对上、而且配方已经查到的,不重复列
   const shown = new Set([...found, ...dust].map((x) => x.r.id));
   const zDefi = (assets.res?.defi || []).filter((g) => !shown.has(recipeFor(g)?.id));
-  const zWallet = assets.res?.wallet || [];
+  const wallets = mergeWallet(assets.res?.wallet || [], EXTRA.map((c) => extra.get(c.cid)?.res).filter(Boolean));
+  lists = { defi: zDefi, wallet: wallets };
   const nDefi = found.length + zDefi.length;
   const defiUsd = found.reduce((s, x) => s + x.res.usd, 0) + zDefi.reduce((s, g) => s + g.usd, 0);
-  const walletUsd = zWallet.reduce((s, g) => s + g.usd, 0);
+  const walletUsd = wallets.reduce((s, g) => s + g.usd, 0);
   const guided = found.length + zDefi.filter(recipeFor).length;
-  const partial = failed.length > 0 || assets.state === "busy" || assets.state === "error";
+  const partial = failed.length > 0 || xFailed.length > 0 || assets.state === "busy" || assets.state === "error";
 
   // 顶上:先说存在项目里的钱,没有再说钱包里的
   if (!done) {
@@ -127,7 +157,7 @@ function paint() {
     setText(big, t("about", usd(defiUsd)));
     setText(note, guided ? t("defiGuided", guided) : t("defiNoGuide"));
     big.hidden = note.hidden = false;
-  } else if (zWallet.length && done) {
+  } else if (wallets.length && done) {
     setText(line, t("walletOnly"));
     setText(big, t("about", usd(walletUsd)));
     setText(note, t("walletOnlyNote"));
@@ -141,14 +171,15 @@ function paint() {
     nodes.push(el("h3", { class: "list-h" }, t("assetsDefiH", usd(defiUsd))), el("p", { class: "sub" }, t("assetsDefiP")),
       ...found.map((x) => foundCard(x.r, x.res)), ...zDefi.map(defiCard), ...dust.map((x) => dustCard(x.r, x.res)));
   }
-  if (zWallet.length) {
+  if (wallets.length) {
     nodes.push(el("h3", { class: "list-h" }, t("assetsWalletH", usd(walletUsd))), el("p", { class: "sub" }, t("assetsWalletP")),
-      el("div", { class: "awallet" }, ...zWallet.map(walletRow)));
+      el("div", { class: "awallet" }, ...wallets.map(walletRow)));
   }
   if (!done) nodes.push(el("div", { class: "rcard skeleton", "aria-hidden": "true" }));
   for (const x of failed) nodes.push(failRow(x.r.protocol, t("failRow", errText(t, x.err)), x.r.id));
+  for (const c of xFailed) nodes.push(failRow(c.chain, t("failRow", errText(t, extra.get(c.cid).err)), `x:${c.cid}`));
   if (assets.state === "busy" || assets.state === "error") nodes.push(failRow(t("assetsH"), t(assets.state === "busy" ? "assetsBusy" : "assetsFail"), "assets"));
-  if (done && !nDefi && !dust.length && !zWallet.length && !partial) {
+  if (done && !nDefi && !dust.length && !wallets.length && !partial) {
     // 什么都没查到。查了全部资产的,照实说查了多少;没接全部资产(off)才叫用户自己去 DeBank 看
     const list = recipes.map((r) => r.protocol).join(lang === "en" ? ", " : "、");
     nodes.push(el("section", { class: "nothing" },
@@ -157,15 +188,122 @@ function paint() {
       assets.state === "empty" ? null : el("p", { class: "sub" }, t("nothingTip")),
       el("a", { class: "btn primary block", href: `${P}/` }, t("another"))));
   }
-  if (assets.res) {
+  if (assets.res || wallets.length) {
     nodes.push(el("p", { class: "fine" }, t("assetsSub")),
-      assets.res.dust ? el("p", { class: "fine" }, t("assetsDust", assets.res.dust)) : null,
+      assets.res?.dust ? el("p", { class: "fine" }, t("assetsDust", assets.res.dust)) : null,
       el("p", { class: "fine" }, t("assetsPriv")));
   }
   cards.replaceChildren(...nodes.filter(Boolean));
 }
 
-// ---------- 两路查询 ----------
+// ---------- 取回弹层(没有指南的项目、钱包里的币) ----------
+
+// 仓位是哪一类 → 通用取法的哪一条(按 Zerion 的仓位类型和项目模块)
+const KINDS = ["lp", "deposit", "staked", "locked", "vesting", "reward", "investment", "other"];
+function kindOf(x) {
+  if (x.mod === "liquidity-pool") return "lp";
+  if (x.mod === "vesting") return "vesting";
+  if (x.type === "reward" || x.mod === "rewards") return "reward";
+  if (x.type === "locked" || x.mod === "locked") return "locked";
+  if (x.type === "staked" || ["staked", "farming", "nft-staked"].includes(x.mod)) return "staked";
+  if (x.type === "investment") return "investment";
+  return x.type === "deposit" ? "deposit" : "other";
+}
+
+const steps = (list) => el("ol", { class: "marks xs" },
+  list.filter(Boolean).map((s, i) => el("li", {}, el("span", { class: "n", "aria-hidden": "true" }, String(i + 1)), el("div", { class: "t" }, s))));
+const tail = () => [
+  el("button", { class: "btn block", type: "button", "data-recheck": "" }, icon("refresh"), t("exitRecheck")),
+  el("p", { class: "fine" }, t("exitNoSign")),
+];
+const chainLine = (g) => el("p", { class: "chainline" }, chainLogo(g.cid, g.chain), g.chain);
+
+function exitDefi(g) {
+  const kinds = new Set(g.items.filter((x) => x.type !== "loan").map(kindOf));
+  return [
+    chainLine(g),
+    rowsTable(itemRows(g)),
+    g.debt > 0 ? el("ul", { class: "warns" }, el("li", {}, icon("alert"), el("span", {}, t("exitDebt", usd(g.debt))))) : null,
+    el("p", { class: "sub" }, t("exitDefiLead", g.app)),
+    steps([
+      el("div", {}, t("exitOpen", g.app), el("p", { class: "tip" }, icon("alert"), el("span", {}, t("exitOpenTip")))),
+      t("exitConnect", g.chain),
+      ...KINDS.filter((k) => kinds.has(k)).map((k) => t("exitKind", k)),
+      t("exitSign"),
+      t("exitDone"),
+    ]),
+    ...tail(),
+  ];
+}
+
+function gasNote(g) {
+  if (!("gas" in g)) return null; // 旧的缓存结果里没有这一项:不下结论
+  const sym = g.gas?.sym || gasSym(g.cid, g.chain);
+  const finding = (cls, mark, head, text) => el("div", { class: `finding ${cls}` }, el("span", { class: "mk" }, icon(mark)), el("div", {}, el("b", {}, head), el("p", {}, text)));
+  if (!g.gas) return finding("wait", "alert", t("exitGasNone", sym), t("exitGasNoneP", sym, g.chain));
+  if (g.gas.usd !== null && g.gas.usd < 0.01) return finding("wait", "alert", t("exitGasLow", qty(g.gas.qty), g.gas.sym), t("exitGasLowP", g.gas.sym, g.chain));
+  return finding("ok", "check", t("exitGasOk", qty(g.gas.qty), g.gas.sym), t("exitGasOkP"));
+}
+
+function exitWallet(g) {
+  const toks = g.tokens.filter((x) => !x.native && x.addr);
+  return [
+    chainLine(g),
+    rowsTable(g.tokens.map((x) => ({ label: x.sym, hint: x.usd === null ? t("assetsUnknown") : null, value: x.usd === null ? qty(x.qty) : `${qty(x.qty)} · $${usd(x.usd)}` }))),
+    gasNote(g),
+    g.usd < 1 ? el("p", { class: "tip" }, icon("info"), el("span", {}, t("exitDust", usd(g.usd)))) : null,
+    el("p", { class: "sub" }, t("exitWalletLead")),
+    steps([
+      t("exitSwitch", g.chain),
+      toks.length ? el("div", {}, t("exitAddToken"), ...toks.map((x) => el("div", { class: "copyrow" },
+        el("span", {}, el("b", {}, x.sym), " ", el("code", {}, shortAddr(x.addr))),
+        el("button", { class: "copy", type: "button", "data-copy": x.addr, "aria-label": `${t("copy")} ${x.sym}` }, icon("copy"), t("copy"))))) : null,
+      t("exitMove", g.chain),
+      t("exitWDone"),
+    ]),
+    ...tail(),
+  ];
+}
+
+function openExit(id) {
+  const g = id[0] === "d" ? lists.defi[Number(id.slice(1))] : lists.wallet[Number(id.slice(1))];
+  if (!g) return;
+  setText(sheetH, id[0] === "d" ? t("exitDefiH", g.app) : t("exitWalletH", g.chain));
+  sheetBody.replaceChildren(...(id[0] === "d" ? exitDefi(g) : exitWallet(g)).filter(Boolean));
+  if (typeof sheet.showModal === "function") sheet.showModal();
+  else sheet.setAttribute("open", "");
+  sheet.scrollTop = 0;
+}
+function closeExit() {
+  if (!sheet.hasAttribute("open")) return;
+  if (typeof sheet.close === "function") sheet.close();
+  else sheet.removeAttribute("open");
+}
+
+sheet.addEventListener("click", async (e) => {
+  if (e.target === sheet) return closeExit();
+  const c = e.target.closest(".copy");
+  if (c) {
+    const ok = await copy(c.dataset.copy);
+    // 按钮本身也变一下色,不只靠底部的提示
+    if (ok) {
+      c.classList.add("ok");
+      setTimeout(() => c.classList.remove("ok"), 1600);
+    }
+    return toast(ok ? t("copied", c.dataset.copy) : t("copyFail"));
+  }
+  if (e.target.closest("[data-recheck]")) {
+    // 用户取完回来再查:不用缓存,三路全部重查
+    closeExit();
+    window.scrollTo(0, 0);
+    loadAssets({ fresh: true });
+    runExtra(EXTRA);
+    run(recipes);
+  }
+});
+$("exitClose").addEventListener("click", closeExit);
+
+// ---------- 三路查询 ----------
 
 async function check(r) {
   results.delete(r.id);
@@ -181,6 +319,20 @@ async function run(list) {
   paint();
   await Promise.all(list.map(check));
   paint();
+}
+
+// Zerion 查不到的链:一条链查完就先显示出来
+async function runExtra(list) {
+  for (const c of list) extra.delete(c.cid);
+  paint();
+  await Promise.all(list.map(async (c) => {
+    try {
+      extra.set(c.cid, { res: await c.query(addr) });
+    } catch (err) {
+      extra.set(c.cid, { err });
+    }
+    paint();
+  }));
 }
 
 // 同一个标签页里 10 分钟内再看同一个地址:用这个标签页自己记下的结果(只存在用户浏览器里,关掉标签页就没了),
@@ -220,10 +372,14 @@ async function loadAssets({ fresh = false } = {}) {
 window.addEventListener("hashchange", () => location.reload());
 
 cards.addEventListener("click", (e) => {
+  const x = e.target.closest("[data-exit]");
+  if (x) return openExit(x.dataset.exit);
   const b = e.target.closest("[data-retry]");
   if (!b) return;
-  if (b.dataset.retry === "assets") loadAssets({ fresh: true });
-  else run(recipes.filter((r) => r.id === b.dataset.retry));
+  const k = b.dataset.retry;
+  if (k === "assets") loadAssets({ fresh: true });
+  else if (k.startsWith("x:")) runExtra(EXTRA.filter((c) => c.cid === k.slice(2)));
+  else run(recipes.filter((r) => r.id === k));
 });
 
 if (!isEvmAddress(addr)) {
@@ -236,4 +392,5 @@ if (!isEvmAddress(addr)) {
   chip.hidden = false;
   run(recipes);
   loadAssets();
+  runExtra(EXTRA);
 }

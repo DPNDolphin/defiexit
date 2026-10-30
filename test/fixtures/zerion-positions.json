@@ -24,7 +24,18 @@
      "flags": {
       "verified": true
      },
-     "implementations": []
+     "implementations": [
+      {
+       "chain_id": "ethereum",
+       "address": null,
+       "decimals": 18
+      },
+      {
+       "chain_id": "arbitrum",
+       "address": null,
+       "decimals": 18
+      }
+     ]
     },
     "flags": {
      "displayable": true,
@@ -74,7 +85,13 @@
      "flags": {
       "verified": true
      },
-     "implementations": []
+     "implementations": [
+      {
+       "chain_id": "base",
+       "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+       "decimals": 6
+      }
+     ]
     },
     "flags": {
      "displayable": true,
@@ -124,7 +141,13 @@
      "flags": {
       "verified": true
      },
-     "implementations": []
+     "implementations": [
+      {
+       "chain_id": "okbchain",
+       "address": null,
+       "decimals": 18
+      }
+     ]
     },
     "flags": {
      "displayable": true,
@@ -174,7 +197,13 @@
      "flags": {
       "verified": true
      },
-     "implementations": []
+     "implementations": [
+      {
+       "chain_id": "binance-smart-chain",
+       "address": null,
+       "decimals": 18
+      }
+     ]
     },
     "flags": {
      "displayable": true,
@@ -224,7 +253,13 @@
      "flags": {
       "verified": true
      },
-     "implementations": []
+     "implementations": [
+      {
+       "chain_id": "polygon",
+       "address": "0x5555555555555555555555555555555555555555",
+       "decimals": 18
+      }
+     ]
     },
     "flags": {
      "displayable": true,
@@ -334,7 +369,8 @@
      "name": "WOOFi",
      "url": "https://example.invalid/"
     },
-    "protocol": "WOOFi"
+    "protocol": "WOOFi",
+    "protocol_module": "staked"
    },
    "relationships": {
     "chain": {
@@ -388,7 +424,8 @@
      "name": "WOOFi",
      "url": "https://example.invalid/"
     },
-    "protocol": "WOOFi"
+    "protocol": "WOOFi",
+    "protocol_module": "rewards"
    },
    "relationships": {
     "chain": {
@@ -442,7 +479,8 @@
      "name": "Aave V3",
      "url": "https://example.invalid/"
     },
-    "protocol": "Aave V3"
+    "protocol": "Aave V3",
+    "protocol_module": "lending"
    },
    "relationships": {
     "chain": {
@@ -496,7 +534,8 @@
      "name": "Aave V3",
      "url": "https://example.invalid/"
     },
-    "protocol": "Aave V3"
+    "protocol": "Aave V3",
+    "protocol_module": "lending"
    },
    "relationships": {
     "chain": {
@@ -550,7 +589,8 @@
      "name": "Uniswap V3",
      "url": "https://example.invalid/"
     },
-    "protocol": "Uniswap V3"
+    "protocol": "Uniswap V3",
+    "protocol_module": "liquidity_pool"
    },
    "relationships": {
     "chain": {
@@ -604,7 +644,8 @@
      "name": "Uniswap V3",
      "url": "https://example.invalid/"
     },
-    "protocol": "Uniswap V3"
+    "protocol": "Uniswap V3",
+    "protocol_module": "liquidity_pool"
    },
    "relationships": {
     "chain": {
@@ -658,7 +699,8 @@
      "name": "ExampleSwap",
      "url": "https://example.invalid/"
     },
-    "protocol": "ExampleSwap"
+    "protocol": "ExampleSwap",
+    "protocol_module": "liquidity_pool"
    },
    "relationships": {
     "chain": {
@@ -727,6 +769,174 @@
      "data": {
       "type": "fungibles",
       "id": "scam"
+     }
+    }
+   }
+  },
+  {
+   "type": "positions",
+   "id": "p15",
+   "attributes": {
+    "name": "Asset",
+    "position_type": "wallet",
+    "quantity": {
+     "int": "0",
+     "decimals": 6,
+     "float": 12.0,
+     "numeric": "12.0"
+    },
+    "value": 12.0,
+    "price": 1.0,
+    "fungible_info": {
+     "name": "USDC",
+     "symbol": "USDC",
+     "icon": null,
+     "flags": {
+      "verified": true
+     },
+     "implementations": [
+      {
+       "chain_id": "linea",
+       "address": "0x176211869cA2b568f2A7D4EE941E073a821EE1ff",
+       "decimals": 6
+      }
+     ]
+    },
+    "flags": {
+     "displayable": true,
+     "is_trash": false
+    },
+    "application_metadata": {}
+   },
+   "relationships": {
+    "chain": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "chains",
+      "id": "linea"
+     }
+    },
+    "fungible": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "fungibles",
+      "id": "usdc"
+     }
+    }
+   }
+  },
+  {
+   "type": "positions",
+   "id": "p16",
+   "attributes": {
+    "name": "Asset",
+    "position_type": "wallet",
+    "quantity": {
+     "int": "0",
+     "decimals": 18,
+     "float": 1e-06,
+     "numeric": "1e-06"
+    },
+    "value": 0.003,
+    "price": 3000.0,
+    "fungible_info": {
+     "name": "ETH",
+     "symbol": "ETH",
+     "icon": null,
+     "flags": {
+      "verified": true
+     },
+     "implementations": [
+      {
+       "chain_id": "arbitrum",
+       "address": null,
+       "decimals": 18
+      }
+     ]
+    },
+    "flags": {
+     "displayable": true,
+     "is_trash": false
+    },
+    "application_metadata": {}
+   },
+   "relationships": {
+    "chain": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "chains",
+      "id": "arbitrum"
+     }
+    },
+    "fungible": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "fungibles",
+      "id": "eth"
+     }
+    }
+   }
+  },
+  {
+   "type": "positions",
+   "id": "p17",
+   "attributes": {
+    "name": "Asset",
+    "position_type": "wallet",
+    "quantity": {
+     "int": "0",
+     "decimals": 18,
+     "float": 10.0,
+     "numeric": "10.0"
+    },
+    "value": 5.0,
+    "price": 0.5,
+    "fungible_info": {
+     "name": "ARB",
+     "symbol": "ARB",
+     "icon": null,
+     "flags": {
+      "verified": true
+     },
+     "implementations": [
+      {
+       "chain_id": "arbitrum",
+       "address": "0x912CE59144191C1204E64559FE8253a0e49E6548",
+       "decimals": 18
+      }
+     ]
+    },
+    "flags": {
+     "displayable": true,
+     "is_trash": false
+    },
+    "application_metadata": {}
+   },
+   "relationships": {
+    "chain": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "chains",
+      "id": "arbitrum"
+     }
+    },
+    "fungible": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "fungibles",
+      "id": "arb"
      }
     }
    }

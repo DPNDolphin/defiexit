@@ -4,6 +4,7 @@
   "short": "Hyperliquid 提回钱包",
   "protocol": "Hyperliquid",
   "route": "Hyperliquid → Arbitrum",
+  "chain": "hyperliquid",
   "detector": "hyperliquid",
   "lastVerified": "2026-10-27",
   "verified": "2026-10-27 实测一例:照本指南操作,到账金额和预计一致(误差不到 0.01 USDC)",

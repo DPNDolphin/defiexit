@@ -247,7 +247,7 @@ function checkPage(tx, recipes) {
   const list = recipes.map((r) => {
     const milestones = r.steps.filter((s) => s.milestone).map((s) => ({ label: punct(s.milestone, tx.lang), when: s.when || null }));
     const chips = (r.chips || []).map((c) => ({ icon: c.icon, text: punct(c.text, tx.lang) }));
-    return `<li data-id="${esc(r.id)}" data-detector="${esc(r.detector)}" data-protocol="${esc(r.protocol)}" data-route="${esc(r.route)}" data-milestones="${esc(JSON.stringify(milestones))}" data-chips="${esc(JSON.stringify(chips))}" data-zerion="${esc(JSON.stringify(r.zerion || null))}"></li>`;
+    return `<li data-id="${esc(r.id)}" data-detector="${esc(r.detector)}" data-protocol="${esc(r.protocol)}" data-route="${esc(r.route)}" data-chain="${esc(r.chain || "")}" data-milestones="${esc(JSON.stringify(milestones))}" data-chips="${esc(JSON.stringify(chips))}" data-zerion="${esc(JSON.stringify(r.zerion || null))}"></li>`;
   }).join("");
   return page({
     tx, kind: "check", path: "/check/", script: "check.js", noindex: true,
@@ -265,6 +265,13 @@ function checkPage(tx, recipes) {
   <div id="cards" class="cards" aria-live="polite"></div>
   <p class="fine resfoot">${tx.h("resultsFoot")}</p>
   <ul id="recipes" hidden>${list}</ul>
+  <dialog class="sheet" id="exitSheet" aria-labelledby="exitH">
+    <div class="sheet-in">
+      <span class="grip" aria-hidden="true"></span>
+      <div class="sheet-head"><h2 id="exitH"></h2><button class="iconbtn" type="button" id="exitClose" aria-label="${tx.attr("close")}">${ico("x")}</button></div>
+      <div class="exit" id="exitBody"></div>
+    </div>
+  </dialog>
 </div>`,
   });
 }
@@ -682,6 +689,7 @@ export function build() {
   mkdirSync(join(DIST, "assets"), { recursive: true });
   copyDir(join(ROOT, "src"), join(DIST, "assets"));
   copyDir(join(ROOT, "static", "fonts"), join(DIST, "assets", "fonts"));
+  copyDir(join(ROOT, "static", "chains"), join(DIST, "assets", "chains"));
   copyFileSync(join(ROOT, "static", "favicon.svg"), join(DIST, "favicon.svg"));
   const write = (rel, html) => {
     const f = join(DIST, rel);

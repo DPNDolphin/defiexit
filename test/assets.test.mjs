@@ -14,11 +14,30 @@ const ok = (json, status = 200) => async () => new Response(JSON.stringify(json)
 test("全部资产:钱包余额按链合起来;份额凭证、垃圾币不算;不到 1 美分的只算个数", () => {
   const out = shape(FIX);
   assert.equal(out.status, "ok");
-  assert.deepEqual(out.wallet.map((g) => [g.chain, g.usd]), [["Ethereum", 1500], ["X Layer", 28], ["Base", 20], ["BNB Chain", 6.5]]);
-  assert.equal(out.dust, 1);
+  assert.deepEqual(out.wallet.map((g) => [g.chain, g.usd]), [["Ethereum", 1500], ["X Layer", 28], ["Base", 20], ["Linea", 12], ["BNB Chain", 6.5], ["Arbitrum", 5]]);
+  assert.equal(out.dust, 2);
   assert.ok(!JSON.stringify(out).includes("aEthUSDC"), "份额凭证不该单列");
   assert.ok(!JSON.stringify(out).includes("SCAM"), "垃圾币不该出现");
-  assert.equal(out.totals.wallet, 1554.5);
+  assert.equal(out.totals.wallet, 1571.5);
+});
+
+test("全部资产:「取回」要用的——链编号、币的合约地址、这条链上有没有原生币付手续费、仓位是哪一类", () => {
+  const out = shape(FIX);
+  const w = Object.fromEntries(out.wallet.map((g) => [g.chain, g]));
+  assert.equal(w.Base.cid, "base");
+  assert.deepEqual(w.Base.tokens[0], { sym: "USDC", qty: 20, usd: 20, addr: "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913", native: false });
+  assert.equal(w.Base.gas, null, "Base 上没有 ETH");
+  assert.deepEqual(w.Ethereum.tokens[0], { sym: "ETH", qty: 0.5, usd: 1500, addr: null, native: true });
+  assert.deepEqual(w.Ethereum.gas, { sym: "ETH", qty: 0.5, usd: 1500 });
+  // 原生币不到 1 美分:不单列,但手续费那一项照样记下
+  assert.deepEqual(w.Arbitrum.tokens.map((x) => x.sym), ["ARB"]);
+  assert.deepEqual(w.Arbitrum.gas, { sym: "ETH", qty: 0.000001, usd: 0.003 });
+  assert.equal(w.Linea.gas, null);
+  assert.equal(w["X Layer"].cid, "okbchain");
+  const d = Object.fromEntries(out.defi.map((g) => [g.app, g]));
+  assert.equal(d.WOOFi.cid, "arbitrum");
+  assert.deepEqual(d.WOOFi.items.map((x) => [x.type, x.mod]), [["staked", "staked"], ["reward", "rewards"]]);
+  assert.deepEqual(d["Uniswap V3"].items.map((x) => x.mod), ["liquidity-pool", "liquidity-pool"]);
 });
 
 test("全部资产:存在项目里的按「项目 + 链」合起来;借款单算,不进合计;价格未知的照样列出", () => {

@@ -74,7 +74,11 @@ test("全站只有 lib/wallet.js 碰钱包,而且只发 eth_accounts、eth_reque
       assert.equal(s.match(/\.request\(/g)?.length, 2);
       continue;
     }
-    assert.ok(!/\bethereum\b|eip6963|\.request\(/.test(s), `${f} 不该碰钱包`);
+    // lib/chains.js 里的 ethereum 是链的名字(以太坊,配图标用),不是钱包:只查它没有碰钱包的写法
+    const pat = f.replace(/\\/g, "/").endsWith("lib/chains.js")
+      ? /eip6963|\.request\(|\.ethereum\b|\[\s*["']ethereum["']\s*\]|\{\s*ethereum\s*[,}]/
+      : /\bethereum\b|eip6963|\.request\(/;
+    assert.ok(!pat.test(s), `${f} 不该碰钱包`);
   }
   assert.ok(seen);
 });

@@ -15,6 +15,9 @@ const CHAINS = {
   blast: "Blast", mantle: "Mantle", xdai: "Gnosis", celo: "Celo", fantom: "Fantom", sonic: "Sonic", unichain: "Unichain",
   world: "World Chain", zora: "Zora", monad: "Monad", robinhood: "Robinhood Chain", plasma: "Plasma", hyperevm: "HyperEVM",
   berachain: "Berachain", ink: "Ink", soneium: "Soneium", megaeth: "MegaETH", abstract: "Abstract", solana: "Solana",
+  "x-layer": "X Layer", xlayer: "X Layer", merlin: "Merlin", degen: "Degen", "manta-pacific": "Manta Pacific",
+  "polygon-zkevm": "Polygon zkEVM", "metis-andromeda": "Metis", "gravity-alpha": "Gravity", swellchain: "Swellchain",
+  apechain: "ApeChain", bob: "BOB", zero: "ZERO", rari: "RARI Chain", sei: "Sei", kaia: "Kaia",
 };
 export const chainName = (id) => CHAINS[id] || String(id || "?").replace(/[-_]+/g, " ").replace(/\b[a-z]/g, (c) => c.toUpperCase());
 
@@ -31,11 +34,23 @@ const reply = (body, status = 200) => new Response(JSON.stringify(body), { statu
 
 const num = (x) => (typeof x === "number" && Number.isFinite(x) ? x : null);
 const text = (s, n = 60) => String(s ?? "").replace(/[\u0000-\u001f]/g, "").trim().slice(0, n);
+const slug = (s) => (/^[a-z0-9][a-z0-9-]{0,39}$/.test(s) ? s : "");
+
+// 这个币在这条链上的合约地址:原生币(付手续费的 ETH、BNB、OKB…)Zerion 给 null;查不到就当不知道
+function where(fi, cid) {
+  const im = (Array.isArray(fi?.implementations) ? fi.implementations : []).find((i) => i?.chain_id === cid);
+  if (!im) return { addr: null, native: false };
+  if (im.address === null) return { addr: null, native: true };
+  return { addr: /^0x[0-9a-fA-F]{40}$/.test(im.address) ? im.address.toLowerCase() : null, native: false };
+}
 
 // Zerion 的回复 → 页面要的样子。只认 displayable 的(份额凭证、垃圾币 Zerion 会标成 false)
+// 页面拿去做「取回」:链编号(配图标)、币的合约地址(用户在钱包里「添加代币」用)、
+// 这条链上有没有原生币付手续费(不到 1 美分也记下)、项目仓位是哪一类(存款、流动性、质押…)。
+// Zerion 给的项目网址不传:没核对过,老项目的域名可能已经换了主人
 export function shape(json) {
   const rows = Array.isArray(json?.data) ? json.data : [];
-  const wallet = new Map(), defi = new Map();
+  const wallet = new Map(), defi = new Map(), gas = new Map();
   let dust = 0;
   for (const r of rows) {
     const a = r?.attributes;
@@ -43,31 +58,35 @@ export function shape(json) {
     const usd = num(a.value);
     const qty = num(a.quantity?.float);
     if (!qty) continue;
-    const chain = chainName(r.relationships?.chain?.data?.id);
+    const cid = slug(r.relationships?.chain?.data?.id);
+    const chain = chainName(cid);
     const sym = text(a.fungible_info?.symbol, 20) || "?";
+    const isWallet = a.position_type === "wallet" || !a.position_type;
+    const w = isWallet ? where(a.fungible_info, cid) : null;
+    if (w?.native) gas.set(chain, { sym, qty, usd });
     if (usd !== null && usd < MIN_USD) {
       dust++;
       continue;
     }
-    if (a.position_type === "wallet" || !a.position_type) {
-      const g = wallet.get(chain) || { chain, usd: 0, tokens: [] };
+    if (isWallet) {
+      const g = wallet.get(chain) || { chain, cid, usd: 0, tokens: [] };
       g.usd += usd || 0;
-      g.tokens.push({ sym, qty, usd });
+      g.tokens.push({ sym, qty, usd, addr: w.addr, native: w.native });
       wallet.set(chain, g);
       continue;
     }
     const app = text(a.application_metadata?.name || a.protocol, 40) || "?";
     const k = `${app}\u0000${chain}`;
-    const g = defi.get(k) || { app, chain, usd: 0, debt: 0, items: [] };
+    const g = defi.get(k) || { app, chain, cid, usd: 0, debt: 0, items: [] };
     if (a.position_type === "loan") g.debt += usd || 0;
     else g.usd += usd || 0;
-    g.items.push({ type: text(a.position_type, 16), sym, qty, usd });
+    g.items.push({ type: text(a.position_type, 16), mod: slug(String(a.protocol_module || "").replace(/_/g, "-")), sym, qty, usd });
     defi.set(k, g);
   }
   const byUsd = (x, y) => (y.usd || 0) - (x.usd || 0);
   const walletList = [...wallet.values()].sort(byUsd).map((g) => {
     const tokens = g.tokens.sort(byUsd);
-    return { chain: g.chain, usd: g.usd, tokens: tokens.slice(0, MAX_TOKENS), more: Math.max(0, tokens.length - MAX_TOKENS) };
+    return { chain: g.chain, cid: g.cid, usd: g.usd, tokens: tokens.slice(0, MAX_TOKENS), more: Math.max(0, tokens.length - MAX_TOKENS), gas: gas.get(g.chain) || null };
   });
   const defiList = [...defi.values()].sort(byUsd).map((g) => ({ ...g, items: g.items.sort(byUsd) }));
   return {

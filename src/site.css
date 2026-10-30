@@ -536,7 +536,21 @@ code { font: 0.92em var(--font-mono); background: var(--surface-2); border: 1px 
 .cards > .list-h { margin: 12px 0 -6px; font-size: 18px; }
 .rcard-h h4 { margin: 0; font-size: 22px; }
 .awallet { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: var(--r-l); background: var(--surface); }
-.aw { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 12px 16px; border-bottom: 1px solid var(--line-2); }
+.aw { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 2px 10px; padding: 10px 12px 12px 14px; border-bottom: 1px solid var(--line-2); }
 .aw:last-child { border-bottom: 0; }
 .aw .mono { text-align: right; font-weight: 600; }
-.aw small { grid-column: 1 / -1; color: var(--faint); font-size: 13px; overflow-wrap: anywhere; }
+.aw small { grid-column: 2 / -1; color: var(--faint); font-size: 13px; overflow-wrap: anywhere; }
+.aw .clogo { width: 24px; height: 24px; }
+.aw .btn.small { min-height: 44px; padding: 0 14px; }
+
+/* 链图标:圆形小图;白底的图标在浅色页面上也看得出边 */
+.clogo { width: 20px; height: 20px; flex: none; border-radius: 50%; box-shadow: 0 0 0 1px var(--line); object-fit: cover; }
+.clogo.letter { display: inline-flex; align-items: center; justify-content: center; background: var(--surface-2); color: var(--sub); font: 700 11px/1 var(--font-mono); }
+.chip .clogo { width: 16px; height: 16px; }
+
+/* 取回弹层:这是什么 → 手续费够不够 → 一步一步怎么取 → 取完重新查一遍 */
+.exit { display: flex; flex-direction: column; gap: 14px; }
+.chainline { margin: 0; display: inline-flex; align-items: center; gap: 8px; color: var(--sub); font-size: 15px; font-weight: 600; }
+.chainline .clogo { width: 22px; height: 22px; }
+.marks.xs li { align-items: flex-start; font-size: 16px; line-height: 1.55; }
+.marks.xs .t > div { display: flex; flex-direction: column; gap: 10px; }

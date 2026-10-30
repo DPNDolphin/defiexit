@@ -4,6 +4,7 @@
   "short": "WOOFi 取回钱包",
   "protocol": "WOOFi",
   "route": "WOOFi → Arbitrum",
+  "chain": "arbitrum",
   "detector": "woofi",
   "zerion": { "apps": ["WOOFi"], "chains": ["Arbitrum"] },
   "lastVerified": "2026-10-29",

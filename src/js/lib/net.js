@@ -6,18 +6,11 @@ function netError(code, message, status) {
   return e;
 }
 
-export async function postJSON(url, body, ms = 12000) {
+async function request(url, init, ms) {
   const ctl = new AbortController();
   const t = setTimeout(() => ctl.abort(), ms);
   try {
-    const r = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-      signal: ctl.signal,
-      credentials: "omit",
-      referrerPolicy: "no-referrer",
-    });
+    const r = await fetch(url, { ...init, signal: ctl.signal, credentials: "omit", referrerPolicy: "no-referrer" });
     if (!r.ok) throw netError("http", `接口返回 ${r.status}`, r.status);
     return await r.json();
   } catch (e) {
@@ -27,6 +20,10 @@ export async function postJSON(url, body, ms = 12000) {
     clearTimeout(t);
   }
 }
+
+export const postJSON = (url, body, ms = 12000) =>
+  request(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }, ms);
+export const getJSON = (url, ms = 12000) => request(url, { method: "GET" }, ms);
 
 export const isEvmAddress = (s) => /^0x[0-9a-fA-F]{40}$/.test(s);
 export const shortAddr = (a) => `${a.slice(0, 6)}…${a.slice(-4)}`;

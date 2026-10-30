@@ -21,6 +21,7 @@
   - `/api/see`:截图求助。你勾选同意后,那张图交给 Cloudflare Workers AI 认是哪一页;
   - `/api/assets`:全部资产。页面把地址发给本站,再转给 Zerion 查各条链上的余额和项目仓位;Zerion 看得到这个地址,看不到你的 IP。密钥只在服务端。
 - 体检和现场诊断时,你的浏览器直接查询协议的官方公开接口(目前是 Hyperliquid)和 Arbitrum 公共节点,它们能看到你的地址和 IP。
+- 体检结果页还会让你的浏览器直接查 X Layer 公共节点(OKX)和 Merlin 官方浏览器(Blockscout),它们能看到你的地址和 IP;币价问 DefiLlama,只发币的编号,不发地址。
 - 网站托管在 Cloudflare。和所有网站一样,托管商会处理访问日志(比如 IP)。
 - 前端零依赖,代码量小,任何人都能读完。
 - 内容安全策略(CSP)只允许加载本站自己的脚本,只允许连到 `scripts/site.mjs` 里列出的公开接口。
