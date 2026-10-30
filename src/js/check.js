@@ -137,7 +137,29 @@ const qty = (x) => (x >= 1000 ? Math.round(x).toLocaleString("en-US") : String(N
 // Zerion 查到的项目,项目名和链都对上我们的配方(配方 JSON 的 zerion 字段)才算有指南;同名项目在别的链上不算
 const recipeFor = (g) => recipes.find((r) => r.zerion?.chains.includes(g.chain) && r.zerion.apps.some((a) => g.app.toLowerCase().includes(a.toLowerCase())));
 
-async function loadAssets() {
+// 同一个标签页里 10 分钟内再看同一个地址:用这个标签页自己记下的结果(只存在用户浏览器里,关掉标签页就没了),
+// 不重复去 Zerion 查——免费档每天只有 300 次
+const ASSETS_KEY = `dx-assets:${addr.toLowerCase()}`, ASSETS_MS = 10 * 60 * 1000;
+function assetsCached() {
+  try {
+    const c = JSON.parse(sessionStorage.getItem(ASSETS_KEY) || "null");
+    return c && Date.now() - c.at < ASSETS_MS ? c.res : null;
+  } catch {
+    return null;
+  }
+}
+function assetsKeep(res) {
+  try {
+    sessionStorage.setItem(ASSETS_KEY, JSON.stringify({ at: Date.now(), res }));
+  } catch { /* 存不了就算了,下次再查 */ }
+}
+
+async function loadAssets({ fresh = false } = {}) {
+  const hit = fresh ? null : assetsCached();
+  if (hit) {
+    paintAssets(hit);
+    return render();
+  }
   assetsBox.hidden = false;
   assetsBox.replaceChildren(el("h2", {}, t("assetsH")), el("p", { class: "sub" }, el("span", { class: "spin", "aria-hidden": "true" }), " ", t("assetsLoading")));
   let res = null;
@@ -145,6 +167,7 @@ async function loadAssets() {
     const r = await fetch("/api/assets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ a: addr }), credentials: "omit", cache: "no-store", referrerPolicy: "no-referrer" });
     res = await r.json();
   } catch { /* 当没查成 */ }
+  if (res?.status === "ok" || res?.status === "empty") assetsKeep(res);
   paintAssets(res);
   render(); // 「没查到」那段的说法跟着变
 }
@@ -179,7 +202,7 @@ function paintAssets(res) {
   if (s === "empty") return assetsBox.replaceChildren(...head, el("p", { class: "sub" }, t("assetsEmpty")), priv);
   if (s !== "ok") {
     const b = el("button", { class: "btn small", type: "button" }, icon("refresh"), t("retry"));
-    b.addEventListener("click", loadAssets);
+    b.addEventListener("click", () => loadAssets({ fresh: true }));
     return assetsBox.replaceChildren(...head, el("p", { class: "sub" }, t(s === "busy" ? "assetsBusy" : "assetsFail")), b);
   }
   assetsBox.replaceChildren(...head,
