@@ -1,12 +1,13 @@
-// 链:图标、付手续费的原生币;以及 Zerion 查不到的两条链(X Layer、Merlin)的钱包余额。
+// 链:图标、付手续费的原生币;以及 Zerion 查不到的两条链(X Layer、Merlin)。
 // 图标在 static/chains/(构建后在 /assets/chains/),来源和许可见那里的 LICENSE.txt;没有图标的链显示首字母。
 // X Layer、Merlin 由用户的浏览器直接只读查,不用密钥、不花钱:
-//   X Layer:OKX 的公共节点,一次批量查原生 OKB 和几种主流代币的余额(eth_getBalance、balanceOf);
+//   X Layer:OKX 的公共节点,钱包余额加两类我们核对过的项目仓位(见 xlayer.js);
 //   Merlin:Merlin 官方浏览器(Blockscout)的公开接口,原生 BTC 和全部 ERC-20 余额;
 //   价格:DefiLlama 的免费接口,只发币的编号,不发用户地址。
 // 没价格的币不列、只算个数:空投来的垃圾币多半没价格,币名里还可能写着钓鱼网址。
-import { postJSON, getJSON } from "./net.js";
+import { getJSON } from "./net.js";
 import { el } from "./ui.js";
+import { query as xlayerQuery } from "./xlayer.js";
 
 // Zerion 的链编号、链的显示名(小写)→ 图标文件名
 export const ICON = {
@@ -48,13 +49,12 @@ const LLAMA = "https://coins.llama.fi/prices/current/";
 const MIN_USD = 0.01;
 const clean = (s, n = 12) => String(s ?? "").replace(/[^\w.+$-]/g, "").slice(0, n);
 const amount = (raw, dec) => Number(BigInt(raw)) / 10 ** dec;
-const bad = () => Object.assign(new Error("bad data"), { code: "network" }); // 回来的数据不对:按没查成处理,给「重试」
 
 // 价格查不到不算出错:只是不报美元
 async function prices(keys) {
   if (!keys.length) return new Map();
   try {
-    const j = await getJSON(LLAMA + keys.map(encodeURIComponent).join(","), 8000);
+    const j = await getJSON(LLAMA + keys.map(encodeURIComponent).join(","), 12000);
     return new Map(Object.entries(j?.coins || {}).map(([k, v]) => [k.toLowerCase(), typeof v?.price === "number" ? v.price : null]));
   } catch {
     return new Map();
@@ -76,34 +76,6 @@ function group(chain, cid, list, more) {
   return { chain, cid, usd: tokens.reduce((s, x) => s + (x.usd || 0), 0), tokens, more, unpriced, gas: gas && { sym: gas.sym, qty: gas.qty, usd: gas.usd } };
 }
 
-// X Layer:主流代币清单(合约地址和小数位 2026-10-30 在链上核对过,DefiLlama 有价格)
-export const XLAYER = {
-  rpc: "https://rpc.xlayer.tech",
-  tokens: [
-    { sym: "USDT", addr: "0x1e4a5963abfd975d8c9021ce480b42188849d41d", dec: 6 },
-    { sym: "WOKB", addr: "0xe538905cf8410324e03a5a23c1c177a474d59b2b", dec: 18 },
-  ],
-};
-
-async function xlayer(a) {
-  const arg = a.slice(2).toLowerCase().padStart(64, "0");
-  const calls = [["eth_getBalance", [a, "latest"]], ...XLAYER.tokens.map((t) => ["eth_call", [{ to: t.addr, data: "0x70a08231" + arg }, "latest"]])];
-  const res = await postJSON(XLAYER.rpc, calls.map((c, i) => ({ jsonrpc: "2.0", id: i + 1, method: c[0], params: c[1] })));
-  if (!Array.isArray(res)) throw bad();
-  const byId = new Map(res.map((r) => [r?.id, r]));
-  const out = calls.map((_, i) => {
-    const r = byId.get(i + 1);
-    if (!r || r.error || typeof r.result !== "string" || !/^0x[0-9a-f]*$/i.test(r.result)) throw bad();
-    return r.result.length > 2 ? BigInt(r.result.slice(0, 66)) : 0n; // 不存在的合约回 "0x",当 0
-  });
-  const list = [];
-  if (out[0] > 0n) list.push({ sym: "OKB", qty: amount(out[0], 18), addr: null, native: true, px: "coingecko:okb" });
-  XLAYER.tokens.forEach((t, i) => { if (out[i + 1] > 0n) list.push({ sym: t.sym, qty: amount(out[i + 1], t.dec), addr: t.addr, native: false, px: `xlayer:${t.addr}` }); });
-  if (!list.length) return null;
-  const px = await prices(list.map((x) => x.px));
-  return group("X Layer", "xlayer", list.map(({ px: k, ...x }) => ({ ...x, usd: px.get(k) == null ? null : x.qty * px.get(k) })), 0);
-}
-
 // Merlin:Blockscout 的公开接口。这个地址在 Merlin 上从没出现过,接口回 404,就是什么都没有
 const MERLIN = "https://scan.merlinchain.io/api/v2/addresses/";
 async function merlin(a) {
@@ -119,11 +91,17 @@ async function merlin(a) {
     if (BigInt(it.value) === 0n) continue;
     list.push({ sym: clean(t.symbol) || "?", qty: amount(it.value, dec), addr, native: false, px: `merlin:${addr}` });
   }
-  if (!list.length) return null;
+  if (!list.length) return { wallet: null, defi: [] };
   const px = await prices(list.map((x) => x.px));
-  return group("Merlin", "merlin", list.map(({ px: k, ...x }) => ({ ...x, usd: px.get(k) == null ? null : x.qty * px.get(k) })), toks?.next_page_params ? 1 : 0);
+  return { wallet: group("Merlin", "merlin", list.map(({ px: k, ...x }) => ({ ...x, usd: px.get(k) == null ? null : x.qty * px.get(k) })), toks?.next_page_params ? 1 : 0), defi: [] };
 }
 
+async function xlayer(a) {
+  const r = await xlayerQuery(a);
+  return { wallet: group("X Layer", "xlayer", r.wallet, 0), defi: r.defi };
+}
+
+// 每条链查完都回 { wallet: 一组钱包余额或 null, defi: [项目仓位…] }
 export const EXTRA = [
   { cid: "xlayer", chain: "X Layer", query: xlayer },
   { cid: "merlin", chain: "Merlin", query: merlin },

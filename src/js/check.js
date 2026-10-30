@@ -10,6 +10,7 @@ import { isEvmAddress, shortAddr, floorTo } from "./lib/net.js";
 import { el, icon, rowsTable, setText, copy, toast } from "./lib/ui.js";
 import { makeT, pageLang, prefix, errText } from "./lib/i18n.js";
 import { chainLogo, chainKey, gasSym, EXTRA } from "./lib/chains.js";
+import { HOW } from "./lib/xlayer.text.js";
 
 const lang = pageLang(), t = makeT(lang), P = prefix(lang);
 const recipes = [...document.querySelectorAll("#recipes li")].map((li) => ({
@@ -77,11 +78,19 @@ const itemRows = (g) => g.items.map((x) => ({
   value: x.usd === null ? `${qty(x.qty)} ${x.sym}` : `$${usd(x.usd)}`,
 }));
 
-// Zerion 查到的项目仓位
+// 我们自己核对过取法、还没做成一步一图的仓位(X Layer 的 OKX Boost、DYORSwap):弹层里给专门的取法
+const when = (sec) => new Date(sec * 1000).toLocaleString(lang === "en" ? "en-US" : "zh-CN", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false });
+const howOf = (g) => g.how && HOW[lang]?.[g.how]?.({
+  ready: g.ready, date: g.end ? when(g.end) : "",
+  got: g.items.map((x) => `${qty(x.qty)} ${x.sym === "WOKB" ? "OKB" : x.sym}`).join(lang === "en" ? " + " : " 和 "),
+});
+
+// 项目仓位(Zerion 查到的,或者我们自己在 X Layer 上查到的)
 function defiCard(g, i) {
-  const r = recipeFor(g);
+  const r = recipeFor(g), h = howOf(g);
   return el("article", { class: "rcard" },
     el("div", { class: "rcard-h" }, el("h4", {}, g.app), chainChip(g.cid, g.chain)),
+    h?.note ? el("p", { class: "sub" }, h.note) : null,
     rowsTable(itemRows(g)),
     g.debt > 0 ? el("ul", { class: "warns" }, el("li", {}, icon("alert"), el("span", {}, t("assetsDebt", usd(g.debt))))) : null,
     r ? el("a", { class: "btn primary block", href: `${P}/r/${r.id}/#a=${addr}&go=1` }, icon("exit"), t("exitGuideBtn"))
@@ -100,6 +109,13 @@ function walletRow(g, i) {
 function failRow(name, text, retry) {
   return el("div", { class: "rline" }, el("b", {}, name), el("span", { class: "sub" }, text),
     el("button", { class: "btn small", type: "button", "data-retry": retry }, icon("refresh"), t("retry")));
+}
+
+// Zerion 查到的项目 + 我们自己查到的:同一条链上项目名对得上的,用 Zerion 的
+const norm = (s) => String(s).toLowerCase().replace(/[^a-z0-9]/g, "");
+function mergeDefi(z, more) {
+  return [...z, ...more.filter((x) => !z.some((g) => chainKey(g.cid, g.chain) === chainKey(x.cid, x.chain) && (norm(g.app).includes(norm(x.app)) || norm(x.app).includes(norm(g.app)))))]
+    .sort((a, b) => b.usd - a.usd);
 }
 
 // Zerion 的钱包余额 + 我们自己查的两条链。同一条链两边都有:只补 Zerion 没有的币
@@ -133,8 +149,9 @@ function paint() {
   const xFailed = EXTRA.filter((c) => extra.get(c.cid)?.err);
   // Zerion 里和我们配方对上、而且配方已经查到的,不重复列
   const shown = new Set([...found, ...dust].map((x) => x.r.id));
-  const zDefi = (assets.res?.defi || []).filter((g) => !shown.has(recipeFor(g)?.id));
-  const wallets = mergeWallet(assets.res?.wallet || [], EXTRA.map((c) => extra.get(c.cid)?.res).filter(Boolean));
+  const xs = EXTRA.map((c) => extra.get(c.cid)?.res).filter(Boolean);
+  const zDefi = mergeDefi((assets.res?.defi || []).filter((g) => !shown.has(recipeFor(g)?.id)), xs.flatMap((x) => x.defi || []));
+  const wallets = mergeWallet(assets.res?.wallet || [], xs.map((x) => x.wallet).filter(Boolean));
   lists = { defi: zDefi, wallet: wallets };
   const nDefi = found.length + zDefi.length;
   const defiUsd = found.reduce((s, x) => s + x.res.usd, 0) + zDefi.reduce((s, g) => s + g.usd, 0);
@@ -189,7 +206,7 @@ function paint() {
       el("a", { class: "btn primary block", href: `${P}/` }, t("another"))));
   }
   // 没价格的币(多半是空投来的仿冒币)只说个数
-  const unpriced = (assets.res?.unpriced || 0) + EXTRA.reduce((s, c) => s + (extra.get(c.cid)?.res?.unpriced || 0), 0);
+  const unpriced = (assets.res?.unpriced || 0) + xs.reduce((s, x) => s + (x.wallet?.unpriced || 0), 0);
   if (assets.res || wallets.length) {
     nodes.push(el("p", { class: "fine" }, t("assetsSub")),
       assets.res?.dust ? el("p", { class: "fine" }, t("assetsDust", assets.res.dust)) : null,
@@ -220,6 +237,26 @@ const tail = () => [
   el("p", { class: "fine" }, t("exitNoSign")),
 ];
 const chainLine = (g) => el("p", { class: "chainline" }, chainLogo(g.cid, g.chain), g.chain);
+const finding = (cls, mark, head, text) => el("div", { class: `finding ${cls}` }, el("span", { class: "mk" }, icon(mark)), el("div", {}, el("b", {}, head), el("p", {}, text)));
+// 复制一行:合约地址前面写币名、显示缩写;网址整条显示(长了就折行)
+const copyRow = (text, label = null) => el("div", { class: "copyrow" },
+  label ? el("span", {}, el("b", {}, label), " ", el("code", {}, shortAddr(text))) : el("span", { class: "url" }, text),
+  el("button", { class: "copy", type: "button", "data-copy": text, "aria-label": `${t("copy")} ${label || ""}`.trim() }, icon("copy"), t("copy")));
+
+// 专门的取法(我们核对过的仓位)
+function exitHow(g, h) {
+  return [
+    chainLine(g),
+    rowsTable(itemRows(g)),
+    h.status ? finding(h.status.ok ? "ok" : "wait", h.status.ok ? "check" : "clock", h.status.head, h.status.text) : null,
+    h.warn ? el("p", { class: "tip bad" }, icon("x"), el("span", {}, h.warn)) : null,
+    el("p", { class: "sub" }, h.lead),
+    steps(h.steps.map((s) => (typeof s === "string" ? s : el("div", {}, s.text, copyRow(s.copy))))),
+    h.after ? el("p", { class: "tip" }, icon("info"), el("span", {}, h.after)) : null,
+    ...tail(),
+    el("p", { class: "fine" }, HOW[lang].foot),
+  ];
+}
 
 function exitDefi(g) {
   const kinds = new Set(g.items.filter((x) => x.type !== "loan").map(kindOf));
@@ -242,7 +279,6 @@ function exitDefi(g) {
 function gasNote(g) {
   if (!("gas" in g)) return null; // 旧的缓存结果里没有这一项:不下结论
   const sym = g.gas?.sym || gasSym(g.cid, g.chain);
-  const finding = (cls, mark, head, text) => el("div", { class: `finding ${cls}` }, el("span", { class: "mk" }, icon(mark)), el("div", {}, el("b", {}, head), el("p", {}, text)));
   if (!g.gas) return finding("wait", "alert", t("exitGasNone", sym), t("exitGasNoneP", sym, g.chain));
   if (g.gas.usd !== null && g.gas.usd < 0.01) return finding("wait", "alert", t("exitGasLow", qty(g.gas.qty), g.gas.sym), t("exitGasLowP", g.gas.sym, g.chain));
   return finding("ok", "check", t("exitGasOk", qty(g.gas.qty), g.gas.sym), t("exitGasOkP"));
@@ -258,9 +294,7 @@ function exitWallet(g) {
     el("p", { class: "sub" }, t("exitWalletLead")),
     steps([
       t("exitSwitch", g.chain),
-      toks.length ? el("div", {}, t("exitAddToken"), ...toks.map((x) => el("div", { class: "copyrow" },
-        el("span", {}, el("b", {}, x.sym), " ", el("code", {}, shortAddr(x.addr))),
-        el("button", { class: "copy", type: "button", "data-copy": x.addr, "aria-label": `${t("copy")} ${x.sym}` }, icon("copy"), t("copy"))))) : null,
+      toks.length ? el("div", {}, t("exitAddToken"), ...toks.map((x) => copyRow(x.addr, x.sym))) : null,
       t("exitMove", g.chain),
       t("exitWDone"),
     ]),
@@ -271,8 +305,9 @@ function exitWallet(g) {
 function openExit(id) {
   const g = id[0] === "d" ? lists.defi[Number(id.slice(1))] : lists.wallet[Number(id.slice(1))];
   if (!g) return;
-  setText(sheetH, id[0] === "d" ? t("exitDefiH", g.app) : t("exitWalletH", g.chain));
-  sheetBody.replaceChildren(...(id[0] === "d" ? exitDefi(g) : exitWallet(g)).filter(Boolean));
+  const h = id[0] === "d" ? howOf(g) : null;
+  setText(sheetH, h ? h.title : id[0] === "d" ? t("exitDefiH", g.app) : t("exitWalletH", g.chain));
+  sheetBody.replaceChildren(...(h ? exitHow(g, h) : id[0] === "d" ? exitDefi(g) : exitWallet(g)).filter(Boolean));
   if (typeof sheet.showModal === "function") sheet.showModal();
   else sheet.setAttribute("open", "");
   sheet.scrollTop = 0;

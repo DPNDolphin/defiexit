@@ -14,7 +14,8 @@ async function request(url, init, ms) {
     if (!r.ok) throw netError("http", `接口返回 ${r.status}`, r.status);
     return await r.json();
   } catch (e) {
-    if (e.code) throw e;
+    // 自己的错误码是字符串;浏览器的 AbortError(DOMException)也带数字 code,不能原样往外抛,否则页面上会出英文原话
+    if (typeof e.code === "string") throw e;
     throw e.name === "AbortError" ? netError("timeout", "查询超时") : netError("network", "网络错误");
   } finally {
     clearTimeout(t);

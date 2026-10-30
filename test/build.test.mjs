@@ -328,3 +328,13 @@ test("体检结果页:WOOFi 配方写明在 Zerion 里对应的项目名和链;H
     assert.ok(hl.includes('data-zerion="null"'), "Hyperliquid 的仓位不在 Zerion 里,不对应");
   }
 });
+
+// 放在这个文件里:测试文件是并行跑的,别的文件去读 dist/,可能正赶上这里在删了重建
+test("体检结果页:有取回弹层;链图标拷进了网站", () => {
+  for (const f of ["dist/check/index.html", "dist/en/check/index.html"]) {
+    const h = read(f);
+    assert.ok(h.includes('<dialog class="sheet" id="exitSheet" aria-labelledby="exitH">'), f);
+    assert.match(h, /<li data-id="woofi"[^>]*data-chain="arbitrum"/);
+  }
+  assert.ok(existsSync("dist/assets/chains/xlayer.svg") && existsSync("dist/assets/chains/merlin.webp"));
+});

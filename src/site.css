@@ -554,3 +554,4 @@ code { font: 0.92em var(--font-mono); background: var(--surface-2); border: 1px 
 .chainline .clogo { width: 22px; height: 22px; }
 .marks.xs li { align-items: flex-start; font-size: 16px; line-height: 1.55; }
 .marks.xs .t > div { display: flex; flex-direction: column; gap: 10px; }
+.copyrow .url { font: 13px/1.45 var(--font-mono); word-break: break-all; }
