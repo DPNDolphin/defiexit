@@ -54,7 +54,7 @@ export const HOW = {
       warn: "In September 2026 DYORSwap mistakenly listed a fake chain and users lost funds through a fake bridge (DYORSwap's own contracts weren't hacked). Only use dyorswap.finance, pick the X Layer network, and don't tap Bridge.",
       lead: "This is liquidity you added to the USDT_Bridged / WOKB pool on DYORSwap (a PancakeSwap fork). Withdrawing takes two confirmations in your wallet: first a signature that approves just the LP you're withdrawing, then a transaction.",
       steps: [
-        { text: "Open this address in the wallet that holds your address, connect, and pick the X Layer network.", copy: "https://dyorswap.finance/liquidity/?chainId=196" },
+        { text: "Open this link in the wallet that holds your address, connect, and pick the X Layer network.", copy: "https://dyorswap.finance/liquidity/?chainId=196" },
         "Under Your Liquidity, find USDT/OKB, expand it and tap Remove.",
         "Tap Max. Keep the default of receiving both USDT and OKB; don't switch to a single token.",
         "Tap Enable. Your wallet asks for a signature (Permit). Check: the contract is DYOR LPs (0x35c1…cD25), the spender is 0x1E69…6036 (the DYORSwap router), and the amount is the LP you're withdrawing.",
