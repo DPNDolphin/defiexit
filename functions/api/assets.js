@@ -47,11 +47,12 @@ function where(fi, cid) {
 // Zerion 的回复 → 页面要的样子。只认 displayable 的(份额凭证、垃圾币 Zerion 会标成 false)
 // 页面拿去做「取回」:链编号(配图标)、币的合约地址(用户在钱包里「添加代币」用)、
 // 这条链上有没有原生币付手续费(不到 1 美分也记下)、项目仓位是哪一类(存款、流动性、质押…)。
-// Zerion 给的项目网址不传:没核对过,老项目的域名可能已经换了主人
+// Zerion 给的项目网址不传:没核对过,老项目的域名可能已经换了主人。
+// 钱包里没价格的币(原生币除外)不列、只算个数:多半是空投来的仿冒币(和真币同名、整数个),列出来还给合约地址,等于帮骗子引路
 export function shape(json) {
   const rows = Array.isArray(json?.data) ? json.data : [];
   const wallet = new Map(), defi = new Map(), gas = new Map();
-  let dust = 0;
+  let dust = 0, unpriced = 0;
   for (const r of rows) {
     const a = r?.attributes;
     if (!a || a.flags?.displayable === false || a.flags?.is_trash) continue;
@@ -69,6 +70,10 @@ export function shape(json) {
       continue;
     }
     if (isWallet) {
+      if (usd === null && !w.native) {
+        unpriced++;
+        continue;
+      }
       const g = wallet.get(chain) || { chain, cid, usd: 0, tokens: [] };
       g.usd += usd || 0;
       g.tokens.push({ sym, qty, usd, addr: w.addr, native: w.native });
@@ -95,6 +100,7 @@ export function shape(json) {
     wallet: walletList,
     defi: defiList,
     dust,
+    unpriced,
   };
 }
 

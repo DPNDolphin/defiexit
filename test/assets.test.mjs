@@ -27,6 +27,8 @@ test("全部资产:「取回」要用的——链编号、币的合约地址、�
   assert.equal(w.Base.cid, "base");
   assert.deepEqual(w.Base.tokens[0], { sym: "USDC", qty: 20, usd: 20, addr: "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913", native: false });
   assert.equal(w.Base.gas, null, "Base 上没有 ETH");
+  assert.equal(w.Base.tokens.length, 1, "没价格的同名币不列");
+  assert.equal(out.unpriced, 1);
   assert.deepEqual(w.Ethereum.tokens[0], { sym: "ETH", qty: 0.5, usd: 1500, addr: null, native: true });
   assert.deepEqual(w.Ethereum.gas, { sym: "ETH", qty: 0.5, usd: 1500 });
   // 原生币不到 1 美分:不单列,但手续费那一项照样记下

@@ -940,6 +940,62 @@
      }
     }
    }
+  },
+  {
+   "type": "positions",
+   "id": "p18",
+   "attributes": {
+    "name": "Asset",
+    "position_type": "wallet",
+    "quantity": {
+     "int": "0",
+     "decimals": 18,
+     "float": 100.0,
+     "numeric": "100.0"
+    },
+    "value": null,
+    "price": null,
+    "fungible_info": {
+     "name": "USDC",
+     "symbol": "USDC",
+     "icon": null,
+     "flags": {
+      "verified": true
+     },
+     "implementations": [
+      {
+       "chain_id": "base",
+       "address": "0x6666666666666666666666666666666666666666",
+       "decimals": 18
+      }
+     ]
+    },
+    "flags": {
+     "displayable": true,
+     "is_trash": false
+    },
+    "application_metadata": {}
+   },
+   "relationships": {
+    "chain": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "chains",
+      "id": "base"
+     }
+    },
+    "fungible": {
+     "links": {
+      "related": "x"
+     },
+     "data": {
+      "type": "fungibles",
+      "id": "usdc"
+     }
+    }
+   }
   }
  ]
 }

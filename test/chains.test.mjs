@@ -100,7 +100,7 @@ test("Merlin:Blockscout 公开接口;地址从没出现过(404)就是 null;没�
     return out;
   }));
   assert.deepEqual(g.tokens.map((x) => [x.sym, x.qty, x.usd]), [["BTC", 0.00005, 4], ["MERL", 2, 1]]);
-  assert.equal(g.more, 1, "没价格的那种只算个数");
+  assert.equal(g.unpriced, 1, "没价格的那种只算个数");
   assert.ok(!JSON.stringify(g).includes("fake"), "没价格的币名字都不带出来");
   assert.deepEqual(g.gas, { sym: "BTC", qty: 0.00005, usd: 4 });
 });

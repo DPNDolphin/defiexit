@@ -188,9 +188,12 @@ function paint() {
       assets.state === "empty" ? null : el("p", { class: "sub" }, t("nothingTip")),
       el("a", { class: "btn primary block", href: `${P}/` }, t("another"))));
   }
+  // 没价格的币(多半是空投来的仿冒币)只说个数
+  const unpriced = (assets.res?.unpriced || 0) + EXTRA.reduce((s, c) => s + (extra.get(c.cid)?.res?.unpriced || 0), 0);
   if (assets.res || wallets.length) {
     nodes.push(el("p", { class: "fine" }, t("assetsSub")),
       assets.res?.dust ? el("p", { class: "fine" }, t("assetsDust", assets.res.dust)) : null,
+      unpriced ? el("p", { class: "fine" }, t("assetsUnpriced", unpriced)) : null,
       el("p", { class: "fine" }, t("assetsPriv")));
   }
   cards.replaceChildren(...nodes.filter(Boolean));

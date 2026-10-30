@@ -61,18 +61,19 @@ async function prices(keys) {
   }
 }
 
-// 列出来的样子和 Zerion 那一路一样:{ chain, cid, usd, tokens:[{ sym, qty, usd, addr, native }], more, gas }。
-// 不到 1 美分的不列;没价格的:原生币照列(只写数量),别的币只算个数。手续费那一项不管多少都记下
+// 列出来的样子和 Zerion 那一路一样:{ chain, cid, usd, tokens:[{ sym, qty, usd, addr, native }], more, unpriced, gas }。
+// 不到 1 美分的不列;没价格的:原生币照列(只写数量),别的币只算个数(unpriced)。手续费那一项不管多少都记下
 function group(chain, cid, list, more) {
   const tokens = [];
+  let unpriced = 0;
   for (const x of list) {
     if (x.usd === null ? x.native : x.usd >= MIN_USD) tokens.push(x);
-    else if (x.usd === null) more++;
+    else if (x.usd === null) unpriced++;
   }
   if (!tokens.length) return null;
   tokens.sort((a, b) => (b.usd || 0) - (a.usd || 0));
   const gas = list.find((x) => x.native) || null;
-  return { chain, cid, usd: tokens.reduce((s, x) => s + (x.usd || 0), 0), tokens, more, gas: gas && { sym: gas.sym, qty: gas.qty, usd: gas.usd } };
+  return { chain, cid, usd: tokens.reduce((s, x) => s + (x.usd || 0), 0), tokens, more, unpriced, gas: gas && { sym: gas.sym, qty: gas.qty, usd: gas.usd } };
 }
 
 // X Layer:主流代币清单(合约地址和小数位 2026-10-30 在链上核对过,DefiLlama 有价格)
