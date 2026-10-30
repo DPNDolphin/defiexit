@@ -16,7 +16,7 @@ export const ICON = {
   celo: "celo", fantom: "fantom", sonic: "sonic", unichain: "unichain", world: "world", "world chain": "world", zora: "zora", monad: "monad",
   robinhood: "robinhood", "robinhood chain": "robinhood", plasma: "plasma", hyperevm: "hyperliquid", hyperliquid: "hyperliquid",
   berachain: "berachain", ink: "ink", soneium: "soneium", megaeth: "megaeth", abstract: "abstract", solana: "solana", degen: "degen",
-  katana: "katana", lisk: "lisk", mode: "mode", taiko: "taiko", apechain: "apechain", sei: "sei", aurora: "aurora",
+  katana: "katana", lisk: "lisk", mode: "mode", taiko: "taiko", apechain: "apechain", ape: "apechain", sei: "sei", aurora: "aurora", tempo: "tempo",
   "manta-pacific": "manta", "manta pacific": "manta", "polygon-zkevm": "polygonzkevm", "polygon zkevm": "polygonzkevm",
   "metis-andromeda": "metis", metis: "metis", cronos: "cronos", kaia: "kaia", ronin: "ronin", bob: "bob", swellchain: "swell", swell: "swell",
   lens: "lens", zero: "zero", "gravity-alpha": "gravity", gravity: "gravity", cyber: "cyber", fraxtal: "fraxtal", rari: "rari", "rari chain": "rari",

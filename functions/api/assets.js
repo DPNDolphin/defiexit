@@ -17,7 +17,7 @@ const CHAINS = {
   berachain: "Berachain", ink: "Ink", soneium: "Soneium", megaeth: "MegaETH", abstract: "Abstract", solana: "Solana",
   "x-layer": "X Layer", xlayer: "X Layer", merlin: "Merlin", degen: "Degen", "manta-pacific": "Manta Pacific",
   "polygon-zkevm": "Polygon zkEVM", "metis-andromeda": "Metis", "gravity-alpha": "Gravity", swellchain: "Swellchain",
-  apechain: "ApeChain", bob: "BOB", zero: "ZERO", rari: "RARI Chain", sei: "Sei", kaia: "Kaia",
+  apechain: "ApeChain", ape: "ApeChain", bob: "BOB", zero: "ZERO", rari: "RARI Chain", sei: "Sei", kaia: "Kaia",
 };
 export const chainName = (id) => CHAINS[id] || String(id || "?").replace(/[-_]+/g, " ").replace(/\b[a-z]/g, (c) => c.toUpperCase());
 

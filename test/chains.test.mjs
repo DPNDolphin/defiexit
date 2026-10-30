@@ -30,6 +30,7 @@ test("链图标:Zerion 的链编号和显示名都认得;每个图标文件都�
   assert.equal(chainKey("okbchain"), "xlayer");
   assert.equal(chainKey("merlin"), "merlin");
   assert.equal(chainKey("hyperliquid"), "hyperliquid");
+  assert.equal(chainKey("ape", "ApeChain"), "apechain");
   assert.equal(chainKey("some-new-chain", "Some New Chain"), "");
   const files = new Set(readdirSync("static/chains"));
   for (const k of new Set(Object.values(ICON))) assert.ok(files.has(FILE[k] || `${k}.svg`), `缺图标 ${k}`);
