@@ -1,6 +1,7 @@
 // X Layer 上两类我们核对过的项目仓位:取回弹层里的专门取法(中英两套)。
-// 网址、按钮名字、合约地址、弹窗里该看到的东西,2026-10-30 对着官网页面、前端代码和链上合约核对过;
-// 手机钱包里的界面还没逐屏看过,所以是文字版,一步一图的版本另做。
+// 网址、按钮名字、合约地址、弹窗里该看到的东西,2026-10-30 对着官网页面、前端代码和链上合约核对过。
+// OKX Boost 已经有一步一图的指南(recipes/okx-boost,10 月在 OKX App 里实测),卡片直接进指南,这里只用它的 note;
+// 下面的文字版和指南走的是同一条路,留着备用。DYORSwap 还是文字版。
 // 参数 v:{ ready 到没到期, date 到期时间(已按用户所在时区排好), got 预计到账(如「0.5 OKB」) }
 export const HOW = {
   zh: {
@@ -11,9 +12,9 @@ export const HOW = {
         : { ok: false, head: `还要等到 ${v.date}`, text: "到期前点了也取不出来。" },
       lead: "参加 OKX Boost「Plasma X Launch」活动时,要在 X Layer 上锁一笔币,锁 2 天。到期后不会自动退回,要自己点「解除质押」。锁仓合约的源码在 OKX 浏览器上验证过,没有管理员,钱只能回到你自己的地址。",
       steps: [
-        { text: "用连着这个地址的钱包,打开 OKX Boost 的活动页。也可以在 Boost「奖励中心」→「X Launch 奖励」里找到「Plasma X Launch」,点「查看详情」。", copy: "https://web3.okx.com/zh-hans/boost/x-launch/plasma" },
-        "连接钱包,页面往下找到「质押详情」,点右边的「解除质押」。",
-        "钱包弹出确认,核对:交互的合约是 0xDA63…FD2b(OKX Boost);转出金额是 0 OKB;不需要授权。对不上就点拒绝。",
+        { text: "在 OKX App 里:顶上选 Web3,底部点「探索」,在搜索框粘贴下面的网址,点「前往第三方网站」那一行;弹出「使用该功能的 App 版本」时点「跳转到 App 对应功能」(网页版在 App 里连不上钱包)。", copy: "https://web3.okx.com/zh-hans/boost/x-launch/plasma" },
+        "往下滑到「质押详情」,点「解除质押」。",
+        "弹出「确认解除质押」,核对:网络是 X Layer;交互地址是 0xDA63…FD2b(OKX Boost);金额前面是加号,是你要收到的。对不上就点拒绝。",
         `到账:钱包里 X Layer 上多出 ${v.got}(取回的是 OKB 本身,不是 WOKB)。回到这里点「重新查一遍」。`,
       ],
     }),
@@ -42,9 +43,9 @@ export const HOW = {
         : { ok: false, head: `Unlocks on ${v.date}`, text: "Nothing comes out before then." },
       lead: "To join OKX Boost's Plasma X Launch you had to lock tokens on X Layer for 2 days. They don't come back on their own: you have to tap Unstake. The lock contract's source is verified on the OKX explorer, it has no admin, and funds can only go back to your own address.",
       steps: [
-        { text: "Open the OKX Boost campaign page in the wallet that holds this address. You can also find Plasma X Launch under Boost > Rewards center > X Launch rewards and tap View details.", copy: "https://web3.okx.com/boost/x-launch/plasma" },
-        "Connect your wallet, scroll down to Staking details and tap Unstake on the right.",
-        "When your wallet asks you to confirm, check: the contract is 0xDA63…FD2b (OKX Boost), the amount sent is 0 OKB, and no approval is needed. If anything doesn't match, reject it.",
+        { text: "In the OKX app: pick Web3 at the top, open the explore tab at the bottom, paste the link below into the search box and tap the third-party website result. When a pop-up offers the app version, tap the bold button to open it in the app (the web version can't connect to the wallet inside the app).", copy: "https://web3.okx.com/boost/x-launch/plasma" },
+        "Scroll down to the staking details and tap the unstake button.",
+        "The unstake confirmation opens. Check: the network is X Layer, the interaction address is 0xDA63…FD2b (OKX Boost), and the amount has a plus sign, meaning you receive it. If anything doesn't match, reject it.",
         `Arrival: ${v.got} shows up in your wallet on X Layer (as OKB itself, not WOKB). Come back here and tap Check again.`,
       ],
     }),

@@ -93,7 +93,7 @@ export function lpOut({ lp, r0, r1, supply, kLast, feeOn, bal0, bal1 }) {
   return total > 0n ? [(bal0 * lp) / total, (bal1 * lp) / total] : [0n, 0n];
 }
 
-async function prices(keys) {
+export async function prices(keys) {
   if (!keys.length) return new Map();
   try {
     const j = await getJSON("https://coins.llama.fi/prices/current/" + keys.map(encodeURIComponent).join(","), 12000);
@@ -140,6 +140,53 @@ export async function read(a) {
     dyor = { lp: lp.toString(), usdt: amount(o0, tok.USDT_Bridged.dec), wokb: amount(o1, tok.WOKB.dec) };
   }
   return { wallet, boost, dyor };
+}
+
+// OKX Boost 指南的检测器用:只查这个地址在锁仓合约里的三种币,和钱包里付手续费的原生 OKB。
+// → { gas, locks: [{ sym, px, qty, start, end }] };有一条没查到、或者回来的字段不全,就整体报错,不拿「查不到」当「没锁」
+export async function readBoost(a) {
+  const ua = arg(a);
+  const calls = [[MULTICALL, SEL.getEthBalance + ua], ...BOOST.tokens.map((t) => [BOOST.locker, SEL.getLockInfo + BOOST.key.slice(2) + ua + arg(t.addr)])];
+  const res = await postJSON(RPC, { jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to: MULTICALL, data: encodeAggregate3(calls) }, "latest"] });
+  if (!res || res.error || typeof res.result !== "string") throw bad();
+  const out = decodeAggregate3(res.result, calls.length);
+  // 余额 1 格;getLockInfo 回 4 格(数量、锁期、开始时间、是否锁着)。少一格都不算数:缺的格子会被当成 0,能把「锁着」看成「没锁过」
+  if (out[0] === null || out[0].length < 2 + 64 || out.slice(1).some((x) => x === null || x.length < 2 + 64 * 4)) throw bad();
+  const locks = BOOST.tokens.map((t, i) => {
+    const r = out[i + 1];
+    const lock = word(r, 1), start = word(r, 2);
+    return { sym: t.sym, px: t.px, qty: amount(word(r, 0), t.dec), start: Number(start), end: Number(start + lock) };
+  });
+  return { gas: amount(word(out[0]), 18), locks };
+}
+
+// 最近约 6 分钟里这个地址的解除质押事件(TokensUnlocked):拿到刚取出的准确数。
+// 公共节点一次只能扫 100 个块(1 秒一块),批量请求很快就被限速,所以只查 4 段;查不到、被限速都返回 null,不影响别的结论
+const UNLOCKED = "0xb22d6ea8fb37b3c28402a761528066018f1d5ea56b967fff8fd1f83c7f0df8e0"; // TokensUnlocked(bytes32,address,address,uint128)
+export async function boostUnlocked(a, windows = 4) {
+  try {
+    const head = await postJSON(RPC, { jsonrpc: "2.0", id: 1, method: "eth_blockNumber", params: [] });
+    const top = parseInt(head?.result, 16);
+    if (!Number.isFinite(top)) return null;
+    const hex = (n) => "0x" + Math.max(n, 0).toString(16);
+    const body = Array.from({ length: windows }, (_, k) => ({
+      jsonrpc: "2.0", id: k + 1, method: "eth_getLogs",
+      params: [{ fromBlock: hex(top - (k + 1) * 100 + 1), toBlock: hex(top - k * 100), address: BOOST.locker, topics: [UNLOCKED, BOOST.key, "0x" + arg(a)] }],
+    }));
+    const res = await postJSON(RPC, body);
+    if (!Array.isArray(res)) return null;
+    const items = [];
+    for (const r of res) {
+      for (const l of Array.isArray(r?.result) ? r.result : []) {
+        const t = BOOST.tokens.find((x) => "0x" + arg(x.addr) === String(l.topics?.[3]).toLowerCase());
+        if (!t || !/^0x[0-9a-f]{1,64}$/i.test(l.data)) continue;
+        items.push({ sym: t.sym, qty: amount(BigInt(l.data), t.dec), block: parseInt(l.blockNumber, 16) });
+      }
+    }
+    return items;
+  } catch {
+    return null;
+  }
 }
 
 // 页面要的样子:钱包余额一组(和 Zerion 那一路一样),项目仓位一张张卡(带 how,取回弹层按它出专门的取法)

@@ -6,6 +6,7 @@
 // 到账核对查到好几笔的,arrival 里给 items: [{ sym, amount, text }]。
 import { detect as hyperliquid, diagnose as hyperliquidDiagnose } from "./hyperliquid.js";
 import { detect as woofi, diagnose as woofiDiagnose } from "./woofi.js";
+import { detect as okxBoost, diagnose as okxBoostDiagnose } from "./okx-boost.js";
 
-export const detectors = { hyperliquid, woofi };
-export const diagnosers = { hyperliquid: hyperliquidDiagnose, woofi: woofiDiagnose };
+export const detectors = { hyperliquid, woofi, "okx-boost": okxBoost };
+export const diagnosers = { hyperliquid: hyperliquidDiagnose, woofi: woofiDiagnose, "okx-boost": okxBoostDiagnose };

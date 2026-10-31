@@ -1,0 +1,134 @@
+{
+  "title": "Get your OKX Boost lock back to your wallet",
+  "short": "OKX Boost to your wallet",
+  "verified": "Tested in October 2026 with the author's own account in the OKX app, following this guide: the interaction address, network and amount on the confirmation page all matched the check card, and native OKB arrived a few seconds later. The lock contract's source is verified on the OKX explorer. It has no admin, only the address that locked the tokens can withdraw them, and the money only goes back to that address",
+  "covers": "OKB, USDT0 and USDG locked on X Layer for OKX Boost's Plasma X Launch",
+  "summary": "To join OKX Boost's Plasma X Launch you had to lock tokens on X Layer (0.5 OKB, 200 USDT0 or 200 USDG). They don't come back on their own, and a year later more than a thousand addresses still haven't taken theirs out. Open the campaign page in the OKX app, tap Unstake once, and the money goes back to your wallet.",
+  "facts": [
+    ["Transactions", "1 ordinary transaction. No approval, no message to sign"],
+    ["Fee", "Under $0.01, paid from the OKB in your wallet on X Layer"],
+    ["Time", "About 2 minutes. It arrives a few seconds after you confirm"],
+    ["You need", "The OKX app, switched to the account that locked the tokens, and a little OKB on X Layer for the fee"]
+  ],
+  "chips": ["About 2 minutes", "1 transaction, no approvals", "Fee under a cent"],
+  "support": {
+    "label": "OKX Help Center",
+    "url": "https://www.okx.com/help",
+    "note": "OKX never DMs you first. Anyone who messages you claiming to be support is a scammer."
+  },
+  "official": [{"label": "OKX Boost campaign page", "url": "https://web3.okx.com/boost/x-launch/plasma"}],
+  "vars": {
+    "addrShort": "your own address",
+    "got": "the tokens you locked (usually 0.5 OKB)",
+    "sym": "the token you locked"
+  },
+  "pro": [
+    "**Route**: OKX app, Web3 at the top → the explore tab at the bottom (second icon) → paste `https://web3.okx.com/boost/x-launch/plasma` into the search box → the third-party website result → **open it in the app** when asked → scroll down to the staking details → the unstake button → confirm.",
+    "**One transaction**: `unlock(bytes32 key, address token)` to OKX Boost's lock contract 0xDA63…FD2b. It sends 0 OKB, needs no approval and no message signature. The key is `lp:175` padded to 32 bytes with spaces; native OKB is written as the token 0xEeee…EEeE.",
+    "**Your numbers**: {{got}}.",
+    "**Gotchas**: the web version can't connect to the wallet inside the OKX app (it says the wallet isn't supported), so always choose to open the page in the app when asked. You need a little OKB on X Layer for the fee. The contract has no deadline: it can be withdrawn any time after unlocking."
+  ],
+  "done": {
+    "where": "on the X Layer network in your wallet",
+    "from": "Sent from OKX Boost's lock contract",
+    "look": "Where to look: in the OKX app, open the token you locked (usually OKB) in your wallet and check its transaction history."
+  },
+  "screens": {
+    "web": {"name": "Web version of the campaign page (black Connect wallet button at the bottom)", "features": ["The address bar at the top says web3.okx.com", "Plasma X Launch, with 15,000,000 XPL in big type below it", "A black Connect wallet button at the very bottom"], "do": "This is the web version, which can't connect to your wallet inside the OKX app. Don't tap Connect wallet: tap the × at the top left to close it, paste the link again as in step 1, and when asked whether to use the app version, tap the first, bold button.", "images": [{"src": "ok-web.webp", "caption": "① Tap the **×** at the top left ✗ Don't tap Connect wallet"}]},
+    "jump": {"name": "Pop-up offering the app version", "features": ["A white pop-up in the middle of a greyed-out page", "It says to use the app version for a smoother experience", "Two buttons: a bold one on top, Cancel below it"], "do": "Tap the bold button on top. It opens the OKX app's own campaign page. Don't tap Cancel: that leaves you on the web version, which can't connect to the wallet."},
+    "unsupported": {"name": "Message saying the wallet isn't supported", "features": ["A panel at the bottom with an orange warning icon", "It asks you to switch to the OKX Wallet extension to join the campaign", "Two buttons: Cancel and a green switch-wallet button"], "do": "You tapped Connect wallet on the web version, which doesn't work inside the OKX app. Tap **Cancel**, close the page with the × at the top left, open it again as in step 1, and choose the app version when asked. Don't tap the switch-wallet button.", "images": [{"src": "ok-unsupported.webp", "caption": "① Tap **Cancel** ✗ Don't tap the green switch-wallet button"}]},
+    "sign": {"name": "Your wallet asks you to sign a message, or to approve (Approve / Permit)", "do": "Tap **Reject**. This guide is one ordinary transaction: no message signatures, no approvals. The web version of web3.okx.com asks for a signature to log in, but this guide doesn't use the web version: close the page, open it again as in step 1, and choose the app version when asked.", "images": [{"src": "ok-sign.webp", "caption": "① Tap **Reject** ✗ Don't confirm"}]},
+    "wrong-to": {"name": "The interaction address isn't 0xDA63E89d…2C0795FD2b, or the amount has a minus sign", "do": "Reject it. This guide only ever sends to OKX Boost's lock contract 0xDA63E89dd0632Db71c89c031de11542C0795FD2b, and you receive money (a plus amount): it never asks you to send tokens out. Close the page and start again from step 1."},
+    "domain": {"name": "The address bar doesn't say web3.okx.com", "do": "Close the page right away and don't sign anything. Paste `https://web3.okx.com/boost/x-launch/plasma` yourself; don't tap links other people send you."}
+  },
+  "steps": {
+    "open": {
+      "title": "Open the campaign page in the OKX app",
+      "items": [
+        "First tap this link to copy it: `https://web3.okx.com/boost/x-launch/plasma`",
+        "Below is how it goes in the OKX app, one picture per tap. We tested the app in Chinese, so the pictures are in Chinese. If your app is in English, look for the button that does what each caption describes, and stop if you can't find it or what you see doesn't match."
+      ],
+      "copy": ["https://web3.okx.com/boost/x-launch/plasma"],
+      "images": [
+        "① Reading this inside the OKX app? Once the link is copied, tap the **×** at the top left to close the page, and come back when you're done. Reading it in another browser? Just open the OKX app",
+        "② Pick **Web3** at the top ③ Tap the explore tab, the second icon in the bottom bar. The amounts in the picture are hidden; the OKX Boost X Launch row under DeFi is this lock",
+        "④ Tap the search box at the top",
+        "⑤ Press and hold the search box, then tap **Paste**",
+        "⑥ Tap the third-party website result below it. The wallet labels every web address this way; the address after it must start exactly with **https://web3.okx.com/**",
+        "⑦ A pop-up offers the app version: tap the first, bold button to open this feature in the app. The address bar in the yellow box must read exactly **web3.okx.com**, nothing before or after it ✗ Don't tap Cancel: the web version can't connect to the wallet inside the app",
+        "⑧ This is the OKX app's own campaign page. The top right shows the current account, which must be the one that locked the tokens"
+      ],
+      "situations": {
+        "web-page": {"see": "The web version opened: an address bar saying web3.okx.com at the top and a black Connect wallet button at the bottom", "do": "The web version can't connect to the wallet inside the OKX app. Don't tap Connect wallet: close it with the × at the top left, paste the link again, and tap the bold **open in the app** button when the pop-up appears."},
+        "no-dialog": {"see": "The pop-up offering the app version didn't appear", "do": "It appeared every time in our tests. If it doesn't, close the page with the × at the top left and paste the link again. If that still doesn't work, tap Stuck? at the top right and send us the report."},
+        "unsupported": {"see": "A message says the wallet isn't supported and asks you to switch to the OKX Wallet extension", "do": "You tapped Connect wallet on the web version. Tap **Cancel**, close the page, open it again as above, and choose the app version when asked. Don't tap the switch-wallet button."},
+        "sign-login": {"see": "A signature request from web3.okx.com that starts with Welcome to OKX Wallet", "do": "That's the web version asking you to log in, and this guide doesn't need it. Tap **Reject**, close the page, open it again as above, and choose the app version when asked."},
+        "third-party": {"see": "The search result calls it a third-party website", "do": "That's normal: the wallet labels every web address this way. Check the address after it: it must start exactly with **https://web3.okx.com/**, with a slash right after okx.com and nothing extra in between."},
+        "no-paste": {"see": "Holding the search box doesn't show Paste", "do": "Come back to this page and tap the link again to copy it. On an iPhone, tap Allow Paste if asked. If it still doesn't work, type `https://web3.okx.com/boost/x-launch/plasma` by hand."},
+        "wrong-account": {"see": "The account at the top right isn't the one that locked the tokens", "do": "Go back to the wallet home, tap the small triangle next to the account name and switch to the account that locked the tokens (an OKX wallet can hold several), then open the page again. On the wrong account you won't find the staking details."},
+        "extension": {"see": "I use the OKX Wallet browser extension on a computer", "do": "We have only tested this guide in the OKX phone app. The extension's steps haven't been checked yet, so don't follow this guide on a computer for now. If this account is in the OKX app on your phone, use the app; if you're unsure, tap Stuck? at the top right and send us the report."}
+      }
+    },
+    "unstake": {
+      "title": "Unstake",
+      "note": "The only transaction",
+      "milestone": "Unstake",
+      "images": [
+        "① Scroll up to the staking details (the staked line is what you locked, about {{got}}) and tap the unstake button below it",
+        "② The unstake confirmation opens. Check it against the card below first, and only when the three yellow boxes all match, tap the green confirm button. The hidden part of the picture is your own address"
+      ],
+      "check": {
+        "title": "Before you confirm, check 3 things",
+        "lead": "This is the OKX app's own confirmation page. Check it against this list and tap each item once it matches.",
+        "confirm": [
+          {"title": "It's the unstake confirmation, on X Layer", "sub": "It's the OKX app's own page, not a pop-up from a website"},
+          {"title": "The interaction address is 0xDA63E89d…2C0795FD2b (OKX Boost's lock contract)", "sub": "The full address is 0xDA63E89dd0632Db71c89c031de11542C0795FD2b. At least the start 0xDA63E89d and the end 2C0795FD2b must match exactly, character for character"},
+          {"title": "The amount has a plus sign: +{{got}}", "sub": "Plus means money you receive. The network fee below is under $0.01"}
+        ],
+        "reject": ["The amount has a minus sign, or it asks you to send any tokens", "It says Approve or Permit", "It's a signature request asking you to sign a message", "The interaction address doesn't match 0xDA63E89d…2C0795FD2b"],
+        "normal": [
+          "The current wallet line is your own address, with your account name under it",
+          "After you tap Confirm, the phone asks for Face ID, a fingerprint or your password",
+          "First a transaction-confirmed message appears, then one saying the unstake succeeded"
+        ]
+      },
+      "situations": {
+        "no-section": {"see": "Scrolling down, there's no staking details block", "do": "This account has nothing locked in this campaign: either it's already been withdrawn or it's not the account that locked the tokens. Check the account at the top right, and tap Stuck? at the top right for a live check."},
+        "low-gas": {"see": "It says the fee can't be paid or the balance is too low", "do": "You need a little OKB on X Layer for the fee (under $0.01). Send a little OKB to this address on X Layer first (0.001 is plenty), then come back and tap again."},
+        "rejected": {"see": "Rejected it by mistake", "do": "Nothing moved. Go back to the campaign page and tap the unstake button again."},
+        "spinning": {"see": "Tapped Confirm and it keeps spinning", "do": "Wait a minute and don't tap again. Then tap Stuck? at the top right for a live check: we look at the lock contract on chain, so we can tell right away whether it came out."},
+        "sign": {"see": "It's a signature request, not the unstake confirmation", "do": "Reject it. Unstaking is an ordinary transaction and needs no message signature. You're most likely on the web version: go back to step 1 and choose the app version when asked."},
+        "wrong-to": {"see": "The interaction address isn't 0xDA63E89d…2C0795FD2b", "do": "Reject it right away."}
+      }
+    },
+    "arrive": {
+      "title": "Check that it arrived",
+      "milestone": "Arrived",
+      "images": [
+        "① A message at the top says the unstake succeeded, and the staking details block is gone: the money is back in your wallet ② To see it in your wallet, tap **‹** at the top left to close the campaign page, then the × at the top left of the web page",
+        "③ Back on the wallet home (OKX at the bottom), open the list of your tokens ④ Tap **OKB** (or USDT0 / USDG if that's what you locked). The balances in the picture are hidden",
+        "⑤ The transaction history has a new unstake entry from OKX Boost, +{{got}}. The balance, address and date in the picture are hidden"
+      ],
+      "check": {
+        "title": "Check that it arrived",
+        "rows": [
+          ["How long", "A few seconds after you confirm"],
+          ["Where to look", "In the OKX app, open {{sym}} in your wallet and check its transaction history"],
+          ["What you should see", "{{got}} more, in an unstake entry from OKX Boost"],
+          ["On-chain record", "It comes from OKX Boost's lock contract 0xDA63…FD2b and goes to your own address"],
+          ["If it hasn't arrived", "Tap Stuck? at the top right for a live check: we look at the lock contract on chain"]
+        ],
+        "foot": "Once it arrives, you're done. If you locked OKB, what comes back is OKB itself (X Layer's native coin), not WOKB"
+      },
+      "situations": {
+        "not-wokb": {"see": "I locked OKB: is it OKB or WOKB that came back?", "do": "It's OKB itself (X Layer's native coin), not WOKB."},
+        "usdt0": {"see": "I locked USDT0 or USDG", "do": "You get back the same token and the same amount. Look for USDT0 or USDG in your wallet's asset list."},
+        "no-record": {"see": "The entry isn't in the transaction history", "do": "Tap Stuck? at the top right for a live check: if your lock in the contract is 0, it's out. The wallet's history sometimes takes a little while to show it."}
+      }
+    }
+  },
+  "sources": [
+    "OKX explorer · OKX Boost lock contract (verified source)",
+    "OKX Boost · Plasma X Launch campaign page"
+  ]
+}

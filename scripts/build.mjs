@@ -565,8 +565,9 @@ export function localize(r, o, file) {
   for (const k of ["title", "short", "verified", "covers", "summary"]) L[k] = need(o[k], k);
   L.facts = same(r.facts, o.facts, "facts").map((x, i) => [need(x?.[0], `facts[${i}][0]`), need(x?.[1], `facts[${i}][1]`)]);
   L.chips = same(r.chips || [], o.chips || [], "chips").map((x, i) => ({ ...r.chips[i], text: need(x, `chips[${i}]`) }));
-  if (r.support) L.support = { ...r.support, label: need(o.support?.label, "support.label"), note: need(o.support?.note, "support.note") };
-  L.official = same(r.official, o.official, "official").map((x, i) => ({ ...r.official[i], label: need(x?.label, `official[${i}].label`) }));
+  if (r.support) L.support = { ...r.support, label: need(o.support?.label, "support.label"), note: need(o.support?.note, "support.note"), ...(o.support?.url ? { url: need(o.support.url, "support.url") } : {}) };
+  // 官网网址可以换成英文版的(比如 OKX 的网址里带着 zh-hans);不写就和中文一样
+  L.official = same(r.official, o.official, "official").map((x, i) => ({ ...r.official[i], label: need(x?.label, `official[${i}].label`), ...(x?.url ? { url: need(x.url, `official[${i}].url`) } : {}) }));
   for (const k of Object.keys(r.vars)) if (!(r.literalVars || []).includes(k)) L.vars[k] = need(o.vars?.[k], `vars.${k}`);
   L.pro = same(r.pro, o.pro, "pro").map((x, i) => need(x, `pro[${i}]`));
   L.done = { where: need(o.done?.where, "done.where"), from: need(o.done?.from, "done.from"), look: need(o.done?.look, "done.look") };
@@ -578,6 +579,8 @@ export function localize(r, o, file) {
     const S = { ...s, title: need(x.title, `${p}.title`) };
     for (const k of ["note", "whenText", "milestone"]) if (s[k]) S[k] = need(x[k], `${p}.${k}`);
     if (s.items) S.items = same(s.items, x.items, `${p}.items`).map((y, i) => need(y, `${p}.items[${i}]`));
+    // 要复制的网址同上:英文版可以换,不写就和中文一样
+    if (s.copy && x.copy) S.copy = same(s.copy, x.copy, `${p}.copy`).map((y, i) => need(y, `${p}.copy[${i}]`));
     if (s.images) S.images = same(s.images, x.images, `${p}.images`).map((y, i) => img(s.images[i], y, `${p}.images[${i}]`));
     if (s.detour) {
       const d = x.detour || {}, q = `${p}.detour`;

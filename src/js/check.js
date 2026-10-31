@@ -147,10 +147,10 @@ function paint() {
   const dust = all.filter((x) => x.res?.status === "dust");
   const failed = all.filter((x) => x.err);
   const xFailed = EXTRA.filter((c) => extra.get(c.cid)?.err);
-  // Zerion 里和我们配方对上、而且配方已经查到的,不重复列
+  // Zerion 或我们自己在 X Layer 上查到的仓位,和配方对上、而且配方已经查到的,不重复列(比如 OKX Boost)
   const shown = new Set([...found, ...dust].map((x) => x.r.id));
   const xs = EXTRA.map((c) => extra.get(c.cid)?.res).filter(Boolean);
-  const zDefi = mergeDefi((assets.res?.defi || []).filter((g) => !shown.has(recipeFor(g)?.id)), xs.flatMap((x) => x.defi || []));
+  const zDefi = mergeDefi(assets.res?.defi || [], xs.flatMap((x) => x.defi || [])).filter((g) => !shown.has(recipeFor(g)?.id));
   const wallets = mergeWallet(assets.res?.wallet || [], xs.map((x) => x.wallet).filter(Boolean));
   lists = { defi: zDefi, wallet: wallets };
   const nDefi = found.length + zDefi.length;
