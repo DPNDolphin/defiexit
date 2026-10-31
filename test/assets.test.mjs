@@ -40,6 +40,7 @@ test("全部资产:「取回」要用的——链编号、币的合约地址、�
   assert.equal(d.WOOFi.cid, "arbitrum");
   assert.deepEqual(d.WOOFi.items.map((x) => [x.type, x.mod]), [["staked", "staked"], ["reward", "rewards"]]);
   assert.deepEqual(d["Uniswap V3"].items.map((x) => x.mod), ["liquidity-pool", "liquidity-pool"]);
+  assert.ok(out.defi.every((g) => g.items.every((x) => "addr" in x)), "带币合约,页面按它和我们自己查到的仓位对");
 });
 
 test("全部资产:存在项目里的按「项目 + 链」合起来;借款单算,不进合计;价格未知的照样列出", () => {

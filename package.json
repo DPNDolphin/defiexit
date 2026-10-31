@@ -9,6 +9,6 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "dev": "node scripts/build.mjs && node scripts/serve.mjs",
-    "test": "node --test test/zh.test.mjs test/hyperliquid.test.mjs test/woofi.test.mjs test/okx-boost.test.mjs test/build.test.mjs test/see.test.mjs test/wallet.test.mjs test/assets.test.mjs test/chains.test.mjs test/xlayer.test.mjs test/net.test.mjs"
+    "test": "node --test test/zh.test.mjs test/hyperliquid.test.mjs test/woofi.test.mjs test/okx-boost.test.mjs test/dyorswap.test.mjs test/build.test.mjs test/see.test.mjs test/wallet.test.mjs test/assets.test.mjs test/chains.test.mjs test/xlayer.test.mjs test/net.test.mjs"
   }
 }

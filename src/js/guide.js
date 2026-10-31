@@ -26,6 +26,7 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 let flags = null;     // null:没填地址,所有步骤都显示
 let base = null;      // 按账户算出来的原始数和开关(用户在现场诊断里改了选择,能退回来)
+let hold = false;     // 检测器说先别照做:结果页点进来也停在概况页,让用户看到提醒
 let addr = null;      // 用户填的地址:只在这一页的内存和 # 后面,不会发给我们
 let pending = null;   // 正在算的那个地址和它的结果:{ a, done }(浏览器换 # 时会连着来两个事件,第二个要等第一个算完)
 let here = null;      // 正在看的那一步;null 是概况页
@@ -175,7 +176,7 @@ async function applyHash() {
     // 查不成:停在概况页,让用户看到为什么(检测器可能在说「先别照指南操作」),# 里的地址也留着
     if (!ok) return show(-1, { push: false, keepHash: true });
   }
-  if (p.get("go")) return show(0, { push: false });
+  if (p.get("go") && !hold) return show(0, { push: false });
   const s = p.get("s");
   const vs = visible(), i = s ? vs.findIndex((x) => x.dataset.id === s) : -1;
   show(i, { push: false, scroll: vs[i] !== here });
@@ -195,6 +196,7 @@ function unpersonalize() {
   addr = null;
   base = null;
   flags = null;
+  hold = false;
   for (const [n, v] of defaults) n.textContent = v;
   art.classList.remove("personal");
   $("exit").href = `${P}/`;
@@ -216,6 +218,7 @@ async function personalize(a) {
     addr = a;
     base = { vars: res.vars, flags: res.flags };
     flags = { ...res.flags };
+    hold = !!res.hold;
     setVars(res.vars);
     resetTicks();
     art.classList.add("personal");

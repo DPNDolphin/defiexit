@@ -1,0 +1,289 @@
+{
+  "id": "dyorswap",
+  "title": "DYORSwap 流动性撤回钱包",
+  "short": "DYORSwap 撤回钱包",
+  "protocol": "DYORSwap",
+  "route": "DYORSwap → X Layer",
+  "chain": "xlayer",
+  "detector": "dyorswap",
+  "lastVerified": "2026-10",
+  "verified": "2026 年 10 月对着 DYORSwap 线上页面一路走到最后一步(只读,没有发交易),撤出用链上模拟算过:滑点 0.5% 会失败,改成 1% 能成功。路由合约的源码在 OKX 浏览器上验证过。OKX App 里的钱包弹窗还没实测,所以弹窗没有配图,要对照核对卡看内容",
+  "tested": false,
+  "covers": "X Layer 上 DYORSwap USDT/OKB 池子里的流动性(LP)",
+  "summary": "在 DYORSwap 的 USDT/OKB 池子里放过流动性,钱不会自己回来。这笔在网站的列表里常常看不到(写着 No liquidity found),按默认设置撤出还会失败。照这份指南:找到池子,把滑点改成 1%,撤出,USDT 和 OKB 就回到你的钱包。",
+  "facts": [
+    ["签名和交易", "1 次签名(只授权这一次要撤的 LP)和 1 笔交易"],
+    ["手续费", "不到 0.01 美元,从钱包 X Layer 上的 OKB 里扣"],
+    ["用时", "约 5 分钟"],
+    ["要准备", "OKX App,切到放这笔流动性的账户;钱包 X Layer 上有一点 OKB 付手续费"]
+  ],
+  "chips": [
+    { "icon": "clock", "text": "约 5 分钟" },
+    { "icon": "pen", "text": "1 次签名 + 1 笔交易" },
+    { "icon": "tag", "text": "手续费不到 1 美分" }
+  ],
+  "official": [
+    { "label": "DYORSwap 找回池子页", "domain": "dyorswap.finance", "url": "https://dyorswap.finance/find/?chainId=196" }
+  ],
+  "vars": { "addrShort": "你自己的地址", "got": "你能撤回的币" },
+  "pro": [
+    "**路线**:OKX App 顶上选 Web3 → 底部 **探索** → 搜索框粘贴 `https://dyorswap.finance/find/?chainId=196` → 前往第三方网站 → **Connect** → **OKX Wallet** → **Select a Token** 选 USDT → **Manage this pool** → **齿轮** 选 1.0% → 点 USDT/OKB → **Remove** → **Max** → **Enable**(签名)→ **Remove** → **Confirm**(交易)。",
+    "**一次签名**:EIP-712 Permit,合约 DYOR LPs 0x35c185563dFd328256A80Aafc23822200719cD25,spender 是路由 0x1E690F24F704672e44255013C2cB22FC04c46036,数量就是这次撤的 LP,不是无限额。",
+    "**一笔交易**:`removeLiquidityETHWithPermit` 发给路由,0 OKB。",
+    "**你的数**:{{got}}。",
+    "**坑**:这里的 USDT 是 X Layer 上的旧版(USDT_Bridged),池子不在网站默认的列表里,所以 Your Liquidity 写着 No liquidity found。撤出时要先给协议补铸手续费 LP,真实到账比网页估的少约 0.5%,超过默认滑点,路由报 `INSUFFICIENT_A_AMOUNT`,所以要先改成 1%。别点 Bridge。"
+  ],
+  "done": {
+    "where": "在你钱包的 X Layer 网络",
+    "from": "发出方是 DYORSwap 的路由合约",
+    "look": "去哪看:OKX App 钱包首页 → 币种 → OKB 或 USDT → 交易历史。"
+  },
+  "screensVerified": "2026-10",
+  "screens": [
+    {
+      "id": "nolist",
+      "img": "dy-nolist.webp",
+      "name": "列表写着 No liquidity found",
+      "features": ["标题 Your Liquidity", "中间写着 No liquidity found", "下面一个 Find other LP tokens 的按钮"],
+      "do": "钱没丢:这个池子不在网站默认的列表里,所以这里看不到。点 **Find other LP tokens**,照第 2 步选 USDT。",
+      "images": [{ "src": "dy-nolist.webp", "caption": "① 点 **Find other LP tokens**" }],
+      "goto": "pool"
+    },
+    {
+      "id": "import",
+      "img": "dy-select.webp",
+      "name": "Import Pool 页",
+      "features": ["标题 Import Pool", "第一格是 OKB,第二格写着 Select a Token"],
+      "do": "这是第 2 步的页面。没连钱包的先点右上角 **Connect**;连上了就点 **Select a Token**,选 USDT。",
+      "goto": "pool"
+    },
+    {
+      "id": "settings",
+      "img": "dy-slip.webp",
+      "name": "底部弹出的 Settings",
+      "features": ["底部弹出一块,标题 Settings", "Slippage Tolerance 下面有 0.1%、0.5%、1.0% 三个按钮"],
+      "do": "这是第 3 步:点 **1.0%**,变成蓝色,再点右上角 **×** 关掉。下面的 Expert Mode 别开。",
+      "goto": "slippage"
+    },
+    {
+      "id": "remove-page",
+      "img": "dy-max.webp",
+      "name": "Remove USDT-OKB liquidity 页",
+      "features": ["标题 Remove USDT-OKB liquidity", "中间一个大大的百分比", "下面四个按钮:25%、50%、75%、Max"],
+      "do": "这是第 4 步:点 **Max**,往上滑到底,看 Slippage Tolerance 是不是 1%,再点 **Enable**。",
+      "goto": "enable"
+    },
+    {
+      "id": "fail",
+      "img": "dy-fail.webp",
+      "name": "红色提示 This transaction would fail",
+      "features": ["顶上弹出一块红色的 Error", "写着 This transaction would fail"],
+      "do": "钱没动。多半是滑点还是 0.5%:撤出时真实能拿回的比网页算的少一点,超过了滑点,交易过不去。点 **×** 关掉提示,关掉弹窗,点撤出页左上角的返回箭头回到列表,照第 3 步改成 1%,再撤一次(要重新签一次名)。",
+      "images": [{ "src": "dy-fail.webp", "caption": "✗ 这是滑点不够:黄框里还写着 0.5%" }],
+      "goto": "slippage"
+    },
+    {
+      "id": "sign-wrong",
+      "ai": "A wallet signature or approval request whose spender (授权给, spender) is not exactly 0x1E690F24F704672e44255013C2cB22FC04c46036, or whose token contract is not DYOR LPs 0x35c185563dFd328256A80Aafc23822200719cD25, or that approves USDT, OKB or any other token, or that shows an unlimited amount. A Permit for DYOR LPs with exactly that spender is NOT this: answer none.",
+      "name": "签名要授权的不是 DYOR LPs,或者授权给的不是 0x1E690F24…FC04c46036",
+      "do": "点 **拒绝**。这份指南只签一次名:合约是 DYOR LPs 0x35c185563dFd328256A80Aafc23822200719cD25,授权给路由 0x1E690F24F704672e44255013C2cB22FC04c46036。别的币、别的地址都不要签。关掉页面,照第 1 步重新打开。",
+      "stop": true
+    },
+    {
+      "id": "wrong-to",
+      "ai": "A transaction confirmation whose interaction address (交互地址, contract, To) is not exactly 0x1E690F24F704672e44255013C2cB22FC04c46036, or one that sends OKB or USDT out (a minus amount on anything other than the LP token).",
+      "name": "确认页的交互地址不是 0x1E690F24…FC04c46036,或者要你转出 OKB、USDT",
+      "do": "点 **拒绝**。撤出这笔只发给路由 0x1E690F24F704672e44255013C2cB22FC04c46036,你转出的只有 LP,收到的是 USDT 和 OKB。关掉页面,照第 1 步重新打开。",
+      "stop": true
+    },
+    {
+      "id": "domain",
+      "ai": "A browser page that looks like DYORSwap (its logo, Swap, Your Liquidity, Remove liquidity) but the address bar shows a domain that is not exactly dyorswap.finance. Not for pages with no address bar: those are none.",
+      "name": "地址栏的域名不是 dyorswap.finance",
+      "do": "马上关掉这个页面,什么都别签。自己重新粘贴 `https://dyorswap.finance/find/?chainId=196`,不要点别人发来的链接。",
+      "stop": true
+    },
+    {
+      "id": "bridge",
+      "ai": "A cross-chain bridge page, or a request to add a new network or to deposit tokens into a bridge, reached from DYORSwap. Not for a wallet asking to switch to X Layer: that is none.",
+      "name": "跨链桥(Bridge)页面,或者要你加一条新的链",
+      "do": "马上关掉,什么都别签。撤出流动性用不到跨链桥。2026 年 9 月有人在 DYORSwap 经假冒的跨链桥被骗。",
+      "stop": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "open",
+      "title": "在 OKX App 里打开 DYORSwap",
+      "items": [
+        "先点一下这个网址,复制下来:`https://dyorswap.finance/find/?chainId=196`",
+        "下面是 OKX App 里的走法,一下一张图。"
+      ],
+      "copy": ["https://dyorswap.finance/find/?chainId=196"],
+      "images": [
+        { "src": "ok-close.webp", "caption": "① 在 OKX App 里看这一页的:复制好网址后,点左上角 **×** 关掉网页,做完再回来。在别的浏览器里看的,直接打开 OKX App" },
+        { "src": "ok-home.webp", "caption": "② 顶上选 **Web3** ③ 点底部的 **探索**。图里的金额已打码" },
+        { "src": "ok-search.webp", "caption": "④ 点顶上的搜索框" },
+        { "src": "ok-paste.webp", "caption": "⑤ 长按搜索框,点 **粘贴**" },
+        { "src": "ok-go.webp", "caption": "⑥ 点下面「前往第三方网站」那一行。图里盖住的是录屏时的另一个网址;你这里后面的网址开头要正好是 **https://dyorswap.finance/**,打开后顶上地址栏要正好是 **dyorswap.finance**,前后没有多余的字" }
+      ],
+      "situations": [
+        { "id": "third-party", "see": "搜索结果写着「前往第三方网站」", "do": "正常:钱包对所有网址都这么写。看后面的网址:开头要正好是 **https://dyorswap.finance/**,finance 后面紧跟斜杠,中间不能多出别的字。" },
+        { "id": "no-paste", "see": "长按搜索框,没有出现「粘贴」", "do": "回到这一页再点一下网址复制;苹果手机问能不能粘贴,点「允许粘贴」。还是不行,就照着手动输入 `https://dyorswap.finance/find/?chainId=196`。" },
+        { "id": "wrong-account", "see": "钱包里的账户不是放这笔流动性的那个", "do": "回到钱包首页,点账户名旁边的小三角,切换到放这笔流动性的那个账户(OKX 钱包里可能有好几个),再从头打开一次。账户不对,后面找不到你的池子。" },
+        { "id": "other-wallet", "see": "我用的不是 OKX App,或者在电脑上", "do": "这份指南只对着 OKX App 写的,别的钱包和电脑插件我们还没核实。网页部分是一样的,但钱包弹窗的样子不同:对不上核对卡就别签,点右上角「遇到问题」,把卡点报告发给我们。" }
+      ]
+    },
+    {
+      "id": "pool",
+      "title": "连接钱包,找到你的池子",
+      "milestone": "找到池子",
+      "note": "连接不花钱,也动不了你的币",
+      "images": [
+        { "src": "dy-find.webp", "caption": "① 打开的是 Import Pool 页。点右上角 **Connect** ✗ 底部的 Bridge 别点:2026 年 9 月有人在 DYORSwap 经假冒的跨链桥被骗,撤出也用不到它" },
+        { "src": "dy-wallets.webp", "caption": "② 点 **OKX Wallet**。钱包问要不要连接时,看来源是 dyorswap.finance,点连接" },
+        { "src": "dy-select.webp", "caption": "③ 连上后,右上角变成钱包图标。点 **Select a Token**" },
+        { "src": "dy-tokens.webp", "caption": "④ 在列表里点 **USDT** ✗ 别点下面的 USD₮0:那是另一种币,这个池子用的是 USDT。图里的余额已打码" },
+        { "src": "dy-found.webp", "caption": "⑤ 下面出现 USDT-OKB LP 这一块,就是你的流动性。点 **Manage this pool**。图里的数已打码" }
+      ],
+      "situations": [
+        { "id": "connected", "see": "右上角没有 Connect,已经是钱包图标", "do": "已经连上了,直接点 **Select a Token**。" },
+        { "id": "switch-network", "see": "页面或钱包要你切换网络", "do": "切到 **X Layer**。只切网络,不用加新的链。要你添加别的链的,点拒绝:DYORSwap 在 9 月出过假链的事。" },
+        { "id": "not-found", "see": "选完 USDT,没有出现 USDT-OKB LP", "do": "看右上角的钱包是不是放这笔流动性的账户;等几秒,页面要读链上的数。还是没有,点右上角「遇到问题」看现场诊断:我们直接查链上这个地址的 LP。" },
+        { "id": "wrong-token", "see": "选成了 USD₮0", "do": "点第二格重新选,选 **USDT**。" },
+        { "id": "no-pool", "see": "写着 No pool found,下面有 Create pool", "do": "币选错了,这两种币没有池子。别点 Create pool:点第二格重新选 **USDT**。" },
+        { "id": "nolist", "see": "页面写着 No liquidity found", "do": "钱没丢:这个池子不在网站默认的列表里。点 **Find other LP tokens**,再点 Select a Token 选 USDT。" }
+      ]
+    },
+    {
+      "id": "slippage",
+      "title": "把滑点改成 1%",
+      "milestone": "改滑点",
+      "note": "不改这一步,后面会失败",
+      "items": [
+        "这个池子撤出时要先结算一笔协议手续费,真实能拿回的比网页算的少一点。网页默认的滑点 0.5% 不够,交易会失败,所以先改成 1%。这是链上模拟算出来的,不是猜的。"
+      ],
+      "images": [
+        { "src": "dy-gear.webp", "caption": "① 回到 Your Liquidity,USDT/OKB 已经在列表里了。点右上角的 **齿轮**。图里的数已打码" },
+        { "src": "dy-slip.webp", "caption": "② 点 **1.0%**,变成蓝色 ③ 点右上角 **×** 关掉" }
+      ],
+      "situations": [
+        { "id": "safe", "see": "改成 1% 安全吗", "do": "滑点的意思是「到账比网页写的少多少,我还接受」。改成 1%,就是少 1% 以内都接受;这一笔实际少约 0.5%。比这个再多,交易会自动失败,钱不动。" },
+        { "id": "expert", "see": "下面有 Expert Mode 开关", "do": "别开。这份指南用不到。" },
+        { "id": "no-gear", "see": "找不到齿轮", "do": "撤出页没有齿轮,要回到 Your Liquidity 这一页:点撤出页左上角的返回箭头。" }
+      ]
+    },
+    {
+      "id": "enable",
+      "title": "选 Max,签名",
+      "milestone": "签名",
+      "note": "签名不花钱,只授权这一次要撤的 LP",
+      "images": [
+        { "src": "dy-row.webp", "caption": "① 点 **USDT/OKB** 那一行,展开。图里的数已打码" },
+        { "src": "dy-expand.webp", "caption": "② 点 **Remove** ✗ 别点 Add liquidity instead。图里的数已打码" },
+        { "src": "dy-max.webp", "caption": "③ 点 **Max**,上面的 0% 变成 100%" },
+        { "src": "dy-enable.webp", "caption": "④ 往上滑到底,先看黄框:Slippage Tolerance 要是 **1%**。再点 **Enable**,钱包弹出签名,对照下面的核对卡。图里的数已打码" }
+      ],
+      "check": {
+        "title": "点确认前,先核对 3 件事",
+        "lead": "这是钱包弹出的签名。OKX App 里这个弹窗我们还没实测,所以没有配图,按内容对,核对完一项就点一下。",
+        "confirm": [
+          { "title": "来源是 dyorswap.finance", "sub": "弹窗里写的网站,前后不能多出别的字" },
+          { "title": "合约是 DYOR LPs:0x35c18556…200719cD25", "sub": "完整地址 0x35c185563dFd328256A80Aafc23822200719cD25。这是你的 LP,不是 USDT,也不是 OKB。大小写不用管,至少对上开头 0x35c18556 和结尾 200719cD25" },
+          { "title": "授权给(spender)0x1E690F24…FC04c46036", "sub": "完整地址 0x1E690F24F704672e44255013C2cB22FC04c46036,这是 DYORSwap 的路由合约。至少对上开头 0x1E690F24 和结尾 FC04c46036" }
+        ],
+        "reject": [
+          "要授权的不是 LP,而是 USDT、OKB 或别的币",
+          "授权给的地址对不上 0x1E690F24…FC04c46036",
+          "数量写着无限(Unlimited)",
+          "来源不是 dyorswap.finance",
+          "写着转账,或者要你发送币",
+          "钱包标红,写着高风险或者恶意网站"
+        ],
+        "normal": [
+          "签名本身不花手续费,钱也不会动",
+          "数量是一串不长的小数字:LP 的单位很小",
+          "钱包只显示头尾几位的话,对上能看到的部分;能点开详情就点开看全"
+        ]
+      },
+      "situations": [
+        { "id": "still-05", "see": "黄框里写的还是 0.5%", "do": "先别点 Enable。点撤出页左上角的返回箭头回到列表,照第 3 步改成 1%,再回来。" },
+        { "id": "approve-tx", "see": "点了 Enable,弹出的是一笔交易,不是签名", "do": "点「拒绝」。有的钱包不支持这种签名,网页会改成发一笔授权交易,这条路我们没有核对过。点右上角「遇到问题」,把卡点报告发给我们。", "stop": true },
+        { "id": "rejected", "see": "不小心点了「拒绝」", "do": "钱没动。再点一次 **Enable**。" },
+        { "id": "wrong-sign", "see": "签名要授权别的币或别的地址", "do": "立刻点「拒绝」。", "stop": true }
+      ]
+    },
+    {
+      "id": "remove",
+      "title": "撤出",
+      "milestone": "撤出",
+      "note": "只有这一笔交易",
+      "images": [
+        { "src": "dy-remove.webp", "caption": "① 左边变成灰色的 Enabled,点右边的 **Remove**" },
+        { "src": "dy-confirm.webp", "caption": "② 弹出 You will receive。黄框里要写着 **1%**。点 **Confirm**,钱包弹出交易,对照下面的核对卡。图里的数已打码" }
+      ],
+      "check": {
+        "title": "点确认前,先核对 3 件事",
+        "lead": "这是钱包弹出的交易。OKX App 里这个弹窗我们还没实测,所以没有配图,按内容对,核对完一项就点一下。",
+        "confirm": [
+          { "title": "来源是 dyorswap.finance,网络是 X Layer", "sub": "弹窗里写的网站和网络" },
+          { "title": "交互地址是路由 0x1E690F24…FC04c46036", "sub": "完整地址 0x1E690F24F704672e44255013C2cB22FC04c46036。至少对上开头 0x1E690F24 和结尾 FC04c46036,差一个字都不行" },
+          { "title": "你收到约 {{got}},不用转出 OKB 或 USDT", "sub": "转出的只有 LP;转出金额写着 0 OKB 是对的。下面的网络费用不到 0.01 美元" }
+        ],
+        "reject": [
+          "要你转出 OKB、USDT 或别的币",
+          "交互地址对不上 0x1E690F24…FC04c46036",
+          "来源不是 dyorswap.finance",
+          "写着授权(Approve)",
+          "钱包标红,写着高风险或者恶意网站"
+        ],
+        "normal": [
+          "到账的数比网页上写的少约 0.5%:正常,这个池子撤出时要先结算手续费,网页算的时候没扣",
+          "钱包只显示头尾几位的话,对上能看到的部分;能点开详情就点开看全",
+          "页面转圈写着 Waiting For Confirmation:在等你在钱包里确认",
+          "点确认后要过一下面容、指纹或者输密码"
+        ]
+      },
+      "situations": [
+        { "id": "fail", "see": "弹出红色的 Error:This transaction would fail", "do": "钱没动。多半是滑点还是 0.5%:点 × 关掉,点撤出页左上角的返回箭头回到列表,照第 3 步改成 1%,再撤一次(要重新签一次名)。已经是 1% 的,点右上角「遇到问题」看现场诊断。" },
+        { "id": "rejected", "see": "不小心点了「拒绝」", "do": "钱没动。再点一次 **Confirm**。" },
+        { "id": "spinning", "see": "点了确认,一直在转圈", "do": "等 1 分钟,别重复点。然后点右上角「遇到问题」看现场诊断:我们直接查链上最近几分钟的撤出记录。" },
+        { "id": "low-gas", "see": "提示手续费不够、余额不足", "do": "X Layer 上要有一点 OKB 付手续费(不到 0.01 美元)。先往这个地址的 X Layer 转一点 OKB(0.001 就够),再回来点。" },
+        { "id": "wrong-to", "see": "交互地址不是 0x1E690F24…FC04c46036", "do": "立刻点「拒绝」。", "stop": true },
+        { "id": "send-out", "see": "要你转出 OKB 或 USDT", "do": "立刻点「拒绝」。撤出是你收钱,不用转出这两种币。", "stop": true }
+      ]
+    },
+    {
+      "id": "arrive",
+      "title": "到账核对",
+      "milestone": "到账",
+      "images": [
+        { "src": "ok-coins.webp", "caption": "① 回到钱包首页(底部「OKX」),点 **币种**:OKB 多了,USDT 也回来了。图里的余额已打码" },
+        { "src": "ok-approvals.webp", "caption": "② 收尾:点 **授权**,找到给 DYORSwap(0x1E69…6036)的 USDT 授权,取消。这是当初加流动性时给的,留着没用。取消要一点手续费,不做钱也不会少" }
+      ],
+      "check": {
+        "kind": "arrive",
+        "title": "到账核对",
+        "rows": [
+          ["多久", "确认后几秒钟就到"],
+          ["去哪看", "OKX App 钱包首页 → 币种 → OKB、USDT → 交易历史"],
+          ["应该看到", "多出 {{got}}"],
+          ["链上记录", "来自 DYORSwap 路由合约 0x1E69…6036,收款是你自己的地址"],
+          ["没到怎么办", "点右上角「遇到问题」看现场诊断:我们直接查链上最近几分钟的撤出记录"]
+        ],
+        "foot": "到账后就结束了。回来的是 OKB 本身(X Layer 的原生币),不是 WOKB"
+      },
+      "situations": [
+        { "id": "not-wokb", "see": "多出来的是 OKB 还是 WOKB", "do": "是 OKB 本身(X Layer 的原生币),不是 WOKB。" },
+        { "id": "old-usdt", "see": "回来的 USDT 是哪一种", "do": "是 X Layer 上的旧版 USDT(USDT_Bridged),OKX 在逐步淘汰。想换成新的 USDT0,可以充到 OKX 交易所再提出来。" },
+        { "id": "less", "see": "比网页上写的少一点", "do": "正常:少约 0.5%。这个池子撤出时要先结算手续费,网页算的时候没扣。" },
+        { "id": "no-approval", "see": "授权里找不到这一条", "do": "钱包的列表不一定全,这不代表授权没了。点右上角「遇到问题」:现场诊断直接查链上,授权还在会告诉你。查到没有了,就不用管。" }
+      ]
+    }
+  ],
+  "sources": [
+    { "label": "OKX 浏览器 · DYORSwap 路由合约(已验证源码)", "url": "https://web3.okx.com/zh-hans/explorer/x-layer/evm/address/0x1e690f24f704672e44255013c2cb22fc04c46036/contract" },
+    { "label": "OKX 浏览器 · USDT/OKB 池子(DYOR LPs)", "url": "https://web3.okx.com/zh-hans/explorer/x-layer/evm/address/0x35c185563dfd328256a80aafc23822200719cd25/contract" },
+    { "label": "DYORSwap · 找回池子页", "url": "https://dyorswap.finance/find/?chainId=196" }
+  ]
+}

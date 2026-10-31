@@ -104,6 +104,19 @@ test("WOOFi 指南:三笔交易各一张核对卡、都能明说跳过;10-29 实
   assert.match(home, /<b>WOOFi<\/b>[\s\S]*?<span class="tag-ok">/);
 });
 
+test("DYORSwap 指南:签名、交易各一张核对卡;网址是能直接打开的 Find 页;图里的 USD₮0 和 Bridge 都标了别点;首页如实标待实测", () => {
+  for (const f of ["dist/r/dyorswap/index.html", "dist/en/r/dyorswap/index.html"]) {
+    const g = read(f);
+    assert.equal(g.match(/data-checks="3"/g)?.length, 2, f);
+    assert.equal(g.match(/<button class="tick" type="button"/g)?.length, 6, f);
+    assert.ok(g.includes('data-copy="https://dyorswap.finance/find/?chainId=196"'), f);
+    assert.ok(g.includes("0x35c185563dFd328256A80Aafc23822200719cD25") && g.includes("0x1E690F24F704672e44255013C2cB22FC04c46036"), `${f} 核对卡要给完整地址`);
+    assert.ok(g.includes("/r/dyorswap/img/dy-enable.webp") && g.includes("/r/dyorswap/img/dy-fail.webp"), f);
+  }
+  assert.ok(read("dist/en/r/dyorswap/index.html").includes("/r/dyorswap/img/dy-wallets-en.webp"), "英文版连接钱包的弹窗换英文截图");
+  assert.ok(/<b>DYORSwap<\/b>(?:(?!<\/li>)[\s\S])*tag-wait/.test(read("dist/index.html")), "还没实测的不能标已实测");
+});
+
 test("每个网页都带 no-transform:Cloudflare 不往页面里插统计脚本", () => {
   const h = read("dist/_headers");
   for (const p of ["/", "/en/", "/check/", "/en/check/", "/r/hyperliquid/", "/en/r/hyperliquid/", "/r/woofi/", "/en/r/woofi/", "/404.html"]) {

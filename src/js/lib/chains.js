@@ -107,14 +107,34 @@ export const EXTRA = [
   { cid: "merlin", chain: "Merlin", query: merlin },
 ];
 
-// Zerion 查到的项目 + 我们自己查到的:同一条链上项目名对得上的算同一笔,用我们的:带专门取法,数量也是撤出时真实能拿回的
-// (美元价我们这边没查到就用 Zerion 的)。Zerion 那笔条目比我们多,说明还有我们没核对过的仓位,留 Zerion 的,不能顶掉
+// Zerion 查到的项目 + 我们自己查到的。Zerion 把一个项目在一条链上的仓位合成一笔,我们只查核对过的那个仓位,所以要在那一笔里认出我们这个仓位:
+//   Zerion 给了池子地址的,比池子地址;没给的,按 Zerion 的分组(同一个池子的条目 group 一样),整组的币要和我们的正好对上;
+//   分组也没有,就是整笔的币要正好对上。币:有合约地址比合约,没有比币名。
+// 认出来了:用我们的(带专门取法,数量也是撤出时真实能拿回的;美元价我们这边没查到就用 Zerion 的),这一笔剩下的条目单列,一样不丢,钱也不重复算。
+// 认不出来:两边都列。宁可多列一张卡,也不能把别的池子删掉
 const norm = (s) => String(s).toLowerCase().replace(/[^a-z0-9]/g, "");
 const sameApp = (g, x) => chainKey(g.cid, g.chain) === chainKey(x.cid, x.chain) && (norm(g.app).includes(norm(x.app)) || norm(x.app).includes(norm(g.app)));
+const sameCoin = (a, b) => (a.addr && b.addr ? a.addr === b.addr : a.sym === b.sym);
+const sumUsd = (items) => items.reduce((s, x) => s + (x.usd || 0), 0);
+const sameCoins = (list, items) => list.length === items.length && items.every((x) => list.some((y) => sameCoin(x, y))) && list.every((y) => items.some((x) => sameCoin(x, y)));
+function findPosition(g, x) {
+  const byPool = g.items.filter((y) => x.pool && y.pool === x.pool);
+  if (byPool.length) return byPool;
+  const groups = new Map();
+  for (const y of g.items) groups.set(y.group || "", [...(groups.get(y.group || "") || []), y]);
+  return [...groups.values()].find((list) => sameCoins(list, x.items)) || null;
+}
 export function mergeDefi(z, more) {
-  const picked = z.map((g) => {
-    const x = more.find((m) => sameApp(g, m));
-    return x && x.items.length >= g.items.length ? { ...x, usd: x.usd || g.usd } : g;
-  });
-  return [...picked, ...more.filter((x) => !z.some((g) => sameApp(g, x)))].sort((a, b) => b.usd - a.usd);
+  const rest = [...more], out = [];
+  for (const g of z) {
+    const i = rest.findIndex((x) => sameApp(g, x) && findPosition(g, x));
+    if (i < 0) {
+      out.push(g);
+      continue;
+    }
+    const [x] = rest.splice(i, 1), mine = findPosition(g, x), left = g.items.filter((y) => !mine.includes(y));
+    out.push({ ...x, usd: x.usd || sumUsd(mine) });
+    if (left.length) out.push({ ...g, items: left, usd: sumUsd(left) });
+  }
+  return [...out, ...rest].sort((a, b) => b.usd - a.usd);
 }

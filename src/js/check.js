@@ -30,8 +30,9 @@ const extra = new Map(); // Zerion 查不到的链:链编号 → { res } 或 { e
 let assets = { state: "pending", res: null }; // 全部资产:pending / ok / empty / off / busy / error
 let lists = { defi: [], wallet: [] }; // 清单上正显示的,「取回」按钮按序号找
 
-// Zerion 查到的项目,项目名和链都对上我们的配方(配方 JSON 的 zerion 字段)才算有指南;同名项目在别的链上不算
-const recipeFor = (g) => recipes.find((r) => r.zerion?.chains.includes(g.chain) && r.zerion.apps.some((a) => g.app.toLowerCase().includes(a.toLowerCase())));
+// 对得上配方才算有指南:我们自己查到的仓位带 how(配方编号);Zerion 查到的,项目名和链都要对上配方 JSON 的 zerion 字段,同名项目在别的链上不算。
+// DYORSwap 不写 zerion 字段:Zerion 查到的可能是别的池子,指南只核对过 USDT/OKB 这一个
+const recipeFor = (g) => recipes.find((r) => r.id === g.how || (r.zerion?.chains.includes(g.chain) && r.zerion.apps.some((a) => g.app.toLowerCase().includes(a.toLowerCase()))));
 const chainChip = (cid, name, text = name) => el("span", { class: "chip" }, chainLogo(cid, name), text);
 
 // ---------- 卡片 ----------

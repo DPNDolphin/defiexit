@@ -79,6 +79,18 @@ test("X Layer:一次 eth_call 发给 Multicall3,查钱包、OKX Boost 锁仓、D
   assert.equal(dyor.chain, "X Layer");
 });
 
+test("X Layer:有 LP 但 kLast、feeTo 没查到:算出来的比真实的多,不能当真,报「没查成」", async () => {
+  const fake = (kLast, feeTo, rv = w(5, 6, 0)) => (url) => (url === RPC
+    ? json({ jsonrpc: "2.0", id: 1, result: results([w(0), ...TOKENS.map(() => w(0)), w(0, 0, 0, 0), w(0, 0, 0, 0), w(0, 0, 0, 0), w(1000), rv, w(100000), kLast, feeTo, w(5), w(6)]) })
+    : json({ coins: {} }));
+  await assert.rejects(withFetch(fake(null, w(1)), () => query(A)), (e) => e.code === "network");
+  await assert.rejects(withFetch(fake(w(30), null), () => query(A)), (e) => e.code === "network");
+  await assert.rejects(withFetch(fake(w(30), w(1), w(5)), () => query(A)), (e) => e.code === "network", "getReserves 少了格子");
+  const ok = await withFetch(fake(w(30), w(1)), () => query(A));
+  assert.equal(ok.defi[0].how, "dyorswap");
+  assert.ok(ok.defi[0].items.every((x) => x.addr), "带币合约,好和 Zerion 那边对");
+});
+
 test("X Layer:没到期的锁仓 ready=false;什么都没有就空着;节点回错就报「没查成」", async () => {
   const now = Math.floor(Date.now() / 1000);
   const n = 1 + TOKENS.length + BOOST.tokens.length + 7;

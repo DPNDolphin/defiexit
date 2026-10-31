@@ -38,6 +38,7 @@ export const DYOR = {
 const SEL = {
   getEthBalance: "0x4d2301cc", balanceOf: "0x70a08231", getLockInfo: "0x05ed942d",
   getReserves: "0x0902f1ac", totalSupply: "0x18160ddd", kLast: "0x7464fc3d", feeTo: "0x017e7e58", aggregate3: "0x82ad56cb",
+  allowance: "0xdd62ed3e", nonces: "0x7ecebe00",
 };
 
 const bad = () => Object.assign(new Error("bad data"), { code: "network" });
@@ -135,7 +136,9 @@ export async function read(a) {
   const lp = word(out[i++]);
   const [rv, supply, kLast, feeTo, bal0, bal1] = out.slice(i, i + 6);
   let dyor = null;
-  if (lp > 0n && rv && supply && bal0 && bal1) {
+  if (lp > 0n) {
+    // 有 LP 就一定要算出真实能拿回的数:kLast、feeTo 缺了算出来的比真实的多,不能当真。少一条就整体报「没查成」,页面给重试
+    if (![supply, kLast, feeTo, bal0, bal1].every((x) => x && x.length >= 2 + 64) || !rv || rv.length < 2 + 64 * 3) throw bad();
     const [o0, o1] = lpOut({ lp, r0: word(rv, 0), r1: word(rv, 1), supply: word(supply), kLast: word(kLast), feeOn: word(feeTo) !== 0n, bal0: word(bal0), bal1: word(bal1) });
     dyor = { lp: lp.toString(), usdt: amount(o0, tok.USDT_Bridged.dec), wokb: amount(o1, tok.WOKB.dec) };
   }
@@ -158,6 +161,32 @@ export async function readBoost(a) {
     return { sym: t.sym, px: t.px, qty: amount(word(r, 0), t.dec), start: Number(start), end: Number(start + lock) };
   });
   return { gas: amount(word(out[0]), 18), locks };
+}
+
+// DYORSwap 指南的检测器用:钱包里付手续费的原生 OKB,这个地址的 LP,撤出时真实能拿回多少、网页上估的是多少,
+// permit 用过几次(撤出时用过就加 1),当初加流动性时给路由的 USDT 授权还剩多少。
+// → { gas, lp, usdt, wokb, pageUsdt, pageWokb, nonce, allowance, px };有一条没查到、或者回来的字段不全,就整体报错,不拿「查不到」当「没有」
+export async function readDyor(a) {
+  const ua = arg(a), usdt = tok.USDT_Bridged, wokb = tok.WOKB;
+  const calls = [
+    [MULTICALL, SEL.getEthBalance + ua], [DYOR.pair, SEL.balanceOf + ua], [DYOR.pair, SEL.nonces + ua], [usdt.addr, SEL.allowance + ua + arg(DYOR.router)],
+    [DYOR.pair, SEL.getReserves], [DYOR.pair, SEL.totalSupply], [DYOR.pair, SEL.kLast], [DYOR.factory, SEL.feeTo],
+    [usdt.addr, SEL.balanceOf + arg(DYOR.pair)], [wokb.addr, SEL.balanceOf + arg(DYOR.pair)],
+  ];
+  const res = await postJSON(RPC, { jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to: MULTICALL, data: encodeAggregate3(calls) }, "latest"] });
+  if (!res || res.error || typeof res.result !== "string") throw bad();
+  const out = decodeAggregate3(res.result, calls.length);
+  // getReserves 回 3 格,别的都是 1 格。少一格都不算数:缺的格子会被当成 0,能把「有 LP」看成「没有」
+  if (out.some((x, i) => x === null || x.length < 2 + 64 * (i === 4 ? 3 : 1))) throw bad();
+  const [gas, lp, nonce, allowance, rv, supply, kLast, feeTo, bal0, bal1] = out;
+  const pool = { lp: word(lp), r0: word(rv, 0), r1: word(rv, 1), supply: word(supply), kLast: word(kLast), feeOn: word(feeTo) !== 0n, bal0: word(bal0), bal1: word(bal1) };
+  const [o0, o1] = lpOut(pool);
+  const [p0, p1] = lpOut({ ...pool, feeOn: false }); // 网页估的时候没算撤出时要补铸的手续费 LP
+  return {
+    gas: amount(word(gas), 18), lp: word(lp), nonce: word(nonce), allowance: word(allowance),
+    usdt: amount(o0, usdt.dec), wokb: amount(o1, wokb.dec), pageUsdt: amount(p0, usdt.dec), pageWokb: amount(p1, wokb.dec),
+    px: { usdt: `xlayer:${usdt.addr}`, okb: "coingecko:okb" },
+  };
 }
 
 // 最近约 6 分钟里这个地址的解除质押事件(TokensUnlocked):拿到刚取出的准确数。
@@ -189,6 +218,46 @@ export async function boostUnlocked(a, windows = 4) {
   }
 }
 
+// 最近约 6 分钟里这个地址撤出 DYORSwap LP 的记录:LP 转回池子的 Transfer 事件 → 那笔交易的回执。
+// LP 可以转给别人,清零不等于撤出来了,到账只认这里:回执成功、发给路由,同一笔里池子有 Burn,USDT 确实打到这个地址,路由把 WOKB 解包了(Withdrawal)。
+// 原生 OKB 转账不出事件,路由的 USDT 和 OKB 打给同一个收款人,所以看解包就够;选了 Receive WOKB 的没有解包,算没查到,不说到账了 OKB。
+// 公共节点一次只能扫 100 个块,批量请求很快就被限速,所以只查 4 段;没查成返回 null,查了没有返回空数组。→ [{ usdt, okb }]
+const TRANSFER = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"; // Transfer(address,address,uint256)
+const BURN = "0xdccd412f0b1252819cb1fd330b93224ca42612892bb3f4f789976e6d81936496"; // Burn(address,uint256,uint256,address)
+const WITHDRAWAL = "0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65"; // Withdrawal(address,uint256)
+export async function dyorRemoved(a, windows = 4) {
+  try {
+    const head = await postJSON(RPC, { jsonrpc: "2.0", id: 1, method: "eth_blockNumber", params: [] });
+    const top = parseInt(head?.result, 16);
+    if (!Number.isFinite(top)) return null;
+    const hex = (n) => "0x" + Math.max(n, 0).toString(16);
+    const me = "0x" + arg(a);
+    const body = Array.from({ length: windows }, (_, k) => ({
+      jsonrpc: "2.0", id: k + 1, method: "eth_getLogs",
+      params: [{ fromBlock: hex(top - (k + 1) * 100 + 1), toBlock: hex(top - k * 100), address: DYOR.pair, topics: [TRANSFER, me, "0x" + arg(DYOR.pair)] }],
+    }));
+    const res = await postJSON(RPC, body);
+    if (!Array.isArray(res)) return null;
+    const hashes = [...new Set(res.flatMap((r) => (Array.isArray(r?.result) ? r.result : []).map((l) => l.transactionHash)))];
+    if (!hashes.length) return res.every((r) => Array.isArray(r?.result)) ? [] : null;
+    const out = [];
+    for (const h of hashes) {
+      const r = await postJSON(RPC, { jsonrpc: "2.0", id: 1, method: "eth_getTransactionReceipt", params: [h] });
+      const logs = r?.result?.logs;
+      if (r?.result?.status !== "0x1" || String(r.result.to).toLowerCase() !== DYOR.router || !Array.isArray(logs)) continue;
+      const from = (l, addr, topic) => String(l.address).toLowerCase() === addr && l.topics?.[0] === topic;
+      const uint = (l) => /^0x[0-9a-f]{64}$/i.test(l?.data || "");
+      const paid = logs.find((l) => from(l, tok.USDT_Bridged.addr, TRANSFER) && String(l.topics?.[2]).toLowerCase() === me);
+      const unwrap = logs.find((l) => from(l, tok.WOKB.addr, WITHDRAWAL) && String(l.topics?.[1]).toLowerCase() === "0x" + arg(DYOR.router));
+      if (!logs.some((l) => from(l, DYOR.pair, BURN)) || !uint(paid) || !uint(unwrap)) continue;
+      out.push({ usdt: amount(BigInt(paid.data), tok.USDT_Bridged.dec), okb: amount(BigInt(unwrap.data), tok.WOKB.dec) });
+    }
+    return out;
+  } catch {
+    return null;
+  }
+}
+
 // 页面要的样子:钱包余额一组(和 Zerion 那一路一样),项目仓位一张张卡(带 how,取回弹层按它出专门的取法)
 export async function query(a) {
   const { wallet, boost, dyor } = await read(a);
@@ -205,10 +274,10 @@ export async function query(a) {
   }
   if (dyor) {
     const items = [
-      { type: "deposit", mod: "liquidity-pool", sym: "USDT_Bridged", qty: dyor.usdt, usd: val(dyor.usdt, `xlayer:${tok.USDT_Bridged.addr}`) },
-      { type: "deposit", mod: "liquidity-pool", sym: "WOKB", qty: dyor.wokb, usd: val(dyor.wokb, "coingecko:okb") },
+      { type: "deposit", mod: "liquidity-pool", sym: "USDT_Bridged", addr: tok.USDT_Bridged.addr, qty: dyor.usdt, usd: val(dyor.usdt, `xlayer:${tok.USDT_Bridged.addr}`) },
+      { type: "deposit", mod: "liquidity-pool", sym: "WOKB", addr: tok.WOKB.addr, qty: dyor.wokb, usd: val(dyor.wokb, "coingecko:okb") },
     ];
-    defi.push({ app: "DYORSwap", chain: "X Layer", cid: "xlayer", how: "dyorswap", debt: 0, items, usd: items.reduce((s, x) => s + (x.usd || 0), 0) });
+    defi.push({ app: "DYORSwap", chain: "X Layer", cid: "xlayer", how: "dyorswap", pool: DYOR.pair, debt: 0, items, usd: items.reduce((s, x) => s + (x.usd || 0), 0) });
   }
   return { wallet: wallet.map(({ px: k, ...x }) => ({ ...x, usd: val(x.qty, k) })), defi };
 }

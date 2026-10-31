@@ -15,6 +15,7 @@
 | [Hyperliquid](recipes/hyperliquid/recipe.json) | 账户里的 USDC、已停发的 USDH,提回 Arbitrum | 2026-10-27 |
 | [WOOFi](recipes/woofi/recipe.json) | Arbitrum 上质押的 WOO、没领的奖励、ETH 金库里已结算待取的钱 | 2026-10-29 |
 | [OKX Boost](recipes/okx-boost/recipe.json) | 「Plasma X Launch」活动时在 X Layer 上锁的 OKB、USDT0、USDG(在 OKX App 里取回) | 2026-10 |
+| [DYORSwap](recipes/dyorswap/recipe.json) | X Layer 上 USDT/OKB 池子里的流动性(页面已核对、链上模拟过,钱包弹窗待实测) | 2026-10 |
 
 更多协议陆续加入,先做被问得最多的。
 

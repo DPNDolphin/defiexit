@@ -1,0 +1,240 @@
+{
+  "title": "Withdraw your DYORSwap liquidity to your wallet",
+  "short": "Withdraw from DYORSwap",
+  "verified": "In October 2026 we followed the live DYORSwap pages all the way to the last step (read-only, no transaction sent) and simulated the withdrawal on chain: at 0.5% slippage it fails, at 1% it succeeds. The router's source is verified on the OKX explorer. The wallet pop-ups in the OKX app haven't been tested live yet, so they have no pictures: check their content against the check cards",
+  "covers": "Liquidity (LP) in DYORSwap's USDT/OKB pool on X Layer",
+  "summary": "If you added liquidity to DYORSwap's USDT/OKB pool, it won't come back on its own. The site's list often doesn't show it (it says No liquidity found), and withdrawing with the default settings fails. Follow this guide to find the pool, set slippage to 1% and withdraw, and your USDT and OKB go back to your wallet.",
+  "facts": [
+    ["Signature and transaction", "1 signature (only for the LP you're withdrawing) and 1 transaction"],
+    ["Fee", "Under $0.01, paid from the OKB in your wallet on X Layer"],
+    ["Time", "About 5 minutes"],
+    ["You'll need", "The OKX app, on the account that added the liquidity, with a little OKB on X Layer for the fee"]
+  ],
+  "chips": ["About 5 minutes", "1 signature + 1 transaction", "Fee under 1 cent"],
+  "official": [{ "label": "DYORSwap find-a-pool page" }],
+  "vars": { "addrShort": "your own address", "got": "what you can withdraw" },
+  "pro": [
+    "**Route**: in the OKX app, pick Web3 at the top → the explore tab at the bottom → paste `https://dyorswap.finance/find/?chainId=196` in the search box → the third-party website result → **Connect** → **OKX Wallet** → **Select a Token**, pick USDT → **Manage this pool** → the **gear**, pick 1.0% → tap USDT/OKB → **Remove** → **Max** → **Enable** (signature) → **Remove** → **Confirm** (transaction).",
+    "**One signature**: an EIP-712 Permit on the DYOR LPs contract 0x35c185563dFd328256A80Aafc23822200719cD25. The spender is the router 0x1E690F24F704672e44255013C2cB22FC04c46036, and the amount is the LP you're withdrawing, not unlimited.",
+    "**One transaction**: `removeLiquidityETHWithPermit` to the router, sending 0 OKB.",
+    "**Your numbers**: {{got}}.",
+    "**Pitfalls**: this USDT is X Layer's old version (USDT_Bridged), and the pool isn't in the site's default list, so Your Liquidity says No liquidity found. Withdrawing first mints the protocol's fee LP, so you actually get about 0.5% less than the site estimates, more than the default slippage, and the router reverts with `INSUFFICIENT_A_AMOUNT`. That's why slippage has to be 1%. Don't tap Bridge."
+  ],
+  "done": {
+    "where": "in your wallet on X Layer",
+    "from": "sent by DYORSwap's router contract",
+    "look": "Where to look: OKX app wallet home → open OKB or USDT → transaction history."
+  },
+  "screens": {
+    "nolist": {
+      "name": "The list says No liquidity found",
+      "features": ["Titled Your Liquidity", "No liquidity found in the middle", "A Find other LP tokens button below it"],
+      "do": "Your money isn't lost: this pool isn't in the site's default list, so it doesn't show here. Tap **Find other LP tokens**, then pick USDT as in step 2.",
+      "images": ["① Tap **Find other LP tokens**"]
+    },
+    "import": {
+      "name": "The Import Pool page",
+      "features": ["Titled Import Pool", "The first box says OKB, the second says Select a Token"],
+      "do": "This is the page from step 2. Not connected yet? Tap **Connect** at the top right first. Connected? Tap **Select a Token** and pick USDT."
+    },
+    "settings": {
+      "name": "The Settings panel at the bottom",
+      "features": ["A panel slides up, titled Settings", "Under Slippage Tolerance there are 0.1%, 0.5% and 1.0% buttons"],
+      "do": "This is step 3: tap **1.0%** so it turns blue, then tap **×** at the top right to close. Leave Expert Mode off."
+    },
+    "remove-page": {
+      "name": "The Remove USDT-OKB liquidity page",
+      "features": ["Titled Remove USDT-OKB liquidity", "A big percentage in the middle", "Four buttons below it: 25%, 50%, 75%, Max"],
+      "do": "This is step 4: tap **Max**, scroll down to the bottom, check that Slippage Tolerance says 1%, then tap **Enable**."
+    },
+    "fail": {
+      "name": "A red message: This transaction would fail",
+      "features": ["A red Error appears at the top", "It says This transaction would fail"],
+      "do": "Your money hasn't moved. Slippage is most likely still 0.5%: you actually get slightly less than the site estimates, which is more than the slippage allows, so the transaction can't go through. Tap **×** to close the message, close the pop-up, tap the back arrow at the top left of the withdraw page to return to the list, set 1% as in step 3, and withdraw again (you'll need to sign again).",
+      "images": ["✗ Slippage is too low: the yellow box still says 0.5%"]
+    },
+    "sign-wrong": {
+      "name": "The signature isn't for DYOR LPs, or the spender isn't 0x1E690F24…FC04c46036",
+      "do": "Tap **Reject**. This guide has one signature only: the contract is DYOR LPs 0x35c185563dFd328256A80Aafc23822200719cD25 and the spender is the router 0x1E690F24F704672e44255013C2cB22FC04c46036. Don't sign for any other token or address. Close the page and reopen it as in step 1."
+    },
+    "wrong-to": {
+      "name": "The interaction address isn't 0x1E690F24…FC04c46036, or it wants you to send OKB or USDT",
+      "do": "Tap **Reject**. This withdrawal only goes to the router 0x1E690F24F704672e44255013C2cB22FC04c46036. The only thing leaving your wallet is the LP, and you receive USDT and OKB. Close the page and reopen it as in step 1."
+    },
+    "domain": {
+      "name": "The address bar isn't dyorswap.finance",
+      "do": "Close this page right away and don't sign anything. Paste `https://dyorswap.finance/find/?chainId=196` again yourself; don't tap links other people send you."
+    },
+    "bridge": {
+      "name": "A bridge page, or a request to add a new network",
+      "do": "Close it right away and don't sign anything. Withdrawing liquidity doesn't need a bridge. In September 2026 users lost funds through a fake bridge on DYORSwap."
+    }
+  },
+  "steps": {
+    "open": {
+      "title": "Open DYORSwap in the OKX app",
+      "items": [
+        "First tap this link to copy it: `https://dyorswap.finance/find/?chainId=196`",
+        "Below is how it goes in the OKX app, one picture per tap. We tested the app in Chinese, so its pictures are in Chinese. If your app is in English, look for the button that does what each caption describes, and stop if you can't find it or what you see doesn't match."
+      ],
+      "images": [
+        "① Reading this inside the OKX app? Once the link is copied, tap the **×** at the top left to close the page, and come back when you're done. Reading it in another browser? Just open the OKX app",
+        "② Pick **Web3** at the top ③ Tap the explore tab, the second icon in the bottom bar. The amounts in the picture are hidden",
+        "④ Tap the search box at the top",
+        "⑤ Press and hold the search box, then tap **Paste**",
+        "⑥ Tap the third-party website result below it. The hidden part of the picture is a different link from our recording; yours must start exactly with **https://dyorswap.finance/**, and once it opens the address bar must say exactly **dyorswap.finance**, with nothing extra before or after"
+      ],
+      "situations": {
+        "third-party": { "see": "The search result says it's a third-party website", "do": "That's normal: the wallet labels every web address this way. Look at the address after it: it must start exactly with **https://dyorswap.finance/**, with a slash right after finance and nothing extra in between." },
+        "no-paste": { "see": "Holding the search box doesn't show Paste", "do": "Come back to this page and tap the link again to copy it. If your iPhone asks whether to allow pasting, allow it. Still nothing? Type `https://dyorswap.finance/find/?chainId=196` by hand." },
+        "wrong-account": { "see": "The wallet is on a different account from the one that added the liquidity", "do": "Go back to the wallet home, tap the small triangle next to the account name, switch to the account that added the liquidity (an OKX wallet can hold several), and start again. On the wrong account you won't find your pool." },
+        "other-wallet": { "see": "I'm not using the OKX app, or I'm on a computer", "do": "This guide was written for the OKX app; we haven't checked other wallets or browser extensions. The web pages are the same, but the wallet pop-ups look different. If they don't match the check cards, don't sign: tap Stuck? at the top right and send us the report." }
+      }
+    },
+    "pool": {
+      "title": "Connect your wallet and find your pool",
+      "milestone": "Find pool",
+      "note": "Connecting is free and can't move your money",
+      "images": [
+        "① The Import Pool page opens. Tap **Connect** at the top right ✗ Don't tap Bridge at the bottom: in September 2026 users lost funds through a fake bridge on DYORSwap, and withdrawing doesn't need it",
+        { "src": "dy-wallets-en.webp", "caption": "② Tap **OKX Wallet**. When the wallet asks to connect, check that it says dyorswap.finance, then connect" },
+        "③ Once connected, a wallet icon shows at the top right. Tap **Select a Token**",
+        "④ Tap **USDT** in the list ✗ Don't tap USD₮0 below it: that's a different token, and this pool uses USDT. The balances in the picture are hidden",
+        "⑤ A USDT-OKB LP block appears: that's your liquidity. Tap **Manage this pool**. The numbers in the picture are hidden"
+      ],
+      "situations": {
+        "connected": { "see": "There's no Connect button, just a wallet icon", "do": "You're already connected. Go straight to **Select a Token**." },
+        "switch-network": { "see": "The page or the wallet asks you to switch networks", "do": "Switch to **X Layer**. That's a switch, not a new network. If it asks you to add any other network, reject it: DYORSwap had a fake chain incident in September." },
+        "not-found": { "see": "After picking USDT, no USDT-OKB LP block appears", "do": "Check the wallet is on the account that added the liquidity, and give the page a few seconds to read the chain. Still nothing? Tap Stuck? at the top right: we check this address's LP on chain directly." },
+        "wrong-token": { "see": "I picked USD₮0 by mistake", "do": "Tap the second box and pick **USDT**." },
+        "no-pool": { "see": "It says No pool found, with Create pool below", "do": "Wrong token: that pair has no pool. Don't tap Create pool. Tap the second box and pick **USDT**." },
+        "nolist": { "see": "The page says No liquidity found", "do": "Your money isn't lost: this pool isn't in the site's default list. Tap **Find other LP tokens**, then Select a Token, and pick USDT." }
+      }
+    },
+    "slippage": {
+      "title": "Set slippage to 1%",
+      "milestone": "Slippage",
+      "note": "Skip this and the withdrawal fails later",
+      "items": [
+        "When you withdraw from this pool it settles a protocol fee first, so you actually get slightly less than the site estimates. The default 0.5% slippage isn't enough and the transaction fails, so change it to 1% first. This comes from an on-chain simulation, not a guess."
+      ],
+      "images": [
+        "① Back on Your Liquidity, USDT/OKB is now in the list. Tap the **gear** at the top right. The numbers in the picture are hidden",
+        "② Tap **1.0%** so it turns blue ③ Tap **×** at the top right to close"
+      ],
+      "situations": {
+        "safe": { "see": "Is 1% safe?", "do": "Slippage is how much less than the site's estimate you'll accept. At 1%, up to 1% less is fine; this withdrawal is about 0.5% less. Anything worse and the transaction just fails, and your money stays put." },
+        "expert": { "see": "There's an Expert Mode switch below", "do": "Leave it off. This guide doesn't need it." },
+        "no-gear": { "see": "I can't find the gear", "do": "The withdraw page has no gear. Go back to Your Liquidity with the back arrow at the top left of the withdraw page." }
+      }
+    },
+    "enable": {
+      "title": "Pick Max and sign",
+      "milestone": "Sign",
+      "note": "Signing is free and only covers the LP you're withdrawing",
+      "images": [
+        "① Tap the **USDT/OKB** row to expand it. The numbers in the picture are hidden",
+        "② Tap **Remove** ✗ Don't tap Add liquidity instead. The numbers in the picture are hidden",
+        "③ Tap **Max**: 0% changes to 100%",
+        "④ Scroll to the bottom and check the yellow box first: Slippage Tolerance must say **1%**. Then tap **Enable**. Your wallet shows a signature request: compare it with the check card below. The numbers in the picture are hidden"
+      ],
+      "check": {
+        "title": "Before you confirm, check 3 things",
+        "lead": "This is the signature request from your wallet. We haven't tested this pop-up in the OKX app yet, so there's no picture: go by what it says, and tap each item once you've checked it.",
+        "confirm": [
+          { "title": "The source is dyorswap.finance", "sub": "The site named in the pop-up, with nothing extra before or after" },
+          { "title": "The contract is DYOR LPs: 0x35c18556…200719cD25", "sub": "Full address 0x35c185563dFd328256A80Aafc23822200719cD25. This is your LP, not USDT or OKB. Upper or lower case doesn't matter; at least match the start 0x35c18556 and the end 200719cD25" },
+          { "title": "The spender is 0x1E690F24…FC04c46036", "sub": "Full address 0x1E690F24F704672e44255013C2cB22FC04c46036, DYORSwap's router contract. At least match the start 0x1E690F24 and the end FC04c46036" }
+        ],
+        "reject": [
+          "It approves USDT, OKB or another token instead of the LP",
+          "The spender doesn't match 0x1E690F24…FC04c46036",
+          "The amount says unlimited",
+          "The source isn't dyorswap.finance",
+          "It says transfer, or asks you to send tokens",
+          "The wallet shows a red warning: high risk or malicious site"
+        ],
+        "normal": [
+          "Signing costs no fee and moves no money",
+          "The amount is a short, small number: LP units are tiny",
+          "If the wallet only shows the first and last characters, match those; open the details to see it all if you can"
+        ]
+      },
+      "situations": {
+        "still-05": { "see": "The yellow box still says 0.5%", "do": "Don't tap Enable yet. Use the back arrow at the top left of the withdraw page to return to the list, set 1% as in step 3, then come back." },
+        "approve-tx": { "see": "Enable brought up a transaction instead of a signature", "do": "Tap Reject. Some wallets can't do this kind of signature, so the site sends an approval transaction instead. We haven't checked that path. Tap Stuck? at the top right and send us the report." },
+        "rejected": { "see": "I tapped Reject by mistake", "do": "Your money hasn't moved. Tap **Enable** again." },
+        "wrong-sign": { "see": "The signature approves another token or another address", "do": "Tap Reject right away." }
+      }
+    },
+    "remove": {
+      "title": "Withdraw",
+      "milestone": "Withdraw",
+      "note": "This is the only transaction",
+      "images": [
+        "① The left button turns grey and says Enabled. Tap **Remove** on the right",
+        "② You will receive opens. The yellow box must say **1%**. Tap **Confirm**, and your wallet shows the transaction: compare it with the check card below. The numbers in the picture are hidden"
+      ],
+      "check": {
+        "title": "Before you confirm, check 3 things",
+        "lead": "This is the transaction from your wallet. We haven't tested this pop-up in the OKX app yet, so there's no picture: go by what it says, and tap each item once you've checked it.",
+        "confirm": [
+          { "title": "The source is dyorswap.finance and the network is X Layer", "sub": "The site and network named in the pop-up" },
+          { "title": "The interaction address is the router 0x1E690F24…FC04c46036", "sub": "Full address 0x1E690F24F704672e44255013C2cB22FC04c46036. At least match the start 0x1E690F24 and the end FC04c46036. One wrong character means stop" },
+          { "title": "You receive about {{got}}, and don't send OKB or USDT", "sub": "Only the LP leaves your wallet; sending 0 OKB is correct. The network fee below is under $0.01" }
+        ],
+        "reject": [
+          "It asks you to send OKB, USDT or another token",
+          "The interaction address doesn't match 0x1E690F24…FC04c46036",
+          "The source isn't dyorswap.finance",
+          "It says Approve",
+          "The wallet shows a red warning: high risk or malicious site"
+        ],
+        "normal": [
+          "You get about 0.5% less than the site says: that's normal, this pool settles a fee first and the site's estimate leaves it out",
+          "If the wallet only shows the first and last characters, match those; open the details to see it all if you can",
+          "The page spins and says Waiting For Confirmation: it's waiting for you to confirm in the wallet",
+          "After confirming you'll need Face ID, a fingerprint or your password"
+        ]
+      },
+      "situations": {
+        "fail": { "see": "A red Error says This transaction would fail", "do": "Your money hasn't moved. Slippage is most likely still 0.5%: tap ×, use the back arrow at the top left of the withdraw page to return to the list, set 1% as in step 3, and withdraw again (you'll need to sign again). Already at 1%? Tap Stuck? at the top right." },
+        "rejected": { "see": "I tapped Reject by mistake", "do": "Your money hasn't moved. Tap **Confirm** again." },
+        "spinning": { "see": "I confirmed and it keeps spinning", "do": "Wait a minute and don't tap again. Then tap Stuck? at the top right: we check the chain for withdrawals from the last few minutes." },
+        "low-gas": { "see": "It says the fee or balance isn't enough", "do": "You need a little OKB on X Layer for the fee (under $0.01). Send a little OKB to this address on X Layer first (0.001 is plenty), then come back." },
+        "wrong-to": { "see": "The interaction address isn't 0x1E690F24…FC04c46036", "do": "Tap Reject right away." },
+        "send-out": { "see": "It asks you to send OKB or USDT", "do": "Tap Reject right away. Withdrawing means you receive money; you don't send these tokens." }
+      }
+    },
+    "arrive": {
+      "title": "Check it arrived",
+      "milestone": "Arrived",
+      "images": [
+        "① Back on the wallet home (the OKX icon at the bottom), tap the tokens tab: you have more OKB, and your USDT is back. The balances in the picture are hidden",
+        "② To finish, tap the approvals tab, the last one in that row, find the USDT approval for DYORSwap (0x1E69…6036) and cancel it. You gave it when adding liquidity and don't need it now. It costs a small fee, and your money is safe either way"
+      ],
+      "check": {
+        "title": "Check it arrived",
+        "rows": [
+          ["How long", "A few seconds after you confirm"],
+          ["Where to look", "OKX app wallet home → OKB and USDT → transaction history"],
+          ["What you should see", "{{got}} more"],
+          ["On chain", "From DYORSwap's router contract 0x1E69…6036, received at your own address"],
+          ["If it hasn't arrived", "Tap Stuck? at the top right: we check the chain for withdrawals from the last few minutes"]
+        ],
+        "foot": "Once it's arrived, you're done. You get OKB itself (X Layer's native token), not WOKB"
+      },
+      "situations": {
+        "not-wokb": { "see": "Is it OKB or WOKB?", "do": "It's OKB itself (X Layer's native token), not WOKB." },
+        "old-usdt": { "see": "Which USDT is this?", "do": "It's X Layer's old USDT (USDT_Bridged), which OKX is phasing out. To switch to the new USDT0, deposit it to the OKX exchange and withdraw it again." },
+        "less": { "see": "It's a bit less than the site said", "do": "That's normal: about 0.5% less. This pool settles a fee first and the site's estimate leaves it out." },
+        "no-approval": { "see": "I can't find this approval", "do": "The wallet's list isn't always complete, so that doesn't prove it's gone. Tap Stuck? at the top right: the live check reads the chain and tells you if the approval is still active. If it's gone, there's nothing to do." }
+      }
+    }
+  },
+  "sources": [
+    "OKX explorer · DYORSwap router contract (verified source)",
+    "OKX explorer · USDT/OKB pool (DYOR LPs)",
+    "DYORSwap · find-a-pool page"
+  ]
+}

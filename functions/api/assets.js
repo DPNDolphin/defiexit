@@ -85,7 +85,9 @@ export function shape(json) {
     const g = defi.get(k) || { app, chain, cid, usd: 0, debt: 0, items: [] };
     if (a.position_type === "loan") g.debt += usd || 0;
     else g.usd += usd || 0;
-    g.items.push({ type: text(a.position_type, 16), mod: slug(String(a.protocol_module || "").replace(/_/g, "-")), sym, qty, usd });
+    // addr、pool、group 给页面判断这是不是我们自己查到的那个仓位:Zerion 文档说同一个池子的条目 group_id 一样
+    const pool = /^0x[0-9a-fA-F]{40}$/.test(a.pool_address || "") ? a.pool_address.toLowerCase() : null;
+    g.items.push({ type: text(a.position_type, 16), mod: slug(String(a.protocol_module || "").replace(/_/g, "-")), sym, addr: where(a.fungible_info, cid).addr, pool, group: text(a.group_id, 80), qty, usd });
     defi.set(k, g);
   }
   const byUsd = (x, y) => (y.usd || 0) - (x.usd || 0);
