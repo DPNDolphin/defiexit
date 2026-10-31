@@ -108,10 +108,11 @@ export const EXTRA = [
 ];
 
 // Zerion 查到的项目 + 我们自己查到的。Zerion 把一个项目在一条链上的仓位合成一笔,我们只查核对过的那个仓位,所以要在那一笔里认出我们这个仓位:
-//   Zerion 给了池子地址的,比池子地址;没给的,按 Zerion 的分组(同一个池子的条目 group 一样),整组的币要和我们的正好对上;
+//   Zerion 给了池子地址的,比池子地址,地址不同就绝对不是;没给的,按 Zerion 的分组(同一个池子的条目 group 一样),整组的币要和我们的正好对上;
 //   分组也没有,就是整笔的币要正好对上。币:有合约地址比合约,没有比币名。
 // 认出来了:用我们的(带专门取法,数量也是撤出时真实能拿回的;美元价我们这边没查到就用 Zerion 的),这一笔剩下的条目单列,一样不丢,钱也不重复算。
-// 认不出来:两边都列。宁可多列一张卡,也不能把别的池子删掉
+// 认不出来:两边都列。宁可多列一张卡,也不能把别的池子删掉。
+// 单列的、认不出来的都标 rest:项目名虽然对得上配方,但不是配方核对过的那个仓位,页面不把它算进配方,也不当重复的去掉
 const norm = (s) => String(s).toLowerCase().replace(/[^a-z0-9]/g, "");
 const sameApp = (g, x) => chainKey(g.cid, g.chain) === chainKey(x.cid, x.chain) && (norm(g.app).includes(norm(x.app)) || norm(x.app).includes(norm(g.app)));
 const sameCoin = (a, b) => (a.addr && b.addr ? a.addr === b.addr : a.sym === b.sym);
@@ -121,7 +122,7 @@ function findPosition(g, x) {
   const byPool = g.items.filter((y) => x.pool && y.pool === x.pool);
   if (byPool.length) return byPool;
   const groups = new Map();
-  for (const y of g.items) groups.set(y.group || "", [...(groups.get(y.group || "") || []), y]);
+  for (const y of g.items.filter((v) => !(x.pool && v.pool))) groups.set(y.group || "", [...(groups.get(y.group || "") || []), y]);
   return [...groups.values()].find((list) => sameCoins(list, x.items)) || null;
 }
 export function mergeDefi(z, more) {
@@ -129,12 +130,12 @@ export function mergeDefi(z, more) {
   for (const g of z) {
     const i = rest.findIndex((x) => sameApp(g, x) && findPosition(g, x));
     if (i < 0) {
-      out.push(g);
+      out.push(more.some((x) => sameApp(g, x)) ? { ...g, rest: true } : g);
       continue;
     }
     const [x] = rest.splice(i, 1), mine = findPosition(g, x), left = g.items.filter((y) => !mine.includes(y));
     out.push({ ...x, usd: x.usd || sumUsd(mine) });
-    if (left.length) out.push({ ...g, items: left, usd: sumUsd(left) });
+    if (left.length) out.push({ ...g, items: left, usd: sumUsd(left), rest: true });
   }
   return [...out, ...rest].sort((a, b) => b.usd - a.usd);
 }

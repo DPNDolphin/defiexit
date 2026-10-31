@@ -110,6 +110,16 @@ test("项目仓位合并:在 Zerion 那一笔里认出我们这个仓位。认�
   const byPool = mergeDefi([zer("DYORSwap", [coin("USDT", A, 10, "g1", PAIR), coin("WOKB", B, 10, "g1", PAIR), coin("ABC", C, 5, "g2", "0x" + "1".repeat(40))])], [mine()]);
   assert.deepEqual(brief(byPool), [[19, "dyorswap"], [5, undefined]]);
 
+  // 币一样、池子地址不一样:绝对不是同一笔,不能合并
+  const samePair = mergeDefi([zer("DYORSwap", [coin("USDT", A, 100, "g9", "0x" + "1".repeat(40)), coin("WOKB", B, 100, "g9", "0x" + "1".repeat(40))])], [mine()]);
+  assert.deepEqual(brief(samePair), [[200, undefined], [19, "dyorswap"]]);
+
+  // 单列的、认不出来的标 rest:页面不把它们算进配方,也不当重复的去掉;认出来的、别的项目不标
+  assert.equal(both[0].rest, true);
+  assert.equal(other[0].rest, true);
+  assert.equal(same[0].rest, undefined);
+  assert.equal(mergeDefi([zer("WOOFi", [coin("WOO", A, 5)])], [mine()])[0].rest, undefined, "项目名对不上的不标,配方照常认");
+
   // 没有池子地址、也没有分组:整笔的币正好对上才算同一笔;对不上就两边都列
   const bare = mergeDefi([zer("DYORSwap", [coin("USDT", A, 10), coin("WOKB", B, 10)])], [mine()]);
   assert.deepEqual(brief(bare), [[19, "dyorswap"]]);
