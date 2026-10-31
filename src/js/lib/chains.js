@@ -106,3 +106,15 @@ export const EXTRA = [
   { cid: "xlayer", chain: "X Layer", query: xlayer },
   { cid: "merlin", chain: "Merlin", query: merlin },
 ];
+
+// Zerion 查到的项目 + 我们自己查到的:同一条链上项目名对得上的算同一笔,用我们的:带专门取法,数量也是撤出时真实能拿回的
+// (美元价我们这边没查到就用 Zerion 的)。Zerion 那笔条目比我们多,说明还有我们没核对过的仓位,留 Zerion 的,不能顶掉
+const norm = (s) => String(s).toLowerCase().replace(/[^a-z0-9]/g, "");
+const sameApp = (g, x) => chainKey(g.cid, g.chain) === chainKey(x.cid, x.chain) && (norm(g.app).includes(norm(x.app)) || norm(x.app).includes(norm(g.app)));
+export function mergeDefi(z, more) {
+  const picked = z.map((g) => {
+    const x = more.find((m) => sameApp(g, m));
+    return x && x.items.length >= g.items.length ? { ...x, usd: x.usd || g.usd } : g;
+  });
+  return [...picked, ...more.filter((x) => !z.some((g) => sameApp(g, x)))].sort((a, b) => b.usd - a.usd);
+}

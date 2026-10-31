@@ -9,7 +9,7 @@ import { detectors } from "./detectors/index.js";
 import { isEvmAddress, shortAddr, floorTo } from "./lib/net.js";
 import { el, icon, rowsTable, setText, copy, toast } from "./lib/ui.js";
 import { makeT, pageLang, prefix, errText } from "./lib/i18n.js";
-import { chainLogo, chainKey, gasSym, EXTRA } from "./lib/chains.js";
+import { chainLogo, chainKey, gasSym, mergeDefi, EXTRA } from "./lib/chains.js";
 import { HOW } from "./lib/xlayer.text.js";
 
 const lang = pageLang(), t = makeT(lang), P = prefix(lang);
@@ -109,13 +109,6 @@ function walletRow(g, i) {
 function failRow(name, text, retry) {
   return el("div", { class: "rline" }, el("b", {}, name), el("span", { class: "sub" }, text),
     el("button", { class: "btn small", type: "button", "data-retry": retry }, icon("refresh"), t("retry")));
-}
-
-// Zerion 查到的项目 + 我们自己查到的:同一条链上项目名对得上的,用 Zerion 的
-const norm = (s) => String(s).toLowerCase().replace(/[^a-z0-9]/g, "");
-function mergeDefi(z, more) {
-  return [...z, ...more.filter((x) => !z.some((g) => chainKey(g.cid, g.chain) === chainKey(x.cid, x.chain) && (norm(g.app).includes(norm(x.app)) || norm(x.app).includes(norm(g.app)))))]
-    .sort((a, b) => b.usd - a.usd);
 }
 
 // Zerion 的钱包余额 + 我们自己查的两条链。同一条链两边都有:只补 Zerion 没有的币
