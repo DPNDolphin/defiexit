@@ -122,8 +122,9 @@ function findPosition(g, x) {
   const byPool = g.items.filter((y) => x.pool && y.pool === x.pool);
   if (byPool.length) return byPool;
   const groups = new Map();
-  for (const y of g.items.filter((v) => !(x.pool && v.pool))) groups.set(y.group || "", [...(groups.get(y.group || "") || []), y]);
-  return [...groups.values()].find((list) => sameCoins(list, x.items)) || null;
+  for (const y of g.items) groups.set(y.group || "", [...(groups.get(y.group || "") || []), y]);
+  // 走到这里说明没有一条的地址等于我们的池子:组里只要带着地址,就是别的池子,整组不比币
+  return [...groups.values()].find((list) => !(x.pool && list.some((y) => y.pool)) && sameCoins(list, x.items)) || null;
 }
 export function mergeDefi(z, more) {
   const rest = [...more], out = [];

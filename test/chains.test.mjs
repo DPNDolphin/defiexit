@@ -114,6 +114,10 @@ test("项目仓位合并:在 Zerion 那一笔里认出我们这个仓位。认�
   const samePair = mergeDefi([zer("DYORSwap", [coin("USDT", A, 100, "g9", "0x" + "1".repeat(40)), coin("WOKB", B, 100, "g9", "0x" + "1".repeat(40))])], [mine()]);
   assert.deepEqual(brief(samePair), [[200, undefined], [19, "dyorswap"]]);
 
+  // 同一组里有一条带着别的池子地址:整组都不是我们的,不能拆开来比币
+  const mixed = mergeDefi([zer("DYORSwap", [coin("USDT", A, 100, "g9"), coin("WOKB", B, 100, "g9"), coin("REWARD", C, 5, "g9", "0x" + "1".repeat(40))])], [mine()]);
+  assert.deepEqual(brief(mixed), [[205, undefined], [19, "dyorswap"]]);
+
   // 单列的、认不出来的标 rest:页面不把它们算进配方,也不当重复的去掉;认出来的、别的项目不标
   assert.equal(both[0].rest, true);
   assert.equal(other[0].rest, true);
