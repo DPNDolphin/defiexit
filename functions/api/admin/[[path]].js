@@ -8,7 +8,7 @@
 // 改东西的请求(ingest 除外)必须同源、JSON、已登录;登录凭证是只给本主机的 __Host- cookie(SameSite=Strict)。
 
 import { reply, gone, hostOk, sameOrigin, readJson, clientIp } from "../../../server/ops/http.js";
-import { ensure, iso, getKv, getDocs, listOut, listIn, getOut, getIn, purge } from "../../../server/ops/db.js";
+import { ensure, iso, getKv, getDocs, listOut, listIn, getOut, getIn, purge, goneStmt } from "../../../server/ops/db.js";
 import { MIN_PASSWORD, hashPassword, checkPassword, newSession, hasSession, endSession, endAll, cookie, mustWait, failed, succeeded, same } from "../../../server/ops/auth.js";
 import { ingest } from "../../../server/ops/ingest.js";
 import { sync } from "../../../server/ops/sync.js";
@@ -19,11 +19,13 @@ const NAME = /^[\p{L}\p{N}_.-]{1,40}$/u;
 
 async function state(db, admin, now) {
   await purge(db, now);
-  const [docs, outbox, inbox, syncAt, syncNote, off] = await Promise.all([
+  const [docs, outbox, inbox, syncAt, syncNote, off, needs] = await Promise.all([
     getDocs(db), listOut(db), listIn(db), getKv(db, "sync_at_ms"), getKv(db, "sync_note"),
     db.prepare("SELECT id FROM watch WHERE on_ = 0").all(),
+    db.prepare("SELECT month, v FROM needs ORDER BY month DESC LIMIT 100").all(),
   ]);
-  return reply({ ok: true, me: { name: admin.name }, docs, outbox, inbox, watchOff: off.results.map((r) => r.id), synced: { at: syncAt ? iso(Number(syncAt)) : null, note: syncNote || "" } });
+  const past = needs.results.map((r) => { try { return { month: r.month, ...JSON.parse(r.v) }; } catch { return null; } }).filter(Boolean);
+  return reply({ ok: true, me: { name: admin.name }, docs, outbox, inbox, needs: past, watchOff: off.results.map((r) => r.id), synced: { at: syncAt ? iso(Number(syncAt)) : null, note: syncNote || "" } });
 }
 
 async function editOut(db, b, now) {
@@ -155,10 +157,7 @@ export async function handle(request, env, fetchImpl = fetch, now = new Date()) 
   if (path === "delete") {
     const table = { inbox: "inbox", outbox: "outbox" }[b.kind];
     if (!table || typeof b.id !== "string" || b.id.length > 64) return reply({ error: "bad" }, 400);
-    await db.batch([
-      db.prepare(`DELETE FROM ${table} WHERE id = ?`).bind(b.id),
-      db.prepare("INSERT INTO gone (id, at) VALUES (?, ?) ON CONFLICT(id) DO NOTHING").bind(b.id, iso(now)),
-    ]);
+    await db.batch([db.prepare(`DELETE FROM ${table} WHERE id = ?`).bind(b.id), await goneStmt(db, b.id, now)]);
     return reply({ ok: true });
   }
   if (path === "sync") {

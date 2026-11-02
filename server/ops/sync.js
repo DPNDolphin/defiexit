@@ -5,7 +5,7 @@
 // - 待发里管理员点过「已发」的,去目标帖子底下找他那条回复,找到就填上链接(这才算核到,不靠自报)。
 // 读不到的帖子写进 errors,页面明说「不算没有新评论」;接口给的回复比帖子显示的少,也标「可能没读全」。两分钟内只许刷一次。
 
-import { iso, plusDays, KEEP_DAYS, getKv, setKv, getDocs, putDoc, existing } from "./db.js";
+import { iso, plusDays, KEEP_DAYS, getKv, setKv, getDocs, putDoc, existing, goneSet } from "./db.js";
 
 export const UPSTREAM = "https://api.fxtwitter.com/2/conversation/";
 export const MIN_GAP_MS = 120 * 1000;
@@ -79,7 +79,7 @@ export async function sync(db, fetchImpl, now) {
   }
   const ids = [...new Set(fresh.map((x) => x.id))];
   const known = await existing(db, "inbox", ids);
-  const gone = await existing(db, "gone", ids);
+  const gone = await goneSet(db, ids);
   const seen = new Set();
   for (const x of fresh) {
     if (known.has(x.id) || gone.has(x.id) || seen.has(x.id)) continue;

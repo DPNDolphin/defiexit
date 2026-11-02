@@ -8,7 +8,7 @@
 // 草稿入库前检查:只许带 defiexit.com 的链接,不许出现私信、客服、加群、转账、授权、助记词、私钥、找回、领取、recover、claim、返佣等词。
 // 不合格的那一条不入库,回执里写明哪条为什么;回执不含任何库里的数据。
 
-import { iso, plusDays, KEEP_DAYS, DOC_KEYS, docStmt, getKv, getDocs, existing } from "./db.js";
+import { iso, plusDays, KEEP_DAYS, DOC_KEYS, docStmt, getKv, getDocs, goneSet } from "./db.js";
 import { unb64u, sha256 } from "./auth.js";
 
 export const SKEW_MS = 10 * 60 * 1000;
@@ -30,8 +30,15 @@ export async function verify(text, sigB64u, pubList) {
 
 // ---------- 草稿检查 ----------
 const BANNED = ["私信", "私聊", "客服", "加群", "进群", "电报", "转账", "汇款", "授权", "助记词", "私钥", "密码", "找回", "领取", "返佣", "recover", "claim", "rebate", "telegram", "whatsapp", "dm me", "seed phrase", "private key"];
-const URLISH = /\b((?:https?:\/\/)?(?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/[^\s]*)?)/gi;
 const ALLOWED_HOSTS = ["defiexit.com", "www.defiexit.com"];
+// 链接的几种写法:带协议的(任何 xxx://)、英文域名(含 xn-- 编码的)、IP 地址、中文域名(汉字之间夹着英文句点)
+const SCHEME = /[a-z][a-z0-9+.-]{1,20}:\/\/[^\s]*/gi;
+const ASCII_HOST = /[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\.(?:[a-z]{2,63}|xn--[a-z0-9-]{2,59})(?![a-z0-9-])/gi;
+const IPV4 = /(?:^|[^\d.])\d{1,3}(?:\.\d{1,3}){3}(?![\d.])/;
+const UNICODE_HOST = /[^\x00-\x7f]\.[\p{L}\p{N}]|[\p{L}\p{N}]\.[^\x00-\x7f]/u; // 英文句点紧挨着汉字等非英文字符
+function hostOf(s) {
+  try { return new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(s) ? s : "http://" + s).hostname.toLowerCase().replace(/\.$/, ""); } catch { return null; }
+}
 
 export function checkText(s, max = MAX.draft) {
   if (typeof s !== "string") return "不是文字";
@@ -41,10 +48,16 @@ export function checkText(s, max = MAX.draft) {
   const low = t.toLowerCase();
   const word = BANNED.find((w) => low.includes(w));
   if (word) return `含不许用的词「${word}」`;
-  for (const m of t.matchAll(URLISH)) {
-    const host = m[1].replace(/^https?:\/\//i, "").split("/")[0].toLowerCase();
-    if (!ALLOWED_HOSTS.includes(host)) return `含站外链接「${host}」`;
+  for (const m of t.matchAll(SCHEME)) {
+    const host = hostOf(m[0]);
+    if (!host || !ALLOWED_HOSTS.includes(host) || !/^https:\/\//i.test(m[0])) return `含站外链接「${host || m[0].slice(0, 30)}」`;
   }
+  for (const m of t.replace(SCHEME, " ").matchAll(ASCII_HOST)) {
+    const host = hostOf(m[0]);
+    if (!host || !ALLOWED_HOSTS.includes(host)) return `含站外链接「${host || m[0]}」`;
+  }
+  if (IPV4.test(t)) return "含 IP 地址";
+  if (UNICODE_HOST.test(t)) return "含中文域名或可疑网址(汉字之间别用英文句点)";
   return null;
 }
 
@@ -82,14 +95,25 @@ export function cleanIn(x) {
   return { id, mine, text: str(x.text, 2000), replied: x.replied === true, repliedAt: when(x.repliedAt) };
 }
 
-// 看板 JSON 的大小和形状只做粗检(页面渲染时一律当文字);数字类字段不许是负数或特别大
+// 看板 JSON:逐项查形状(页面渲染时还会再兜一层);数字不许是负数或特别大
+const isObj = (v) => !!v && typeof v === "object" && !Array.isArray(v);
+const okStr = (v, n = 300) => v === undefined || (typeof v === "string" && v.length <= n);
+const okNum = (v, nullable) => (nullable && v === null) || v === undefined || (typeof v === "number" && Number.isFinite(v) && v >= 0 && v <= 1e9);
+const okArr = (v, n, each) => Array.isArray(v) && v.length <= n && v.every((x) => isObj(x) && each(x));
+const SHAPES = {
+  summary: (v) => okStr(v.updatedAt, 40) && (v.asks === undefined || okArr(v.asks, 12, (a) => typeof a.text === "string" && a.text.length <= 200 && okStr(a.when, 10) && (a.href === undefined || /^#[a-z]+$/.test(a.href)))),
+  x_posts: (v) => okArr(v.posts, 10, (p) => /^\d{1,25}$/.test(String(p.id)) && okStr(p.name, 40) && okStr(p.url, 120) && (p.points === undefined || okArr(p.points, 300, (r) => typeof r.at === "string" && ["views", "likes", "replies", "reposts", "bookmarks"].every((f) => okNum(r[f], true)))))
+    && (v.square === undefined || okArr(v.square, 10, (r) => okStr(r.name, 60) && okNum(r.views, true) && okNum(r.comments, true))) && okStr(v.squareNote, 300) && okStr(v.source, 200),
+  goal_1215: (v) => /^\d{4}-\d{2}-\d{2}$/.test(String(v.deadline)) && okArr(v.items, 8, (it) => typeof it.label === "string" && okNum(it.value, true) && okNum(it.goal) && okStr(it.unit, 10) && okStr(it.note, 300)) && okStr(v.source, 200),
+  funnel: (v) => okNum(v.target) && okArr(v.stages, 8, (s) => typeof s.key === "string" && typeof s.label === "string" && okNum(s.value)) && okStr(v.note, 300),
+  protocols: (v) => okArr(v.rows, 50, (r) => typeof r.protocol === "string" && okStr(r.chain, 40) && okNum(r.posts) && okNum(r.people)) && okStr(v.note, 300),
+  clocks: (v) => okArr(v.rows, 20, (r) => typeof r.name === "string" && okStr(r.short, 20) && okStr(r.due, 10) && okStr(r.status, 20) && okStr(r.reading, 1000)) && okStr(v.source, 200),
+  bot: (v) => (v.rows === undefined || okArr(v.rows, 50, (r) => okNum(r.n) && typeof r.title === "string" && okStr(r.state, 20) && okNum(r.comments))) && okStr(v.note, 300) && okStr(v.source, 200) && okStr(v.error, 300),
+};
 function cleanDoc(k, v) {
-  if (!DOC_KEYS.includes(k) || !v || typeof v !== "object" || Array.isArray(v)) return "不认识的看板项";
-  const s = JSON.stringify(v);
-  if (s.length > MAX.doc) return "太大";
-  let bad = null;
-  JSON.parse(s, (key, val) => { if (typeof val === "number" && (!Number.isFinite(val) || val < 0 || val > 1e9)) bad = `数字「${key}」不合理`; return val; });
-  return bad;
+  if (!DOC_KEYS.includes(k) || !isObj(v)) return "不认识的看板项";
+  if (JSON.stringify(v).length > MAX.doc) return "太大";
+  return SHAPES[k](v) ? null : "格式不对";
 }
 
 // x_posts 有两个写的人:管理员点「刷新」时服务器追加读数,Claude 投递时带来本地记的读数。按帖子、按时间合并,谁的都不丢
@@ -156,7 +180,7 @@ async function locked(db, raw, body, now) {
     const { results } = await db.prepare(`SELECT id, mine, status, purged FROM outbox WHERE id IN (${ids.map(() => "?").join(",")})`).bind(...ids).all();
     for (const r of results) have.set(r.id, r);
   }
-  const gone = await existing(db, "gone", [...ids, ...ins.map((x) => String(x?.id ?? ""))].filter(Boolean));
+  const gone = await goneSet(db, [...ids, ...ins.map((x) => String(x?.id ?? ""))].filter(Boolean));
   for (const x of outs) {
     const c = cleanOut(x);
     if (c.error) { rejected.push({ kind: "outbox", id: c.id || "?", why: c.error }); continue; }

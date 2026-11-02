@@ -274,30 +274,52 @@ test("已发的回复:刷新时去目标帖子底下按账号编号找,找到才
   assert.equal(item.reply_url, "https://x.com/owner_acct/status/2116000000000000004");
 });
 
-test("30 天到期:原文、账号、链接、备注删掉,只留需求摘要;再投递也补不回原文", async () => {
+test("30 天到期:评论整行删掉、编号只留哈希,只留不带账号的需求摘要;再投递也收不回来", async () => {
   const w = world();
   const c = await w.login();
-  await w.ingest({ inbox: [{ id: "3000000000000000004", source: "X 长文", author: "user_b", url: "https://x.com/user_b/status/3000000000000000004", text: "@某个机器人 画个图", type: "提问", need: "想看行情数据", suggestion: "不采纳", draft: "数据已经有人答了" }], outbox: [OUT()] });
+  await w.ingest({ inbox: [{ id: "3000000000000000004", source: "X 长文", author: "user_b", url: "https://x.com/user_b/status/3000000000000000004", text: "@某个机器人 画个图", type: "提问", need: "想看行情数据", suggestion: "不采纳", draft: "数据已经有人答了" }], outbox: [OUT({ draft: "@someone 步骤在 defiexit.com/r/woofi 。" })] });
   await w.call("/api/admin/inbox", { method: "POST", body: { id: "3000000000000000004", note: "这人是 user_b", decision: "不采纳" }, cookie: c });
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", status: "已发" }, cookie: c });
   w.clock += 31 * 864e5;
   const c2 = (await w.call("/api/admin/login", { method: "POST", body: { name: "admin1", password: PW } })).headers.get("Set-Cookie").split(";")[0];
   let st = (await w.call("/api/admin/state", { cookie: c2 })).json;
-  const it = st.inbox[0];
-  assert.equal(it.text, null);
-  assert.equal(it.note, null);
-  assert.equal(it.mine.author, undefined);
-  assert.equal(it.mine.url, undefined);
-  assert.equal(it.mine.need, "想看行情数据");
-  assert.equal(it.decision, "不采纳");
+  assert.equal(st.inbox.length, 0);
+  assert.equal(st.needs.length, 1);
+  assert.deepEqual({ ...st.needs[0], month: undefined }, { month: undefined, source: "X 长文", type: "提问", need: "想看行情数据", suggestion: "不采纳", decision: "不采纳" });
+  assert.equal(JSON.stringify(st.needs).includes("user_b"), false);
+  assert.equal((await w.db.prepare("SELECT COUNT(*) AS n FROM gone WHERE id = '3000000000000000004'").first()).n, 0); // 存的是哈希
   const o = st.outbox[0];
   assert.equal(o.mine.target.handle, undefined);
   assert.equal(o.mine.target.url, undefined);
+  assert.equal(o.mine.target.id, undefined);
   assert.equal(o.mine.target.protocol, "OpenEden");
+  assert.equal(o.mine.draft.includes("@someone"), false);
+  assert.equal(o.sent_text.includes("@someone"), false);
   w.clock += 1000;
-  await w.ingest({ inbox: [{ id: "3000000000000000004", text: "又送来一遍原文", author: "user_b" }] });
+  const r = await w.ingest({ inbox: [{ id: "3000000000000000004", text: "又送来一遍原文", author: "user_b" }] });
+  assert.match(r.json.rejected[0].why, /删过/);
   st = (await w.call("/api/admin/state", { cookie: c2 })).json;
-  assert.equal(st.inbox[0].text, null);
-  assert.equal(st.inbox[0].mine.author, undefined);
+  assert.equal(st.inbox.length, 0);
+});
+
+test("草稿里的链接:带协议的、IP、中文域名都拦;本站的放行", () => {
+  assert.equal(checkText("在defiexit.com上查一下"), null);
+  assert.equal(checkText("https://defiexit.com/r/woofi/"), null);
+  assert.match(checkText("http://defiexit.com/r/woofi/"), /站外链接/); // 只认 https
+  assert.match(checkText("打开 http://1.2.3.4/claim"), /站外|IP|claim/);
+  assert.match(checkText("访问 1.2.3.4 就行"), /IP/);
+  assert.match(checkText("访问 例子.中国 就行"), /中文域名/);
+  assert.match(checkText("ftp://files.example.org/a"), /站外链接/);
+  assert.match(checkText("看 xn--fiqs8s.xn--fiqz9s"), /站外链接/);
+  assert.match(checkText("去 app.uniswap.org 撤"), /站外链接/);
+  assert.equal(checkText("取出 0.5 个 ETH,大约 1.2 美元;版本 1.2.3"), null);
+});
+
+test("看板数据格式不对:整项不收,页面不会坏", async () => {
+  const w = world();
+  const r = await w.ingest({ docs: { funnel: { target: 5, stages: {} }, goal_1215: { deadline: "12-15", items: [] }, summary: { asks: [{ text: "x", href: "javascript:alert(1)" }] }, protocols: { rows: [{ protocol: "A", posts: -1 }] } } });
+  assert.deepEqual(r.json.rejected.map((x) => x.id).sort(), ["funnel", "goal_1215", "protocols", "summary"]);
+  assert.equal(r.json.docs, 0);
 });
 
 test("按要求删掉一条;帖子可以停止读评论", async () => {

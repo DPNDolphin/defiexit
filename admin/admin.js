@@ -74,7 +74,7 @@
     if (!bad) setTimeout(() => { if (el.textContent === msg) el.textContent = ""; }, 2500);
   }
 
-  const S = { docs: {}, out: new Map(), inn: new Map(), cards: new Map(), ro: null, watchOff: new Set() };
+  const S = { docs: {}, out: new Map(), inn: new Map(), cards: new Map(), ro: null, watchOff: new Set(), needs: [] };
 
   function show(view) {
     $("boot-msg").hidden = view !== "boot";
@@ -291,6 +291,7 @@
   function apply(json) {
     S.docs = json.docs || {};
     S.watchOff = new Set(json.watchOff || []);
+    S.needs = Array.isArray(json.needs) ? json.needs : [];
     S.out = new Map((json.outbox || []).map((d) => [d.id, d]));
     S.inn = new Map((json.inbox || []).map((d) => [d.id, d]));
     sync("out");
@@ -491,6 +492,18 @@
       p && p.note ? h("p", { class: "src" }, p.note) : null);
   }
 
+  // 到期删掉的评论只留下这些:月份、类型、需求、建议和你的决定(没有账号和原文)
+  function needsPanel(rows) {
+    if (!rows.length) return null;
+    return h("div", { class: "panel" },
+      h("h3", null, "30 天前的评论需求(已去掉账号和原文)"),
+      h("div", { class: "list" }, ...rows.map((r) => h("div", { class: "li" },
+        h("span", { class: "k" }, String(r.month || "").slice(2)),
+        h("span", { class: "nm" }, r.need || "暂无明确需求"),
+        h("span", { class: "pill " + (r.decision ? "ok" : "mute") }, r.decision || "没定"),
+        h("span", { class: "sub" }, [r.source, r.type, r.suggestion ? "我的建议:" + r.suggestion : ""].filter(Boolean).join(" · "))))));
+  }
+
   const CLOCK = { open: ["进行中", "hi"], read: ["已读", "mute"], canceled: ["取消", "mute"], void: ["作废", "mute"] };
   function clocksPanel(c) {
     const rows = (Array.isArray(c && c.rows) ? c.rows : []).slice().sort((a, b) => (a.status === "open" ? 0 : 1) - (b.status === "open" ? 0 : 1) || String(a.due || "9").localeCompare(String(b.due || "9")));
@@ -530,7 +543,7 @@
   }
   function renderData() {
     const D = S.docs;
-    const parts = [safe(goalPanel, D.goal_1215), safe(routePanel, D.funnel), safe(viewsPanel, D.x_posts), safe(protocolPanel, D.protocols), safe(clocksPanel, D.clocks), safe(botPanel, D.bot)].filter(Boolean);
+    const parts = [safe(goalPanel, D.goal_1215), safe(routePanel, D.funnel), safe(viewsPanel, D.x_posts), safe(protocolPanel, D.protocols), safe(needsPanel, S.needs), safe(clocksPanel, D.clocks), safe(botPanel, D.bot)].filter(Boolean);
     $("data-body").replaceChildren(...(parts.length ? parts : [h("p", { class: "empty" }, "还没有数据。我下次干活时送进来。")]));
   }
 
