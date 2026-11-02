@@ -1,13 +1,14 @@
 // 运营台登录:只有一个管理员。密码用 PBKDF2-SHA256 + 随机盐;登录凭证是随机 32 字节,浏览器里放在只给本主机的 cookie,
 // 库里只存它的 SHA-256。输错按 IP 递增等待,最多 1 小时(不会把管理员永久锁在外面)。
-// 迭代次数受 Cloudflare 免费计划每次请求 10ms CPU 的限制(本机实测 2 万次约 6ms),所以密码至少 20 位、要手机密码管理器随机生成,靠强密码兜底。
+// 登录时勾了「30 天内免登录」,凭证 30 天有效;没勾 1 天。不按闲置时间踢人(管理员要的是登一次就能一直用)。
+// 迭代次数受 Cloudflare 免费计划每次请求 10ms CPU 的限制(本机实测 2 万次约 6ms)。密码最少 8 位(管理员定的);
+// 短密码靠按 IP 递增等待挡猜测,另外管理员改的草稿也要过链接检查,就算有人登进来也塞不进站外链接。
 
 import { iso } from "./db.js";
 
 export const ITER = 20000;
-export const MIN_PASSWORD = 20;
-export const SESSION_DAYS = 30; // 最长 30 天
-export const IDLE_DAYS = 7; // 7 天没打开就要重新登录
+export const MIN_PASSWORD = 8;
+export const SESSION_DAYS = { remember: 30, normal: 1 };
 // __Host- 开头:浏览器只认 Secure、Path=/、不带 Domain 的写法,别的子域名写不进、读不到
 export const COOKIE = "__Host-dx_ops";
 const enc = new TextEncoder();
@@ -44,18 +45,19 @@ export function readCookie(request) {
   return m ? m[1] : null;
 }
 
-export async function newSession(db, now) {
+export async function newSession(db, now, remember = false) {
+  const days = remember ? SESSION_DAYS.remember : SESSION_DAYS.normal;
   const token = b64u(crypto.getRandomValues(new Uint8Array(32)));
-  await db.prepare("INSERT INTO sessions (h, created_at, expires_at, last_seen) VALUES (?, ?, ?, ?)").bind(await sha256(token), iso(now), iso(+now + SESSION_DAYS * 864e5), iso(now)).run();
-  return cookie(token, SESSION_DAYS * 86400);
+  await db.prepare("INSERT INTO sessions (h, created_at, expires_at, last_seen) VALUES (?, ?, ?, ?)").bind(await sha256(token), iso(now), iso(+now + days * 864e5), iso(now)).run();
+  return cookie(token, days * 86400);
 }
-// 每个请求都查库:过期、闲置太久都算没登录;闲置时间最多一小时记一次,少写库
+// 每个请求都查库:过期就算没登录;最后打开时间最多一小时记一次,少写库
 export async function hasSession(db, request, now) {
   const t = readCookie(request);
   if (!t) return false;
   const h = await sha256(t);
   const r = await db.prepare("SELECT expires_at, last_seen FROM sessions WHERE h = ?").bind(h).first();
-  if (!r || r.expires_at <= iso(now) || r.last_seen <= iso(+now - IDLE_DAYS * 864e5)) return false;
+  if (!r || r.expires_at <= iso(now)) return false;
   if (r.last_seen <= iso(+now - 3600e3)) await db.prepare("UPDATE sessions SET last_seen = ? WHERE h = ?").bind(iso(now), h).run();
   return true;
 }

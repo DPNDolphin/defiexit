@@ -70,6 +70,8 @@ p { margin: 0; }
 .gate form { display: grid; gap: 8px; }
 .gate label { font-size: 14px; color: var(--sub); font-weight: 600; margin-top: 4px; }
 .gate .btn { margin-top: 10px; }
+.gate label.check { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 15px; font-weight: 600; color: var(--text); margin-top: 6px; }
+.gate label.check input { width: 22px; height: 22px; accent-color: var(--accent); }
 .offline { color: var(--sub); }
 
 /* 分区导航 */

@@ -10,7 +10,7 @@
 import { reply, gone, hostOk, sameOrigin, readJson, clientIp } from "../../../server/ops/http.js";
 import { ensure, iso, getKv, getDocs, listOut, listIn, getOut, getIn, purge, goneStmt } from "../../../server/ops/db.js";
 import { MIN_PASSWORD, hashPassword, checkPassword, newSession, hasSession, endSession, endAll, cookie, mustWait, failed, succeeded, same } from "../../../server/ops/auth.js";
-import { ingest } from "../../../server/ops/ingest.js";
+import { ingest, checkText } from "../../../server/ops/ingest.js";
 import { sync } from "../../../server/ops/sync.js";
 
 const STATUS = ["待发", "已发", "跳过"];
@@ -50,8 +50,13 @@ async function editOut(db, b, now) {
   if ("draft" in b) {
     if ((b.status || cur.status) !== "待发") return reply({ error: "locked" }, 409);
     if (b.draft === null) sets.push("draft_admin = NULL");
-    else if (typeof b.draft === "string" && b.draft.length <= 2000) { sets.push("draft_admin = ?"); args.push(b.draft); }
-    else return reply({ error: "bad" }, 400);
+    else if (typeof b.draft === "string" && b.draft.length <= 2000) {
+      // 管理员改的草稿也过一遍:只许本站链接、不许敏感词(就算账号被人登进去,也塞不进站外链接)
+      const bad = checkText(b.draft);
+      if (bad) return reply({ error: "draftbad", why: bad }, 400);
+      sets.push("draft_admin = ?");
+      args.push(b.draft);
+    } else return reply({ error: "bad" }, 400);
   }
   if ("note" in b) {
     if (typeof b.note !== "string" || b.note.length > 500) return reply({ error: "bad" }, 400);
@@ -137,7 +142,7 @@ export async function handle(request, env, fetchImpl = fetch, now = new Date()) 
     }
     await db.prepare("DELETE FROM kv WHERE k IN ('setup_hash', 'setup_exp')").run();
     await succeeded(db, ip);
-    return reply({ ok: true }, 200, { "Set-Cookie": await newSession(db, now) });
+    return reply({ ok: true }, 200, { "Set-Cookie": await newSession(db, now, b.remember === true) });
   }
   if (path === "login") {
     if (!admin) return reply({ need: "setup" }, 401);
@@ -147,7 +152,7 @@ export async function handle(request, env, fetchImpl = fetch, now = new Date()) 
     const okPw = await checkPassword(String(b.password || ""), row);
     if (!(same(String(b.name || "").trim(), row.name) && okPw)) { await failed(db, ip, now); return reply({ error: "wrong" }, 401); }
     await succeeded(db, ip);
-    return reply({ ok: true }, 200, { "Set-Cookie": await newSession(db, now) });
+    return reply({ ok: true }, 200, { "Set-Cookie": await newSession(db, now, b.remember === true) });
   }
   if (path === "logout") return reply({ ok: true }, 200, { "Set-Cookie": await endSession(db, request) });
 

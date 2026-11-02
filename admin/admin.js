@@ -61,12 +61,12 @@
   }
   const WHY = {
     network: "连不上服务器,看看网络再试", wrong: "用户名或密码不对", wait: "试错太多次了,等一会儿再试",
-    weak: "密码至少 20 位", mismatch: "两次输的密码不一样", exists: "管理员已经设过了,请登录", db: "数据库还没接上(Cloudflare 里的 D1 还没绑)",
+    weak: "密码至少 8 位", mismatch: "两次输的密码不一样", exists: "管理员已经设过了,请登录", db: "数据库还没接上(Cloudflare 里的 D1 还没绑)",
     origin: "请求来源不对,刷新页面再试", login: "登录过期了,请重新登录", busy: "刚刷新过,两分钟后再点", bad: "内容不合格,没存",
-    nocode: "设置链接还没生成或已经过期,叫我重新发一个", code: "设置码不对:请直接打开我发的设置链接", name: "用户名只能用字母、数字、汉字和 _ . -,最多 40 个", locked: "这条已经点过「已发 / 跳过」,先改回待发再改草稿",
-    none: "这一条已经不在了,刷新一下", target: "这条没有目标帖子编号,不能发",
+    nocode: "设置链接还没生成或已经过期,叫我重新发一个", code: "设置码不对", name: "用户名只能用字母、数字、汉字和 _ . -,最多 40 个", locked: "这条已经点过「已发 / 跳过」,先改回待发再改草稿",
+    none: "这一条已经不在了,刷新一下", target: "这条没有目标帖子编号,不能发", draftbad: "草稿里有站外链接或不许用的词",
   };
-  const why = (j) => WHY[j && (j.error || j.need)] || "出错了(" + ((j && (j.error || j.need)) || "未知") + "),再试一次";
+  const why = (j) => (WHY[j && (j.error || j.need)] || "出错了(" + ((j && (j.error || j.need)) || "未知") + "),再试一次") + (j && j.why ? ":" + j.why : "");
   function note(el, msg, bad) {
     if (!el) return;
     el.textContent = msg;
@@ -554,7 +554,7 @@
       const f = e.currentTarget, msg = $("login-msg");
       const btn = f.querySelector("button");
       btn.disabled = true;
-      const { status, json } = await api("login", { name: f.name.value.trim(), password: f.password.value });
+      const { status, json } = await api("login", { name: f.name.value.trim(), password: f.password.value, remember: f.remember.checked });
       btn.disabled = false;
       if (status === 200 && json.ok) { f.password.value = ""; msg.textContent = ""; load(); }
       else note(msg, why(json) + (json.seconds ? "(约 " + json.seconds + " 秒)" : ""), true);
@@ -562,11 +562,11 @@
     $("setup-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const f = e.currentTarget, msg = $("setup-msg");
-      if (f.password.value.length < 20) return note(msg, WHY.weak, true);
+      if (f.password.value.length < 8) return note(msg, WHY.weak, true);
       if (f.password.value !== f.password2.value) return note(msg, WHY.mismatch, true);
       const btn = f.querySelector("button");
       btn.disabled = true;
-      const { status, json } = await api("setup", { code: f.code.value, name: f.name.value.trim(), password: f.password.value });
+      const { status, json } = await api("setup", { code: f.code.value.trim(), name: f.name.value.trim(), password: f.password.value, remember: f.remember.checked });
       btn.disabled = false;
       if (status === 200 && json.ok) { f.reset(); load(); }
       else note(msg, why(json), true);
@@ -593,7 +593,7 @@
     const m = /^#setup=([A-Za-z0-9_-]{20,100})$/.exec(location.hash);
     if (!m) return;
     $("setup-code").value = m[1];
-    $("setup-hint").textContent = "设置码已经从链接里带进来了。用户名随便起;密码至少 20 位,请让手机的密码管理器生成并保存。";
+    $("setup-hint").textContent = "设置码已经从链接里带进来了。起个用户名和密码(密码至少 8 位,别和别的网站用同一个)。";
     try { history.replaceState(null, "", location.pathname); } catch (_) { /* 抹不掉也不影响 */ }
   })();
   bindForms();

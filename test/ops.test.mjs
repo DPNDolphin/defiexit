@@ -87,7 +87,7 @@ test("第一次设管理员:设置码、密码长度、只能设一次;cookie �
   assert.equal((await w.call("/api/admin/setup", { method: "POST", body: { code: "wrong-code-wrong-code", name: "admin1", password: PW } })).status, 403);
   assert.equal((await w.call("/api/admin/setup", { method: "POST", body: { code: CODE, name: "admin1", password: "x".repeat(MIN_PASSWORD - 1) } })).json.error, "weak");
   assert.equal((await w.call("/api/admin/setup", { method: "POST", body: { code: CODE, name: "<b>", password: PW } })).json.error, "name");
-  const r = await w.call("/api/admin/setup", { method: "POST", body: { code: CODE, name: "admin1", password: PW } });
+  const r = await w.call("/api/admin/setup", { method: "POST", body: { code: CODE, name: "admin1", password: PW, remember: true } });
   assert.equal(r.status, 200);
   const sc = r.headers.get("Set-Cookie");
   assert.match(sc, /^__Host-dx_ops=[A-Za-z0-9_-]{40,}; Path=\/; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000$/);
@@ -128,22 +128,39 @@ test("登录:输错递增等待(按 IP),等够了能进;别的 IP 不受影响",
   assert.equal(waitFor(40), 3600);
 });
 
-test("登录凭证:退出、全部退出、闲置 7 天、满 30 天都失效", async () => {
+test("登录凭证:勾了「30 天内免登录」30 天有效、不勾 1 天;退出、全部退出立刻失效", async () => {
   const w = world();
-  const c = await w.login();
-  w.clock += 6 * 864e5;
-  assert.equal((await w.call("/api/admin/state", { cookie: c })).status, 200); // 6 天内打开过,闲置时间重算
-  w.clock += 6 * 864e5;
-  assert.equal((await w.call("/api/admin/state", { cookie: c })).status, 200);
-  w.clock += 8 * 864e5;
-  assert.equal((await w.call("/api/admin/state", { cookie: c })).json.need, "login"); // 闲置超过 7 天
-  const c2 = (await w.call("/api/admin/login", { method: "POST", body: { name: "admin1", password: PW } })).headers.get("Set-Cookie").split(";")[0];
+  await w.login();
+  const loginAs = async (remember) => (await w.call("/api/admin/login", { method: "POST", body: { name: "admin1", password: PW, remember } })).headers.get("Set-Cookie");
+  const long = await loginAs(true);
+  assert.match(long, /Max-Age=2592000$/);
+  const short = await loginAs(false);
+  assert.match(short, /Max-Age=86400$/);
+  const cl = long.split(";")[0], cs = short.split(";")[0];
+  w.clock += 25 * 3600e3;
+  assert.equal((await w.call("/api/admin/state", { cookie: cs })).json.need, "login"); // 不勾:过了一天要重新登
+  w.clock += 20 * 864e5;
+  assert.equal((await w.call("/api/admin/state", { cookie: cl })).status, 200); // 勾了:20 多天没打开也不用登
+  w.clock += 10 * 864e5;
+  assert.equal((await w.call("/api/admin/state", { cookie: cl })).json.need, "login"); // 满 30 天
+  const c2 = (await loginAs(true)).split(";")[0];
   await w.call("/api/admin/logout", { method: "POST", body: {}, cookie: c2 });
   assert.equal((await w.call("/api/admin/state", { cookie: c2 })).json.need, "login");
-  const c3 = (await w.call("/api/admin/login", { method: "POST", body: { name: "admin1", password: PW } })).headers.get("Set-Cookie").split(";")[0];
-  const c4 = (await w.call("/api/admin/login", { method: "POST", body: { name: "admin1", password: PW } })).headers.get("Set-Cookie").split(";")[0];
+  const c3 = (await loginAs(true)).split(";")[0];
+  const c4 = (await loginAs(true)).split(";")[0];
   await w.call("/api/admin/logout-all", { method: "POST", body: {}, cookie: c3 });
   assert.equal((await w.call("/api/admin/state", { cookie: c4 })).json.need, "login");
+});
+
+test("管理员改的草稿也只许本站链接、不许敏感词", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outbox: [OUT()] });
+  const bad = await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", draft: "去 https://evil.example/claim 领" }, cookie: c });
+  assert.equal(bad.json.error, "draftbad");
+  assert.ok(bad.json.why);
+  const ok = await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", draft: "步骤在 defiexit.com/r/woofi 。" }, cookie: c });
+  assert.equal(ok.json.item.draft_admin, "步骤在 defiexit.com/r/woofi 。");
 });
 
 test("投递:签名、环境、时间、nonce、旧包", async () => {
