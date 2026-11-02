@@ -4,7 +4,7 @@
 # 运营台(defiexit.com/admin/):只在 ADMIN_HOSTS 列的主机上应答;OPS_ENV 写进签名(预览的投递进不了正式库);
 # INGEST_PUBKEYS 是 Claude 主窗口投递用的 Ed25519 公钥(公开的,可以写几把,换钥匙就改这里再发布);
 # 第一次设管理员:维护者用签名投递送一个一次性的设置链接(24 小时内有效),不用在 Cloudflare 加机密;
-# 也可以在 Cloudflare 加机密 SETUP_CODE(至少 16 位)代替。D1 数据库(绑定名 OPS)建好库再加。
+# 也可以在 Cloudflare 加机密 SETUP_CODE(至少 16 位)代替。D1 数据库(绑定名 OPS)只建了正式库;预览环境没有库,预览上的后台会说「数据库还没接上」。
 name = "defiexit"
 pages_build_output_dir = "dist"
 compatibility_date = "2026-10-01"
@@ -27,3 +27,8 @@ INGEST_PUBKEYS = "uU-sCviEOGst4OFy6aswMgZFtFNPVvKPUX6LQZi99l0"
 OPS_ENV = "production"
 ADMIN_HOSTS = "defiexit.com"
 INGEST_PUBKEYS = "Ab658gilbT2DCHplN4GUFyeiI1Oac9NAHFl6t7ooXTU"
+
+[[env.production.d1_databases]]
+binding = "OPS"
+database_name = "defiexit-ops"
+database_id = "5d656a02-7449-4051-aa7d-e091b36045be"
