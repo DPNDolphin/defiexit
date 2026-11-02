@@ -285,7 +285,8 @@ test("截图求助:只在有图鉴的指南里出现;每张普通页面都有 2�
   for (const f of ["dist/r/woofi/index.html", "dist/en/r/woofi/index.html"]) {
     assert.ok(read(f).includes(`<div id="lostShot" class="shot-ai" hidden data-r="woofi" data-v="${data.v}">`), `${f} 的版本对不上`);
   }
-  assert.deepEqual(JSON.parse(read("dist/_routes.json")), { version: 1, include: ["/api/*"], exclude: [] });
+  // 只有接口和运营台走函数(运营台要先看主机名);网页、图片还是静态文件
+  assert.deepEqual(JSON.parse(read("dist/_routes.json")), { version: 1, include: ["/api/*", "/admin", "/admin/*"], exclude: [] });
   const h = read("dist/_headers");
   assert.match(h, /img-src 'self' data: blob:/);
   assert.ok(!h.includes("unsafe-eval") && !h.includes("unsafe-inline"));

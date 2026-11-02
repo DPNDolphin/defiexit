@@ -21,7 +21,7 @@ const pre = (lang) => (lang === "en" ? "/en" : "");
 function version() {
   try {
     const git = (...args) => execFileSync("git", args, { cwd: ROOT, stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
-    return { commit: git("rev-parse", "--short", "HEAD"), dirty: git("status", "--porcelain", "--", "src", "recipes", "scripts", "static", "functions", "wrangler.toml") !== "" };
+    return { commit: git("rev-parse", "--short", "HEAD"), dirty: git("status", "--porcelain", "--", "src", "recipes", "scripts", "static", "functions", "server", "admin", "wrangler.toml") !== "" };
   } catch {
     return null;
   }
@@ -691,6 +691,11 @@ export function build() {
   copyDir(join(ROOT, "static", "fonts"), join(DIST, "assets", "fonts"));
   copyDir(join(ROOT, "static", "chains"), join(DIST, "assets", "chains"));
   copyFileSync(join(ROOT, "static", "favicon.svg"), join(DIST, "favicon.svg"));
+  // 运营台(只在 admin 主机上由 functions/admin 发出去;字体和图标也放在 /admin/ 下,不依赖主站路径)
+  copyDir(join(ROOT, "admin"), join(DIST, "admin"));
+  mkdirSync(join(DIST, "admin", "fonts"), { recursive: true });
+  for (const f of ["atkinson-next.woff2", "atkinson-mono.woff2", "barlow-sc-800.woff2"]) copyFileSync(join(ROOT, "static", "fonts", f), join(DIST, "admin", "fonts", f));
+  copyFileSync(join(ROOT, "static", "favicon.svg"), join(DIST, "admin", "favicon.svg"));
   const write = (rel, html) => {
     const f = join(DIST, rel);
     mkdirSync(dirname(f), { recursive: true });
@@ -705,8 +710,9 @@ export function build() {
   }
   for (const r of recipes) copyDir(join(ROOT, "recipes", r.zh.id, "img"), join(DIST, "r", r.zh.id, "img"));
   for (const [id, s] of shots) if (s) write(`r/${id}/screens.json`, JSON.stringify(s));
-  // 只有 /api/* 走 Pages Functions;网页、图片、图鉴数据都是静态文件,不占函数的调用次数
-  write("_routes.json", JSON.stringify({ version: 1, include: ["/api/*"], exclude: [] }));
+  // 只有 /api/* 和运营台(/admin)走 Pages Functions;网页、图片、图鉴数据都是静态文件,不占函数的调用次数。
+  // /admin 必须经函数:函数先看主机名,不是 admin 主机就 404,所以 defiexit.com/admin/ 打不开
+  write("_routes.json", JSON.stringify({ version: 1, include: ["/api/*", "/admin", "/admin/*"], exclude: [] }));
   write("404.html", notFound());
   const h = headers(site.connect);
   // 网页本身加 no-transform:Cloudflare 就不会往页面里插它的访问统计脚本,也不会改动页面内容

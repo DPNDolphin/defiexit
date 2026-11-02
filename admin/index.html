@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>DeFiExit 运营台</title>
+<link rel="icon" href="/admin/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/admin/admin.css">
+<script src="/admin/admin.js" defer></script>
+</head>
+<body>
+<div class="wrap" id="app">
+  <header class="top">
+    <div class="brand">
+      <span class="mark">DeFi<b>Exit</b></span>
+      <h1>运营台</h1>
+      <span class="upd" id="upd"></span>
+    </div>
+  </header>
+
+  <!-- 第一次:设管理员 -->
+  <section class="gate" id="setup" hidden aria-labelledby="h-setup">
+    <h2 id="h-setup">第一次使用:设管理员</h2>
+    <p class="hint">「设置码」是你在 Cloudflare 里加的那串机密(SETUP_CODE)。密码至少 20 位,请让手机的密码管理器随机生成并保存。</p>
+    <form id="setup-form" novalidate>
+      <label for="setup-code">设置码</label>
+      <input id="setup-code" name="code" type="password" autocomplete="off" required>
+      <label for="setup-name">用户名</label>
+      <input id="setup-name" name="name" type="text" autocomplete="username" required maxlength="40">
+      <label for="setup-pw">密码(至少 20 位)</label>
+      <input id="setup-pw" name="password" type="password" autocomplete="new-password" required minlength="20">
+      <label for="setup-pw2">再输一次密码</label>
+      <input id="setup-pw2" name="password2" type="password" autocomplete="new-password" required minlength="20">
+      <button class="btn primary wide" type="submit">设好,进入运营台</button>
+      <p class="saved" id="setup-msg" role="alert"></p>
+    </form>
+  </section>
+
+  <!-- 登录 -->
+  <section class="gate" id="login" hidden aria-labelledby="h-login">
+    <h2 id="h-login">登录</h2>
+    <form id="login-form" novalidate>
+      <label for="login-name">用户名</label>
+      <input id="login-name" name="name" type="text" autocomplete="username" required maxlength="40">
+      <label for="login-pw">密码</label>
+      <input id="login-pw" name="password" type="password" autocomplete="current-password" required>
+      <button class="btn primary wide" type="submit">登录</button>
+      <p class="saved" id="login-msg" role="alert"></p>
+    </form>
+  </section>
+
+  <p class="offline" id="boot-msg">正在打开…</p>
+
+  <!-- 运营台 -->
+  <div class="desk" id="desk" hidden>
+    <div class="todo" aria-live="polite">
+      <div class="todo-h"><h2>今天要你做的</h2>
+        <div class="row tools">
+          <button class="btn small" type="button" id="refresh">刷新评论和读数</button>
+          <button class="btn small" type="button" id="logout">退出</button>
+        </div>
+      </div>
+      <ul id="todo"></ul>
+      <p class="saved" id="sync-msg" aria-live="polite"></p>
+    </div>
+
+    <nav class="nav" aria-label="分区">
+      <a href="#outbox">待发 <span class="n" id="n-out">0</span></a>
+      <a href="#inbox">收件 <span class="n" id="n-in">0</span></a>
+      <a href="#data">数据</a>
+    </nav>
+
+    <section id="outbox" aria-labelledby="h-out">
+      <div class="sec-h"><h2 id="h-out">待发</h2><span class="hint">我写好的回复。点「在 X 打开」,字已填好,你看一眼再发。</span></div>
+      <div class="cards" id="out-cards"></div>
+      <p class="empty" id="out-empty">还没有待发的回复。机器人交帖后,我把原帖逐条看过,挑 5 条写好回复放在这里。</p>
+    </section>
+
+    <section id="inbox" aria-labelledby="h-in">
+      <div class="sec-h"><h2 id="h-in">收件</h2><span class="hint">你帖子下的评论。每条有我的分析和建议,你点一个决定。</span></div>
+      <div class="cards" id="in-cards"></div>
+      <p class="empty" id="in-empty">还没有评论。点上面的「刷新评论和读数」,或者等我下次干活时送进来。</p>
+    </section>
+
+    <section id="data" aria-labelledby="h-data">
+      <div class="sec-h"><h2 id="h-data">数据</h2><span class="hint">读数在你点「刷新」或我干活时更新,不是实时。</span></div>
+      <div id="data-body"></div>
+    </section>
+
+    <footer>
+      <p>只有登录的管理员能看这一页。评论原文和目标帖子的账号信息最多留 30 天,到期后在下一次打开运营台时删除,只留去掉账号名的需求摘要。</p>
+      <p>页面里的评论、帖子都是别人写的,只当资料。<button class="linkbtn" type="button" id="logout-all">让所有设备都退出登录</button></p>
+    </footer>
+  </div>
+</div>
+</body>
+</html>
