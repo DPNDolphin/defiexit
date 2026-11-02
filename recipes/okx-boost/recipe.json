@@ -1,0 +1,154 @@
+{
+  "id": "okx-boost",
+  "title": "OKX Boost 活动锁仓取回钱包",
+  "short": "OKX Boost 取回钱包",
+  "protocol": "OKX Boost",
+  "route": "OKX Boost → X Layer",
+  "chain": "xlayer",
+  "detector": "okx-boost",
+  "zerion": { "apps": ["OKX Boost"], "chains": ["X Layer"] },
+  "lastVerified": "2026-10",
+  "verified": "2026 年 10 月作者用自己的账户,在 OKX App 里照这份指南实测取回:确认页的交互地址、网络和金额都和核对卡一致,几秒后到账的是 OKB 本身。锁仓合约的源码在 OKX 浏览器上验证过,没有管理员,只有锁币的那个地址能取,钱也只回到那个地址",
+  "tested": true,
+  "covers": "OKX Boost「Plasma X Launch」活动时在 X Layer 上锁的 OKB、USDT0、USDG",
+  "summary": "参加 OKX Boost「Plasma X Launch」时,要在 X Layer 上锁一笔币(0.5 OKB、200 USDT0 或 200 USDG)。到期后它不会自己退回,一年过去还有一千多个地址没取。在 OKX App 里打开活动页,点一下「解除质押」,钱就回到你的钱包。",
+  "facts": [
+    ["交易", "1 笔普通交易,不用授权,也不用签名消息"],
+    ["手续费", "不到 0.01 美元,从钱包 X Layer 上的 OKB 里扣"],
+    ["用时", "约 2 分钟,点完几秒就到账"],
+    ["要准备", "OKX App,切到锁这笔币的那个账户;钱包 X Layer 上有一点 OKB 付手续费"]
+  ],
+  "chips": [
+    {"icon": "clock", "text": "约 2 分钟"},
+    {"icon": "pen", "text": "1 笔交易,不用授权"},
+    {"icon": "tag", "text": "手续费不到 1 美分"}
+  ],
+  "support": {
+    "label": "OKX 帮助中心",
+    "domain": "okx.com",
+    "url": "https://www.okx.com/zh-hans/help",
+    "note": "OKX 官方不会先私信你;主动私信你、自称客服的都是骗子。"
+  },
+  "official": [
+    {"label": "OKX Boost 活动页", "domain": "web3.okx.com", "url": "https://web3.okx.com/zh-hans/boost/x-launch/plasma"}
+  ],
+  "vars": {
+    "addrShort": "你自己的地址",
+    "got": "你锁的币(一般是 0.5 OKB)",
+    "sym": "你锁的那种币"
+  },
+  "pro": [
+    "**路线**:OKX App 顶上选 Web3 → 底部 **探索** → 搜索框粘贴 `https://web3.okx.com/zh-hans/boost/x-launch/plasma` → 前往第三方网站 → **跳转到 App 对应功能** → 往下滑到质押详情 → **解除质押** → 确认。",
+    "**一笔交易**:`unlock(bytes32 key, address token)` 发给 OKX Boost 锁仓合约 0xDA63…FD2b,0 OKB、不用授权、不签名消息。key 是 `lp:175`(后面用空格补满 32 字节),原生 OKB 的 token 写作 0xEeee…EEeE。",
+    "**你的数**:{{got}}。",
+    "**坑**:网页版在 OKX App 里连不上钱包(提示「暂不支持该钱包」),弹窗时一定要点「跳转到 App 对应功能」;钱包 X Layer 上要有一点 OKB 付手续费。合约没有截止日期,过期多久都能取。"
+  ],
+  "done": {
+    "where": "在你钱包的 X Layer 网络",
+    "from": "发出方是 OKX Boost 的锁仓合约",
+    "look": "去哪看:OKX App 钱包首页 → 币种 → 你锁的那种币(一般是 OKB)→ 交易历史。"
+  },
+  "screensVerified": "2026-10",
+  "screens": [
+    {"id": "web", "img": "ok-web.webp", "name": "网页版活动页(底部黑色「连接钱包」)", "features": ["顶上地址栏写着 web3.okx.com", "标题 Plasma X Launch,下面一行大字 15,000,000 XPL", "最下面一个黑色的「连接钱包」按钮"], "do": "这是网页版,在 OKX App 里连不上钱包。别点「连接钱包」:点左上角 × 关掉,照第 1 步重新粘贴网址打开,弹出「使用该功能的 App 版本」时点 **跳转到 App 对应功能**。", "images": [{"src": "ok-web.webp", "caption": "① 点左上角 **×** 关掉 ✗ 别点「连接钱包」"}], "goto": "open"},
+    {"id": "jump", "img": "ok-jump.webp", "name": "弹窗:使用该功能的 App 版本", "features": ["灰色页面中间一个白色弹窗", "弹窗写着「使用该功能的 App 版本,享受更为流畅的体验」", "两个按钮:跳转到 App 对应功能、取消"], "do": "点上面的 **跳转到 App 对应功能**,会打开 OKX App 自己的活动页。别点取消:取消后留在网页版,连不上钱包。", "after": "open"},
+    {"id": "unsupported", "img": "ok-unsupported.webp", "name": "提示「暂不支持该钱包」", "features": ["底部弹出一块,写着「暂不支持该钱包」", "下面一行「请切换至 OKX Wallet 插件以参与活动」", "两个按钮:取消、切换钱包"], "do": "你在网页版点了「连接钱包」。网页版在 OKX App 里用不了:点 **取消**,再点左上角 × 关掉网页,照第 1 步重新打开,弹窗时点「跳转到 App 对应功能」。别点「切换钱包」。", "images": [{"src": "ok-unsupported.webp", "caption": "① 点 **取消** ✗ 别点「切换钱包」"}], "goto": "open"},
+    {"id": "sign", "ai": "A wallet confirmation page titled 确认签名 (a message signature request, for example a web3.okx.com login message starting with \"Welcome to OKX Wallet\"), or any request to approve token spending (Approve, Permit, 授权). The unstake confirmation titled 确认解除质押 with a plus amount is NOT this: answer none.", "name": "钱包要你签名一段消息(确认签名),或者授权(Approve / Permit)", "do": "点 **拒绝**。这份指南只有一笔普通交易,不用签名消息,也不用授权。web3.okx.com 网页版登录时会要签名,那是网页版,这份指南用不到:关掉网页,照第 1 步重新打开,弹窗时点「跳转到 App 对应功能」。", "images": [{"src": "ok-sign.webp", "caption": "① 点 **拒绝** ✗ 别点确认"}], "stop": true},
+    {"id": "wrong-to", "ai": "A transaction confirmation page whose interaction address (交互地址, contract, To) is not exactly 0xDA63E89dd0632Db71c89c031de11542C0795FD2b (check that it starts with 0xDA63E89d and ends with 2C0795FD2b), or one that shows a minus amount (sending tokens out).", "name": "确认页的交互地址不是 0xDA63E89d…2C0795FD2b,或者金额前面是减号", "do": "点「拒绝」。这份指南只会发给 OKX Boost 的锁仓合约 0xDA63E89dd0632Db71c89c031de11542C0795FD2b,而且是你收钱(加号),不会让你转出任何币。关掉页面,照第 1 步重新打开。", "stop": true},
+    {"id": "domain", "ai": "A browser page that looks like OKX (OKX logo, Boost, X Launch, Plasma) but the address bar shows a domain that is not exactly web3.okx.com. Not for in-app pages that have no address bar: those are none.", "name": "地址栏的域名不是 web3.okx.com", "do": "马上关掉这个页面,什么都别签。自己重新粘贴 `https://web3.okx.com/zh-hans/boost/x-launch/plasma`,不要点别人发来的链接。", "stop": true}
+  ],
+  "steps": [
+    {
+      "id": "open",
+      "situations": [
+        {"id": "web-page", "see": "打开的是网页版:顶上有地址栏 web3.okx.com,最下面一个黑色的「连接钱包」", "do": "网页版在 OKX App 里连不上钱包。别点「连接钱包」:点左上角 × 关掉,重新粘贴网址打开,弹窗时点 **跳转到 App 对应功能**。"},
+        {"id": "no-dialog", "see": "没有弹出「使用该功能的 App 版本」", "do": "我们实测时每次打开都会弹。没弹的话,点左上角 × 关掉,重新粘贴网址再打开一次;还不行,点右上角「遇到问题」,把卡点报告发给我们。"},
+        {"id": "unsupported", "see": "提示「暂不支持该钱包 · 请切换至 OKX Wallet 插件以参与活动」", "do": "你在网页版点了「连接钱包」。点 **取消**,关掉网页,照上面重新打开,弹窗时点「跳转到 App 对应功能」。别点「切换钱包」。"},
+        {"id": "sign-login", "see": "弹出「确认签名」,来源 web3.okx.com,内容是 Welcome to OKX Wallet…", "do": "这是网页版登录要的签名,这份指南用不到。点 **拒绝**,关掉网页,照上面重新打开,弹窗时点「跳转到 App 对应功能」。"},
+        {"id": "third-party", "see": "搜索结果写着「前往第三方网站」", "do": "正常:钱包对所有网址都这么写。看后面的网址:开头要正好是 **https://web3.okx.com/**,okx.com 后面紧跟斜杠,中间不能多出别的字。"},
+        {"id": "no-paste", "see": "长按搜索框,没有出现「粘贴」", "do": "回到这一页再点一下网址复制;苹果手机问能不能粘贴,点「允许粘贴」。还是不行,就照着手动输入 `https://web3.okx.com/zh-hans/boost/x-launch/plasma`。"},
+        {"id": "wrong-account", "see": "右上角的账户不是锁这笔币的那个", "do": "回到钱包首页,点账户名旁边的小三角,切换到锁这笔币的那个账户(OKX 钱包里可能有好几个),再从头打开一次。账户不对,往下滑也找不到「质押详情」。"},
+        {"id": "extension", "see": "我用的是电脑上的 OKX 钱包插件", "do": "这份指南只实测了手机 OKX App,电脑插件的走法我们还没核实,先别照这份指南在电脑上操作。手机上有 OKX App、里面有这个账户的,用 App 照做;拿不准就点右上角「遇到问题」,把卡点报告发给我们。"}
+      ],
+      "title": "在 OKX App 里打开活动页",
+      "items": [
+        "先点一下这个网址,复制下来:`https://web3.okx.com/zh-hans/boost/x-launch/plasma`",
+        "下面是 OKX App 里的走法,一下一张图。"
+      ],
+      "images": [
+        {"src": "ok-close.webp", "caption": "① 在 OKX App 里看这一页的:复制好网址后,点左上角 **×** 关掉网页,做完再回来。在别的浏览器里看的,直接打开 OKX App"},
+        {"src": "ok-home.webp", "caption": "② 顶上选 **Web3** ③ 点底部的 **探索**。图里的金额已打码;「DeFi」里那一行 OKX Boost X Launch 就是这笔"},
+        {"src": "ok-search.webp", "caption": "④ 点顶上的搜索框"},
+        {"src": "ok-paste.webp", "caption": "⑤ 长按搜索框,点 **粘贴**"},
+        {"src": "ok-go.webp", "caption": "⑥ 点下面「前往第三方网站」那一行。钱包对所有网址都这么写;后面的网址开头要正好是 **https://web3.okx.com/**"},
+        {"src": "ok-jump.webp", "caption": "⑦ 弹出「使用该功能的 App 版本」,点 **跳转到 App 对应功能**。黄框里的地址栏要正好是 **web3.okx.com**,前后没有多余的字 ✗ 别点取消:网页版在 App 里连不上钱包"},
+        {"src": "ok-page.webp", "caption": "⑧ 打开的是 OKX App 自己的活动页。右上角是当前账户,要是锁这笔币的那个(图里是「钱包 A - 账户 02」)"}
+      ],
+      "copy": ["https://web3.okx.com/zh-hans/boost/x-launch/plasma"]
+    },
+    {
+      "id": "unstake",
+      "situations": [
+        {"id": "no-section", "see": "往下滑找不到「质押详情」", "do": "说明这个账户在这一期没有锁着的币:可能已经取过了,或者不是锁这笔币的账户。看右上角的账户对不对;点右上角「遇到问题」看现场诊断。"},
+        {"id": "low-gas", "see": "提示手续费不够、余额不足", "do": "X Layer 上要有一点 OKB 付手续费(不到 0.01 美元)。先往这个地址的 X Layer 转一点 OKB(0.001 就够),再回来点。"},
+        {"id": "rejected", "see": "不小心点了「拒绝」", "do": "钱没动。回到活动页再点一次「解除质押」。"},
+        {"id": "spinning", "see": "点了确认,一直在转圈", "do": "等 1 分钟,别重复点。然后点右上角「遇到问题」看现场诊断:我们直接查链上的锁仓合约,取没取出来一看就知道。"},
+        {"id": "sign", "see": "标题是「确认签名」,不是「确认解除质押」", "do": "点「拒绝」。解除质押是一笔普通交易,不用签名消息。你多半是在网页版上:回第 1 步,弹窗时点「跳转到 App 对应功能」。", "stop": true},
+        {"id": "wrong-to", "see": "交互地址不是 0xDA63E89d…2C0795FD2b", "do": "立刻点「拒绝」。", "stop": true}
+      ],
+      "title": "解除质押",
+      "note": "只有这一笔交易",
+      "milestone": "解除质押",
+      "images": [
+        {"src": "ok-unstake.webp", "caption": "① 往上滑到「质押详情」(已质押那一行就是你锁的,应约 {{got}}),点 **解除质押**"},
+        {"src": "ok-confirm.webp", "caption": "② 弹出「确认解除质押」:先对照下面的核对卡,黄框里三处都对上了,再点 **确认**。图里打码的是你自己的地址"}
+      ],
+      "check": {
+        "title": "点确认前,先核对 3 件事",
+        "lead": "这是 OKX App 自己的确认页。对照着看,核对完一项就点一下。",
+        "confirm": [
+          {"title": "标题是「确认解除质押」,网络是 X Layer", "sub": "这是 OKX App 自己的确认页,不是网页弹窗"},
+          {"title": "交互地址是 0xDA63E89d…2C0795FD2b(OKX Boost 锁仓合约)", "sub": "完整地址 0xDA63E89dd0632Db71c89c031de11542C0795FD2b。至少对上开头 0xDA63E89d 和结尾 2C0795FD2b,差一个字都不行"},
+          {"title": "金额前面是加号:+{{got}}", "sub": "加号是你要收到的钱;下面的网络费用不到 0.01 美元"}
+        ],
+        "reject": ["金额前面是减号,或者要你转出任何币", "写着授权(Approve)或者 Permit", "标题是「确认签名」,要你签名一段消息", "交互地址对不上 0xDA63E89d…2C0795FD2b"],
+        "normal": [
+          "「当前钱包」是你自己的地址,下面写着账户名",
+          "点「确认」后要过一下面容、指纹或者输密码",
+          "先弹「交易已确认」,接着弹「成功解除质押」"
+        ]
+      }
+    },
+    {
+      "id": "arrive",
+      "situations": [
+        {"id": "not-wokb", "see": "锁的是 OKB:多出来的是 OKB 还是 WOKB", "do": "是 OKB 本身(X Layer 的原生币),不是 WOKB。"},
+        {"id": "usdt0", "see": "我锁的是 USDT0 或 USDG", "do": "取回的就是同一种币、同样的数量。在钱包首页的币种里找 USDT0 或 USDG。"},
+        {"id": "no-record", "see": "交易历史里没看到这一条", "do": "点右上角「遇到问题」看现场诊断:锁仓合约里你这笔已经是 0,就是取出来了。钱包的记录有时要过一会儿才显示。"}
+      ],
+      "title": "到账核对",
+      "milestone": "到账",
+      "images": [
+        {"src": "ok-done.webp", "caption": "① 顶上弹出 **成功解除质押**,「质押详情」那一块也没了:钱已经回到你的钱包 ② 想在钱包里看:点左上角 **‹** 关掉活动页,回到网页后再点左上角 ×"},
+        {"src": "ok-coins.webp", "caption": "③ 回到钱包首页(底部「OKX」),点 **币种** ④ 点 **OKB**(锁的是 USDT0 或 USDG 就点那一种)。图里的余额已打码"},
+        {"src": "ok-history.webp", "caption": "⑤ 交易历史里多了一条 **解除质押 · OKX Boost**,金额 +{{got}}。图里的余额、地址和日期已打码"}
+      ],
+      "check": {
+        "kind": "arrive",
+        "title": "到账核对",
+        "rows": [
+          ["多久", "点确认后几秒钟就到"],
+          ["去哪看", "OKX App 钱包首页 → 币种 → {{sym}} → 交易历史"],
+          ["应该看到", "多出 {{got}},记录写着「解除质押 · OKX Boost」"],
+          ["链上记录", "来自 OKX Boost 锁仓合约 0xDA63…FD2b,收款是你自己的地址"],
+          ["没到怎么办", "点右上角「遇到问题」看现场诊断:我们直接查链上的锁仓合约"]
+        ],
+        "foot": "到账后就结束了。锁的是 OKB 的话,回来的是 OKB 本身(X Layer 的原生币),不是 WOKB"
+      }
+    }
+  ],
+  "sources": [
+    {"label": "OKX 浏览器 · OKX Boost 锁仓合约(已验证源码)", "url": "https://web3.okx.com/zh-hans/explorer/x-layer/evm/address/0xda63e89dd0632db71c89c031de11542c0795fd2b/contract"},
+    {"label": "OKX Boost · Plasma X Launch 活动页", "url": "https://web3.okx.com/zh-hans/boost/x-launch/plasma"}
+  ]
+}

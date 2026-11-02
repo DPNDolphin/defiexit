@@ -4,6 +4,7 @@ import { readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync, copyFileSy
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { site } from "./site.mjs";
 import { zh as zhPunct } from "../src/js/lib/zh.js";
 import { makeT } from "../src/js/lib/i18n.js";
@@ -16,11 +17,11 @@ const HTML_LANG = { zh: "zh-CN", en: "en" };
 const pre = (lang) => (lang === "en" ? "/en" : "");
 
 // 版本号:页脚显示构建时的提交,谁都能去 GitHub 核对线上跑的是哪一版。会进网站的那几个目录有没提交的改动,就标出来,不冒充干净版本
-// (只看这几个目录:Cloudflare 构建时会在根目录自己生成 package-lock.json,不影响网站内容)
+// (只看这几个目录和文件:Cloudflare 构建时会在根目录自己生成 package-lock.json,不影响网站内容)
 function version() {
   try {
     const git = (...args) => execFileSync("git", args, { cwd: ROOT, stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
-    return { commit: git("rev-parse", "--short", "HEAD"), dirty: git("status", "--porcelain", "--", "src", "recipes", "scripts", "static") !== "" };
+    return { commit: git("rev-parse", "--short", "HEAD"), dirty: git("status", "--porcelain", "--", "src", "recipes", "scripts", "static", "functions", "wrangler.toml") !== "" };
   } catch {
     return null;
   }
@@ -183,6 +184,7 @@ function home(tx, recipes) {
       <p class="err" id="addrErr" role="alert" hidden></p>
       <button class="btn primary block" type="submit">${tx.h("checkFree")}${ico("arrowRight")}</button>
       <p class="hint" id="addrHint">${tx.h("addrHint")}</p>
+      <p class="hint">${tx.h("scopeNow", recipes.map((r) => r.protocol).join(tx.lang === "en" ? ", " : "、"))}</p>
     </form>
     <ul class="feats">
       <li>${ico("eye")}<span>${tx.h("feat1")}</span></li>
@@ -245,7 +247,7 @@ function checkPage(tx, recipes) {
   const list = recipes.map((r) => {
     const milestones = r.steps.filter((s) => s.milestone).map((s) => ({ label: punct(s.milestone, tx.lang), when: s.when || null }));
     const chips = (r.chips || []).map((c) => ({ icon: c.icon, text: punct(c.text, tx.lang) }));
-    return `<li data-id="${esc(r.id)}" data-detector="${esc(r.detector)}" data-protocol="${esc(r.protocol)}" data-route="${esc(r.route)}" data-milestones="${esc(JSON.stringify(milestones))}" data-chips="${esc(JSON.stringify(chips))}"></li>`;
+    return `<li data-id="${esc(r.id)}" data-detector="${esc(r.detector)}" data-protocol="${esc(r.protocol)}" data-route="${esc(r.route)}" data-chain="${esc(r.chain || "")}" data-milestones="${esc(JSON.stringify(milestones))}" data-chips="${esc(JSON.stringify(chips))}" data-zerion="${esc(JSON.stringify(r.zerion || null))}"></li>`;
   }).join("");
   return page({
     tx, kind: "check", path: "/check/", script: "check.js", noindex: true,
@@ -260,16 +262,23 @@ function checkPage(tx, recipes) {
     <p class="big" id="sumBig" hidden></p>
     <p class="sub" id="sumNote" hidden></p>
   </section>
-  <div id="cards" class="cards"></div>
+  <div id="cards" class="cards" aria-live="polite"></div>
   <p class="fine resfoot">${tx.h("resultsFoot")}</p>
   <ul id="recipes" hidden>${list}</ul>
+  <dialog class="sheet" id="exitSheet" aria-labelledby="exitH">
+    <div class="sheet-in">
+      <span class="grip" aria-hidden="true"></span>
+      <div class="sheet-head"><h2 id="exitH"></h2><button class="iconbtn" type="button" id="exitClose" aria-label="${tx.attr("close")}">${ico("x")}</button></div>
+      <div class="exit" id="exitBody"></div>
+    </div>
+  </dialog>
 </div>`,
   });
 }
 
 // ---------- 指南页 ----------
 
-function guide(tx, R) {
+function guide(tx, R, shot) {
   const { lang } = tx;
   const P = pre(lang);
   const V = R.vars;
@@ -377,6 +386,44 @@ function guide(tx, R) {
         ${(x.images || []).map((im) => shotHtml(im)).join("")}
         ${!x.stop && (x.goto || x.after) ? `<button class="btn primary block" type="button" data-scr-go="${esc(x.goto || "")}" data-scr-after="${esc(x.after || "")}"></button>` : ""}
       </section>`).join("");
+  // 截图求助:选图 → 竖向裁剪 → 手机里重新生成一张新图 → 放大预览 + 两个勾 → 发给 AI。
+  // AI 只回编号;认出来后并排放「你的截图」和「我们审过的图」,用户逐条核对文字特征(放在 <template> 里)才显示审过的答案
+  const shotOn = !!(site.shotAI && shot && screens.length);
+  const agree = (text, attr) => `<label class="agree"><input type="checkbox" ${attr}><span class="box">${ico("check")}</span><span>${text}</span></label>`;
+  const shotView = shotOn ? `<div id="lostShot" class="shot-ai" hidden data-r="${esc(R.id)}" data-v="${esc(shot.v)}">
+        <h3>${tx.h("shotH")}</h3>
+        <section class="shot-p" id="shotPick">
+          <p class="sub">${tx.h("shotIntro")}</p>
+          <input class="sr-only" type="file" id="shotFile" accept="image/*" tabindex="-1" aria-hidden="true">
+          <button class="btn primary block" type="button" id="shotChoose">${ico("image")}${tx.h("shotChoose")}</button>
+        </section>
+        <section class="shot-p" id="shotCrop" hidden>
+          <p class="sub">${tx.h("shotCropSub")}</p>
+          <div class="crop-wrap"><div class="crop" id="shotCropBox"><canvas id="shotCv" width="1" height="1"></canvas><span class="crop-sh top"></span><span class="crop-sh bot"></span><button class="crop-h top" type="button" role="slider" aria-label="${tx.attr("shotTop")}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></button><button class="crop-h bot" type="button" role="slider" aria-label="${tx.attr("shotBottom")}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><span></span></button></div></div>
+          <div class="shot-row"><button class="btn" type="button" data-shot-again>${tx.h("shotAgain")}</button><button class="btn primary" type="button" id="shotUse">${tx.h("shotUse")}</button></div>
+        </section>
+        <section class="shot-p" id="shotSend" hidden>
+          <p class="shot-lead">${tx.h("shotPrevH")}</p>
+          <figure class="shot-prev"><img id="shotPrev" alt="${tx.attr("shotPrevAlt")}"></figure>
+          <p class="fine">${tx.h("shotPrivacy")}</p>
+          ${agree(tx.h("shotAgree1"), "data-agree")}
+          ${agree(tx.h("shotAgree2"), "data-agree")}
+          <div class="shot-row"><button class="btn" type="button" data-shot-again>${tx.h("shotAgain")}</button><button class="btn primary" type="button" id="shotGo" disabled>${tx.h("shotSend")}</button></div>
+        </section>
+        <section class="shot-p" id="shotWait" hidden><p class="sub" role="status"><span class="spin" aria-hidden="true"></span> ${tx.h("shotWait")}</p></section>
+        <section class="shot-p" id="shotMatch" hidden>
+          <p class="shot-lead">${tx.h("shotMatchH")}</p>
+          <div class="pair"><figure><img id="shotMine" alt=""><figcaption>${tx.h("shotMine")}</figcaption></figure><figure><img id="shotOurs" alt=""><figcaption>${tx.h("shotOurs")}</figcaption></figure></div>
+          <p class="sub">${tx.h("shotFeatH")}</p>
+          <div class="feats-ck" id="shotFeats"></div>
+          <button class="btn primary block" type="button" id="shotYes" disabled>${tx.h("shotYes")}${ico("arrowRight")}</button>
+          <button class="btn block" type="button" id="shotNo">${tx.h("shotNo")}</button>
+        </section>
+        <section class="shot-p shot-warn" id="shotMiss" hidden><p id="shotMissMsg"></p><button class="btn block" type="button" data-shot-again>${tx.h("shotRetry")}</button></section>
+        <section class="shot-p shot-warn" id="shotSecret" hidden><p>${tx.h("shotSecret")}</p><button class="btn block" type="button" data-shot-again>${tx.h("shotRetry")}</button></section>
+        <button class="btn block" type="button" id="shotBack">${ico("arrowLeft")}${tx.h("shotBack")}</button>
+        ${screens.filter((x) => !x.stop).map((x) => `<template data-feat="${esc(x.id)}">${x.features.map((f) => agree(r(f), "data-feat-ck")).join("")}</template>`).join("")}
+      </div>` : "";
   const lostSheet = screens.length ? `<dialog class="sheet" id="lost" aria-labelledby="lostH">
     <div class="sheet-in">
       <span class="grip" aria-hidden="true"></span>
@@ -385,9 +432,11 @@ function guide(tx, R) {
         ${stops ? `<div class="scr-stops"><p>${tx.h("lostStopH")}</p>${stops}</div>` : ""}
         <p class="sub">${tx.h("lostSub")}</p>
         <div class="scrs">${tiles}</div>
+        ${shotOn ? `<button class="btn block shot-open" type="button" id="shotOpen">${ico("image")}${tx.h("shotOpen")}</button>` : ""}
         ${R.screensVerified ? `<p class="fine">${tx.h("lostAsOf", R.screensVerified)}</p>` : ""}
       </div>
       <div id="lostAns" hidden>${answers}<p class="sub" id="lostSkip" hidden>${tx.h("lostSkip")}</p><button class="btn block" type="button" id="lostBack">${ico("arrowLeft")}${tx.h("lostBack")}</button></div>
+      ${shotView}
       <div class="fallback">
         <p>${tx.h("lostNone")}</p>
         <div class="fb-row">${support}<button class="btn small" type="button" id="lostDiag">${tx.h("lostDiag")}</button><button class="btn small" type="button" id="lostReport">${ico("copy")}${tx.h("report")}</button></div>
@@ -467,10 +516,11 @@ function notFound() {
 
 // ---------- 安全响应头(Cloudflare Pages 读 _headers;本地预览也用同一份) ----------
 
+// img-src 的 blob::截图求助在手机里裁好的那张图,预览和对照都直接显示它(不经过网络)。
 export function headers(connect) {
   return {
     "Content-Security-Policy": [
-      "default-src 'self'", "script-src 'self'", "style-src 'self'", "img-src 'self' data:", "font-src 'self'",
+      "default-src 'self'", "script-src 'self'", "style-src 'self'", "img-src 'self' data: blob:", "font-src 'self'",
       `connect-src 'self' ${connect.join(" ")}`, "object-src 'none'", "base-uri 'none'", "form-action 'none'", "frame-ancestors 'none'",
     ].join("; "),
     "X-Content-Type-Options": "nosniff",
@@ -512,8 +562,9 @@ export function localize(r, o, file) {
   for (const k of ["title", "short", "verified", "covers", "summary"]) L[k] = need(o[k], k);
   L.facts = same(r.facts, o.facts, "facts").map((x, i) => [need(x?.[0], `facts[${i}][0]`), need(x?.[1], `facts[${i}][1]`)]);
   L.chips = same(r.chips || [], o.chips || [], "chips").map((x, i) => ({ ...r.chips[i], text: need(x, `chips[${i}]`) }));
-  if (r.support) L.support = { ...r.support, label: need(o.support?.label, "support.label"), note: need(o.support?.note, "support.note") };
-  L.official = same(r.official, o.official, "official").map((x, i) => ({ ...r.official[i], label: need(x?.label, `official[${i}].label`) }));
+  if (r.support) L.support = { ...r.support, label: need(o.support?.label, "support.label"), note: need(o.support?.note, "support.note"), ...(o.support?.url ? { url: need(o.support.url, "support.url") } : {}) };
+  // 官网网址可以换成英文版的(比如 OKX 的网址里带着 zh-hans);不写就和中文一样
+  L.official = same(r.official, o.official, "official").map((x, i) => ({ ...r.official[i], label: need(x?.label, `official[${i}].label`), ...(x?.url ? { url: need(x.url, `official[${i}].url`) } : {}) }));
   for (const k of Object.keys(r.vars)) if (!(r.literalVars || []).includes(k)) L.vars[k] = need(o.vars?.[k], `vars.${k}`);
   L.pro = same(r.pro, o.pro, "pro").map((x, i) => need(x, `pro[${i}]`));
   L.done = { where: need(o.done?.where, "done.where"), from: need(o.done?.from, "done.from"), look: need(o.done?.look, "done.look") };
@@ -525,6 +576,8 @@ export function localize(r, o, file) {
     const S = { ...s, title: need(x.title, `${p}.title`) };
     for (const k of ["note", "whenText", "milestone"]) if (s[k]) S[k] = need(x[k], `${p}.${k}`);
     if (s.items) S.items = same(s.items, x.items, `${p}.items`).map((y, i) => need(y, `${p}.items[${i}]`));
+    // 要复制的网址同上:英文版可以换,不写就和中文一样
+    if (s.copy && x.copy) S.copy = same(s.copy, x.copy, `${p}.copy`).map((y, i) => need(y, `${p}.copy[${i}]`));
     if (s.images) S.images = same(s.images, x.images, `${p}.images`).map((y, i) => img(s.images[i], y, `${p}.images[${i}]`));
     if (s.detour) {
       const d = x.detour || {}, q = `${p}.detour`;
@@ -553,7 +606,9 @@ export function localize(r, o, file) {
     L.screens = r.screens.map((y) => {
       const z = o.screens?.[y.id], q = `screens.${y.id}`;
       const S = { ...y, name: need(z?.name, `${q}.name`), do: need(z?.do, `${q}.do`) };
+      delete S.ai; // 只给 AI 看的判定条件(里面夹着中文界面上的词),服务端从中文配方里取,英文版页面用不到
       if (z?.img) S.img = z.img;
+      if (y.features) S.features = same(y.features, z?.features, `${q}.features`).map((w, i) => need(w, `${q}.features[${i}]`));
       if (y.images) S.images = same(y.images, z?.images, `${q}.images`).map((w, i) => img(y.images[i], w, `${q}.images[${i}]`));
       return S;
     });
@@ -577,6 +632,15 @@ function loadRecipes() {
       scrIds.add(x.id);
       for (const k of ["goto", "after"]) if (x[k] && !stepIds.has(x[k])) throw new Error(`${d}: 页面图鉴 ${x.id} 的 ${k} 指向不存在的步骤 ${x[k]}`);
       if (x.stop && (x.goto || x.after)) throw new Error(`${d}: 页面图鉴 ${x.id} 是「停下」,不能再带去某一步`);
+      // 截图求助:AI 认出一页后,用户要逐条核对这几条看得见的文字特征;停手的页面不核对,直接让停下
+      if (x.stop) {
+        if (x.features) throw new Error(`${d}: 页面图鉴 ${x.id} 是「停下」,不用写文字特征`);
+        // 停手的页面直接让人停下,不再核对:所以要给 AI 写清什么时候算、什么时候不算,免得把普通页面认成停手
+        if (typeof x.ai !== "string" || !x.ai.trim()) throw new Error(`${d}: 页面图鉴 ${x.id} 是「停下」,要写 ai(只给 AI 看的英文判定条件:什么时候算、什么时候不算)`);
+      } else {
+        if (!x.img) throw new Error(`${d}: 页面图鉴 ${x.id} 缺小图 img(截图求助要拿它和用户的截图对照)`);
+        if (!Array.isArray(x.features) || x.features.length < 2 || x.features.length > 3 || x.features.some((f) => typeof f !== "string" || !f.trim())) throw new Error(`${d}: 页面图鉴 ${x.id} 要有 2–3 条文字特征 features`);
+      }
     }
     for (const s of r.steps) {
       const ids = new Set();
@@ -602,12 +666,30 @@ function loadRecipes() {
   });
 }
 
+// 截图求助的候选页面:中英两套的编号、名字、文字特征。服务端从这份静态文件取白名单(和页面上的图鉴是同一版),
+// 版本号 v 跟着内容变:页面带着 v 发请求,对不上说明手机上开着的是旧页面
+export function shotData(r) {
+  if (!r.zh.screens?.length) return null;
+  const txt = (s) => String(s).replace(/\*\*|`/g, "");
+  const screens = r.zh.screens.map((x, i) => {
+    const e = r.en.screens[i];
+    const o = { id: x.id, stop: !!x.stop, name: { zh: txt(x.name), en: txt(e.name) } };
+    if (x.features) o.features = { zh: x.features.map(txt), en: e.features.map(txt) };
+    if (x.ai) o.ai = txt(x.ai);
+    return o;
+  });
+  const body = { recipe: r.zh.id, site: r.zh.official[0].domain, screens };
+  return { v: createHash("sha256").update(JSON.stringify(body)).digest("hex").slice(0, 12), ...body };
+}
+
 export function build() {
   const recipes = loadRecipes();
+  const shots = new Map(recipes.map((r) => [r.zh.id, shotData(r)]));
   rmSync(DIST, { recursive: true, force: true });
   mkdirSync(join(DIST, "assets"), { recursive: true });
   copyDir(join(ROOT, "src"), join(DIST, "assets"));
   copyDir(join(ROOT, "static", "fonts"), join(DIST, "assets", "fonts"));
+  copyDir(join(ROOT, "static", "chains"), join(DIST, "assets", "chains"));
   copyFileSync(join(ROOT, "static", "favicon.svg"), join(DIST, "favicon.svg"));
   const write = (rel, html) => {
     const f = join(DIST, rel);
@@ -619,9 +701,12 @@ export function build() {
     const rs = recipes.map((r) => r[lang]);
     write(`${pre(lang)}/index.html`, home(tx, rs));
     write(`${pre(lang)}/check/index.html`, checkPage(tx, rs));
-    for (const R of rs) write(`${pre(lang)}/r/${R.id}/index.html`, guide(tx, R));
+    for (const R of rs) write(`${pre(lang)}/r/${R.id}/index.html`, guide(tx, R, shots.get(R.id)));
   }
   for (const r of recipes) copyDir(join(ROOT, "recipes", r.zh.id, "img"), join(DIST, "r", r.zh.id, "img"));
+  for (const [id, s] of shots) if (s) write(`r/${id}/screens.json`, JSON.stringify(s));
+  // 只有 /api/* 走 Pages Functions;网页、图片、图鉴数据都是静态文件,不占函数的调用次数
+  write("_routes.json", JSON.stringify({ version: 1, include: ["/api/*"], exclude: [] }));
   write("404.html", notFound());
   const h = headers(site.connect);
   // 网页本身加 no-transform:Cloudflare 就不会往页面里插它的访问统计脚本,也不会改动页面内容

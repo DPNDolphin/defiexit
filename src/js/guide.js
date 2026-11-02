@@ -7,6 +7,8 @@ import { isEvmAddress, shortAddr, floorTo } from "./lib/net.js";
 import { el, icon, route, rowsTable, toast, copy, contact, setText } from "./lib/ui.js";
 import { makeT, pageLang, prefix, errText } from "./lib/i18n.js";
 import { zh } from "./lib/zh.js";
+import { setupShot } from "./shot.js";
+import { mountWalletRead } from "./lib/wallet.js";
 
 const lang = pageLang(), t = makeT(lang), P = prefix(lang);
 const $ = (id) => document.getElementById(id);
@@ -19,10 +21,12 @@ const [prevBtn, nextBtn] = pager.querySelectorAll("[data-go]");
 const mine = $("mine"), meForm = $("me"), meInput = $("addr");
 const sheet = $("sheet"), diagBox = $("diag"), sheetSits = $("sheetSits"), sitsH = $("sitsH");
 const lost = $("lost"); // 「页面和图里不一样?」的页面图鉴;配方没有图鉴时没有它
+const shotView = $("lostShot"); // 图鉴里的「发截图给 AI 认」;没开这个功能时没有它
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 let flags = null;     // null:没填地址,所有步骤都显示
 let base = null;      // 按账户算出来的原始数和开关(用户在现场诊断里改了选择,能退回来)
+let hold = false;     // 检测器说先别照做:结果页点进来也停在概况页,让用户看到提醒
 let addr = null;      // 用户填的地址:只在这一页的内存和 # 后面,不会发给我们
 let pending = null;   // 正在算的那个地址和它的结果:{ a, done }(浏览器换 # 时会连着来两个事件,第二个要等第一个算完)
 let here = null;      // 正在看的那一步;null 是概况页
@@ -172,7 +176,7 @@ async function applyHash() {
     // 查不成:停在概况页,让用户看到为什么(检测器可能在说「先别照指南操作」),# 里的地址也留着
     if (!ok) return show(-1, { push: false, keepHash: true });
   }
-  if (p.get("go")) return show(0, { push: false });
+  if (p.get("go") && !hold) return show(0, { push: false });
   const s = p.get("s");
   const vs = visible(), i = s ? vs.findIndex((x) => x.dataset.id === s) : -1;
   show(i, { push: false, scroll: vs[i] !== here });
@@ -192,6 +196,7 @@ function unpersonalize() {
   addr = null;
   base = null;
   flags = null;
+  hold = false;
   for (const [n, v] of defaults) n.textContent = v;
   art.classList.remove("personal");
   $("exit").href = `${P}/`;
@@ -213,6 +218,7 @@ async function personalize(a) {
     addr = a;
     base = { vars: res.vars, flags: res.flags };
     flags = { ...res.flags };
+    hold = !!res.hold;
     setVars(res.vars);
     resetTicks();
     art.classList.add("personal");
@@ -246,6 +252,14 @@ meForm.addEventListener("submit", async (e) => {
   const a = clean(meInput.value);
   if (!isEvmAddress(a)) return toast(t("badAddr"));
   if (await personalize(a)) writeHash(here?.dataset.id, false);
+});
+// 在钱包里打开、链接里也没带地址:自动读钱包地址,直接按这个账户算好数字和步骤
+mountWalletRead(meInput, t, {
+  auto: !isEvmAddress(clean(new URLSearchParams(location.hash.slice(1)).get("a") || "")),
+  onAddress: async (a) => {
+    if (addr === a) return;
+    if (await personalize(a)) writeHash(here?.dataset.id, false);
+  },
 });
 
 // ---------- 遇到问题:底部弹层 ----------
@@ -304,6 +318,7 @@ function closeLost() {
 function lostPick() {
   $("lostPick").hidden = false;
   $("lostAns").hidden = true;
+  if (shotView) shotView.hidden = true;
   lost.scrollTop = 0;
 }
 // 图鉴说「去某一步」或「某一步之后的下一步」(按这个账户用得到的步骤算,比如没奖励就直接到解押)
@@ -333,6 +348,7 @@ function lostShow(id) {
   }
   $("lostPick").hidden = true;
   $("lostAns").hidden = false;
+  if (shotView) shotView.hidden = true;
   lost.scrollTop = 0;
 }
 function lostGo(b) {
@@ -346,6 +362,19 @@ if (lost) {
   $("lostBack").addEventListener("click", lostPick);
   $("lostDiag").addEventListener("click", () => { closeLost(); openSheet(); });
   $("lostReport").addEventListener("click", () => report(here));
+  // 发截图给 AI 认:认出来的页面照样走 lostShow(审过的答案 + 去第几步);关掉弹层时原图、新图都丢掉
+  const shot = setupShot({ t, lang, picked, showAnswer: lostShow });
+  if (shot) {
+    $("shotOpen").addEventListener("click", () => {
+      shot.open();
+      $("lostPick").hidden = true;
+      $("lostAns").hidden = true;
+      shotView.hidden = false;
+      lost.scrollTop = 0;
+    });
+    $("shotBack").addEventListener("click", lostPick);
+    lost.addEventListener("close", shot.close);
+  }
 }
 
 function addrForm() {
@@ -361,6 +390,7 @@ function addrForm() {
     setText(sitsH, t("sitsH"));
     runDiag();
   });
+  mountWalletRead(input, t, { onAddress: () => f.requestSubmit() });
   return f;
 }
 
@@ -393,7 +423,9 @@ function renderDiag(d) {
   if (target) {
     refresh(); // 被跳过的步骤放出来了,当前这一步的编号可能变了
     const vs = visible(), n = vs.indexOf(target) + 1;
-    out.push(el("div", { class: "where" }, route(vs.length, n - 1), el("p", {}, target === sheetFor ? t("whereHere") : t("whereAt", n, titleOf(target)))));
+    // 比用户正在看的那一步靠后才说恭喜:往回退的只是提示
+    const ahead = !!sheetFor && n - 1 > vs.indexOf(sheetFor);
+    out.push(el("div", { class: "where" }, route(vs.length, n - 1), el("p", {}, target === sheetFor ? t("whereHere") : t("whereAt", n, titleOf(target), ahead))));
     if (target !== sheetFor && !finished(d)) out.push(el("button", { class: "btn primary block", type: "button", "data-goto": target.dataset.id }, t("goStep", n, titleOf(target)), icon("arrowRight")));
   }
   if (d.choice?.options) out.push(renderChoice(d.choice.options));
@@ -535,7 +567,8 @@ document.addEventListener("visibilitychange", async () => {
     const target = d.step && reveal(d.step);
     refresh();
     if (target && here && target !== here) {
-      setText(follow.querySelector("span"), t("follow", visible().indexOf(target) + 1, titleOf(target)));
+      const vs = visible();
+      setText(follow.querySelector("span"), t("follow", vs.indexOf(target) + 1, titleOf(target), vs.indexOf(target) > vs.indexOf(here)));
       follow.querySelector("[data-goto]").dataset.goto = target.dataset.id;
       follow.hidden = false;
     }

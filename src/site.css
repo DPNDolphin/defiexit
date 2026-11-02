@@ -306,7 +306,7 @@ code { font: 0.92em var(--font-mono); background: var(--surface-2); border: 1px 
 .tick[aria-pressed="true"] .box, .tick.on .box { border-color: var(--ok); background: var(--ok); color: var(--ok-ink); }
 .tick .tt { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .tick b { font-size: 16px; line-height: 1.4; overflow-wrap: anywhere; }
-.tick .tt > span { color: var(--sub); font-size: 14px; line-height: 1.45; }
+.tick .tt > span { color: var(--sub); font-size: 14px; line-height: 1.45; overflow-wrap: anywhere; }
 .reject { padding: 14px 16px; border-radius: var(--r-l); background: var(--stop-bg); color: var(--stop); }
 .reject p { margin: 0 0 8px; font-weight: 700; }
 .reject ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 15px; line-height: 1.45; }
@@ -429,6 +429,42 @@ code { font: 0.92em var(--font-mono); background: var(--surface-2); border: 1px 
 .fallback > p:first-child { margin: 0; color: var(--stop); font-weight: 700; }
 .fb-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
 .fb-row .btn { background: var(--surface-2); }
+/* 截图求助:选图 → 竖向裁剪 → 预览 + 两个勾 → 对照审过的图、逐条核对 */
+.shot-open { border-style: dashed; border-color: var(--hi-border); color: var(--hi); }
+.shot-open:hover { color: var(--hi-hover); }
+#lostShot { display: flex; flex-direction: column; gap: 14px; }
+#lostShot > h3 { margin: 0; font-size: 18px; line-height: 1.35; }
+.shot-p { display: flex; flex-direction: column; gap: 12px; }
+.shot-lead { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.5; }
+.shot-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 10px; }
+.crop-wrap { display: flex; justify-content: center; }
+.crop { position: relative; display: inline-block; max-width: 100%; line-height: 0; -webkit-user-select: none; user-select: none; }
+.crop canvas { display: block; max-width: 100%; max-height: 56vh; max-height: 56dvh; width: auto; height: auto; border-radius: 10px; background: #000; }
+.crop-sh { position: absolute; left: 0; right: 0; height: 0; background: var(--overlay); pointer-events: none; }
+.crop-sh.top { top: 0; border-radius: 10px 10px 0 0; }
+.crop-sh.bot { bottom: 0; border-radius: 0 0 10px 10px; }
+.crop-h { position: absolute; left: -8px; right: -8px; top: 0; height: 44px; margin-top: -22px; padding: 0; border: 0; background: transparent; cursor: ns-resize; touch-action: none; }
+.crop-h.bot { top: 100%; }
+.crop-h span { position: absolute; left: 8px; right: 8px; top: 20px; height: 4px; border-radius: 2px; background: var(--hi); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45); }
+.crop-h span::after { content: ""; position: absolute; left: 50%; top: -9px; width: 48px; height: 22px; margin-left: -24px; border-radius: 11px; background: var(--hi); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45); }
+.crop-h:focus-visible { outline: none; }
+.crop-h:focus-visible span::after { outline: 3px solid var(--text); outline-offset: 2px; }
+.shot-prev { margin: 0; display: flex; justify-content: center; }
+.shot-prev img { display: block; max-width: 100%; max-height: 48vh; max-height: 48dvh; border: 1px solid var(--line); border-radius: 10px; background: #000; }
+.agree { position: relative; display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: var(--r-l); background: var(--surface-2); color: var(--text); font-size: 15px; line-height: 1.45; cursor: pointer; transition: border-color 0.15s, background-color 0.15s; }
+.agree input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.agree .box { width: 24px; height: 24px; flex: none; display: flex; align-items: center; justify-content: center; border: 2px solid var(--box); border-radius: 7px; color: transparent; transition: background-color 0.15s, border-color 0.15s; }
+.agree .box .i { width: 15px; height: 15px; stroke-width: 3.2; }
+.agree input:checked + .box { border-color: var(--ok); background: var(--ok); color: var(--ok-ink); }
+.agree input:focus-visible + .box { outline: 3px solid var(--hi); outline-offset: 2px; }
+.agree:has(input:checked) { border-color: var(--ok); background: var(--ok-bg); }
+.pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.pair figure { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.pair img { display: block; width: 100%; height: 38vh; height: 38dvh; object-fit: contain; object-position: top; border-radius: 10px; background: #000; }
+.pair figcaption { color: var(--sub); font-size: 13px; text-align: center; }
+.feats-ck { display: flex; flex-direction: column; gap: 8px; }
+.shot-warn { padding: 12px 14px; border: 1.5px solid var(--stop); border-radius: var(--r-m); background: var(--stop-bg); }
+.shot-warn > p { margin: 0; color: var(--stop); font-weight: 700; line-height: 1.55; }
 .follow { position: fixed; left: 50%; bottom: calc(92px + env(safe-area-inset-bottom)); z-index: 16; width: min(92vw, 560px); transform: translateX(-50%); display: flex; align-items: center; gap: 8px; padding: 10px 10px 10px 14px; border-radius: var(--r-m); background: var(--text); color: var(--bg); font-size: 14px; box-shadow: var(--shadow); }
 .follow span { flex: 1; }
 .follow .btn { border-color: var(--bg); color: var(--bg); background: transparent; }
@@ -489,3 +525,33 @@ code { font: 0.92em var(--font-mono); background: var(--surface-2); border: 1px 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* 从钱包读取地址:只在检测到钱包时由脚本加上 */
+.wallet-read { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.wallet-pick { display: flex; flex-wrap: wrap; gap: 8px; }
+.wallet-pick .hint { flex-basis: 100%; }
+.wallet-read .hint:empty { display: none; }
+
+/* 体检结果页:「存在项目里的」「钱包里的」两段清单(我们的检测器 + 经本站接口交给 Zerion 查的全部资产) */
+.cards > .list-h { margin: 12px 0 -6px; font-size: 18px; }
+.rcard-h h4 { margin: 0; font-size: 22px; }
+.awallet { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: var(--r-l); background: var(--surface); }
+.aw { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 2px 10px; padding: 10px 12px 12px 14px; border-bottom: 1px solid var(--line-2); }
+.aw:last-child { border-bottom: 0; }
+.aw .mono { text-align: right; font-weight: 600; }
+.aw small { grid-column: 2 / -1; color: var(--faint); font-size: 13px; overflow-wrap: anywhere; }
+.aw .clogo { width: 24px; height: 24px; }
+.aw .btn.small { min-height: 44px; padding: 0 14px; }
+
+/* 链图标:圆形小图;白底的图标在浅色页面上也看得出边 */
+.clogo { width: 20px; height: 20px; flex: none; border-radius: 50%; box-shadow: 0 0 0 1px var(--line); object-fit: cover; }
+.clogo.letter { display: inline-flex; align-items: center; justify-content: center; background: var(--surface-2); color: var(--sub); font: 700 11px/1 var(--font-mono); }
+.chip .clogo { width: 16px; height: 16px; }
+
+/* 取回弹层:这是什么 → 手续费够不够 → 一步一步怎么取 → 取完重新查一遍 */
+.exit { display: flex; flex-direction: column; gap: 14px; }
+.chainline { margin: 0; display: inline-flex; align-items: center; gap: 8px; color: var(--sub); font-size: 15px; font-weight: 600; }
+.chainline .clogo { width: 22px; height: 22px; }
+.marks.xs li { align-items: flex-start; font-size: 16px; line-height: 1.55; }
+.marks.xs .t > div { display: flex; flex-direction: column; gap: 10px; }
+.copyrow .url { font: 13px/1.45 var(--font-mono); word-break: break-all; }

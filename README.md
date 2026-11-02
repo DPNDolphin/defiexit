@@ -2,7 +2,7 @@
 
 **链上资产体检 + 取回指南。** 粘贴钱包地址,看看有没有被遗忘在链上的钱;查到了,就给你一步一图的官方路线。签名在你自己的钱包里完成,钱直接回到你自己的地址。
 
-- **只读**:体检只要地址。本站不连接钱包,也不发任何签名请求。
+- **只读**:体检只要地址,可以粘贴;在钱包里打开时,也可以点一下从钱包读取(只请钱包告诉本页地址)。本站从不发起签名、代币授权或交易。
 - **不碰私钥**:任何人向你要私钥或助记词,都是骗子,包括冒充我们的人。
 - **你自己签**:每一步都在官方网站上操作。签名前,核对卡会告诉你弹窗里应该看到什么。
 - **开源免费**:代码和每份指南都公开,不收任何费用。
@@ -13,7 +13,9 @@
 | 配方 | 能处理什么 | 最后核验 |
 |---|---|---|
 | [Hyperliquid](recipes/hyperliquid/recipe.json) | 账户里的 USDC、已停发的 USDH,提回 Arbitrum | 2026-10-27 |
-| [WOOFi](recipes/woofi/recipe.json) | Arbitrum 上质押的 WOO、没领的奖励、ETH 金库里已结算待取的钱(还没实测取回) | 2026-10-28 |
+| [WOOFi](recipes/woofi/recipe.json) | Arbitrum 上质押的 WOO、没领的奖励、ETH 金库里已结算待取的钱 | 2026-10-29 |
+| [OKX Boost](recipes/okx-boost/recipe.json) | 「Plasma X Launch」活动时在 X Layer 上锁的 OKB、USDT0、USDG(在 OKX App 里取回) | 2026-10 |
+| [DYORSwap](recipes/dyorswap/recipe.json) | X Layer 上 USDT/OKB 池子里的流动性(在 OKX App 里撤出) | 2026-11 |
 
 更多协议陆续加入,先做被问得最多的。
 
@@ -27,8 +29,8 @@
   - 坑;
   - 依据和最后核验日期。
 - **检测器**(`src/js/detectors/`):在你的浏览器里只读查询公开接口,算出你能提回多少、哪些步骤用不到。地址只从你的浏览器发给这些公开接口,不经过我们;这些接口能看到你的地址和 IP。
-- **现场诊断**:卡住时点「我卡在这一步」,浏览器实时查你账户的挂单、成交、提现记录和 Arbitrum 上的到账,告诉你实际做到了哪一步、该怎么办;每一步的常见情况都有审过的答案。不用 AI,地址同样不经过我们。
-- **网站**:纯静态页面,前端零依赖,没有服务器,我们不存数据(托管在 Cloudflare,托管商会处理访问日志)。安全响应头只允许页面连到配置里列出的公开接口(`scripts/site.mjs`)。
+- **现场诊断**:卡住时点「我卡在这一步」,浏览器实时查你账户的挂单、成交、提现记录、锁仓和链上到账,告诉你实际做到了哪一步、该怎么办;每一步的常见情况都有审过的答案。不用 AI,地址同样不经过我们。
+- **网站**:静态页面加两个小接口(Cloudflare Pages Functions):`/api/see` 截图求助(图交给 Cloudflare Workers AI 认),`/api/assets` 全部资产(地址交给 Zerion 查,需要在 Pages 里配机密 `ZERION_API_KEY`,没配就不显示这一块)。都不存数据(托管在 Cloudflare,托管商会处理访问日志)。Zerion 查不到的 X Layer、Merlin,由浏览器直接只读查这两条链的公共节点(OKX 的 X Layer 节点、Merlin 官方浏览器),币价用 DefiLlama 的免费接口。前端零依赖;安全响应头只允许页面连到配置里列出的公开接口(`scripts/site.mjs`)。链图标放在 `static/chains/`,来源和许可(web3icons、Trust Wallet assets,都是 MIT)见那里的 `LICENSE.txt`。
 - **中英两套**:中文在 `/`,英文在 `/en/`。界面文字在 `src/js/lib/i18n.js`;每份配方都要带英文版 `recipes/<协议>/i18n/en.json`,缺一条、条数对不上、或者英文版里混着中文,构建直接报错。
 - **字体**:Barlow Semi Condensed(标题)、Atkinson Hyperlegible Next(正文)、Atkinson Hyperlegible Mono(地址和数字),都放在本站 `static/fonts/`,SIL Open Font License,授权文件在同一目录;汉字用系统字体。
 
@@ -55,7 +57,7 @@ npm test         # 跑测试
 
 ## English
 
-DeFiExit is a free, open-source, read-only checkup for forgotten on-chain positions. It gives step-by-step guides through each protocol's **official** interface, with a check card before every signature. It never asks for keys, never connects to your wallet, and never DMs you first. The only official domain is **defiexit.com**.
+DeFiExit is a free, open-source, read-only checkup for forgotten on-chain positions. It gives step-by-step guides through each protocol's **official** interface, with a check card before every signature. It never asks for keys, never starts a signature, token approval or transaction (it can read your address from your wallet if you tap the button), and never DMs you first. The only official domain is **defiexit.com**.
 
 ## 许可证
 

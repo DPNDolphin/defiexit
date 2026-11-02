@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { build, splitMarks, localize } from "../scripts/build.mjs";
 import { STR } from "../src/js/lib/i18n.js";
+import { site } from "../scripts/site.mjs";
 
 const read = (f) => readFileSync(f, "utf8");
 const PAGES = ["dist/index.html", "dist/en/index.html", "dist/check/index.html", "dist/en/check/index.html", "dist/r/hyperliquid/index.html", "dist/en/r/hyperliquid/index.html", "dist/r/woofi/index.html", "dist/en/r/woofi/index.html", "dist/404.html"];
@@ -103,6 +104,34 @@ test("WOOFi 指南:三笔交易各一张核对卡、都能明说跳过;10-29 实
   assert.match(home, /<b>WOOFi<\/b>[\s\S]*?<span class="tag-ok">/);
 });
 
+test("DYORSwap 指南:签名、交易各一张核对卡;网址是能直接打开的 Find 页;图里的 USD₮0 和 Bridge 都标了别点;首页如实标待实测", () => {
+  for (const f of ["dist/r/dyorswap/index.html", "dist/en/r/dyorswap/index.html"]) {
+    const g = read(f);
+    assert.equal(g.match(/data-checks="3"/g)?.length, 2, f);
+    assert.equal(g.match(/<button class="tick" type="button"/g)?.length, 6, f);
+    assert.ok(g.includes('data-copy="https://dyorswap.finance/find/?chainId=196"'), f);
+    assert.ok(g.includes("0x35c185563dFd328256A80Aafc23822200719cD25") && g.includes("0x1E690F24F704672e44255013C2cB22FC04c46036"), `${f} 核对卡要给完整地址`);
+    assert.ok(/\/r\/dyorswap\/img\/dy-enable(-en)?\.webp/.test(g) && /\/r\/dyorswap\/img\/dy-fail(-en)?\.webp/.test(g), f);
+  }
+  // 中文版用中文界面的图,英文版用英文界面的图;网页上的每一张都要换
+  const zh = read("dist/r/dyorswap/index.html"), en = read("dist/en/r/dyorswap/index.html");
+  assert.ok(zh.includes("/r/dyorswap/img/dy-enable.webp") && !zh.includes("-en.webp"), "中文版用中文图");
+  assert.ok(!/img\/dy-[a-z]+\.webp/.test(en), "英文版不混中文界面的图");
+  // 别点的东西不进第 1 张图(图上打叉的 Bridge 反而有人点),文字里写清楚,中文界面叫「桥」
+  assert.ok(zh.includes("底部导航栏的「桥」（Bridge）不要点"));
+  assert.ok(/data-sit="bridge-page"/.test(zh) && /data-sit="wrong-network"/.test(zh), "点进跨链桥、网络不对都有说法");
+  assert.ok(/<b>DYORSwap<\/b>(?:(?!<\/li>)[\s\S])*tag-ok/.test(read("dist/index.html")), "实测过了,首页标已实测");
+});
+
+test("查到用户往前走了才说恭喜;往回退的只是提示", () => {
+  for (const k of ["follow", "whereAt"]) {
+    assert.match(STR.zh[k](6, "到账核对", true), /^恭喜/);
+    assert.ok(!STR.zh[k](2, "找到池子", false).includes("恭喜"));
+    assert.match(STR.en[k](6, "Check it arrived", true), /^Nice work/);
+    assert.ok(!STR.en[k](2, "Find your pool", false).includes("Nice work"));
+  }
+});
+
 test("每个网页都带 no-transform:Cloudflare 不往页面里插统计脚本", () => {
   const h = read("dist/_headers");
   for (const p of ["/", "/en/", "/check/", "/en/check/", "/r/hyperliquid/", "/en/r/hyperliquid/", "/r/woofi/", "/en/r/woofi/", "/404.html"]) {
@@ -195,6 +224,30 @@ test("WOOFi 第 3–5 步:一下点击一张图,编号在这一步里接着数;�
   assert.ok(enHtml.includes('src="/r/woofi/img/perps-earn-en.webp"'));
 });
 
+test("WOOFi 第 1 步:币安钱包里一下一张图(录屏)——先复制,发现 → 搜索框 → 允许粘贴 → 粘贴 → 点那一行;别点历史记录", () => {
+  // 10-29 两段手机录屏:点历史记录里的 WOOFi 只会打开首页(→ 介绍页 → LAUNCH APP → K 线页);粘贴完整网址再点那一行,直接是质押页
+  const r = JSON.parse(read("recipes/woofi/recipe.json"));
+  const en = localize(r, JSON.parse(read("recipes/woofi/i18n/en.json")), "woofi/en.json");
+  const nums = (c) => [...c].filter((ch) => "①②③④⑤⑥⑦⑧⑨".includes(ch)).map((ch) => "①②③④⑤⑥⑦⑧⑨".indexOf(ch) + 1);
+  for (const L of [r, en]) {
+    const s = L.steps.find((x) => x.id === "open");
+    assert.deepEqual(s.images.map((im) => im.src), ["bn-wallet.webp", "bn-discover.webp", "bn-search.webp", "bn-allow.webp", "bn-paste.webp", "bn-go.webp", "bn-history.webp", "bn-stake.webp"]);
+    const taps = s.images.filter((im) => !im.caption.startsWith("✗"));
+    assert.deepEqual(taps.map((im) => nums(im.caption)).flat(), [1, 2, 3, 4, 5, 6, 7], "编号要从 1 接着数,一张图一个");
+    assert.ok(s.images.find((im) => im.src === "bn-history.webp").caption.startsWith("✗"), "历史记录那张是「别点」");
+    assert.ok(s.items[0].includes("https://woofi.com/stake"), "第一句就让人先复制网址");
+    for (const id of ["history", "no-paste"]) assert.ok(s.situations.find((x) => x.id === id), `缺常见情况 ${id}`);
+    // 地区限制的提醒放在连接那一步的图后面
+    const c = L.steps.find((x) => x.id === "connect");
+    assert.ok(c.items?.some((x) => x.startsWith("✗") && x.includes("WE'RE SORRY")), "连接那一步缺地区限制的提醒");
+  }
+  const zh = read("dist/r/woofi/index.html");
+  const step1 = zh.slice(zh.indexOf('id="s-open"'), zh.indexOf('id="s-connect"'));
+  // 「点下面那一行」写的是 woofi.com/stake,不能变成复制按钮;第一句里的完整网址才是
+  assert.equal((step1.match(/data-copy="https:\/\/woofi\.com\/stake"/g) || []).length >= 1, true);
+  assert.ok(step1.indexOf("bn-wallet.webp") > step1.indexOf("https://woofi.com/stake"), "先复制,再看图");
+});
+
 test("首页如实写作者本人的实测、不放累计金额;每份指南有实测记录;隐私说明列全查询的地方", () => {
   const zh = read("dist/index.html"), en = read("dist/en/index.html");
   assert.match(zh, /<p class="proof">[\s\S]*?实测取回 4 次[\s\S]*?目前还没有经过核实的其他用户案例/);
@@ -205,4 +258,103 @@ test("首页如实写作者本人的实测、不放累计金额;每份指南有�
     const g = read(f);
     assert.match(g, new RegExp(`<section class="tests">[\\s\\S]*?<b class="mono">${date}</b>`), `${f} 缺实测记录`);
   }
+});
+
+test("截图求助:只在有图鉴的指南里出现;每张普通页面都有 2–3 条要用户逐条核对的文字特征;发出去前两个勾", () => {
+  for (const f of ["dist/r/woofi/index.html", "dist/en/r/woofi/index.html"]) {
+    const g = read(f);
+    assert.ok(g.includes('<button class="btn block shot-open" type="button" id="shotOpen">'), `${f} 缺入口`);
+    // 入口放在图鉴小图后面:先自己比对,拿不准再发图
+    assert.ok(g.indexOf('class="scrs"') < g.indexOf('id="shotOpen"'));
+    assert.ok(g.indexOf('class="scr-stops"') < g.indexOf('id="shotOpen"'));
+    assert.match(g, /<input class="sr-only" type="file" id="shotFile" accept="image\/\*"/);
+    assert.equal(g.match(/<input type="checkbox" data-agree>/g)?.length, 2);
+    assert.ok(/<button class="btn primary" type="button" id="shotGo" disabled>/.test(g), "发送按钮默认不能点");
+    const tpls = [...g.matchAll(/<template data-feat="([a-z-]+)">((?:(?!<\/template>)[\s\S])*)<\/template>/g)];
+    assert.deepEqual(tpls.map((m) => m[1]), ["perps", "home", "stake-new", "wallets", "networks", "stake", "unstake", "earn", "vault"]);
+    for (const [, id, body] of tpls) {
+      const n = body.match(/data-feat-ck/g)?.length;
+      assert.ok(n >= 2 && n <= 3, `${id} 的文字特征 ${n} 条`);
+    }
+  }
+  for (const f of ["dist/r/hyperliquid/index.html", "dist/en/r/hyperliquid/index.html"]) {
+    assert.ok(!read(f).includes("lostShot"), `${f} 没有图鉴,不该有截图求助`);
+  }
+  // 页面带的版本号和服务端读的候选页面数据是同一版
+  const data = JSON.parse(read("dist/r/woofi/screens.json"));
+  for (const f of ["dist/r/woofi/index.html", "dist/en/r/woofi/index.html"]) {
+    assert.ok(read(f).includes(`<div id="lostShot" class="shot-ai" hidden data-r="woofi" data-v="${data.v}">`), `${f} 的版本对不上`);
+  }
+  assert.deepEqual(JSON.parse(read("dist/_routes.json")), { version: 1, include: ["/api/*"], exclude: [] });
+  const h = read("dist/_headers");
+  assert.match(h, /img-src 'self' data: blob:/);
+  assert.ok(!h.includes("unsafe-eval") && !h.includes("unsafe-inline"));
+  // 截图求助不用人机验证:用户是卡住了才来传图,不能再让他们过一关
+  assert.ok(!h.includes("challenges.cloudflare.com"));
+  for (const f of PAGES) assert.ok(!read(f).includes("dx-turnstile"), `${f} 不该带人机验证`);
+});
+
+test("图鉴答案只带路:质押页、Unstake 页签、金库取款页签不再直接叫人点 Claim / UNSTAKE / WITHDRAW", () => {
+  for (const f of ["dist/r/woofi/index.html", "dist/en/r/woofi/index.html"]) {
+    const g = read(f);
+    for (const id of ["stake", "unstake", "vault"]) {
+      const a = g.match(new RegExp(`data-scr-a="${id}" hidden>\\s*<h3>[\\s\\S]*?</h3>\\s*<p>([\\s\\S]*?)</p>`));
+      assert.ok(a, `${f} 缺 ${id} 的答案`);
+      assert.ok(!/Claim|UNSTAKE|WITHDRAW/.test(a[1]), `${f} ${id} 的答案还写着按钮:${a[1]}`);
+      assert.match(g, new RegExp(`data-scr-a="${id}" hidden>(?:(?!</section>)[\\s\\S])*data-scr-(go|after)=`), `${id} 要带去对应那一步`);
+    }
+  }
+});
+
+test("截图求助:停手的页面都给 AI 写了判定条件(普通交易确认弹窗不算要你签名);介绍页的答案走 LAUNCH APP → 三条横线 → 质押", () => {
+  // 10-29 真模型评测:没写判定条件时,币安的交易确认弹窗被认成「要你签名」、币安发现页被认成「域名不对」
+  const data = JSON.parse(read("dist/r/woofi/screens.json"));
+  for (const x of data.screens.filter((y) => y.stop)) assert.ok(typeof x.ai === "string" && x.ai.length > 20, `${x.id} 缺判定条件`);
+  assert.match(data.screens.find((x) => x.id === "sign").ai, /Contract call[\s\S]*answer none/);
+  assert.match(data.screens.find((x) => x.id === "domain").ai, /no address bar/);
+  // 判定条件只给服务端,页面上不出现
+  for (const f of ["dist/r/woofi/index.html", "dist/en/r/woofi/index.html"]) assert.ok(!read(f).includes("Only when") && !read(f).includes("answer none"), f);
+  // 币安钱包里点历史记录、或只开 woofi.com 会先落到介绍页,地址栏改不了网址:按录屏走通的路带回质押页
+  const zh = read("dist/r/woofi/index.html"), en = read("dist/en/r/woofi/index.html");
+  const home = (g) => g.match(/data-scr-a="home" hidden>((?:(?!<\/section>)[\s\S])*)<\/section>/)?.[1] || "";
+  assert.ok(/LAUNCH APP/.test(home(zh)) && !/地址栏/.test(home(zh)), "中文介绍页答案");
+  for (const [g, imgs] of [[zh, ["home-launch.webp", "perps-1.webp", "perps-2.webp"]], [en, ["home-launch.webp", "perps-1-en.webp", "perps-2-en.webp"]]]) {
+    const h = home(g);
+    let at = -1;
+    for (const im of imgs) {
+      const k = h.indexOf(im);
+      assert.ok(k > at, `介绍页答案的图顺序不对:${im}`);
+      at = k;
+    }
+  }
+});
+
+test("页面图鉴的英文版:文字特征条数要和中文一样", () => {
+  const r = JSON.parse(read("recipes/woofi/recipe.json"));
+  const en = JSON.parse(read("recipes/woofi/i18n/en.json"));
+  const L = localize(r, en, "woofi/en.json");
+  assert.equal(L.screens.find((x) => x.id === "vault").features.length, r.screens.find((x) => x.id === "vault").features.length);
+  const bad = JSON.parse(JSON.stringify(en));
+  bad.screens.vault.features = bad.screens.vault.features.slice(1);
+  assert.throws(() => localize(r, bad, "x.json"), /screens\.vault\.features/);
+});
+
+test("体检结果页:WOOFi 配方写明在 Zerion 里对应的项目名和链;Hyperliquid 不对应", () => {
+  for (const f of ["dist/check/index.html", "dist/en/check/index.html"]) {
+    const h = read(f);
+    const li = h.match(/<li data-id="woofi"[^>]*>/)?.[0] || "";
+    assert.ok(/data-zerion="[^"]*WOOFi[^"]*Arbitrum[^"]*"/.test(li), li);
+    const hl = h.match(/<li data-id="hyperliquid"[^>]*>/)?.[0] || "";
+    assert.ok(hl.includes('data-zerion="null"'), "Hyperliquid 的仓位不在 Zerion 里,不对应");
+  }
+});
+
+// 放在这个文件里:测试文件是并行跑的,别的文件去读 dist/,可能正赶上这里在删了重建
+test("体检结果页:有取回弹层;链图标拷进了网站", () => {
+  for (const f of ["dist/check/index.html", "dist/en/check/index.html"]) {
+    const h = read(f);
+    assert.ok(h.includes('<dialog class="sheet" id="exitSheet" aria-labelledby="exitH">'), f);
+    assert.match(h, /<li data-id="woofi"[^>]*data-chain="arbitrum"/);
+  }
+  assert.ok(existsSync("dist/assets/chains/xlayer.svg") && existsSync("dist/assets/chains/merlin.webp"));
 });
