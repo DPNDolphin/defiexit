@@ -310,3 +310,98 @@ test("按要求删掉一条;帖子可以停止读评论", async () => {
   await w.call("/api/admin/watch", { method: "POST", body: { id: "3000000000000000005", on: false }, cookie: c });
   assert.deepEqual((await w.call("/api/admin/state", { cookie: c })).json.watchOff, ["3000000000000000005"]);
 });
+
+// ---------- 代码审查复现过的问题(修了以后留着防回归) ----------
+import { failed, mustWait } from "../server/ops/auth.js";
+import { sync } from "../server/ops/sync.js";
+import { ensure, putDoc } from "../server/ops/db.js";
+
+test("投递一次只处理一包:锁着就回 busy;锁超过 60 秒算失效", async () => {
+  const w = world();
+  await w.ingest({ docs: {} }); // 建表
+  await w.db.prepare("INSERT INTO kv (k, v) VALUES ('ingest_lock', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(String(w.clock)).run();
+  assert.equal((await w.ingest({ docs: {} }, { ts: w.clock + 1 })).json.error, "busy");
+  await w.db.prepare("UPDATE kv SET v = ? WHERE k = 'ingest_lock'").bind(String(w.clock - 61000)).run();
+  assert.equal((await w.ingest({ docs: {} }, { ts: w.clock + 2 })).status, 200);
+  assert.equal(await w.db.prepare("SELECT v FROM kv WHERE k = 'ingest_lock'").first(), null); // 用完就放
+});
+
+test("投递读完状态、还没写的时候管理员点了「已发」:草稿不被改", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outbox: [OUT()] });
+  // 包一层库:投递刚读完待发的状态,就让管理员点「已发」
+  const real = w.db;
+  const sneaky = {
+    prepare(sql) {
+      const st = real.prepare(sql);
+      if (!sql.startsWith("SELECT id, mine, status, purged FROM outbox")) return st;
+      return { bind: (...a) => ({ all: async () => { const r = await st.bind(...a).all(); await real.prepare("UPDATE outbox SET status = '已发' WHERE id = ?").bind("r-openeden-1").run(); return r; } }) };
+    },
+    batch: (s) => real.batch(s),
+  };
+  w.clock += 1000;
+  const raw = JSON.stringify({ v: 1, ts: w.clock, nonce: randomUUID().replace(/-/g, ""), outbox: [OUT({ draft: "在途的新草稿" })] });
+  const sig = sign(null, Buffer.from(signedText("production", "POST", "/api/admin/ingest", raw)), PROD.privateKey).toString("base64url");
+  const r = await handle(new Request(HOST + "/api/admin/ingest", { method: "POST", headers: { "X-DX-Sig": sig }, body: raw }), baseEnv(sneaky), w.fetchImpl, w.now());
+  assert.equal(r.status, 200);
+  const item = (await w.call("/api/admin/state", { cookie: c })).json.outbox[0];
+  assert.equal(item.status, "已发");
+  assert.equal(item.mine.draft, OUT().draft);
+});
+
+test("到期删过的待发:回复链接不能再写回", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outbox: [OUT()] });
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", status: "已发" }, cookie: c });
+  w.clock += 31 * 864e5;
+  const c2 = (await w.call("/api/admin/login", { method: "POST", body: { name: "admin1", password: PW } })).headers.get("Set-Cookie").split(";")[0];
+  await w.call("/api/admin/state", { cookie: c2 }); // 触发到期删除
+  const r = await w.ingest({ outbox: [OUT({ replyUrl: "https://x.com/owner_acct/status/2116000000000000002" })] });
+  assert.match(r.json.rejected[0].why, /处理过/);
+  assert.equal((await w.call("/api/admin/state", { cookie: c2 })).json.outbox[0].reply_url, null);
+});
+
+test("按要求删掉的评论:刷新不再收进来,投递也不收", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ docs: { x_posts: { posts: [{ name: "X 长文", id: "3000000000000000005", points: [] }] } } });
+  w.fetchImpl = async () => new Response(JSON.stringify({ status: { id: "3000000000000000005", author: { id: "1", screen_name: "owner_acct" }, replies: 1 }, replies: [{ id: "3000000000000000009", text: "hi", author: { id: "9", screen_name: "visitor" } }] }));
+  assert.equal((await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c })).json.newReplies, 1);
+  await w.call("/api/admin/delete", { method: "POST", body: { kind: "inbox", id: "3000000000000000009" }, cookie: c });
+  w.clock += 121000;
+  assert.equal((await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c })).json.newReplies, 0);
+  assert.equal((await w.call("/api/admin/state", { cookie: c })).json.inbox.length, 0);
+  w.clock += 1000;
+  const r = await w.ingest({ inbox: [{ id: "3000000000000000009", text: "hi", author: "visitor" }] });
+  assert.match(r.json.rejected[0].why, /删过/);
+});
+
+test("同一时刻连错 20 次:次数照样累加,要等", async () => {
+  const db = new LocalD1();
+  await ensure(db);
+  const now = new Date("2026-11-03T10:00:00Z");
+  await Promise.all(Array.from({ length: 20 }, () => failed(db, "203.0.113.9", now)));
+  assert.equal((await db.prepare("SELECT n FROM fails").first()).n, 20);
+  assert.ok((await mustWait(db, "203.0.113.9", now)) > 0);
+});
+
+test("刷新读到 200 条评论:查库次数不跟着涨", async () => {
+  const db = new LocalD1();
+  await ensure(db);
+  const now = new Date("2026-11-03T10:00:00Z");
+  await putDoc(db, "x_posts", { posts: [{ id: "1234", name: "our-post", points: [] }] }, now);
+  let calls = 0;
+  const counted = {
+    prepare(sql) {
+      const wrap = (st) => ({ inner: st, bind: (...a) => wrap(st.bind(...a)), first: (...a) => { calls++; return st.first(...a); }, all: () => { calls++; return st.all(); }, run: () => { calls++; return st.run(); } });
+      return wrap(db.prepare(sql));
+    },
+    batch: (s) => { calls++; return db.batch(s.map((x) => x.inner)); },
+  };
+  const replies = Array.from({ length: 200 }, (_, i) => ({ id: String(2000 + i), text: "c", author: { id: "9", screen_name: "visitor" } }));
+  const r = await sync(counted, async () => new Response(JSON.stringify({ status: { id: "1234", author: { id: "1", screen_name: "owner" }, replies: 200 }, replies })), now);
+  assert.equal(r.body.newReplies, 200);
+  assert.ok(calls <= 20, "查库 " + calls + " 次");
+});

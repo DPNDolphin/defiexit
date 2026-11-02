@@ -77,11 +77,12 @@ export async function mustWait(db, ip, now) {
   const r = await db.prepare("SELECT until FROM fails WHERE k = ?").bind(await ipKey(ip)).first();
   return r && r.until > iso(now) ? Math.ceil((Date.parse(r.until) - +now) / 1000) : 0;
 }
+// 同一时刻错很多次也要累加:计数在库里原子加一,等待时间只往后推,不会被晚到的那次改短
 export async function failed(db, ip, now) {
   const k = await ipKey(ip);
-  const r = await db.prepare("SELECT n FROM fails WHERE k = ?").bind(k).first();
-  const n = (r ? r.n : 0) + 1;
-  await db.prepare("INSERT INTO fails (k, n, until) VALUES (?, ?, ?) ON CONFLICT(k) DO UPDATE SET n = excluded.n, until = excluded.until").bind(k, n, iso(+now + waitFor(n) * 1000)).run();
+  const r = await db.prepare("INSERT INTO fails (k, n, until) VALUES (?, 1, ?) ON CONFLICT(k) DO UPDATE SET n = fails.n + 1 RETURNING n").bind(k, iso(now)).first();
+  const n = r ? Number(r.n) : 1;
+  await db.prepare("UPDATE fails SET until = MAX(until, ?) WHERE k = ?").bind(iso(+now + waitFor(n) * 1000), k).run();
 }
 export async function succeeded(db, ip) {
   await db.prepare("DELETE FROM fails WHERE k = ?").bind(await ipKey(ip)).run();

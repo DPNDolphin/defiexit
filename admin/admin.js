@@ -94,9 +94,10 @@
 
   async function save(kind, id, patch, msgEl) {
     const { status, json } = await api(kind, { id, ...patch });
+    const ok = status === 200 && !!json.item;
     const el0 = S.cards.get((kind === "outbox" ? "out:" : "in:") + id);
-    if (el0 && el0._saved) el0._saved(status === 200 && !!json.item);
-    if (status === 200 && json.item) {
+    if (el0 && el0._saved) el0._saved(ok, "draft" in patch);
+    if (ok) {
       (kind === "outbox" ? S.out : S.inn).set(id, json.item);
       const el = S.cards.get((kind === "outbox" ? "out:" : "in:") + id);
       if (el) el._update(json.item);
@@ -106,6 +107,7 @@
     } else if (status === 401) {
       show("login");
     } else note(msgEl, "没存上:" + why(json), true);
+    return ok;
   }
 
   // 删除:先点一下变成「确定删除?再点一次」,3 秒内再点才删(按对方要求删数据时用)
@@ -164,9 +166,13 @@
       if (/^\d{1,25}$/.test(String(tid || ""))) { open.href = intent(ta.value, tid); open.removeAttribute("aria-disabled"); open.classList.remove("off"); }
       else { open.removeAttribute("href"); open.setAttribute("aria-disabled", "true"); open.classList.add("off"); }
     };
-    const flush = () => { clearTimeout(timer); if (!dirty) return; dirty = false; pending = true; save("outbox", id, { draft: ta.value }, saved); };
-    let pending = false;
-    el._saved = (ok) => { if (pending && !ok) dirty = true; pending = false; };
+    // 草稿存不上:字留在框里(dirty 设回去,之后的刷新不会盖掉),也不往下改状态
+    const flush = async () => { clearTimeout(timer); if (!dirty) return true; dirty = false; return save("outbox", id, { draft: ta.value }, saved); };
+    el._saved = (ok, wasDraft) => { if (wasDraft && !ok) dirty = true; };
+    const decide = async (st) => {
+      if (!(await flush())) return note(saved, "草稿没存上,先别点「" + st + "」;字还在框里", true);
+      save("outbox", id, { status: st }, saved);
+    };
     ta.addEventListener("input", () => { dirty = true; refresh(); clearTimeout(timer); timer = setTimeout(flush, 1200); });
     ta.addEventListener("blur", flush);
     restore.addEventListener("click", () => { dirty = false; save("outbox", id, { draft: null }, saved); });
@@ -174,8 +180,8 @@
       const fallback = () => { ta.focus(); ta.select(); note(saved, "已选中,长按复制"); };
       try { navigator.clipboard.writeText(ta.value).then(() => note(saved, "已复制"), fallback); } catch (_) { fallback(); }
     });
-    sent.addEventListener("click", () => { flush(); save("outbox", id, { status: "已发" }, saved); });
-    skip.addEventListener("click", () => save("outbox", id, { status: "跳过" }, saved));
+    sent.addEventListener("click", () => decide("已发"));
+    skip.addEventListener("click", () => decide("跳过"));
     back.addEventListener("click", () => save("outbox", id, { status: "待发" }, saved));
     memo.addEventListener("change", () => save("outbox", id, { note: memo.value }, saved));
     el._update = (d) => {
@@ -302,7 +308,8 @@
     const items = [];
     if (pendOut) items.push({ text: pendOut + " 条回复等你点发", href: "#outbox", when: "今天" });
     if (pendIn) items.push({ text: pendIn + " 条评论等你点一个决定", href: "#inbox", when: "今天" });
-    for (const a of (S.docs.summary && S.docs.summary.asks) || []) items.push(a);
+    const asks = S.docs.summary && S.docs.summary.asks;
+    for (const a of Array.isArray(asks) ? asks : []) if (a && typeof a.text === "string") items.push(a);
     $("todo").replaceChildren(...(items.length ? items.map((a) => h("li", null,
       h("span", { class: "when " + (a.when === "不急" ? "later" : "now") }, a.when || "今天"),
       a.href && /^#[a-z]+$/.test(a.href) ? h("a", { href: a.href }, a.text) : h("span", null, a.text))) : [h("li", { class: "none" }, "今天没有要你做的。")]));
@@ -315,7 +322,7 @@
   function goalPanel(g) {
     if (!g || !g.deadline) return null;
     const left = daysUntil(g.deadline);
-    const rows = (g.items || []).map((it) => {
+    const rows = (Array.isArray(g.items) ? g.items : []).map((it) => {
       const v = it.value;
       const valEl = v == null
         ? h("span", { class: "pill warn" }, "还没开始数")
@@ -345,7 +352,7 @@
   }
   function routePanel(f) {
     const live = { drafted: S.out.size, posted: [...S.out.values()].filter((d) => d.status === "已发").length };
-    const stages = ((f && f.stages) || []).map((s) => ({ ...s, value: s.key in live ? live[s.key] : s.value }));
+    const stages = (Array.isArray(f && f.stages) ? f.stages : []).map((s) => ({ ...s, value: s.key in live ? live[s.key] : s.value }));
     if (!stages.length) return null;
     const ol = h("ol", { class: "route", "aria-label": "回帖试验的每一站" });
     stages.forEach((s, i) => {
@@ -363,7 +370,7 @@
 
   function viewsPanel(x) {
     if (!x || !Array.isArray(x.posts)) return null;
-    const series = x.posts.slice(0, 3).map((p, i) => ({ ...p, cls: "s" + (i + 1), pts: (p.points || []).filter((r) => typeof r.views === "number").sort((a, b) => String(a.at).localeCompare(String(b.at))) }));
+    const series = x.posts.slice(0, 3).map((p, i) => ({ ...p, cls: "s" + (i + 1), pts: (Array.isArray(p.points) ? p.points : []).filter((r) => r && typeof r.views === "number" && !Number.isNaN(Date.parse(r.at))).sort((a, b) => String(a.at).localeCompare(String(b.at))) }));
     const legend = h("div", { class: "legend" }, ...series.map((s) => {
       const last = s.pts[s.pts.length - 1];
       const off = S.watchOff.has(String(s.id));
@@ -388,7 +395,7 @@
       h("tbody", null, ...times.slice().reverse().map((t) => h("tr", null,
         h("td", null, mdhm(t, series.some((s) => s.pts.some((p) => p.at === t && p.approx)))),
         ...series.map((s) => { const p = s.pts.find((q) => q.at === t); return h("td", { class: "num" }, p ? (p.label ? p.label + " " : "") + fmt(p.views) : "—"); })))));
-    const sq = (x.square || []).length ? h("div", { class: "tbl-wrap" }, h("table", null,
+    const sq = Array.isArray(x.square) && x.square.length ? h("div", { class: "tbl-wrap" }, h("table", null,
       h("thead", null, h("tr", null, h("th", null, "币安广场"), h("th", { class: "num" }, "浏览"), h("th", { class: "num" }, "评论"), h("th", null, "读数时间"))),
       h("tbody", null, ...x.square.map((r) => h("tr", null, h("td", null, String(r.name || "").replace("币安广场", "") || r.name), h("td", { class: "num" }, fmt(r.views)), h("td", { class: "num" }, fmt(r.comments)), h("td", null, r.at ? mdhm(r.at) : "—")))))) : null;
     return h("div", { class: "panel" },
@@ -468,7 +475,7 @@
   }
 
   function protocolPanel(p) {
-    const rows = (p && p.rows) || [];
+    const rows = Array.isArray(p && p.rows) ? p.rows : [];
     const max = Math.max(1, ...rows.map((r) => r.posts || 0));
     return h("div", { class: "panel" },
       h("h3", null, "大家卡在哪些协议"),
@@ -486,7 +493,7 @@
 
   const CLOCK = { open: ["进行中", "hi"], read: ["已读", "mute"], canceled: ["取消", "mute"], void: ["作废", "mute"] };
   function clocksPanel(c) {
-    const rows = ((c && c.rows) || []).slice().sort((a, b) => (a.status === "open" ? 0 : 1) - (b.status === "open" ? 0 : 1) || String(a.due || "9").localeCompare(String(b.due || "9")));
+    const rows = (Array.isArray(c && c.rows) ? c.rows : []).slice().sort((a, b) => (a.status === "open" ? 0 : 1) - (b.status === "open" ? 0 : 1) || String(a.due || "9").localeCompare(String(b.due || "9")));
     if (!rows.length) return null;
     return h("div", { class: "panel" },
       h("h3", null, "判定钟"),
@@ -504,7 +511,7 @@
 
   const BOT = { "已回复": "ok", "待办": "warn", "要我回答": "stop" };
   function botPanel(b) {
-    const rows = (b && b.rows) || [];
+    const rows = Array.isArray(b && b.rows) ? b.rows : [];
     if (!b) return null;
     return h("div", { class: "panel" },
       h("h3", null, "机器人「DX找卡点」"),
@@ -517,9 +524,13 @@
       b.source ? h("p", { class: "src" }, "来源:" + b.source) : null);
   }
 
+  // 某一块的数据格式不对,只让那一块显示一句话,别的照常
+  function safe(fn, d) {
+    try { return fn(d); } catch (_) { return h("p", { class: "empty" }, "这一块的数据格式不对,我下次干活时修。"); }
+  }
   function renderData() {
     const D = S.docs;
-    const parts = [goalPanel(D.goal_1215), routePanel(D.funnel), viewsPanel(D.x_posts), protocolPanel(D.protocols), clocksPanel(D.clocks), botPanel(D.bot)].filter(Boolean);
+    const parts = [safe(goalPanel, D.goal_1215), safe(routePanel, D.funnel), safe(viewsPanel, D.x_posts), safe(protocolPanel, D.protocols), safe(clocksPanel, D.clocks), safe(botPanel, D.bot)].filter(Boolean);
     $("data-body").replaceChildren(...(parts.length ? parts : [h("p", { class: "empty" }, "还没有数据。我下次干活时送进来。")]));
   }
 

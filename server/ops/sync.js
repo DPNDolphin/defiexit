@@ -5,7 +5,7 @@
 // - 待发里管理员点过「已发」的,去目标帖子底下找他那条回复,找到就填上链接(这才算核到,不靠自报)。
 // 读不到的帖子写进 errors,页面明说「不算没有新评论」;接口给的回复比帖子显示的少,也标「可能没读全」。两分钟内只许刷一次。
 
-import { iso, plusDays, KEEP_DAYS, getKv, setKv, getDocs, putDoc } from "./db.js";
+import { iso, plusDays, KEEP_DAYS, getKv, setKv, getDocs, putDoc, existing } from "./db.js";
 
 export const UPSTREAM = "https://api.fxtwitter.com/2/conversation/";
 export const MIN_GAP_MS = 120 * 1000;
@@ -45,6 +45,8 @@ export async function sync(db, fetchImpl, now) {
   let newReplies = 0, marked = 0;
   const stmts = [];
   const owners = new Set(); // 发帖人账号的固定编号(从被监控帖子本身读出来)
+  const fresh = []; // 这次读到的别人的评论,最后一起查重、一起写(查库次数不随评论条数涨)
+  const marks = []; // 发帖人自己的回复:等新评论写进去以后再标「已回复」
 
   for (const p of posts) {
     const { j, error } = await conversation(p.id, fetchImpl);
@@ -64,7 +66,7 @@ export async function sync(db, fetchImpl, now) {
         // 发帖人自己的回复:回的是哪条评论,就把那条标成已回复
         const to = r.replying_to && r.replying_to.status;
         if (/^\d{1,25}$/.test(String(to || ""))) {
-          stmts.push(db.prepare(
+          marks.push(db.prepare(
             "UPDATE inbox SET replied = 1, replied_at = COALESCE(replied_at, ?), mine = CASE WHEN purged = 1 OR json_extract(mine, '$.yourReply') IS NOT NULL THEN mine ELSE json_set(mine, '$.yourReply', ?) END, updated_at = ? WHERE id = ?",
           ).bind(bjIso(r.created_timestamp) || t, clip(r.text, 1000), t, String(to)));
           marked++;
@@ -72,13 +74,20 @@ export async function sync(db, fetchImpl, now) {
         continue;
       }
       if (!sn) continue;
-      const mine = { source: clip(p.name, 40), url: `https://x.com/${sn}/status/${id}`, author: sn, at: bjIso(r.created_timestamp) || t, replyToId: id };
-      const res = await db.prepare(
-        "INSERT INTO inbox (id, mine, text, created_at, updated_at, purge_after) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO NOTHING",
-      ).bind(id, JSON.stringify(mine), clip(r.text, 2000), t, t, plusDays(now, KEEP_DAYS)).run();
-      if (res.meta && res.meta.changes === 1) newReplies++;
+      fresh.push({ id, mine: { source: clip(p.name, 40), url: `https://x.com/${sn}/status/${id}`, author: sn, at: bjIso(r.created_timestamp) || t, replyToId: id }, text: clip(r.text, 2000) });
     }
   }
+  const ids = [...new Set(fresh.map((x) => x.id))];
+  const known = await existing(db, "inbox", ids);
+  const gone = await existing(db, "gone", ids);
+  const seen = new Set();
+  for (const x of fresh) {
+    if (known.has(x.id) || gone.has(x.id) || seen.has(x.id)) continue;
+    seen.add(x.id);
+    stmts.push(db.prepare("INSERT INTO inbox (id, mine, text, created_at, updated_at, purge_after) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO NOTHING").bind(x.id, JSON.stringify(x.mine), x.text, t, t, plusDays(now, KEEP_DAYS)));
+    newReplies++;
+  }
+  stmts.push(...marks);
 
   // 已发但还没核到链接的待发:去目标帖子底下找管理员那条回复(按账号编号认;这次一条被监控帖子都没读到,就先不核)
   const { results: sent } = await db.prepare("SELECT id, mine, sent_target FROM outbox WHERE status = '已发' AND reply_url IS NULL AND purged = 0 ORDER BY decided_at DESC LIMIT ?").bind(MAX_SENT_CHECKS).all();

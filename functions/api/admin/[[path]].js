@@ -155,7 +155,10 @@ export async function handle(request, env, fetchImpl = fetch, now = new Date()) 
   if (path === "delete") {
     const table = { inbox: "inbox", outbox: "outbox" }[b.kind];
     if (!table || typeof b.id !== "string" || b.id.length > 64) return reply({ error: "bad" }, 400);
-    await db.prepare(`DELETE FROM ${table} WHERE id = ?`).bind(b.id).run();
+    await db.batch([
+      db.prepare(`DELETE FROM ${table} WHERE id = ?`).bind(b.id),
+      db.prepare("INSERT INTO gone (id, at) VALUES (?, ?) ON CONFLICT(id) DO NOTHING").bind(b.id, iso(now)),
+    ]);
     return reply({ ok: true });
   }
   if (path === "sync") {

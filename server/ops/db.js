@@ -15,6 +15,8 @@ const DDL = [
   "CREATE TABLE IF NOT EXISTS inbox (id TEXT PRIMARY KEY, mine TEXT NOT NULL, text TEXT, decision TEXT, decided_at TEXT, note TEXT, replied INTEGER NOT NULL DEFAULT 0, replied_at TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL, purge_after TEXT NOT NULL, purged INTEGER NOT NULL DEFAULT 0)",
   "CREATE TABLE IF NOT EXISTS nonces (n TEXT PRIMARY KEY, at TEXT NOT NULL)",
   "CREATE TABLE IF NOT EXISTS watch (id TEXT PRIMARY KEY, on_ INTEGER NOT NULL)",
+  // 按要求删掉的编号(评论的帖子编号、待发的条目编号):只记编号,以后刷新、投递都不再收进来
+  "CREATE TABLE IF NOT EXISTS gone (id TEXT PRIMARY KEY, at TEXT NOT NULL)",
 ];
 const ready = new WeakSet();
 
@@ -25,6 +27,18 @@ export async function ensure(db) {
 }
 
 export const iso = (d) => new Date(d).toISOString();
+
+// D1 每条语句最多绑 100 个参数:按 50 个一组查
+export async function existing(db, table, ids) {
+  const found = new Set();
+  for (let i = 0; i < ids.length; i += 50) {
+    const part = ids.slice(i, i + 50);
+    if (!part.length) continue;
+    const { results } = await db.prepare(`SELECT id FROM ${table} WHERE id IN (${part.map(() => "?").join(",")})`).bind(...part).all();
+    for (const r of results) found.add(String(r.id));
+  }
+  return found;
+}
 export const plusDays = (now, n) => iso(+now + n * 864e5);
 const parse = (s, dflt) => { try { return JSON.parse(s); } catch { return dflt; } };
 

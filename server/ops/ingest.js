@@ -8,11 +8,11 @@
 // 草稿入库前检查:只许带 defiexit.com 的链接,不许出现私信、客服、加群、转账、授权、助记词、私钥、找回、领取、recover、claim、返佣等词。
 // 不合格的那一条不入库,回执里写明哪条为什么;回执不含任何库里的数据。
 
-import { iso, plusDays, KEEP_DAYS, DOC_KEYS, docStmt, getKv, getDocs } from "./db.js";
+import { iso, plusDays, KEEP_DAYS, DOC_KEYS, docStmt, getKv, getDocs, existing } from "./db.js";
 import { unb64u, sha256 } from "./auth.js";
 
 export const SKEW_MS = 10 * 60 * 1000;
-export const MAX = { draft: 1000, short: 300, doc: 200 * 1024, items: 100, perDay: 200, body: 512 * 1024 };
+export const MAX = { draft: 1000, short: 300, doc: 200 * 1024, items: 50, perDay: 200, body: 512 * 1024 };
 
 export const signedText = (envName, method, path, raw) => `dx-ingest-v1\n${envName}\n${method}\n${path}\n${raw}`;
 
@@ -113,6 +113,17 @@ export async function ingest(db, { raw, sig, envName, method, path, pubkeys }, n
   if (!body || typeof body !== "object" || body.v !== 1) return { status: 400, body: { error: "bad" } };
   if (typeof body.ts !== "number" || Math.abs(+now - body.ts) > SKEW_MS) return { status: 401, body: { error: "stale" } };
   if (!/^[A-Za-z0-9_-]{16,64}$/.test(String(body.nonce || ""))) return { status: 400, body: { error: "nonce" } };
+  // 一次只处理一包(两包同时到,后到的回 busy):「比上一包新」的检查和写入之间不会被别的包插进来。锁 60 秒没放就算失效
+  const lock = await db.prepare("INSERT INTO kv (k, v) VALUES ('ingest_lock', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v WHERE CAST(kv.v AS INTEGER) < ?").bind(String(+now), +now - 60000).run();
+  if (!lock.meta || lock.meta.changes !== 1) return { status: 409, body: { error: "busy" } };
+  try {
+    return await locked(db, raw, body, now);
+  } finally {
+    await db.prepare("DELETE FROM kv WHERE k = 'ingest_lock' AND v = ?").bind(String(+now)).run();
+  }
+}
+
+async function locked(db, raw, body, now) {
   const lastTs = Number((await getKv(db, "ingest_ts")) || 0);
   if (body.ts <= lastTs) return { status: 409, body: { error: "old" } };
   if (await db.prepare("SELECT 1 FROM nonces WHERE n = ?").bind(body.nonce).first()) return { status: 409, body: { error: "replay" } };
@@ -138,15 +149,18 @@ export async function ingest(db, { raw, sig, envName, method, path, pubkeys }, n
   }
 
   const outs = Array.isArray(body.outbox) ? body.outbox.slice(0, MAX.items) : [];
+  const ins = Array.isArray(body.inbox) ? body.inbox.slice(0, MAX.items) : [];
   const ids = outs.map((x) => itemId(x?.id)).filter(Boolean);
   const have = new Map();
   if (ids.length) {
     const { results } = await db.prepare(`SELECT id, mine, status, purged FROM outbox WHERE id IN (${ids.map(() => "?").join(",")})`).bind(...ids).all();
     for (const r of results) have.set(r.id, r);
   }
+  const gone = await existing(db, "gone", [...ids, ...ins.map((x) => String(x?.id ?? ""))].filter(Boolean));
   for (const x of outs) {
     const c = cleanOut(x);
     if (c.error) { rejected.push({ kind: "outbox", id: c.id || "?", why: c.error }); continue; }
+    if (gone.has(c.id)) { rejected.push({ kind: "outbox", id: c.id, why: "管理员按要求删过,不再收" }); continue; }
     const old = have.get(c.id);
     if (!old) {
       stmts.push(db.prepare("INSERT INTO outbox (id, mine, reply_url, created_at, updated_at, purge_after) VALUES (?, ?, ?, ?, ?, ?)").bind(c.id, JSON.stringify(c.mine), c.replyUrl ?? null, t, t, plusDays(now, KEEP_DAYS)));
@@ -154,19 +168,21 @@ export async function ingest(db, { raw, sig, envName, method, path, pubkeys }, n
       const oldTarget = (() => { try { return JSON.parse(old.mine).target?.id; } catch { return undefined; } })();
       if (oldTarget && oldTarget !== c.mine.target.id) { rejected.push({ kind: "outbox", id: c.id, why: "目标帖子不能换" }); continue; }
       if (old.purged || old.status !== "待发") {
-        // 管理员点过了(或已到期删过):只许补他那条回复的链接
-        if (c.replyUrl) stmts.push(db.prepare("UPDATE outbox SET reply_url = ?, updated_at = ? WHERE id = ?").bind(c.replyUrl, t, c.id));
+        // 管理员点过了(或已到期删过):只许给「已发」且没到期删过的补他那条回复的链接
+        if (c.replyUrl && !old.purged && old.status === "已发") stmts.push(db.prepare("UPDATE outbox SET reply_url = ?, updated_at = ? WHERE id = ? AND status = '已发' AND purged = 0").bind(c.replyUrl, t, c.id));
         else rejected.push({ kind: "outbox", id: c.id, why: "管理员已经处理过,草稿不再改" });
       } else {
-        stmts.push(db.prepare("UPDATE outbox SET mine = ?, reply_url = COALESCE(?, reply_url), updated_at = ? WHERE id = ?").bind(JSON.stringify(c.mine), c.replyUrl ?? null, t, c.id));
+        // 条件写在语句里:读和写之间管理员点了「已发 / 跳过」,这条就不改
+        stmts.push(db.prepare("UPDATE outbox SET mine = ?, reply_url = COALESCE(?, reply_url), updated_at = ? WHERE id = ? AND status = '待发' AND purged = 0").bind(JSON.stringify(c.mine), c.replyUrl ?? null, t, c.id));
       }
     }
     outN++;
   }
 
-  for (const x of (Array.isArray(body.inbox) ? body.inbox : []).slice(0, MAX.items)) {
+  for (const x of ins) {
     const c = cleanIn(x);
     if (c.error) { rejected.push({ kind: "inbox", id: c.id || "?", why: c.error }); continue; }
+    if (gone.has(c.id)) { rejected.push({ kind: "inbox", id: c.id, why: "管理员按要求删过,不再收" }); continue; }
     // 原文只在新建时写;到期删过的不再补回;回复保留期从第一次入库算,更新不重置;replied 只会从 0 变 1
     stmts.push(db.prepare(
       "INSERT INTO inbox (id, mine, text, replied, replied_at, created_at, updated_at, purge_after) VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
