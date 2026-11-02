@@ -1,6 +1,6 @@
 // 运营台服务端的公共小件:回复格式、主机名门禁、同源检查、读请求体。
-// 运营台只在 admin 主机上开:正式环境 admin.defiexit.com,预览环境 *.defiexit.pages.dev(wrangler.toml 里分环境写 ADMIN_HOSTS)。
-// 主机名不对一律当作不存在(404),主站 defiexit.com 上看不到后台。
+// 运营台只在 ADMIN_HOSTS 列的主机上开:正式环境 defiexit.com(网址 defiexit.com/admin/),预览环境 ops.defiexit.pages.dev。
+// 主机名不对一律当作不存在(404):www.defiexit.com、defiexit.pages.dev 上都打不开后台。
 
 export const HEADERS = {
   "Content-Type": "application/json; charset=utf-8",

@@ -162,7 +162,19 @@ async function locked(db, raw, body, now) {
     db.prepare("INSERT INTO kv (k, v) VALUES ('ingest_ts', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(String(body.ts)),
     db.prepare("INSERT INTO kv (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind("ingest_day:" + day, String(used + 1)),
   ];
-  let docs = 0, outN = 0, inN = 0;
+  let docs = 0, outN = 0, inN = 0, setup = false;
+  // 一次性设置链接:我在本机生成一串随机码,只把它的 SHA-256 送进来;还没有管理员时才收,最多 48 小时有效
+  if (body.setup !== undefined) {
+    const s = body.setup;
+    const hasAdmin = await db.prepare("SELECT 1 FROM admin WHERE id = 1").first();
+    if (hasAdmin) rejected.push({ kind: "setup", id: "setup", why: "已经有管理员了" });
+    else if (!s || !/^[0-9a-f]{64}$/.test(String(s.hash)) || !(s.hours > 0 && s.hours <= 48)) rejected.push({ kind: "setup", id: "setup", why: "格式不对" });
+    else {
+      stmts.push(db.prepare("INSERT INTO kv (k, v) VALUES ('setup_hash', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(s.hash));
+      stmts.push(db.prepare("INSERT INTO kv (k, v) VALUES ('setup_exp', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(String(+now + s.hours * 3600e3)));
+      setup = true;
+    }
+  }
   const current = body.docs && body.docs.x_posts ? await getDocs(db) : {};
   for (const [k, v0] of Object.entries(body.docs || {})) {
     const bad = cleanDoc(k, v0);
@@ -223,5 +235,5 @@ async function locked(db, raw, body, now) {
     if (/UNIQUE|constraint/i.test(String(e && e.message))) return { status: 409, body: { error: "replay" } };
     throw e;
   }
-  return { status: 200, body: { ok: true, receipt: (await sha256(raw)).slice(0, 16), docs, outbox: outN, inbox: inN, rejected } };
+  return { status: 200, body: { ok: true, receipt: (await sha256(raw)).slice(0, 16), docs, outbox: outN, inbox: inN, setup, rejected } };
 }

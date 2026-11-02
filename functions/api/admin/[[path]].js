@@ -16,6 +16,7 @@ import { sync } from "../../../server/ops/sync.js";
 const STATUS = ["待发", "已发", "跳过"];
 const DECISIONS = ["采纳", "以后再说", "不采纳"];
 const NAME = /^[\p{L}\p{N}_.-]{1,40}$/u;
+const hex = async (s) => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)))].map((x) => x.toString(16).padStart(2, "0")).join("");
 
 async function state(db, admin, now) {
   await purge(db, now);
@@ -114,11 +115,16 @@ export async function handle(request, env, fetchImpl = fetch, now = new Date()) 
 
   if (path === "setup") {
     if (admin) return reply({ error: "exists" }, 409);
+    // 两种设置码:维护者签名送进来的一次性链接(只存哈希,有效期内),或 Cloudflare 里的机密 SETUP_CODE
     const code = String(env.SETUP_CODE || "");
-    if (code.length < 16) return reply({ error: "nocode" }, 503);
+    const linkHash = await getKv(db, "setup_hash");
+    const linkOk = !!linkHash && +now < Number((await getKv(db, "setup_exp")) || 0);
+    if (code.length < 16 && !linkOk) return reply({ error: "nocode" }, 503);
     const wait = await mustWait(db, ip, now);
     if (wait) return reply({ error: "wait", seconds: wait }, 429);
-    if (!same(String(b.code || ""), code)) { await failed(db, ip, now); return reply({ error: "code" }, 403); }
+    const given = String(b.code || "");
+    const okCode = (code.length >= 16 && same(given, code)) || (linkOk && same(await hex(given), linkHash));
+    if (!okCode) { await failed(db, ip, now); return reply({ error: "code" }, 403); }
     const name = String(b.name || "").trim();
     if (!NAME.test(name)) return reply({ error: "name" }, 400);
     if (String(b.password || "").length < MIN_PASSWORD) return reply({ error: "weak" }, 400);
@@ -129,6 +135,7 @@ export async function handle(request, env, fetchImpl = fetch, now = new Date()) 
     } catch {
       return reply({ error: "exists" }, 409);
     }
+    await db.prepare("DELETE FROM kv WHERE k IN ('setup_hash', 'setup_exp')").run();
     await succeeded(db, ip);
     return reply({ ok: true }, 200, { "Set-Cookie": await newSession(db, now) });
   }

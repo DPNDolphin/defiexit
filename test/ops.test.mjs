@@ -9,13 +9,13 @@ import { checkText, signedText, SKEW_MS } from "../server/ops/ingest.js";
 import { waitFor, MIN_PASSWORD } from "../server/ops/auth.js";
 import { hostOk } from "../server/ops/http.js";
 
-const HOST = "https://admin.defiexit.com";
+const HOST = "https://defiexit.com";
 const kp = () => generateKeyPairSync("ed25519");
 const pubOf = (k) => k.publicKey.export({ type: "spki", format: "der" }).subarray(-32).toString("base64url");
 const PROD = kp(), PREV = kp();
 const CODE = "setup-code-0123456789abcdef";
 const PW = "correct-horse-battery-staple-42";
-const baseEnv = (db, extra = {}) => ({ OPS: db, ADMIN_HOSTS: "admin.defiexit.com", OPS_ENV: "production", INGEST_PUBKEYS: pubOf(PROD), SETUP_CODE: CODE, ...extra });
+const baseEnv = (db, extra = {}) => ({ OPS: db, ADMIN_HOSTS: "defiexit.com", OPS_ENV: "production", INGEST_PUBKEYS: pubOf(PROD), SETUP_CODE: CODE, ...extra });
 
 function world() {
   const w = { db: new LocalD1(), clock: Date.parse("2026-11-03T10:00:00Z"), fetchImpl: async () => new Response("{}", { status: 500 }) };
@@ -47,21 +47,22 @@ const OUT = (over = {}) => ({ id: "r-openeden-1", target: TARGET, why: "原帖�
 
 test("主机名门禁:只认 ADMIN_HOSTS;没配就谁都不认", () => {
   const r = (u) => new Request(u);
-  assert.equal(hostOk(r("https://admin.defiexit.com/api/admin/state"), { ADMIN_HOSTS: "admin.defiexit.com" }), true);
-  assert.equal(hostOk(r("https://defiexit.com/api/admin/state"), { ADMIN_HOSTS: "admin.defiexit.com" }), false);
-  assert.equal(hostOk(r("https://ADMIN.defiexit.com/x"), { ADMIN_HOSTS: "admin.defiexit.com" }), true);
+  assert.equal(hostOk(r("https://defiexit.com/api/admin/state"), { ADMIN_HOSTS: "defiexit.com" }), true);
+  assert.equal(hostOk(r("https://www.defiexit.com/api/admin/state"), { ADMIN_HOSTS: "defiexit.com" }), false);
+  assert.equal(hostOk(r("https://DEFIEXIT.com/x"), { ADMIN_HOSTS: "defiexit.com" }), true);
+  assert.equal(hostOk(r("https://defiexit.com.evil.example/x"), { ADMIN_HOSTS: "defiexit.com" }), false);
   assert.equal(hostOk(r("https://ops.defiexit.pages.dev/x"), { ADMIN_HOSTS: "ops.defiexit.pages.dev" }), true);
   assert.equal(hostOk(r("https://abc123.defiexit.pages.dev/x"), { ADMIN_HOSTS: "ops.defiexit.pages.dev" }), false);
   assert.equal(hostOk(r("https://defiexit.pages.dev/x"), { ADMIN_HOSTS: "*.defiexit.pages.dev" }), false);
-  assert.equal(hostOk(r("https://admin.defiexit.com/x"), {}), false);
+  assert.equal(hostOk(r("https://defiexit.com/x"), {}), false);
 });
 
-test("主站主机上接口和网页都是 404", async () => {
+test("别的主机上接口和网页都是 404", async () => {
   const w = world();
-  assert.equal((await w.call("/api/admin/state", { host: "https://defiexit.com" })).status, 404);
+  assert.equal((await w.call("/api/admin/state", { host: "https://www.defiexit.com" })).status, 404);
   const assets = { fetch: async () => new Response("<!doctype html>", { status: 200 }) };
-  const env = { ADMIN_HOSTS: "admin.defiexit.com", ASSETS: assets };
-  assert.equal((await serve(new Request("https://defiexit.com/admin/"), env)).status, 404);
+  const env = { ADMIN_HOSTS: "defiexit.com", ASSETS: assets };
+  assert.equal((await serve(new Request("https://www.defiexit.com/admin/"), env)).status, 404);
   assert.equal((await serve(new Request("https://defiexit.pages.dev/admin/"), env)).status, 404);
   const ok = await serve(new Request(HOST + "/admin/"), env);
   assert.equal(ok.status, 200);
@@ -74,7 +75,7 @@ test("主站主机上接口和网页都是 404", async () => {
 });
 
 test("没接数据库:回 need db", async () => {
-  const r = await handle(new Request(HOST + "/api/admin/state"), { ADMIN_HOSTS: "admin.defiexit.com" });
+  const r = await handle(new Request(HOST + "/api/admin/state"), { ADMIN_HOSTS: "defiexit.com" });
   assert.equal(r.status, 503);
   assert.equal((await r.json()).need, "db");
 });
@@ -162,7 +163,7 @@ test("投递:签名、环境、时间、nonce、旧包", async () => {
   const r = await handle(new Request(HOST + "/api/admin/ingest", { method: "POST", headers: { "X-DX-Sig": ok.sig }, body: ok.raw.replace("2026", "2027") }), baseEnv(w.db), w.fetchImpl, w.now());
   assert.equal((await r.json()).error, "sig");
   // 没登录的人拿不到数据:回执里没有库里的内容
-  assert.deepEqual(Object.keys(again.json).sort(), ["docs", "inbox", "ok", "outbox", "receipt", "rejected"]);
+  assert.deepEqual(Object.keys(again.json).sort(), ["docs", "inbox", "ok", "outbox", "receipt", "rejected", "setup"]);
 });
 
 test("草稿检查:站外链接、敏感词一律不收", () => {
@@ -426,4 +427,27 @@ test("刷新读到 200 条评论:查库次数不跟着涨", async () => {
   const r = await sync(counted, async () => new Response(JSON.stringify({ status: { id: "1234", author: { id: "1", screen_name: "owner" }, replies: 200 }, replies })), now);
   assert.equal(r.body.newReplies, 200);
   assert.ok(calls <= 20, "查库 " + calls + " 次");
+});
+
+test("一次性设置链接:没有管理员时才收;有效期内能设一次,用过作废;过期不认", async () => {
+  const { createHash } = await import("node:crypto");
+  const hexOf = (t) => createHash("sha256").update(t).digest("hex");
+  const w = world();
+  const env = { SETUP_CODE: "" };
+  assert.equal((await w.call("/api/admin/setup", { method: "POST", body: { code: "x", name: "admin1", password: PW }, env })).json.error, "nocode");
+  const token = "tok_" + "a".repeat(40);
+  const r = await w.ingest({ setup: { hash: hexOf(token), hours: 24 } });
+  assert.equal(r.json.setup, true);
+  assert.equal((await w.call("/api/admin/setup", { method: "POST", body: { code: "wrong-wrong-wrong-wrong", name: "admin1", password: PW }, env })).json.error, "code");
+  const ok = await w.call("/api/admin/setup", { method: "POST", body: { code: token, name: "admin1", password: PW }, env });
+  assert.equal(ok.status, 200);
+  assert.equal(await w.db.prepare("SELECT v FROM kv WHERE k = 'setup_hash'").first(), null); // 用过就删
+  w.clock += 1000;
+  const again = await w.ingest({ setup: { hash: hexOf("other"), hours: 24 } });
+  assert.match(again.json.rejected[0].why, /已经有管理员/);
+  // 过期
+  const w2 = world();
+  await w2.ingest({ setup: { hash: hexOf(token), hours: 1 } });
+  w2.clock += 2 * 3600e3;
+  assert.equal((await w2.call("/api/admin/setup", { method: "POST", body: { code: token, name: "admin1", password: PW }, env })).json.error, "nocode");
 });
