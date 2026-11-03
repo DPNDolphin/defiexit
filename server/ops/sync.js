@@ -90,7 +90,8 @@ export async function sync(db, fetchImpl, now) {
   stmts.push(...marks);
 
   // 已发但还没核到链接的待发:去目标帖子底下找管理员那条回复(按账号编号认;这次一条被监控帖子都没读到,就先不核)
-  const { results: sent } = await db.prepare("SELECT id, mine, sent_target FROM outbox WHERE status = '已发' AND reply_url IS NULL AND purged = 0 ORDER BY decided_at DESC LIMIT ?").bind(MAX_SENT_CHECKS).all();
+  // 自己发的帖子没有目标帖子(sent_target 是空的),不在这里找
+  const { results: sent } = await db.prepare("SELECT id, mine, sent_target FROM outbox WHERE status = '已发' AND reply_url IS NULL AND purged = 0 AND sent_target IS NOT NULL ORDER BY decided_at DESC LIMIT ?").bind(MAX_SENT_CHECKS).all();
   for (const r of owners.size ? sent : []) {
     let target;
     try { target = String(r.sent_target || JSON.parse(r.mine).target.id); } catch { continue; }

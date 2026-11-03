@@ -1,4 +1,4 @@
-// 运营台(只在 admin 主机上打开):登录 → 读 /api/admin/state → 待发、收件、数据。管理员点的「已发 / 采纳」、改的草稿,
+// 运营台(只在 admin 主机上打开):登录 → 读 /api/admin/state → 待发、收件、数据、已处理。管理员点的「已发 / 采纳」、改的草稿,
 // 都经 /api/admin/* 存进数据库。页面里的评论、帖子是别人写的:一律用 textContent 放进页面,不当 HTML。
 (function () {
   "use strict";
@@ -100,7 +100,9 @@
     if (ok) {
       (kind === "outbox" ? S.out : S.inn).set(id, json.item);
       const el = S.cards.get((kind === "outbox" ? "out:" : "in:") + id);
-      if (el) el._update(json.item);
+      // 待发:状态变了要挪到「待发」或「已处理」(sync 只在顺序变了才挪,改草稿不会让框失焦)
+      if (kind === "outbox") sync("out");
+      else if (el) el._update(json.item);
       renderTop();
       if (kind === "outbox") renderData();
       note(msgEl, "已存");
@@ -133,7 +135,10 @@
   }
 
   // ---------- 待发卡片 ----------
+  // 两种:回别人的帖子(mine.target),或者自己发一条新帖(mine.kind === "post")。点过「已发 / 跳过」的挪到「已处理」
   const OUT_STATUS = { "待发": "hi", "已发": "ok", "跳过": "mute" };
+  const isPost = (d) => !!(d && d.mine && d.mine.kind === "post");
+  const isPend = (d) => ((d && d.status) || "待发") === "待发";
   function outCard(id) {
     const ta = h("textarea", { id: "draft-" + id, "aria-label": "回复草稿,可以直接改" });
     const count = h("span", { class: "count" });
@@ -150,8 +155,9 @@
     const chips = h("div", { class: "chips" });
     const kv = h("dl", { class: "kv" });
     const link = h("p", { class: "count" });
+    const lab = h("span", { class: "label" });
     const el = h("article", { class: "card", "data-id": id }, head, chips, kv,
-      h("div", { class: "row" }, h("span", { class: "label" }, "我写的回复(可以直接改)"), h("span", { class: "grow" }), restore), ta,
+      h("div", { class: "row" }, lab, h("span", { class: "grow" }), restore), ta,
       h("div", { class: "row" }, count, h("span", { class: "grow" }), copy),
       open,
       h("div", { class: "row" }, sent, skip, back, h("span", { class: "grow" }), status),
@@ -163,7 +169,7 @@
       count.textContent = "约 " + n + " / 280";
       count.classList.toggle("over", n > 280);
       const tid = target().id;
-      if (/^\d{1,25}$/.test(String(tid || ""))) { open.href = intent(ta.value, tid); open.removeAttribute("aria-disabled"); open.classList.remove("off"); }
+      if (isPost(el._d) || /^\d{1,25}$/.test(String(tid || ""))) { open.href = intent(ta.value, isPost(el._d) ? null : tid); open.removeAttribute("aria-disabled"); open.classList.remove("off"); }
       else { open.removeAttribute("href"); open.setAttribute("aria-disabled", "true"); open.classList.add("off"); }
     };
     // 草稿存不上:字留在框里(dirty 设回去,之后的刷新不会盖掉),也不往下改状态
@@ -171,7 +177,8 @@
     el._saved = (ok, wasDraft) => { if (wasDraft && !ok) dirty = true; };
     const decide = async (st) => {
       if (!(await flush())) return note(saved, "草稿没存上,先别点「" + st + "」;字还在框里", true);
-      save("outbox", id, { status: st }, saved);
+      const was = isPend(el._d);
+      if ((await save("outbox", id, { status: st }, saved)) && was) note($("out-msg"), "点了「" + st + "」,这条挪到下面的「已处理」了");
     };
     ta.addEventListener("input", () => { dirty = true; refresh(); clearTimeout(timer); timer = setTimeout(flush, 1200); });
     ta.addEventListener("blur", flush);
@@ -182,32 +189,39 @@
     });
     sent.addEventListener("click", () => decide("已发"));
     skip.addEventListener("click", () => decide("跳过"));
-    back.addEventListener("click", () => save("outbox", id, { status: "待发" }, saved));
+    back.addEventListener("click", async () => { if (await save("outbox", id, { status: "待发" }, saved)) note($("done-msg"), "这条挪回「待发」了"); });
     memo.addEventListener("change", () => save("outbox", id, { note: memo.value }, saved));
     el._update = (d) => {
       el._d = d;
-      const m = d.mine || {}, t = m.target || {};
-      head.replaceChildren(
-        h("span", { class: "who" }, "回 @" + (t.handle || "?")),
-        t.postedAt ? h("span", null, md(t.postedAt) + " 发的帖") : null,
-        safeUrl(t.url) ? out(t.url, "看原帖 ↗") : null);
-      chips.replaceChildren(...[t.protocol, t.chain, t.type].filter(Boolean).map((x) => h("span", { class: "chip" }, x)));
-      kv.replaceChildren(
-        h("dt", null, "卡在"), h("dd", null, t.summary || (d.purged ? "(30 天到了,原帖信息已删)" : "—")),
-        m.why ? h("dt", null, "为什么回") : null, m.why ? h("dd", null, m.why) : null);
+      const m = d.mine || {}, t = m.target || {}, post = isPost(d);
+      head.replaceChildren(...(post
+        ? [h("span", { class: "who" }, "自己发的帖子"), h("span", null, "发一条新帖,不是回复别人")]
+        : [h("span", { class: "who" }, "回 @" + (t.handle || "?")),
+          t.postedAt ? h("span", null, md(t.postedAt) + " 发的帖") : null,
+          safeUrl(t.url) ? out(t.url, "看原帖 ↗") : null]));
+      chips.replaceChildren(...(post ? [m.topic] : [t.protocol, t.chain, t.type]).filter(Boolean).map((x) => h("span", { class: "chip" }, x)));
+      kv.replaceChildren(...(post
+        ? [m.why ? h("dt", null, "为什么发") : null, m.why ? h("dd", null, m.why) : null]
+        : [h("dt", null, "卡在"), h("dd", null, t.summary || (d.purged ? "(30 天到了,原帖信息已删)" : "—")),
+          m.why ? h("dt", null, "为什么回") : null, m.why ? h("dd", null, m.why) : null]));
+      const st = d.status || "待发";
       const draft = d.draft_admin != null ? d.draft_admin : (m.draft || "");
       if (document.activeElement !== ta && !dirty && ta.value !== draft) ta.value = draft;
-      restore.hidden = d.draft_admin == null;
+      // 点过「已发 / 跳过」的草稿改不了(服务器也不收),「在 X 打开」也收起来,免得同一条发两次
+      lab.textContent = (post ? "我写的帖子" : "我写的回复") + (st === "待发" ? "(可以直接改)" : "");
+      ta.readOnly = st !== "待发";
+      restore.hidden = d.draft_admin == null || st !== "待发";
+      open.hidden = st !== "待发";
+      open.textContent = post ? "在 X 打开,发新帖,字已填好 ↗" : "在 X 打开,字已填好 ↗";
       if (document.activeElement !== memo && memo.value !== (d.note || "")) memo.value = d.note || "";
-      const st = d.status || "待发";
       status.className = "pill " + (OUT_STATUS[st] || "mute");
-      status.textContent = st;
+      status.textContent = st + (st !== "待发" && d.decided_at ? " · " + mdhm(d.decided_at) : "");
       sent.setAttribute("aria-pressed", String(st === "已发"));
       skip.setAttribute("aria-pressed", String(st === "跳过"));
       back.hidden = st === "待发";
       el.classList.toggle("done", st !== "待发");
       link.replaceChildren(st === "已发"
-        ? (safeUrl(d.reply_url) ? h("span", null, "你的回复:", out(d.reply_url, "看 ↗")) : "你的回复链接:我下次干活时自己找到填上。")
+        ? (safeUrl(d.reply_url) ? h("span", null, post ? "你的帖子:" : "你的回复:", out(d.reply_url, "看 ↗")) : (post ? "你的帖子链接" : "你的回复链接") + ":我下次干活时自己找到填上。")
         : "");
       refresh();
     };
@@ -269,14 +283,10 @@
   }
 
   // 按顺序摆卡片:只在顺序变了才挪(挪动会让正在打字的框失焦)
-  function sync(kind) {
-    const box = $(kind === "out" ? "out-cards" : "in-cards");
-    const store = kind === "out" ? S.out : S.inn;
-    const rows = [...store.entries()];
-    if (kind === "out") rows.sort((a, b) => ((a[1].status || "待发") === "待发" ? 0 : 1) - ((b[1].status || "待发") === "待发" ? 0 : 1) || String(a[1].created_at || "").localeCompare(String(b[1].created_at || "")));
-    else rows.sort((a, b) => (a[1].decision ? 1 : 0) - (b[1].decision ? 1 : 0) || String((b[1].mine || {}).at || "").localeCompare(String((a[1].mine || {}).at || "")));
+  // 待发:「待发」里只放还没点的(先送来的在上面);点过「已发 / 跳过」的放「已处理」(最近点的在上面)
+  function place(boxId, kind, rows) {
+    const box = $(boxId);
     const want = rows.map((r) => kind + ":" + r[0]);
-    for (const [key, el] of S.cards) if (key.startsWith(kind + ":") && !want.includes(key)) { el.remove(); S.cards.delete(key); }
     for (const [id, d] of rows) {
       const key = kind + ":" + id;
       let el = S.cards.get(key);
@@ -285,7 +295,27 @@
     }
     const now = [...box.children].map((c) => kind + ":" + c.getAttribute("data-id"));
     if (now.join("|") !== want.join("|")) want.forEach((k) => box.append(S.cards.get(k)));
-    $(kind === "out" ? "out-empty" : "in-empty").hidden = rows.length > 0;
+  }
+  function sync(kind) {
+    const store = kind === "out" ? S.out : S.inn;
+    const rows = [...store.entries()];
+    const keys = new Set(rows.map((r) => kind + ":" + r[0]));
+    for (const [key, el] of S.cards) if (key.startsWith(kind + ":") && !keys.has(key)) { el.remove(); S.cards.delete(key); }
+    if (kind === "out") {
+      const pend = rows.filter((r) => isPend(r[1])).sort((a, b) => String(a[1].created_at || "").localeCompare(String(b[1].created_at || "")));
+      const done = rows.filter((r) => !isPend(r[1])).sort((a, b) => String(b[1].decided_at || "").localeCompare(String(a[1].decided_at || "")) || String(b[1].created_at || "").localeCompare(String(a[1].created_at || "")));
+      place("out-cards", kind, pend);
+      place("done-cards", kind, done);
+      $("out-empty").hidden = pend.length > 0;
+      $("out-empty").textContent = done.length
+        ? "待发的都处理完了。点过「已发 / 跳过」的在下面的「已处理」里。"
+        : "还没有待发的。机器人交帖后,我把原帖逐条看过,写好回复放在这里;每天的项目帖也放这里。";
+      $("done-empty").hidden = done.length > 0;
+      return;
+    }
+    rows.sort((a, b) => (a[1].decision ? 1 : 0) - (b[1].decision ? 1 : 0) || String((b[1].mine || {}).at || "").localeCompare(String((a[1].mine || {}).at || "")));
+    place("in-cards", kind, rows);
+    $("in-empty").hidden = rows.length > 0;
   }
 
   function apply(json) {
@@ -302,12 +332,15 @@
 
   // ---------- 顶部 ----------
   function renderTop(json) {
-    const pendOut = [...S.out.values()].filter((d) => (d.status || "待发") === "待发").length;
+    const pend = [...S.out.values()].filter(isPend);
+    const pendOut = pend.length, pendPosts = pend.filter(isPost).length, pendReplies = pendOut - pendPosts;
+    const doneOut = S.out.size - pendOut;
     const pendIn = [...S.inn.values()].filter((d) => !d.decision).length;
     $("n-out").textContent = pendOut; $("n-out").classList.toggle("due", pendOut > 0);
     $("n-in").textContent = pendIn; $("n-in").classList.toggle("due", pendIn > 0);
+    $("n-done").textContent = doneOut;
     const items = [];
-    if (pendOut) items.push({ text: pendOut + " 条回复等你点发", href: "#outbox", when: "今天" });
+    if (pendOut) items.push({ text: [pendReplies ? pendReplies + " 条回复" : "", pendPosts ? pendPosts + " 条项目帖" : ""].filter(Boolean).join("、") + "等你点发", href: "#outbox", when: "今天" });
     if (pendIn) items.push({ text: pendIn + " 条评论等你点一个决定", href: "#inbox", when: "今天" });
     const asks = S.docs.summary && S.docs.summary.asks;
     for (const a of Array.isArray(asks) ? asks : []) if (a && typeof a.text === "string") items.push(a);
@@ -352,7 +385,9 @@
     return s;
   }
   function routePanel(f) {
-    const live = { drafted: S.out.size, posted: [...S.out.values()].filter((d) => d.status === "已发").length };
+    // 回帖试验只数回帖,不数自己发的帖子
+    const replies = [...S.out.values()].filter((d) => !isPost(d));
+    const live = { drafted: replies.length, posted: replies.filter((d) => d.status === "已发").length };
     const stages = (Array.isArray(f && f.stages) ? f.stages : []).map((s) => ({ ...s, value: s.key in live ? live[s.key] : s.value }));
     if (!stages.length) return null;
     const ol = h("ol", { class: "route", "aria-label": "回帖试验的每一站" });

@@ -102,6 +102,7 @@ export async function getIn(db, id) {
 // ---------- 到期删除 ----------
 // 收件:删原文、账号名、帖子链接、草稿、备注,只留类型、需求摘要、建议(都是 Claude 写的、不带账号名)和管理员的决定
 // 待发:删目标帖子的账号、链接、编号、「卡在哪」的描述和备注,只留协议、链、类型、我们的草稿和管理员点的状态
+// (自己发的帖子没有目标帖子:留题目和草稿)
 export async function purge(db, now) {
   const t = iso(now);
   const ins = (await db.prepare("SELECT id, mine, decision FROM inbox WHERE purge_after <= ?").bind(t).all()).results;
@@ -118,7 +119,9 @@ export async function purge(db, now) {
   for (const r of outs) {
     const m = parse(r.mine, {});
     const tg = m.target || {};
-    const keep = { target: { protocol: tg.protocol, chain: tg.chain, type: tg.type }, why: scrub(m.why), draft: scrub(m.draft) };
+    const keep = m.kind === "post"
+      ? { kind: "post", topic: m.topic, why: scrub(m.why), draft: scrub(m.draft) }
+      : { target: { protocol: tg.protocol, chain: tg.chain, type: tg.type }, why: scrub(m.why), draft: scrub(m.draft) };
     stmts.push(db.prepare("UPDATE outbox SET mine = ?, draft_admin = ?, sent_text = ?, reply_url = NULL, sent_target = NULL, note = NULL, purged = 1, updated_at = ? WHERE id = ?").bind(JSON.stringify(keep), scrub(r.draft_admin) ?? null, scrub(r.sent_text) ?? null, t, r.id));
   }
   stmts.push(db.prepare("DELETE FROM sessions WHERE expires_at <= ?").bind(t));

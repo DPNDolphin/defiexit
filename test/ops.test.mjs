@@ -224,6 +224,51 @@ test("待发:管理员点过以后,投递改不了草稿和目标;目标帖子�
   assert.equal(item.reply_url, "https://x.com/owner_acct/status/2116000000000000002");
 });
 
+test("自己发的帖子:没有目标帖子也收;点「已发」不要目标,刷新不去找它;回帖和帖子不能互换;到期留题目和草稿", async () => {
+  const w = world();
+  const c = await w.login();
+  const POST = (over = {}) => ({ id: "p-zksync-lite-1104", kind: "post", topic: "关停提醒", why: "ZKsync Lite 5 月关停,还有人卡着", draft: "ZKsync Lite 关停了,钱还是你的:官方取款页能查余额,取到以太坊。", ...over });
+  let r = await w.ingest({ outbox: [POST(), POST({ id: "p-bad-1", kind: "story" }), POST({ id: "p-bad-2", draft: "私信我" })] });
+  assert.equal(r.json.outbox, 1);
+  assert.deepEqual(r.json.rejected.map((x) => x.id), ["p-bad-1", "p-bad-2"]);
+  w.clock += 1000;
+  r = await w.ingest({ outbox: [OUT(), OUT({ id: "p-zksync-lite-1104" })] });
+  assert.deepEqual(r.json.rejected.map((x) => [x.id, x.why]), [["p-zksync-lite-1104", "回帖和自己发的帖子不能互换"]]);
+  w.clock += 1000;
+  r = await w.ingest({ outbox: [POST({ id: "r-openeden-1" })] });
+  assert.match(r.json.rejected[0].why, /不能互换/);
+  let st = (await w.call("/api/admin/state", { cookie: c })).json;
+  const p = st.outbox.find((x) => x.id === "p-zksync-lite-1104");
+  assert.equal(p.mine.kind, "post");
+  assert.equal(p.mine.topic, "关停提醒");
+  assert.equal(p.mine.target, undefined);
+  const sent = await w.call("/api/admin/outbox", { method: "POST", body: { id: "p-zksync-lite-1104", status: "已发" }, cookie: c });
+  assert.equal(sent.status, 200, JSON.stringify(sent.json));
+  assert.equal(sent.json.item.status, "已发");
+  assert.equal(sent.json.item.sent_text, POST().draft);
+  // 刷新:只读被监控的帖子,不为自己发的帖子去找「目标帖子」
+  await w.ingest({ docs: { x_posts: { posts: [{ name: "X 长文", id: "3000000000000000005", points: [] }] } } }, { ts: (w.clock += 1000) });
+  const asked = [];
+  w.fetchImpl = async (u) => { asked.push(String(u).split("/").pop()); return new Response(JSON.stringify({ code: 200, status: { id: "3000000000000000005", author: { id: "1", screen_name: "owner_acct" }, views: 1 } }), { status: 200 }); };
+  const s = await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c });
+  assert.equal(s.status, 200, JSON.stringify(s.json));
+  assert.deepEqual(asked, ["3000000000000000005"]);
+  // 帖子的链接能补
+  w.clock += 1000;
+  r = await w.ingest({ outbox: [POST({ replyUrl: "https://x.com/owner_acct/status/3000000000000000009" })] });
+  assert.equal(r.json.rejected.length, 0);
+  // 30 天到期:留题目和草稿
+  w.clock += 31 * 864e5;
+  const c2 = (await w.call("/api/admin/login", { method: "POST", body: { name: "admin1", password: PW } })).headers.get("Set-Cookie").split(";")[0];
+  st = (await w.call("/api/admin/state", { cookie: c2 })).json;
+  const q = st.outbox.find((x) => x.id === "p-zksync-lite-1104");
+  assert.equal(q.purged, true);
+  assert.equal(q.mine.kind, "post");
+  assert.equal(q.mine.topic, "关停提醒");
+  assert.equal(q.mine.draft, POST().draft);
+  assert.equal(q.status, "已发");
+});
+
 test("收件:刷新读进来的评论,投递补上分析;管理员的决定不被覆盖;发帖人自己的回复会标成已回复", async () => {
   const w = world();
   const c = await w.login();

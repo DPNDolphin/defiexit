@@ -38,11 +38,12 @@ async function editOut(db, b, now) {
     sets.push("status = ?", "decided_at = ?");
     args.push(b.status, b.status === "待发" ? null : iso(now));
     if (b.status === "已发") {
-      // 记下点「已发」那一刻的草稿和目标帖子:之后核对的就是这一条
+      // 记下点「已发」那一刻的草稿和目标帖子:之后核对的就是这一条(自己发的帖子没有目标帖子)
+      const post = !!cur.mine && cur.mine.kind === "post";
       const tid = cur.mine && cur.mine.target && cur.mine.target.id;
-      if (!tid) return reply({ error: "target" }, 400);
+      if (!tid && !post) return reply({ error: "target" }, 400);
       sets.push("sent_text = ?", "sent_target = ?");
-      args.push(cur.draft_admin != null ? cur.draft_admin : cur.mine.draft || "", tid);
+      args.push(cur.draft_admin != null ? cur.draft_admin : cur.mine.draft || "", post ? null : tid);
     } else {
       sets.push("sent_text = NULL", "sent_target = NULL", "reply_url = NULL");
     }

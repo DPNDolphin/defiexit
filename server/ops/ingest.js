@@ -4,7 +4,7 @@
 // 签的是「dx-ingest-v1 / 环境 / 方法 / 路径 / 原始请求体」,所以预览的包投不进正式库,换了路径也不认。
 // 请求体带 ts(毫秒,按服务器时钟 ±10 分钟)和 nonce;ts 还必须比上一次收下的大(旧包不能盖新数据);nonce 和数据同一个事务写入。
 // 投递只能:替换看板的几份 JSON;新建待发、收件,或者改它们 Claude 写的部分(mine)。永远不碰管理员点的状态、决定、备注、改过的草稿;
-// 待发一旦被管理员点过「已发 / 跳过」,草稿和目标帖子就不能再改;目标帖子的编号建好以后不能换。
+// 待发一旦被管理员点过「已发 / 跳过」,草稿和目标帖子就不能再改;目标帖子的编号建好以后不能换;回帖和自己发的帖子建好以后不能互换。
 // 草稿入库前检查:只许带 defiexit.com 的链接,不许出现私信、客服、加群、转账、授权、助记词、私钥、找回、领取、recover、claim、返佣等词。
 // 不合格的那一条不入库,回执里写明哪条为什么;回执不含任何库里的数据。
 
@@ -69,15 +69,22 @@ const when = (v) => (typeof v === "string" && !Number.isNaN(Date.parse(v)) ? v :
 const itemId = (v) => (/^[a-z0-9][a-z0-9-]{2,63}$/.test(String(v ?? "")) ? String(v) : undefined);
 const drop = (o) => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined));
 
+// 待发有两种:回别人的帖子(要目标帖子),或者自己发一条新帖(kind: "post",没有目标帖子,topic 是一句话的题目)
 export function cleanOut(x) {
   const id = itemId(x?.id);
   if (!id) return { error: "id 不合格" };
-  const t = x.target || {};
-  const target = drop({ id: tweetId(t.id), handle: handle(t.handle), url: xUrl(t.url), postedAt: when(t.postedAt), protocol: str(t.protocol, 60), chain: str(t.chain, 40), type: str(t.type, 40), summary: str(t.summary, 200) });
-  if (!target.id || !target.url || !target.url.endsWith("/status/" + target.id)) return { id, error: "目标帖子的编号或链接不合格(两者要对得上)" };
+  const post = x.kind === "post";
+  if (!post && x.kind !== undefined) return { id, error: "kind 只能不写(回帖)或写 post(自己发的帖子)" };
+  let target;
+  if (!post) {
+    const t = x.target || {};
+    target = drop({ id: tweetId(t.id), handle: handle(t.handle), url: xUrl(t.url), postedAt: when(t.postedAt), protocol: str(t.protocol, 60), chain: str(t.chain, 40), type: str(t.type, 40), summary: str(t.summary, 200) });
+    if (!target.id || !target.url || !target.url.endsWith("/status/" + target.id)) return { id, error: "目标帖子的编号或链接不合格(两者要对得上)" };
+  }
   const bad = checkText(x.draft);
   if (bad) return { id, error: "草稿" + bad };
-  return { id, mine: drop({ target, why: str(x.why), draft: x.draft.trim() }), replyUrl: xUrl(x.replyUrl) };
+  const mine = post ? drop({ kind: "post", topic: str(x.topic, 40), why: str(x.why), draft: x.draft.trim() }) : drop({ target, why: str(x.why), draft: x.draft.trim() });
+  return { id, mine, replyUrl: xUrl(x.replyUrl) };
 }
 
 export function cleanIn(x) {
@@ -201,8 +208,10 @@ async function locked(db, raw, body, now) {
     if (!old) {
       stmts.push(db.prepare("INSERT INTO outbox (id, mine, reply_url, created_at, updated_at, purge_after) VALUES (?, ?, ?, ?, ?, ?)").bind(c.id, JSON.stringify(c.mine), c.replyUrl ?? null, t, t, plusDays(now, KEEP_DAYS)));
     } else {
-      const oldTarget = (() => { try { return JSON.parse(old.mine).target?.id; } catch { return undefined; } })();
-      if (oldTarget && oldTarget !== c.mine.target.id) { rejected.push({ kind: "outbox", id: c.id, why: "目标帖子不能换" }); continue; }
+      const oldMine = (() => { try { return JSON.parse(old.mine) || {}; } catch { return {}; } })();
+      if ((oldMine.kind || "reply") !== (c.mine.kind || "reply")) { rejected.push({ kind: "outbox", id: c.id, why: "回帖和自己发的帖子不能互换" }); continue; }
+      const oldTarget = oldMine.target?.id;
+      if (oldTarget && oldTarget !== c.mine.target?.id) { rejected.push({ kind: "outbox", id: c.id, why: "目标帖子不能换" }); continue; }
       if (old.purged || old.status !== "待发") {
         // 管理员点过了(或已到期删过):只许给「已发」且没到期删过的补他那条回复的链接
         if (c.replyUrl && !old.purged && old.status === "已发") stmts.push(db.prepare("UPDATE outbox SET reply_url = ?, updated_at = ? WHERE id = ? AND status = '已发' AND purged = 0").bind(c.replyUrl, t, c.id));

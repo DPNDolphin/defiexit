@@ -72,12 +72,14 @@
       <a href="#outbox">待发 <span class="n" id="n-out">0</span></a>
       <a href="#inbox">收件 <span class="n" id="n-in">0</span></a>
       <a href="#data">数据</a>
+      <a href="#done">已处理 <span class="n" id="n-done">0</span></a>
     </nav>
 
     <section id="outbox" aria-labelledby="h-out">
-      <div class="sec-h"><h2 id="h-out">待发</h2><span class="hint">我写好的回复。点「在 X 打开」,字已填好,你看一眼再发。</span></div>
+      <div class="sec-h"><h2 id="h-out">待发</h2><span class="hint">我写好的回复和项目帖。点「在 X 打开」,字已填好,你看一眼再发;发完点「已发」,这条就挪到「已处理」。</span></div>
+      <p class="saved" id="out-msg" aria-live="polite"></p>
       <div class="cards" id="out-cards"></div>
-      <p class="empty" id="out-empty">还没有待发的回复。机器人交帖后,我把原帖逐条看过,挑 5 条写好回复放在这里。</p>
+      <p class="empty" id="out-empty">还没有待发的。机器人交帖后,我把原帖逐条看过,写好回复放在这里;每天的项目帖也放这里。</p>
     </section>
 
     <section id="inbox" aria-labelledby="h-in">
@@ -89,6 +91,13 @@
     <section id="data" aria-labelledby="h-data">
       <div class="sec-h"><h2 id="h-data">数据</h2><span class="hint">读数在你点「刷新」或我干活时更新,不是实时。</span></div>
       <div id="data-body"></div>
+    </section>
+
+    <section id="done" aria-labelledby="h-done">
+      <div class="sec-h"><h2 id="h-done">已处理</h2><span class="hint">你点过「已发」或「跳过」的,最近点的在上面。点错了就点「改回待发」。</span></div>
+      <p class="saved" id="done-msg" aria-live="polite"></p>
+      <div class="cards" id="done-cards"></div>
+      <p class="empty" id="done-empty">还没有。你在「待发」里点了「已发」或「跳过」,那条就挪到这里。</p>
     </section>
 
     <footer>
