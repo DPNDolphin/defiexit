@@ -36,9 +36,9 @@
   const out = (href, text) => h("a", { href, target: "_blank", rel: "noopener noreferrer" }, text);
   const safeUrl = (u) => (/^https:\/\/(x|twitter)\.com\//.test(String(u || "")) ? u : null);
 
-  // X 计字:中日韩文字算 2,网址算 23(和 X 的规则一致,所以写「约」)
+  // X 计字:中日韩文字算 2,网址算 23(和 X 的规则一致,所以写「约」);不带 https:// 的 defiexit.com 也会被 X 当成网址
   function xLen(s) {
-    const re = /https?:\/\/\S+/g;
+    const re = /https?:\/\/\S+|(?:www\.)?defiexit\.com(?:\/[\x21-\x7e]*)?/gi;
     let n = (String(s).match(re) || []).length * 23;
     for (const ch of String(s).replace(re, "")) {
       const c = ch.codePointAt(0);
