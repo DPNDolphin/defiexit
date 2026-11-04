@@ -128,7 +128,7 @@ export async function sync(db, fetchImpl, now) {
 
   // 7 天内点了「已发」的一次查出来:还没核到链接的,先去目标帖子底下找管理员那条回复(按我们账号的编号认;一个都不认得就这次先不核);
   // 自己发的帖子没有目标帖子(sent_target 是空的),不在这里找。核到的链接先攒着,和别的写一起写
-  const { results: sentAll } = await db.prepare("SELECT id, mine, sent_target, reply_url, decided_at FROM outbox WHERE status = '已发' AND purged = 0 AND decided_at >= ? ORDER BY decided_at DESC LIMIT 300").bind(iso(+now - AUTO_DAYS * 864e5)).all();
+  const { results: sentAll } = await db.prepare("SELECT id, mine, sent_target, reply_url, decided_at FROM outbox WHERE status = '已发' AND purged = 0 AND decided_at >= ? ORDER BY decided_at DESC LIMIT 500").bind(iso(+now - AUTO_DAYS * 864e5)).all(); // 每天回 50 条 × 7 天
   const links = [], found = [];
   for (const r of ours.size ? (sentAll || []).filter((q) => !q.reply_url && q.sent_target).slice(0, MAX_SENT_CHECKS) : []) {
     if (!canFetch()) break;

@@ -189,10 +189,10 @@
     // 草稿存不上:字留在框里(dirty 设回去,之后的刷新不会盖掉),也不往下改状态
     const flush = async () => { clearTimeout(timer); if (!dirty) return true; dirty = false; return save("outbox", id, { draft: ta.value }, saved); };
     el._saved = (ok, wasDraft) => { if (wasDraft && !ok) dirty = true; };
-    const decide = async (st) => {
+    const decide = async (st, msg) => {
       if (!(await flush())) return note(saved, "草稿没存上,先别点「" + st + "」;字还在框里", true);
       const was = isPend(el._d);
-      if ((await save("outbox", id, { status: st }, saved)) && was) note($("out-msg"), "点了「" + st + "」,这条挪到下面的「已处理」了");
+      if ((await save("outbox", id, { status: st }, saved)) && was) note($("out-msg"), msg || "点了「" + st + "」,这条挪到下面的「已处理」了");
     };
     ta.addEventListener("input", () => { dirty = true; refresh(); clearTimeout(timer); timer = setTimeout(flush, 1200); });
     ta.addEventListener("blur", flush);
@@ -202,6 +202,11 @@
       try { navigator.clipboard.writeText(ta.value).then(() => note(saved, "已复制"), fallback); } catch (_) { fallback(); }
     });
     sent.addEventListener("click", () => decide("已发"));
+    // 点「在 X 打开」就当发了(省得发完再回来点「已发」):回复的链接运营台自己去目标帖子底下找,项目帖的链接晚上机器人补;
+    // 一天还没在 X 上找到你那条回复,顶上会提醒(可能没发出去,点「改回待发」就回来)
+    open.addEventListener("click", () => {
+      if (isPend(el._d) && !open.classList.contains("off")) decide("已发", "打开了 X,发出去就行,不用再点「已发」;这条挪到下面的「已处理」了");
+    });
     skip.addEventListener("click", () => decide("跳过"));
     back.addEventListener("click", async () => { if (await save("outbox", id, { status: "待发" }, saved)) note($("done-msg"), "这条挪回「待发」了"); });
     memo.addEventListener("change", () => save("outbox", id, { note: memo.value }, saved));
@@ -242,9 +247,9 @@
       link.replaceChildren(st === "已发"
         ? (safeUrl(d.reply_url)
           ? h("span", null, post ? "你的帖子:" : "你的回复:", out(d.reply_url, "看 ↗"), x ? " · " + statText(x) + "(" + mdhm(x.at) + " 读)" : " · 读数等下一次刷新")
-          : post ? "你的帖子链接:运营台找不到自己发的帖子,在下面贴一次链接,之后浏览、点赞、回复自动跟着读。" : "你的回复链接:运营台每 20 分钟自己去目标帖子底下找;一直找不到,也可以在下面贴。")
+          : post ? "你的帖子链接:晚上机器人找到了会补上,之后浏览、点赞、回复自动跟着读。" : "你的回复链接:运营台每 20 分钟自己去目标帖子底下找。")
         : "");
-      pasteRow.hidden = !(st === "已发" && !safeUrl(d.reply_url));
+      pasteRow.hidden = true; // 老板 11-04:不用贴,链接自动找(服务器那边贴链接的入口留着,维护者用)
       paste.placeholder = post ? "贴上这条帖子的链接" : "贴上你这条回复的链接(可不贴)";
       refresh();
     };
@@ -380,10 +385,10 @@
     $("n-in").textContent = pendIn; $("n-in").classList.toggle("due", pendIn > 0);
     $("n-done").textContent = S.out.size - pendOut + S.inn.size - pendIn;
     const items = [];
-    if (pendOut) items.push({ text: [pendReplies ? pendReplies + " 条回复" : "", pendPosts ? pendPosts + " 条项目帖" : ""].filter(Boolean).join("、") + "等你点发", href: "#outbox", when: "今天" });
+    if (pendOut) items.push({ text: [pendReplies ? pendReplies + " 条回复" : "", pendPosts ? pendPosts + " 条项目帖" : ""].filter(Boolean).join("、") + "等你发(点「在 X 打开」发出去就行)", href: "#outbox", when: "今天" });
     if (pendIn) items.push({ text: pendIn + " 条评论等你看(回一句,或点一个决定)", href: "#inbox", when: "今天" });
-    const noLink = [...S.out.values()].filter((d) => isPost(d) && d.status === "已发" && !safeUrl(d.reply_url) && Date.now() - Date.parse(d.decided_at || 0) < 7 * 864e5).length;
-    if (noLink) items.push({ text: noLink + " 条项目帖还没贴链接,贴一下就能自动看浏览和回复(在「已处理」里)", href: "#done", when: "今天" });
+    const lost = [...S.out.values()].filter((d) => !isPost(d) && d.status === "已发" && !safeUrl(d.reply_url) && Date.now() - Date.parse(d.decided_at || 0) > 864e5 && Date.now() - Date.parse(d.decided_at || 0) < 7 * 864e5).length;
+    if (lost) items.push({ text: lost + " 条回复点了「在 X 打开」,一天了还没在 X 上找到你发的,可能没发出去(在「已处理」里点「改回待发」)", href: "#done", when: "今天" });
     if (json && json.synced) $("sync-at").textContent = json.synced.at ? "上次刷新 " + mdhm(json.synced.at) + (json.synced.note ? " · " + json.synced.note : "") : "";
     // 定时任务停了要说出来(「没有新东西」和「根本没跑」不是一回事)
     const late = (x, hrs) => x && x.at && (Date.now() - Date.parse(x.at)) / 3600e3 > hrs;
