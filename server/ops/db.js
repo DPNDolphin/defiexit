@@ -48,16 +48,12 @@ export async function goneSet(db, ids) {
 // 把文字里的 @账号 换掉(到期时用:我们的草稿、发出去的话里可能带着对方账号)
 export const scrub = (s) => (typeof s === "string" ? s.replace(/@[A-Za-z0-9_]{1,15}/g, "@某人") : s);
 
-// D1 每条语句最多绑 100 个参数:按 50 个一组查
+// 查哪些编号已经在表里:一条语句(编号整串当一个 JSON 参数传给 json_each,不受「每条语句最多绑 100 个参数」的限制,
+// 查多少个都只算一次查询)。table 只由代码里写死的表名传进来
 export async function existing(db, table, ids) {
-  const found = new Set();
-  for (let i = 0; i < ids.length; i += 50) {
-    const part = ids.slice(i, i + 50);
-    if (!part.length) continue;
-    const { results } = await db.prepare(`SELECT id FROM ${table} WHERE id IN (${part.map(() => "?").join(",")})`).bind(...part).all();
-    for (const r of results) found.add(String(r.id));
-  }
-  return found;
+  if (!ids.length) return new Set();
+  const { results } = await db.prepare(`SELECT value AS id FROM json_each(?) WHERE value IN (SELECT id FROM ${table})`).bind(JSON.stringify(ids.map(String))).all();
+  return new Set((results || []).map((r) => String(r.id)));
 }
 export const plusDays = (now, n) => iso(+now + n * 864e5);
 const parse = (s, dflt) => { try { return JSON.parse(s); } catch { return dflt; } };

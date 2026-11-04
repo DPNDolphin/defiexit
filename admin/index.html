@@ -60,7 +60,8 @@
     <div class="todo" aria-live="polite">
       <div class="todo-h"><h2>今天要你做的</h2>
         <div class="row tools">
-          <button class="btn small" type="button" id="refresh">刷新评论和读数</button>
+          <span class="hint" id="sync-at"></span>
+          <button class="btn small" type="button" id="refresh">刷新</button>
           <button class="btn small" type="button" id="logout">退出</button>
         </div>
       </div>
@@ -83,14 +84,14 @@
     </section>
 
     <section id="inbox" aria-labelledby="h-in">
-      <div class="sec-h"><h2 id="h-in">收件</h2><span class="hint">你帖子下的评论。每条有我的分析和建议,你点一个决定,这条就挪到「已处理」。</span></div>
+      <div class="sec-h"><h2 id="h-in">收件</h2><span class="hint">你的帖子和回复底下别人的评论。每条有我的分析和起草的回复:点「去 X 回复」回一句,或点一个决定,这条就挪到「已处理」。</span></div>
       <p class="saved" id="in-msg" aria-live="polite"></p>
       <div class="cards" id="in-cards"></div>
-      <p class="empty" id="in-empty">还没有评论。点上面的「刷新评论和读数」,或者等我下次干活时送进来。</p>
+      <p class="empty" id="in-empty">还没有评论。每 20 分钟自动刷新一次,也可以点上面的「刷新」。</p>
     </section>
 
     <section id="data" aria-labelledby="h-data">
-      <div class="sec-h"><h2 id="h-data">数据</h2><span class="hint">读数在你点「刷新」或我干活时更新,不是实时。</span></div>
+      <div class="sec-h"><h2 id="h-data">数据</h2><span class="hint">读数每 20 分钟自动更新,点上面的「刷新」马上读一次。</span></div>
       <div id="data-body"></div>
     </section>
 

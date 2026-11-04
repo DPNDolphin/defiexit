@@ -22,7 +22,7 @@ else if (cmd === "leads" && file) {
 
 const raw = JSON.stringify({ v: 1, ts: Date.now(), nonce: randomBytes(18).toString("base64url"), ...body });
 const sig = sign(null, Buffer.from(`dx-task-v1\n${ENV}\nPOST\n${PATH}\n${raw}`), createPrivateKey(pem)).toString("base64url");
-const r = await fetch(BASE + PATH, { method: "POST", headers: { "Content-Type": "application/json", "X-DX-Sig": sig }, body: raw, signal: AbortSignal.timeout(60000) });
+const r = await fetch(BASE + PATH, { method: "POST", headers: { "Content-Type": "application/json", "X-DX-Sig": sig }, body: raw, signal: AbortSignal.timeout(120000) }); // 运营台那边读了 45 秒就停,留足余量
 const text = await r.text();
 console.log(`${cmd}: HTTP ${r.status} ${text.slice(0, 300)}`);
 // 运营台还没上线这个入口(旧版本回 404,或者把它当成网页请求回 403 origin)、刚刷过或今天次数满了(429):这次跳过,不算失败

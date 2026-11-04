@@ -102,7 +102,7 @@ section { display: grid; gap: 14px; scroll-margin-top: 72px; }
 .kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
 .label { font-size: 13px; color: var(--faint); font-weight: 600; letter-spacing: 0.04em; }
 .drafted { display: grid; gap: 8px; }
-textarea, input[type="text"], input[type="password"] { width: 100%; font: inherit; font-size: 16px; color: var(--text); background: var(--surface-2); border: 1px solid var(--line-3); border-radius: 12px; padding: 10px 12px; min-height: 44px; }
+textarea, input[type="text"], input[type="password"], input[type="url"] { width: 100%; font: inherit; font-size: 16px; color: var(--text); background: var(--surface-2); border: 1px solid var(--line-3); border-radius: 12px; padding: 10px 12px; min-height: 44px; }
 textarea { min-height: 120px; resize: vertical; line-height: 1.6; }
 textarea[readonly] { color: var(--sub); border-style: dashed; resize: none; }
 textarea:focus, input:focus { outline: 2px solid var(--hi); outline-offset: 0; border-color: transparent; }

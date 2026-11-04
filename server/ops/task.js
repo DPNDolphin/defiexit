@@ -5,7 +5,7 @@
 //   { do: "leads", leads: [...], read, failed }  往「项目变动线索」里加监控找到的线索(只加不改,按编号去重,每次、每天有上限)
 //   改不了待发、收件、看板,也设不了管理员。钥匙丢了,别人最多让它多刷新几次、塞几条线索(来源链接只认白名单里的网站)。
 // POST /api/admin/export  维护者(Claude 主窗口)用投递那把钥匙读:管理员点的决定、状态、时间,管理员自己写的备注(可能提到别人),
-//   我们自己发出去的回复的链接,线索(公开信息),定时任务的情况。不回评论原文、评论人账号、目标帖子信息。导出前先跑一遍到期清理,过期的不会导出。
+//   我们自己发出去的回复的链接和读数(浏览、点赞、回复数),线索(公开信息),定时任务的情况。不回评论原文、评论人账号、目标帖子信息。导出前先跑一遍到期清理,过期的不会导出。
 // 两个入口都查:签名、时间(±10 分钟)、nonce 只能用一次;task 还要求 ts 比上一次大,同一时刻只处理一包(锁 5 分钟,比最慢的一次刷新长)。
 // 「每天」按 UTC 算。
 
@@ -15,7 +15,7 @@ import { sync } from "./sync.js";
 
 export const taskText = (envName, method, path, raw) => `dx-task-v1\n${envName}\n${method}\n${path}\n${raw}`;
 export const exportText = (envName, method, path, raw) => `dx-export-v1\n${envName}\n${method}\n${path}\n${raw}`;
-export const LIMIT = { body: 256 * 1024, perDay: 200, syncPerDay: 48, leadsPerReq: 100, leadsPerDay: 300, lockMs: 5 * 60 * 1000 };
+export const LIMIT = { body: 256 * 1024, perDay: 200, syncPerDay: 96, leadsPerReq: 100, leadsPerDay: 300, lockMs: 5 * 60 * 1000 };
 
 // 按天计数:先占一个名额再干活(带条件的写,满了就占不到),不是做完再 +1
 async function reserve(db, key, cap) {
@@ -147,5 +147,7 @@ export async function exportFor(db, { raw, sig, envName, method, path, pubkeys }
   const outbox = (await db.prepare("SELECT id, status, decided_at, reply_url, note FROM outbox WHERE updated_at >= ? ORDER BY updated_at DESC LIMIT 500").bind(since).all()).results;
   const leads = (await db.prepare("SELECT id, v, found_at FROM leads WHERE found_at >= ? ORDER BY found_at DESC LIMIT 300").bind(since).all()).results
     .map((r) => ({ id: r.id, found_at: r.found_at, ...(parse(r.v, {}) || {}) }));
-  return { status: 200, body: { ok: true, at: iso(now), inbox, outbox, leads, auto: await autoState(db) } };
+  let outStats = {};
+  try { outStats = JSON.parse((await getKv(db, "out_stats")) || "{}") || {}; } catch { outStats = {}; }
+  return { status: 200, body: { ok: true, at: iso(now), inbox, outbox, leads, auto: await autoState(db), outStats } };
 }

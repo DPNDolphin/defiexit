@@ -9,7 +9,7 @@ import { serve } from "../functions/admin/[[path]].js";
 import { checkText, signedText, SKEW_MS } from "../server/ops/ingest.js";
 import { waitFor, MIN_PASSWORD } from "../server/ops/auth.js";
 import { hostOk } from "../server/ops/http.js";
-import { taskText, exportText } from "../server/ops/task.js";
+import { taskText, exportText, LIMIT } from "../server/ops/task.js";
 
 const HOST = "https://defiexit.com";
 const kp = () => generateKeyPairSync("ed25519");
@@ -357,7 +357,7 @@ test("刷新太慢、中间被新的一次刷新顶掉:旧的不写,读数不被
   assert.equal(x.posts[0].points.length, 0);
   // 名额:没刷成的退回;到了上限就不刷
   assert.equal(await w.db.prepare("SELECT v FROM kv WHERE k = ?").bind("auto_sync_day:" + new Date(w.clock).toISOString().slice(0, 10)).first("v"), "0");
-  await w.db.prepare("INSERT INTO kv (k, v) VALUES (?, '48') ON CONFLICT(k) DO UPDATE SET v = '48'").bind("auto_sync_day:" + new Date(w.clock).toISOString().slice(0, 10)).run();
+  await w.db.prepare("INSERT INTO kv (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind("auto_sync_day:" + new Date(w.clock).toISOString().slice(0, 10), String(LIMIT.syncPerDay)).run();
   w.clock += 10 * 60 * 1000;
   assert.equal((await w.task({ do: "sync" })).json.error, "sync-day");
 });
@@ -483,9 +483,290 @@ test("已发的回复:刷新时去目标帖子底下按账号编号找,找到才
     ];
     return new Response(JSON.stringify(base), { status: 200 });
   };
+  const s = await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c });
+  const st = (await w.call("/api/admin/state", { cookie: c })).json;
+  assert.equal(st.outbox[0].reply_url, "https://x.com/owner_acct/status/2116000000000000004");
+  // 刚核到链接的回复,这一次就接着读了(读数、别人接着回的)
+  assert.equal(s.json.read, 2);
+  assert.equal(st.outStats["r-openeden-1"].views, 1);
+});
+
+test("我们发出去的回复:7 天内的也读;别人接着回的进收件(写明是回我们哪条);我们又回了就标已回复;读数记进 outStats", async () => {
+  const w = world();
+  const c = await w.login();
+  const OWNER = { id: "1000000000000000001", screen_name: "owner_acct" };
+  const MINE = "2116000000000000004";
+  await w.ingest({ docs: { x_posts: { posts: [{ name: "X 长文", id: "3000000000000000005", points: [] }] } }, outbox: [OUT()] });
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", status: "已发" }, cookie: c });
+  w.clock += 1000; // 投递的包要比上一包新
+  await w.ingest({ outbox: [{ ...OUT(), replyUrl: "https://x.com/owner_acct/status/" + MINE }] });
+  const asked = [];
+  w.fetchImpl = async (u) => {
+    const id = String(u).split("/").pop();
+    asked.push(id);
+    if (id === MINE) return new Response(JSON.stringify({ status: { id, author: OWNER, views: 41, likes: 1, replies: 2, reposts: 0 }, replies: [
+      { id: "2116000000000000007", text: "But the bridge stopped working", author: { id: "555", screen_name: "someone" }, replying_to: { status: MINE }, created_timestamp: 1793750000 },
+      { id: "2116000000000000008", text: "Lisk said on Nov 3 ...", author: OWNER, replying_to: { status: "2116000000000000007" }, created_timestamp: 1793750100 },
+    ] }));
+    return new Response(JSON.stringify({ status: { id, author: OWNER, views: 1, replies: 0 }, replies: [] }));
+  };
+  const s = await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c });
+  assert.equal(s.status, 200, JSON.stringify(s.json));
+  assert.equal(s.json.read, 2);
+  assert.ok(asked.includes(MINE), "读了我们那条回复");
+  const st = (await w.call("/api/admin/state", { cookie: c })).json;
+  const got = st.inbox.find((x) => x.id === "2116000000000000007");
+  assert.ok(got, "别人接着回的进了收件");
+  assert.equal(got.mine.source, "我们的回复 · OpenEden");
+  assert.equal(got.mine.replyToId, "2116000000000000007");
+  assert.equal(got.replied, true);
+  assert.equal(got.mine.yourReply, "Lisk said on Nov 3 ...");
+  assert.deepEqual([st.outStats["r-openeden-1"].views, st.outStats["r-openeden-1"].likes, st.outStats["r-openeden-1"].replies], [41, 1, 2]);
+  assert.ok(!st.inbox.find((x) => x.id === "2116000000000000008"), "我们自己的回复不进收件");
+  // 导出也带读数
+  assert.equal((await w.exp({})).json.outStats["r-openeden-1"].views, 41);
+});
+
+test("我们发出去的多了:一次读帖总数有上限(被监控的先读),下一次先读没读过的;7 天前点「已发」的不读", async () => {
+  const w = world();
+  const c = await w.login();
+  const sid = (i) => "22160000000000001" + String(i).padStart(2, "0");
+  const tid = (i) => "21160000000000002" + String(i).padStart(2, "0");
+  const items = Array.from({ length: 31 }, (_, i) => OUT({ id: "r-x-" + i, target: { ...TARGET, id: tid(i), url: "https://x.com/someone/status/" + tid(i) } }));
+  await w.ingest({ docs: { x_posts: { posts: [{ name: "X 长文", id: "3000000000000000005", points: [] }] } }, outbox: items });
+  for (const it of items) await w.call("/api/admin/outbox", { method: "POST", body: { id: it.id, status: "已发" }, cookie: c });
+  w.clock += 1000;
+  await w.ingest({ outbox: items.map((it, i) => ({ ...it, replyUrl: "https://x.com/owner_acct/status/" + sid(i) })) });
+  await w.db.prepare("UPDATE outbox SET decided_at = ? WHERE id = ?").bind(new Date(w.clock - 8 * 864e5).toISOString(), "r-x-0").run();
+  let asked = [];
+  w.fetchImpl = async (u) => { const id = String(u).split("/").pop(); asked.push(id); return new Response(JSON.stringify({ status: { id, author: { id: "1", screen_name: "owner_acct" }, views: 3, replies: 0 }, replies: [] })); };
   await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c });
-  const item = (await w.call("/api/admin/state", { cookie: c })).json.outbox[0];
-  assert.equal(item.reply_url, "https://x.com/owner_acct/status/2116000000000000004");
+  assert.equal(asked.length, MAX_FETCH);
+  assert.equal(asked[0], "3000000000000000005", "被监控的帖子先读");
+  assert.ok(!asked.includes(sid(0)), "8 天前的不读");
+  const first = new Set(asked);
+  w.clock += 3 * 60 * 1000;
+  asked = [];
+  await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c });
+  assert.equal(asked.length, MAX_FETCH);
+  const unread = Array.from({ length: 30 }, (_, i) => sid(i + 1)).filter((x) => !first.has(x));
+  assert.equal(unread.length, 30 - (MAX_FETCH - 1));
+  assert.deepEqual(asked.slice(1, 1 + unread.length).sort(), unread.sort(), "上次没轮到的先读");
+  assert.ok(!asked.includes(sid(0)));
+});
+
+test("我们回复底下:只收这一串里的评论(别的分支不收);贴的链接不是我们账号发的,不收它底下的评论", async () => {
+  const w = world();
+  const c = await w.login();
+  const OWNER = { id: "1000000000000000001", screen_name: "owner_acct" };
+  const MINE = "2116000000000000004", STRANGER = "2116000000000000044";
+  const POST = { id: "p-wrong-1105", kind: "post", topic: "关停提醒", why: "测试", draft: "测试项目帖。" };
+  await w.ingest({ docs: { x_posts: { posts: [{ name: "X 长文", id: "3000000000000000005", points: [] }] } }, outbox: [OUT(), POST] });
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", status: "已发" }, cookie: c });
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: POST.id, status: "已发" }, cookie: c });
+  w.clock += 1000;
+  await w.ingest({ outbox: [{ ...OUT(), replyUrl: "https://x.com/owner_acct/status/" + MINE }] });
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: POST.id, reply_url: "https://x.com/someone_else/status/" + STRANGER }, cookie: c });
+  w.fetchImpl = async (u) => {
+    const id = String(u).split("/").pop();
+    if (id === MINE) return new Response(JSON.stringify({ status: { id, author: OWNER, views: 9, replies: 2 }, replies: [
+      { id: "2116000000000000007", text: "in our thread", author: { id: "555", screen_name: "someone" }, replying_to: { status: MINE } },
+      { id: "2116000000000000017", text: "deeper in our thread", author: { id: "556", screen_name: "another" }, replying_to: { status: "2116000000000000007" } },
+      { id: "2116000000000000027", text: "another branch", author: { id: "557", screen_name: "elsewhere" }, replying_to: { status: "2116000000000000999" } },
+    ] }));
+    if (id === STRANGER) return new Response(JSON.stringify({ status: { id, author: { id: "777", screen_name: "someone_else" }, views: 5, replies: 1 }, replies: [
+      { id: "2116000000000000037", text: "not about us", author: { id: "558", screen_name: "visitor" }, replying_to: { status: STRANGER } },
+    ] }));
+    return new Response(JSON.stringify({ status: { id, author: OWNER, views: 1, replies: 0 }, replies: [] }));
+  };
+  const s = await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c });
+  assert.equal(s.status, 200, JSON.stringify(s.json));
+  const ids = (await w.call("/api/admin/state", { cookie: c })).json.inbox.map((x) => x.id).sort();
+  assert.deepEqual(ids, ["2116000000000000007", "2116000000000000017"]);
+  assert.ok(s.json.errors.some((e) => /不是我们账号发的/.test(e)), JSON.stringify(s.json.errors));
+});
+
+test("贴链接:只收 x.com 的帖子链接(去掉 ?s=20 这类尾巴),只给「已发」的贴;贴了刷新就读它", async () => {
+  const w = world();
+  const c = await w.login();
+  const POST = { id: "p-balancer-1105", kind: "post", topic: "关停提醒 · Balancer", why: "官方论坛写明大部分池子只能取", draft: "Balancer 正在关停,先看看自己有没有仓位。" };
+  await w.ingest({ docs: { x_posts: { posts: [{ name: "项目帖 · ZKsync", id: "2117764004450045982", points: [] }] } }, outbox: [POST] });
+  const put = (url) => w.call("/api/admin/outbox", { method: "POST", body: { id: POST.id, reply_url: url }, cookie: c });
+  assert.equal((await put("https://x.com/Ilikecoin2023/status/2117778827250409695")).status, 409); // 还是待发
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: POST.id, status: "已发" }, cookie: c });
+  for (const bad of ["https://evil.example/Ilikecoin2023/status/2117778827250409695", "http://x.com/Ilikecoin2023/status/2117778827250409695", "javascript:alert(1)", "https://x.com/Ilikecoin2023", "https://x.com/a/status/1/photo/1"]) {
+    const r = await put(bad);
+    assert.equal(r.status, 400, bad);
+    assert.equal(r.json.error, "badlink", bad);
+  }
+  const ok = await put("https://x.com/Ilikecoin2023/status/2117778827250409695?a=tPG3jbVDUS4clhsExLU&s=20");
+  assert.equal(ok.status, 200, JSON.stringify(ok.json));
+  assert.equal(ok.json.item.reply_url, "https://x.com/Ilikecoin2023/status/2117778827250409695");
+  const asked = [];
+  w.fetchImpl = async (u) => { const id = String(u).split("/").pop(); asked.push(id); return new Response(JSON.stringify({ status: { id, author: { id: "1", screen_name: "Ilikecoin2023" }, views: 14, likes: 0, replies: 0 }, replies: [] })); };
+  await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c });
+  assert.deepEqual(asked, ["2117764004450045982", "2117778827250409695"]);
+  assert.equal((await w.call("/api/admin/state", { cookie: c })).json.outStats[POST.id].views, 14);
+  // 到期删过的不能再贴回去
+  await w.db.prepare("UPDATE outbox SET purged = 1, reply_url = NULL WHERE id = ?").bind(POST.id).run();
+  assert.equal((await put("https://x.com/Ilikecoin2023/status/2117778827250409695")).status, 409);
+});
+
+test("评论多:一次收 100 条(被我们回过的先,其余新的先),没收完的下次接着收,不漏;已回复标记也补齐", async () => {
+  const w = world();
+  const c = await w.login();
+  const OWNER = { id: "1000000000000000001", screen_name: "owner_acct" };
+  const POST = "3000000000000000005";
+  await w.ingest({ docs: { x_posts: { posts: [{ name: "X 长文", id: POST, points: [] }] } } });
+  // 160 条别人的评论;发帖人回了最早的 40 条(一共 200 条,读帖接口一次最多给 200 条)
+  const cid = (k) => String(2117000000000000000n + BigInt(k));
+  const rid = (k) => String(2117000000000001000n + BigInt(k));
+  const replies = [];
+  for (let k = 0; k < 160; k++) replies.push({ id: cid(k), text: "q" + k, author: { id: String(5000 + k), screen_name: "v" + k }, replying_to: { status: POST } });
+  for (let k = 0; k < 40; k++) replies.push({ id: rid(k), text: "a" + k, author: OWNER, replying_to: { status: cid(k) } });
+  w.fetchImpl = async () => new Response(JSON.stringify({ status: { id: POST, author: OWNER, replies: 200 }, replies }));
+  const got = [];
+  for (let i = 0; i < 3; i++) {
+    const r = await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c });
+    assert.equal(r.status, 200, JSON.stringify(r.json));
+    got.push([r.json.newReplies, r.json.marked]);
+    w.clock += 121000;
+  }
+  assert.deepEqual(got, [[100, 40], [60, 0], [0, 0]]); // 回过的 40 条先收、收进来就标好
+  const inbox = (await w.call("/api/admin/state", { cookie: c })).json.inbox;
+  assert.equal(inbox.length, 160);
+  assert.equal(inbox.filter((x) => x.replied === true).length, 40);
+});
+
+test("上游这次少给了几条:下次给了照样收(晚到的、父评论这次没返回的子评论);同一条评论在两条帖子底下只算一次;一条帖子评论再多也挤不掉别的", async () => {
+  const w = world();
+  const c = await w.login();
+  const OWNER = { id: "1000000000000000001", screen_name: "owner_acct" };
+  const A = "3000000000000000005", B = "3000000000000000006";
+  await w.ingest({ docs: { x_posts: { posts: [{ name: "A", id: A, points: [] }, { name: "B", id: B, points: [] }] } } });
+  const cm = (id, to, k) => ({ id, text: "t" + k, author: { id: String(7000 + k), screen_name: "u" + k }, replying_to: { status: to } });
+  let round = 0;
+  const busy = (n) => Array.from({ length: 150 }, (_, k) => cm(String(2118000000000000000n + BigInt(n * 1000 + k)), A, k));
+  w.fetchImpl = async (u) => {
+    const id = String(u).split("/").pop();
+    let replies = [];
+    if (id === A) replies = round === 0 ? [cm("2117000000000000102", A, 2), cm("2117000000000000101", A, 1)] : round === 1 ? [cm("2117000000000000102", A, 2), cm("2117000000000000201", "2117000000000000200", 3), cm("2117000000000000103", A, 4)] : [cm("2117000000000000200", A, 5), cm("2117000000000000201", "2117000000000000200", 3), cm("2117000000000000103", A, 4), ...busy(2)];
+    if (id === B) replies = round >= 2 ? [cm("2117000000000000103", B, 4), cm("2117000000000000301", B, 6)] : [];
+    return new Response(JSON.stringify({ status: { id, author: OWNER, replies: replies.length }, replies }));
+  };
+  const ids = async () => (await w.call("/api/admin/state", { cookie: c })).json.inbox.map((x) => x.id);
+  round = 0; await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c }); w.clock += 121000;
+  assert.deepEqual((await ids()).sort(), ["2117000000000000101", "2117000000000000102"]);
+  round = 1; await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c }); w.clock += 121000;
+  assert.ok((await ids()).includes("2117000000000000103"));
+  assert.ok(!(await ids()).includes("2117000000000000201"), "父评论这次没返回,先不收");
+  round = 2;
+  const r = await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c }); w.clock += 121000;
+  assert.equal(r.json.newReplies, 100, "一次最多 100 条;B 底下那条和 A 底下那条重复的只算一次");
+  assert.ok((await ids()).includes("2117000000000000301"), "A 底下一下来了 150 条,B 那条也收了");
+  round = 3;
+  const r2 = await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c });
+  const now = await ids();
+  assert.ok(now.includes("2117000000000000200") && now.includes("2117000000000000201"), "父评论回来了,子评论也收(上一次没收完的这次接着收)");
+  assert.equal(r2.json.newReplies, 53);
+  assert.equal(now.length, 2 + 1 + 100 + 53);
+});
+
+test("回复串很深、倒着返回:顺着找到底,都收;停了读评论的帖子,也在已发记录里也不读", async () => {
+  const w = world();
+  const c = await w.login();
+  const OWNER = { id: "1000000000000000001", screen_name: "owner_acct" };
+  const POST = "3000000000000000005", MINE = "2117780000000000001";
+  const ITEM = { id: "p-deep-1105", kind: "post", topic: "关停提醒", why: "测试", draft: "测试项目帖。" };
+  await w.ingest({ docs: { x_posts: { posts: [{ name: "X 长文", id: POST, points: [] }] } }, outbox: [ITEM] });
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: ITEM.id, status: "已发" }, cookie: c });
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: ITEM.id, reply_url: "https://x.com/owner_acct/status/" + MINE }, cookie: c });
+  // 8 层:第 1 层回帖子,第 n 层回第 n-1 层;倒着给
+  const lv = (n) => String(2117790000000000000n + BigInt(n));
+  const chain = Array.from({ length: 8 }, (_, i) => ({ id: lv(i + 1), text: "l" + (i + 1), author: { id: String(6000 + i), screen_name: "d" + i }, replying_to: { status: i === 0 ? POST : lv(i) }, created_timestamp: 1793760000 + i }));
+  const asked = [];
+  w.fetchImpl = async (u) => {
+    const id = String(u).split("/").pop();
+    asked.push(id);
+    return new Response(JSON.stringify({ status: { id, author: OWNER, replies: 8 }, replies: id === POST ? chain.slice().reverse() : [] }));
+  };
+  let r = await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c });
+  assert.equal(r.json.newReplies, 8);
+  assert.ok(asked.includes(MINE), "项目帖贴了链接,读它");
+  // 管理员停了读项目帖的评论:就算它也在已发记录里,也不读
+  await w.call("/api/admin/watch", { method: "POST", body: { id: MINE, on: false }, cookie: c });
+  w.clock += 121000;
+  asked.length = 0;
+  r = await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  assert.ok(!asked.includes(MINE), "停了就不读");
+});
+
+test("删过的评论再多也挡不住别的:更早的那条照样收;我们回了、但那条评论这次没返回,收件里的也照样标已回复;计数按实际写进去的", async () => {
+  const w = world();
+  const c = await w.login();
+  const OWNER = { id: "1000000000000000001", screen_name: "owner_acct" };
+  const POST = "3000000000000000005";
+  await w.ingest({ docs: { x_posts: { posts: [{ name: "X 长文", id: POST, points: [] }] } } });
+  const id = (k) => String(2117000000000000000n + BigInt(k));
+  const cm = (k, to = POST) => ({ id: id(k), text: "t" + k, author: { id: String(8000 + k), screen_name: "u" + k }, replying_to: { status: to } });
+  // 新的 150 条都按要求删过(gone),最早的第 0 条没删
+  for (let k = 1; k <= 150; k++) await (await goneStmt(w.db, id(k), w.now())).run();
+  let replies = Array.from({ length: 151 }, (_, k) => cm(k));
+  w.fetchImpl = async () => new Response(JSON.stringify({ status: { id: POST, author: OWNER, replies: replies.length }, replies }));
+  let r = await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c });
+  assert.equal(r.json.newReplies, 1);
+  assert.deepEqual((await w.call("/api/admin/state", { cookie: c })).json.inbox.map((x) => x.id), [id(0)]);
+  // 第 0 条收件里已经有;这次只返回我们回它的那条,第 0 条本身没返回:照样标已回复
+  w.clock += 121000;
+  replies = [{ id: id(900), text: "我们回的", author: OWNER, replying_to: { status: id(0) } }];
+  r = await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c });
+  assert.equal(r.json.marked, 1);
+  const it = (await w.call("/api/admin/state", { cookie: c })).json.inbox[0];
+  assert.equal(it.replied, true);
+  assert.equal(it.mine.yourReply, "我们回的");
+  // 查重之后、写之前,投递先把同一条写进去了:刷新这条写进去 0 行,也就不算新评论
+  w.clock += 121000;
+  replies = [cm(1000)];
+  const raw = w.db;
+  let raced = false;
+  w.db = { prepare: (sql) => raw.prepare(sql), batch: async (ss) => {
+    if (!raced && ss.some((x) => /INSERT INTO inbox/.test(x.sql || ""))) { raced = true; await raw.prepare("INSERT INTO inbox (id, mine, text, created_at, updated_at, purge_after) VALUES (?, '{}', 'x', ?, ?, ?)").bind(id(1000), "t", "t", "2099-01-01").run(); }
+    return raw.batch(ss);
+  } };
+  r = await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c });
+  w.db = raw;
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  assert.equal(r.json.newReplies, 0);
+});
+
+test("一次刷新最坏情况:fetch 加数据库查询不超过 50 个(免费计划的上限)", async () => {
+  const w = world();
+  const c = await w.login();
+  const OWNER = { id: "1000000000000000001", screen_name: "owner_acct" };
+  const posts = Array.from({ length: 10 }, (_, i) => ({ name: "帖子 " + i, id: "30000000000000001" + String(i).padStart(2, "0"), points: [] }));
+  const tid = (i) => "21160000000000003" + String(i).padStart(2, "0");
+  const items = Array.from({ length: 40 }, (_, i) => OUT({ id: "r-y-" + i, target: { ...TARGET, id: tid(i), url: "https://x.com/someone/status/" + tid(i) } }));
+  await w.ingest({ docs: { x_posts: { posts } }, outbox: items });
+  for (const it of items) await w.call("/api/admin/outbox", { method: "POST", body: { id: it.id, status: "已发" }, cookie: c });
+  w.clock += 1000;
+  await w.ingest({ outbox: items.slice(0, 30).map((it, i) => ({ ...it, replyUrl: "https://x.com/owner_acct/status/22160000000000002" + String(i).padStart(2, "0") })) });
+  let fetches = 0;
+  w.fetchImpl = async (u) => {
+    fetches++;
+    const id = String(u).split("/").pop();
+    const replies = Array.from({ length: 200 }, (_, k) => ({ id: id.slice(0, 15) + String(1000 + k), text: "c" + k, author: { id: String(900 + k), screen_name: "v" + k }, replying_to: { status: id }, created_timestamp: 1793750000 + k }));
+    return new Response(JSON.stringify({ status: { id, author: OWNER, views: 1, replies: 200 }, replies }));
+  };
+  const raw = w.db;
+  let queries = 0;
+  const wrap = (st) => ({ inner: st, bind: (...a) => wrap(st.bind(...a)), first: (...a) => { queries++; return st.first(...a); }, all: () => { queries++; return st.all(); }, run: () => { queries++; return st.run(); } });
+  w.db = { prepare: (sql) => wrap(raw.prepare(sql)), batch: (ss) => { queries++; return raw.batch(ss.map((x) => x.inner)); } };
+  const r = await w.task({ do: "sync" });
+  w.db = raw;
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  assert.equal(fetches, MAX_FETCH);
+  assert.ok(fetches + queries <= 50, `fetch ${fetches} + 查库 ${queries} = ${fetches + queries}`);
 });
 
 test("30 天到期:评论整行删掉、编号只留哈希,只留不带账号的需求摘要;再投递也收不回来", async () => {
@@ -549,8 +830,8 @@ test("按要求删掉一条;帖子可以停止读评论", async () => {
 
 // ---------- 代码审查复现过的问题(修了以后留着防回归) ----------
 import { failed, mustWait } from "../server/ops/auth.js";
-import { sync } from "../server/ops/sync.js";
-import { ensure, putDoc } from "../server/ops/db.js";
+import { sync, MAX_FETCH } from "../server/ops/sync.js";
+import { ensure, putDoc, goneStmt } from "../server/ops/db.js";
 
 test("投递一次只处理一包:锁着就回 busy;锁超过 60 秒算失效", async () => {
   const w = world();
@@ -638,7 +919,7 @@ test("刷新读到 200 条评论:查库次数不跟着涨", async () => {
   };
   const replies = Array.from({ length: 200 }, (_, i) => ({ id: String(2000 + i), text: "c", author: { id: "9", screen_name: "visitor" } }));
   const r = await sync(counted, edgeFetch(async () => new Response(JSON.stringify({ status: { id: "1234", author: { id: "1", screen_name: "owner" }, replies: 200 }, replies }))), now);
-  assert.equal(r.body.newReplies, 200);
+  assert.equal(r.body.newReplies, 100); // 一次最多收 100 条(最新的在前),剩下的下次再收
   assert.ok(calls <= 20, "查库 " + calls + " 次");
 });
 

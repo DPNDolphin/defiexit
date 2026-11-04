@@ -26,6 +26,8 @@
     }
     return el;
   }
+  // 换掉一个元素里的内容:和 h() 一样跳过 null / false(直接 replaceChildren(null) 会显示成「null」)
+  const fill = (el, ...kids) => el.replaceChildren(...kids.flat(Infinity).filter((k) => k != null && k !== false));
   const NS = "http://www.w3.org/2000/svg";
   function sv(tag, attrs, ...kids) {
     const el = document.createElementNS(NS, tag);
@@ -65,6 +67,7 @@
     origin: "请求来源不对,刷新页面再试", login: "登录过期了,请重新登录", busy: "刚刷新过,两分钟后再点", superseded: "同时有另一次刷新在跑,这次的结果没写进去,过一会儿再看", bad: "内容不合格,没存",
     nocode: "设置链接还没生成或已经过期,叫我重新发一个", code: "设置码不对", name: "用户名只能用字母、数字、汉字和 _ . -,最多 40 个", locked: "这条已经点过「已发 / 跳过」,先改回待发再改草稿",
     none: "这一条已经不在了,刷新一下", target: "这条没有目标帖子编号,不能发", draftbad: "草稿里有站外链接或不许用的词",
+    badlink: "链接不对:要 x.com 上那一条的链接(帖子右下角「分享」→「复制链接」)",
   };
   const why = (j) => (WHY[j && (j.error || j.need)] || "出错了(" + ((j && (j.error || j.need)) || "未知") + "),再试一次") + (j && j.why ? ":" + j.why : "");
   function note(el, msg, bad) {
@@ -74,7 +77,7 @@
     if (!bad) setTimeout(() => { if (el.textContent === msg) el.textContent = ""; }, 2500);
   }
 
-  const S = { docs: {}, out: new Map(), inn: new Map(), cards: new Map(), ro: null, watchOff: new Set(), needs: [], leads: [], auto: {} };
+  const S = { docs: {}, out: new Map(), inn: new Map(), cards: new Map(), ro: null, watchOff: new Set(), needs: [], leads: [], auto: {}, outStats: {} };
 
   function show(view) {
     $("boot-msg").hidden = view !== "boot";
@@ -137,6 +140,17 @@
   const OUT_STATUS = { "待发": "hi", "已发": "ok", "跳过": "mute" };
   const isPost = (d) => !!(d && d.mine && d.mine.kind === "post");
   const isPend = (d) => ((d && d.status) || "待发") === "待发";
+  // 我们发出去那一条的最新读数:刷新时记的(out_stats)和「帖子读数」里最后一个点(被监控的帖子),哪个新用哪个
+  function statOf(d) {
+    const x = S.outStats && S.outStats[d.id];
+    const m = /\/status\/(\d{1,25})$/.exec(String(d.reply_url || ""));
+    const p = m && ((S.docs.x_posts && S.docs.x_posts.posts) || []).find((q) => String(q.id) === m[1]);
+    const pt = p && Array.isArray(p.points) && p.points[p.points.length - 1];
+    const a = x && typeof x.at === "string" ? x : null, b = pt && typeof pt.at === "string" ? pt : null;
+    return a && b ? (a.at >= b.at ? a : b) : a || b;
+  }
+  const n0 = (v) => (v == null ? "?" : v);
+  const statText = (x) => "浏览 " + n0(x.views) + " · 赞 " + n0(x.likes) + " · 回复 " + n0(x.replies);
   function outCard(id) {
     const ta = h("textarea", { id: "draft-" + id, "aria-label": "回复草稿,可以直接改" });
     const count = h("span", { class: "count" });
@@ -153,13 +167,15 @@
     const chips = h("div", { class: "chips" });
     const kv = h("dl", { class: "kv" });
     const link = h("p", { class: "count" });
+    const paste = h("input", { type: "url", id: "url-out-" + id, inputmode: "url", maxlength: "300", "aria-label": "贴上这一条在 X 上的链接" });
+    const pasteRow = h("div", { class: "row", hidden: true }, paste);
     const lab = h("span", { class: "label" });
     const el = h("article", { class: "card", "data-id": id }, head, chips, kv,
       h("div", { class: "row" }, lab, h("span", { class: "grow" }), restore), ta,
       h("div", { class: "row" }, count, h("span", { class: "grow" }), copy),
       open,
       h("div", { class: "row" }, sent, skip, back, h("span", { class: "grow" }), status),
-      link, memo, h("div", { class: "row" }, saved, h("span", { class: "grow" }), delButton("outbox", id, saved)));
+      link, pasteRow, memo, h("div", { class: "row" }, saved, h("span", { class: "grow" }), delButton("outbox", id, saved)));
     let timer = null, dirty = false;
     const target = () => (el._d && el._d.mine && el._d.mine.target) || {};
     const refresh = () => {
@@ -189,16 +205,20 @@
     skip.addEventListener("click", () => decide("跳过"));
     back.addEventListener("click", async () => { if (await save("outbox", id, { status: "待发" }, saved)) note($("done-msg"), "这条挪回「待发」了"); });
     memo.addEventListener("change", () => save("outbox", id, { note: memo.value }, saved));
+    paste.addEventListener("change", async () => {
+      const v = paste.value.trim();
+      if (v && (await save("outbox", id, { reply_url: v }, saved))) { paste.value = ""; note(saved, "链接记下了,之后浏览、点赞、回复每 20 分钟自动读"); }
+    });
     el._update = (d) => {
       el._d = d;
       const m = d.mine || {}, t = m.target || {}, post = isPost(d);
-      head.replaceChildren(...(post
+      fill(head, ...(post
         ? [h("span", { class: "who" }, "自己发的帖子"), h("span", null, "发一条新帖,不是回复别人")]
         : [h("span", { class: "who" }, "回 @" + (t.handle || "?")),
           t.postedAt ? h("span", null, md(t.postedAt) + " 发的帖") : null,
           safeUrl(t.url) ? out(t.url, "看原帖 ↗") : null]));
       chips.replaceChildren(...(post ? [m.topic] : [t.protocol, t.chain, t.type]).filter(Boolean).map((x) => h("span", { class: "chip" }, x)));
-      kv.replaceChildren(...(post
+      fill(kv, ...(post
         ? [m.why ? h("dt", null, "为什么发") : null, m.why ? h("dd", null, m.why) : null]
         : [h("dt", null, "卡在"), h("dd", null, t.summary || (d.purged ? "(30 天到了,原帖信息已删)" : "—")),
           m.why ? h("dt", null, "为什么回") : null, m.why ? h("dd", null, m.why) : null]));
@@ -218,9 +238,14 @@
       skip.setAttribute("aria-pressed", String(st === "跳过"));
       back.hidden = st === "待发";
       el.classList.toggle("done", st !== "待发");
+      const x = st === "已发" ? statOf(d) : null;
       link.replaceChildren(st === "已发"
-        ? (safeUrl(d.reply_url) ? h("span", null, post ? "你的帖子:" : "你的回复:", out(d.reply_url, "看 ↗")) : (post ? "你的帖子链接" : "你的回复链接") + ":我下次干活时自己找到填上。")
+        ? (safeUrl(d.reply_url)
+          ? h("span", null, post ? "你的帖子:" : "你的回复:", out(d.reply_url, "看 ↗"), x ? " · " + statText(x) + "(" + mdhm(x.at) + " 读)" : " · 读数等下一次刷新")
+          : post ? "你的帖子链接:运营台找不到自己发的帖子,在下面贴一次链接,之后浏览、点赞、回复自动跟着读。" : "你的回复链接:运营台每 20 分钟自己去目标帖子底下找;一直找不到,也可以在下面贴。")
         : "");
+      pasteRow.hidden = !(st === "已发" && !safeUrl(d.reply_url));
+      paste.placeholder = post ? "贴上这条帖子的链接" : "贴上你这条回复的链接(可不贴)";
       refresh();
     };
     return el;
@@ -253,12 +278,12 @@
       if ((await save("inbox", id, { decision: DECISIONS[i] }, saved)) && was) note($("in-msg"), "定了「" + DECISIONS[i] + "」,这条挪到下面的「已处理」了");
     }));
     undo.addEventListener("click", async () => { if (await save("inbox", id, { decision: null }, saved)) note($("done-msg"), "这条挪回「收件」了"); });
-    replied.addEventListener("click", () => save("inbox", id, { replied: true }, saved));
+    replied.addEventListener("click", async () => { if (await save("inbox", id, { replied: true }, saved)) note($("in-msg"), "记下了,这条挪到下面的「已处理」了"); });
     memo.addEventListener("change", () => save("inbox", id, { note: memo.value }, saved));
     el._update = (d) => {
       el._d = d;
       const m = d.mine || {};
-      head.replaceChildren(
+      fill(head, 
         h("span", { class: "who" }, m.source || "评论"),
         h("span", null, "@" + (m.author || "?")),
         m.at ? h("span", null, mdhm(m.at)) : null,
@@ -266,7 +291,7 @@
         d.replied ? h("span", { class: "pill ok" }, "已回复" + (d.replied_at ? " " + md(d.replied_at) : "")) : null);
       quote.textContent = d.text != null ? d.text : "(30 天到了,原文已删;需求摘要留在下面)";
       quote.classList.toggle("gone", d.text == null);
-      kv.replaceChildren(
+      fill(kv, 
         h("dt", null, "类型"), h("dd", null, m.type || "等我分析"),
         h("dt", null, "背后的需求"), h("dd", null, m.need || (m.type ? "暂无明确需求" : "我下次干活时看")),
         h("dt", null, "我的建议"), h("dd", null, m.suggestion ? h("b", null, m.suggestion) : "—", m.suggestionWhy ? ":" + m.suggestionWhy : ""));
@@ -278,11 +303,11 @@
       replied.hidden = !!d.replied || !m.draft;
       const dec = d.decision || null;
       btns.forEach((b, i) => b.setAttribute("aria-pressed", String(dec === DECISIONS[i])));
-      undo.hidden = !dec;
-      status.className = "pill " + (dec ? "ok" : "warn");
-      status.textContent = dec ? "你定了:" + dec + (d.decided_at ? " · " + mdhm(d.decided_at) : "") : "等你定";
+      undo.hidden = !dec || !!d.replied; // 回过的本来就算处理过,改回待定也还在「已处理」
+      status.className = "pill " + (dec || d.replied ? "ok" : "warn");
+      status.textContent = dec ? "你定了:" + dec + (d.decided_at ? " · " + mdhm(d.decided_at) : "") : d.replied ? "回过了,不用再定" : "等你定";
       if (document.activeElement !== memo && memo.value !== (d.note || "")) memo.value = d.note || "";
-      el.classList.toggle("done", !!dec);
+      el.classList.toggle("done", !!dec || !!d.replied);
     };
     return el;
   }
@@ -302,7 +327,8 @@
     const now = [...box.children].map((c) => c._key);
     if (now.join("|") !== want.join("|")) want.forEach((k) => box.append(S.cards.get(k)));
   }
-  const decidedIn = (d) => !!(d && d.decision);
+  // 收件里点过决定的、回过的(你点「我已回复」,或刷新时认出你在 X 上回了),都算处理过
+  const handledIn = (d) => !!(d && (d.decision || d.replied));
   function sync(kind) {
     const store = kind === "out" ? S.out : S.inn;
     const keys = new Set([...store.keys()].map((id) => kind + ":" + id));
@@ -315,17 +341,17 @@
         ? "待发的都处理完了。点过「已发 / 跳过」的在下面的「已处理」里。"
         : "还没有待发的。机器人交帖后,我把原帖逐条看过,写好回复放在这里;每天的项目帖也放这里。";
     } else {
-      const pend = [...S.inn.entries()].filter(([, d]) => !decidedIn(d)).sort((a, b) => String((b[1].mine || {}).at || "").localeCompare(String((a[1].mine || {}).at || ""))).map(([id, d]) => ["in", id, d]);
+      const pend = [...S.inn.entries()].filter(([, d]) => !handledIn(d)).sort((a, b) => String((b[1].mine || {}).at || "").localeCompare(String((a[1].mine || {}).at || ""))).map(([id, d]) => ["in", id, d]);
       place("in-cards", pend);
       $("in-empty").hidden = pend.length > 0;
       $("in-empty").textContent = S.inn.size > pend.length
-        ? "收件里的都处理完了。点过决定的在下面的「已处理」里。"
-        : "还没有评论。点上面的「刷新评论和读数」,或者等我下次干活时送进来。";
+        ? "收件里的都处理完了。点过决定的、回过的在下面的「已处理」里。"
+        : "还没有评论。每 20 分钟自动刷新一次,也可以点上面的「刷新」。";
     }
     const done = [
       ...[...S.out.entries()].filter(([, d]) => !isPend(d)).map(([id, d]) => ["out", id, d]),
-      ...[...S.inn.entries()].filter(([, d]) => decidedIn(d)).map(([id, d]) => ["in", id, d]),
-    ].sort((a, b) => String(b[2].decided_at || "").localeCompare(String(a[2].decided_at || "")) || String(b[2].created_at || "").localeCompare(String(a[2].created_at || "")));
+      ...[...S.inn.entries()].filter(([, d]) => handledIn(d)).map(([id, d]) => ["in", id, d]),
+    ].sort((a, b) => String(b[2].decided_at || b[2].replied_at || "").localeCompare(String(a[2].decided_at || a[2].replied_at || "")) || String(b[2].created_at || "").localeCompare(String(a[2].created_at || "")));
     place("done-cards", done);
     $("done-empty").hidden = done.length > 0;
   }
@@ -336,6 +362,7 @@
     S.needs = Array.isArray(json.needs) ? json.needs : [];
     S.leads = Array.isArray(json.leads) ? json.leads : [];
     S.auto = json.auto && typeof json.auto === "object" ? json.auto : {};
+    S.outStats = json.outStats && typeof json.outStats === "object" ? json.outStats : {};
     S.out = new Map((json.outbox || []).map((d) => [d.id, d]));
     S.inn = new Map((json.inbox || []).map((d) => [d.id, d]));
     sync("out");
@@ -348,13 +375,16 @@
   function renderTop(json) {
     const pend = [...S.out.values()].filter(isPend);
     const pendOut = pend.length, pendPosts = pend.filter(isPost).length, pendReplies = pendOut - pendPosts;
-    const pendIn = [...S.inn.values()].filter((d) => !d.decision).length;
+    const pendIn = [...S.inn.values()].filter((d) => !handledIn(d)).length;
     $("n-out").textContent = pendOut; $("n-out").classList.toggle("due", pendOut > 0);
     $("n-in").textContent = pendIn; $("n-in").classList.toggle("due", pendIn > 0);
     $("n-done").textContent = S.out.size - pendOut + S.inn.size - pendIn;
     const items = [];
     if (pendOut) items.push({ text: [pendReplies ? pendReplies + " 条回复" : "", pendPosts ? pendPosts + " 条项目帖" : ""].filter(Boolean).join("、") + "等你点发", href: "#outbox", when: "今天" });
-    if (pendIn) items.push({ text: pendIn + " 条评论等你点一个决定", href: "#inbox", when: "今天" });
+    if (pendIn) items.push({ text: pendIn + " 条评论等你看(回一句,或点一个决定)", href: "#inbox", when: "今天" });
+    const noLink = [...S.out.values()].filter((d) => isPost(d) && d.status === "已发" && !safeUrl(d.reply_url) && Date.now() - Date.parse(d.decided_at || 0) < 7 * 864e5).length;
+    if (noLink) items.push({ text: noLink + " 条项目帖还没贴链接,贴一下就能自动看浏览和回复(在「已处理」里)", href: "#done", when: "今天" });
+    if (json && json.synced) $("sync-at").textContent = json.synced.at ? "上次刷新 " + mdhm(json.synced.at) + (json.synced.note ? " · " + json.synced.note : "") : "";
     // 定时任务停了要说出来(「没有新东西」和「根本没跑」不是一回事)
     const late = (x, hrs) => x && x.at && (Date.now() - Date.parse(x.at)) / 3600e3 > hrs;
     if (late(S.auto.sync, 3) || (S.auto.sync && S.auto.sync.ok === false)) items.push({ text: "自动刷新没跑成,看「数据」最下面的「定时任务」", href: "#data", when: "今天" });
@@ -367,7 +397,6 @@
       a.href && /^#[a-z]+$/.test(a.href) ? h("a", { href: a.href }, a.text) : h("span", null, a.text))) : [h("li", { class: "none" }, "今天没有要你做的。")]));
     const upd = S.docs.summary && S.docs.summary.updatedAt;
     $("upd").textContent = upd ? "我 " + mdhm(upd) + " 更新" : "";
-    if (json && json.synced && json.synced.at) $("sync-msg").textContent = "上次刷新 " + mdhm(json.synced.at) + (json.synced.note ? " · " + json.synced.note : "");
   }
 
   // ---------- 数据 ----------
@@ -605,6 +634,22 @@
       h("p", { class: "src" }, "都只是线索,不等于事实;我核过官方原文再写成帖子。"));
   }
 
+  // 我们发出去的帖子和回复:最近点了「已发」的 40 条,带最新读数
+  function minePanel(outbox) {
+    const items = [...outbox.values()].filter((d) => d.status === "已发").sort((a, b) => String(b.decided_at || "").localeCompare(String(a.decided_at || ""))).slice(0, 40);
+    if (!items.length) return null;
+    return h("div", { class: "panel" }, h("h3", null, "我们发的帖子和回复"),
+      h("div", { class: "list" }, ...items.map((d) => {
+        const m = d.mine || {}, t = m.target || {}, x = statOf(d), url = safeUrl(d.reply_url) ? d.reply_url : null;
+        return h("div", { class: "li" + (url ? "" : " muted") },
+          h("span", { class: "k" }, isPost(d) ? "帖子" : "回复"),
+          h("span", { class: "nm" }, isPost(d) ? (m.topic || d.id) : "回 @" + (t.handle || "?") + (t.protocol ? " · " + t.protocol : "")),
+          h("span", { class: "pill " + (x ? (x.replies ? "warn" : "ok") : "mute") }, x ? statText(x) : url ? "等读数" : "还没链接"),
+          h("span", { class: "sub" }, url ? out(url, mdhm(d.decided_at) + " 发 ↗") : mdhm(d.decided_at) + " 发"));
+      })),
+      h("p", { class: "src" }, "点了「已发」、链接核到了的,7 天内每 20 分钟轮着读浏览、点赞、回复;别人接着回的进「收件」,我起草接着回的话。自己发的帖子要在卡片上贴一次链接。"));
+  }
+
   // 刷新跑了、但被监控的帖子一条都没读到(和「没有新评论」不是一回事)
   function syncBlind(x) { return !!(x && x.ok !== false && x.failed > 0 && x.read === 0); }
 
@@ -632,7 +677,7 @@
   }
   function renderData() {
     const D = S.docs;
-    const parts = [safe(goalPanel, D.goal_1215), safe(routePanel, D.funnel), safe(viewsPanel, D.x_posts), safe(leadsPanel, S.leads), safe(protocolPanel, D.protocols), safe(needsPanel, S.needs), safe(clocksPanel, D.clocks), safe(botPanel, D.bot), safe(autoPanel, S.auto)].filter(Boolean);
+    const parts = [safe(goalPanel, D.goal_1215), safe(routePanel, D.funnel), safe(viewsPanel, D.x_posts), safe(minePanel, S.out), safe(leadsPanel, S.leads), safe(protocolPanel, D.protocols), safe(needsPanel, S.needs), safe(clocksPanel, D.clocks), safe(botPanel, D.bot), safe(autoPanel, S.auto)].filter(Boolean);
     $("data-body").replaceChildren(...(parts.length ? parts : [h("p", { class: "empty" }, "还没有数据。我下次干活时送进来。")]));
   }
 
@@ -660,17 +705,19 @@
       if (status === 200 && json.ok) { f.reset(); load(); }
       else note(msg, why(json), true);
     });
+    // 「刷新」:先请服务器去 X 上读一次(新评论、读数),再把运营台的内容整个重新拉一遍(我送来的草稿、分析也一起到)
     $("refresh").addEventListener("click", async (e) => {
       const btn = e.currentTarget, msg = $("sync-msg");
       btn.disabled = true;
-      msg.textContent = "正在读 X 上的评论和读数…";
+      msg.textContent = "正在读 X 上的新评论和读数…";
       const { status, json } = await api("sync", {});
       btn.disabled = false;
-      if (status === 200 && json.ok) {
-        note(msg, "读好了:新评论 " + (json.newReplies || 0) + " 条" + (json.errors && json.errors.length ? ";有 " + json.errors.length + " 条帖子没读到(" + json.errors.join("、") + "),不算「没有新评论」" : ""), !!(json.errors && json.errors.length));
-        load();
-      } else if (status === 401) show("login");
-      else note(msg, why(json), true);
+      if (status === 401) return show("login");
+      const errs = (status === 200 && Array.isArray(json.errors)) ? json.errors : [];
+      if (status === 200 && json.ok) note(msg, "刷新好了:读到 " + (json.read || 0) + " 条,新评论 " + (json.newReplies || 0) + " 条" + (errs.length ? ";有 " + errs.length + " 条没读到(" + errs.join("、") + "),不算「没有新评论」" : ""), errs.length > 0);
+      else if (json.error === "busy") note(msg, "两分钟内刚刷新过,已把最新的内容拉下来");
+      else note(msg, why(json) + ";已把最新的内容拉下来", true);
+      load();
     });
     $("logout").addEventListener("click", async () => { await api("logout", {}); show("login"); });
     $("logout-all").addEventListener("click", async () => { await api("logout-all", {}); show("login"); });

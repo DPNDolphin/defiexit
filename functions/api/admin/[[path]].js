@@ -23,20 +23,43 @@ const hex = async (s) => [...new Uint8Array(await crypto.subtle.digest("SHA-256"
 
 async function state(db, admin, now) {
   await purge(db, now);
-  const [docs, outbox, inbox, syncAt, syncNote, off, needs, leads, auto] = await Promise.all([
+  const [docs, outbox, inbox, syncAt, syncNote, off, needs, leads, auto, outStats] = await Promise.all([
     getDocs(db), listOut(db), listIn(db), getKv(db, "sync_at_ms"), getKv(db, "sync_note"),
     db.prepare("SELECT id FROM watch WHERE on_ = 0").all(),
     db.prepare("SELECT month, v FROM needs ORDER BY month DESC LIMIT 100").all(),
-    listLeads(db, 30), autoState(db),
+    listLeads(db, 30), autoState(db), getKv(db, "out_stats"),
   ]);
   const past = needs.results.map((r) => { try { return { month: r.month, ...JSON.parse(r.v) }; } catch { return null; } }).filter(Boolean);
-  return reply({ ok: true, me: { name: admin.name }, docs, outbox, inbox, needs: past, leads, auto, watchOff: off.results.map((r) => r.id), synced: { at: syncAt ? iso(Number(syncAt)) : null, note: syncNote || "" } });
+  let stats = {};
+  try { stats = JSON.parse(outStats || "{}") || {}; } catch { stats = {}; }
+  return reply({ ok: true, me: { name: admin.name }, docs, outbox, inbox, needs: past, leads, auto, outStats: stats, watchOff: off.results.map((r) => r.id), synced: { at: syncAt ? iso(Number(syncAt)) : null, note: syncNote || "" } });
+}
+
+// 管理员贴的帖子链接:只收 x.com(或 twitter.com)上的帖子链接,统一成 https://x.com/<账号>/status/<编号>,去掉 ?s=20 这类尾巴
+function xStatusUrl(s) {
+  try {
+    const u = new URL(String(s || "").trim());
+    if (u.protocol !== "https:" || !["x.com", "www.x.com", "mobile.x.com", "twitter.com", "www.twitter.com", "mobile.twitter.com"].includes(u.hostname)) return null;
+    const m = /^\/([A-Za-z0-9_]{1,15})\/status\/(\d{1,25})\/?$/.exec(u.pathname);
+    return m ? `https://x.com/${m[1]}/status/${m[2]}` : null;
+  } catch {
+    return null;
+  }
 }
 
 async function editOut(db, b, now) {
   const cur = await getOut(db, String(b.id || ""));
   if (!cur) return reply({ error: "none" }, 404);
   const sets = [], args = [];
+  if ("reply_url" in b) {
+    // 自己发的帖子运营台找不到链接,管理员贴一次;回复一般自己能找到,找不到也可以贴。只给「已发」的贴
+    if ("status" in b) return reply({ error: "bad" }, 400);
+    const u = xStatusUrl(b.reply_url);
+    if (!u) return reply({ error: "badlink" }, 400);
+    if (cur.status !== "已发" || cur.purged) return reply({ error: "locked" }, 409);
+    sets.push("reply_url = ?");
+    args.push(u);
+  }
   if ("status" in b) {
     if (!STATUS.includes(b.status)) return reply({ error: "bad" }, 400);
     sets.push("status = ?", "decided_at = ?");
