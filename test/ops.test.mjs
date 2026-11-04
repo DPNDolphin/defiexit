@@ -19,14 +19,16 @@ const CODE = "setup-code-0123456789abcdef";
 const PW = "correct-horse-battery-staple-42";
 const baseEnv = (db, extra = {}) => ({ OPS: db, ADMIN_HOSTS: "defiexit.com", OPS_ENV: "production", INGEST_PUBKEYS: pubOf(PROD), TASK_PUBKEYS: pubOf(TASK), SETUP_CODE: CODE, ...extra });
 
+// Cloudflare 上的 fetch 只认 redirect: "follow" / "manual",写 "error" 当场报错(Node 却照常跑,11-04 正式站的刷新因此一条都没读到):假 fetch 照 Cloudflare 的来
+const edgeFetch = (inner) => (u, o = {}) => {
+  if (o.redirect !== undefined && o.redirect !== "follow" && o.redirect !== "manual") throw new TypeError('Invalid redirect value, must be one of "follow" or "manual"');
+  return inner(u, o);
+};
+
 function world() {
   const w = { db: new LocalD1(), clock: Date.parse("2026-11-03T10:00:00Z"), fetchImpl: async () => new Response("{}", { status: 500 }) };
   w.now = () => new Date(w.clock);
-  // Cloudflare 上的 fetch 只认 redirect: "follow" / "manual",写 "error" 当场报错(Node 却照常跑,11-04 正式站的刷新因此一条都没读到):测试照 Cloudflare 的来
-  w.edge = (u, o = {}) => {
-    if (o.redirect !== undefined && o.redirect !== "follow" && o.redirect !== "manual") throw new TypeError('Invalid redirect value, must be one of "follow" or "manual"');
-    return w.fetchImpl(u, o);
-  };
+  w.edge = edgeFetch((u, o) => w.fetchImpl(u, o));
   w.call = async (path, { method = "GET", body, cookie, origin = HOST, host = HOST, ip = "203.0.113.7", env = {}, type = "application/json" } = {}) => {
     const h = { "CF-Connecting-IP": ip };
     if (body !== undefined) h["Content-Type"] = type;
@@ -635,7 +637,7 @@ test("刷新读到 200 条评论:查库次数不跟着涨", async () => {
     batch: (s) => { calls++; return db.batch(s.map((x) => x.inner)); },
   };
   const replies = Array.from({ length: 200 }, (_, i) => ({ id: String(2000 + i), text: "c", author: { id: "9", screen_name: "visitor" } }));
-  const r = await sync(counted, async () => new Response(JSON.stringify({ status: { id: "1234", author: { id: "1", screen_name: "owner" }, replies: 200 }, replies })), now);
+  const r = await sync(counted, edgeFetch(async () => new Response(JSON.stringify({ status: { id: "1234", author: { id: "1", screen_name: "owner" }, replies: 200 }, replies }))), now);
   assert.equal(r.body.newReplies, 200);
   assert.ok(calls <= 20, "查库 " + calls + " 次");
 });
