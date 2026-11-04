@@ -287,6 +287,63 @@ test("自己发的帖子:没有目标帖子也收;点「已发」不要目标,�
   assert.equal(q.status, "已发");
 });
 
+test("项目帖引用官方原帖:只收 x.com 原帖链接、只许项目帖带;草稿里照样不许别的链接;到期连同引用一起删", async () => {
+  const w = world();
+  const c = await w.login();
+  const QUOTE = "https://x.com/Scroll_ZKP/status/2117620208819167673";
+  const POST = (over = {}) => ({ id: "p-scroll-1106", kind: "post", topic: "迁移提醒 · Scroll", quote: QUOTE, why: "官方提案", draft: "Scroll 提案:$SCR 迁到以太坊主网,要 DAO 投票。", ...over });
+  const r = await w.ingest({ outbox: [
+    POST(),
+    POST({ id: "p-bad-q1", quote: "https://evil.example/Scroll_ZKP/status/1" }),
+    POST({ id: "p-bad-q2", quote: "https://x.com/Scroll_ZKP" }),
+    POST({ id: "p-bad-q3", quote: "http://x.com/Scroll_ZKP/status/2117620208819167673" }),
+    POST({ id: "p-bad-q4", quote: QUOTE, draft: "看这里 " + QUOTE }),
+    OUT({ id: "r-bad-q5", quote: QUOTE }),
+  ] });
+  assert.equal(r.json.outbox, 1);
+  assert.deepEqual(r.json.rejected.map((x) => x.id), ["p-bad-q1", "p-bad-q2", "p-bad-q3", "p-bad-q4", "r-bad-q5"]);
+  assert.match(r.json.rejected[0].why, /引用的原帖链接不合格/);
+  assert.match(r.json.rejected[3].why, /站外链接/);
+  assert.match(r.json.rejected[4].why, /回帖不能带引用/);
+  let st = (await w.call("/api/admin/state", { cookie: c })).json;
+  assert.equal(st.outbox.find((x) => x.id === "p-scroll-1106").mine.quote, QUOTE);
+  const sent = await w.call("/api/admin/outbox", { method: "POST", body: { id: "p-scroll-1106", status: "已发" }, cookie: c });
+  assert.equal(sent.json.item.sent_text, POST().draft);
+  // 30 天到期:目标帖子的账号信息一律删,引用的原帖也一样
+  w.clock += 31 * 864e5;
+  const c2 = (await w.call("/api/admin/login", { method: "POST", body: { name: "admin1", password: PW } })).headers.get("Set-Cookie").split(";")[0];
+  st = (await w.call("/api/admin/state", { cookie: c2 })).json;
+  const q = st.outbox.find((x) => x.id === "p-scroll-1106");
+  assert.equal(q.purged, true);
+  assert.equal(q.mine.quote, undefined);
+  assert.equal(q.mine.draft, POST().draft);
+});
+
+test("引用的原帖建好以后不能换、不能去掉;原来没有的,老板没改过草稿才能补", async () => {
+  const w = world();
+  const c = await w.login();
+  const Q1 = "https://x.com/Scroll_ZKP/status/2117620208819167673", Q2 = "https://x.com/Scroll_ZKP/status/2117620210727579787";
+  const POST = (over = {}) => ({ id: "p-q-1106", kind: "post", topic: "迁移提醒", why: "测试", draft: "Scroll 提案:$SCR 迁到以太坊主网。", ...over });
+  const push = async (items) => { w.clock += 1000; return (await w.ingest({ outbox: items })).json; };
+  const quoteNow = async (id) => (await w.call("/api/admin/state", { cookie: c })).json.outbox.find((x) => x.id === id).mine.quote;
+  // 旧版建的(没有引用),老板没改草稿:能补上
+  assert.equal((await push([POST()])).outbox, 1);
+  assert.deepEqual((await push([POST({ quote: Q1 })])).rejected, []);
+  assert.equal(await quoteNow("p-q-1106"), Q1);
+  // 有了以后:换成别的、去掉,都不收;同一条照样能改别的字段
+  let r = await push([POST({ quote: Q2 }), POST({ id: "p-q-1106" })]);
+  assert.deepEqual(r.rejected.map((x) => x.why), ["引用的原帖建好以后不能换", "引用的原帖建好以后不能换"]);
+  assert.deepEqual((await push([POST({ quote: Q1, why: "改了理由" })])).rejected, []);
+  assert.equal(await quoteNow("p-q-1106"), Q1);
+  // 没有引用的,老板改过草稿:不能再补(他的字可能和原帖对不上)
+  assert.equal((await push([POST({ id: "p-q2-1106" })])).outbox, 1);
+  const ed = await w.call("/api/admin/outbox", { method: "POST", body: { id: "p-q2-1106", draft: "老板改过的项目帖。" }, cookie: c });
+  assert.equal(ed.status, 200, JSON.stringify(ed.json));
+  r = await push([POST({ id: "p-q2-1106", quote: Q1 })]);
+  assert.deepEqual(r.rejected.map((x) => x.why), ["引用的原帖建好以后不能换"]);
+  assert.equal(await quoteNow("p-q2-1106"), undefined);
+});
+
 const LEAD = (over = {}) => ({ kind: "事件", key: "event|balancer-v2|1793318400|withdrawals-only", protocol: "Balancer V2", when: "2026-10-30", text: "Most Balancer pools become withdrawals-only", source: "https://defillama.com/protocol/balancer-v2", site: "https://balancer.fi/", x: "@Balancer", category: "Dexs", chains: ["Ethereum"], tvl: 17000000, ...over });
 
 test("定时任务的小钥匙:能刷新、能加线索(去重、来源白名单);改不了别的;和投递钥匙互不通用;nonce 只能用一次", async () => {
@@ -882,7 +939,7 @@ test("投递读完状态、还没写的时候管理员点了「已发」:草稿�
   const sneaky = {
     prepare(sql) {
       const st = real.prepare(sql);
-      if (!sql.startsWith("SELECT id, mine, status, purged FROM outbox")) return st;
+      if (!/^SELECT id, mine, status, purged(, draft_admin)? FROM outbox/.test(sql)) return st;
       return { bind: (...a) => ({ all: async () => { const r = await st.bind(...a).all(); await real.prepare("UPDATE outbox SET status = '已发' WHERE id = ?").bind("r-openeden-1").run(); return r; } }) };
     },
     batch: (s) => real.batch(s),

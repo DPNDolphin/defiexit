@@ -4,7 +4,8 @@
 // 签的是「dx-ingest-v1 / 环境 / 方法 / 路径 / 原始请求体」,所以预览的包投不进正式库,换了路径也不认。
 // 请求体带 ts(毫秒,按服务器时钟 ±10 分钟)和 nonce;ts 还必须比上一次收下的大(旧包不能盖新数据);nonce 和数据同一个事务写入。
 // 投递只能:替换看板的几份 JSON;新建待发、收件,或者改它们 Claude 写的部分(mine)。永远不碰管理员点的状态、决定、备注、改过的草稿;
-// 待发一旦被管理员点过「已发 / 跳过」,草稿和目标帖子就不能再改;目标帖子的编号建好以后不能换;回帖和自己发的帖子建好以后不能互换。
+// 待发一旦被管理员点过「已发 / 跳过」,草稿和目标帖子就不能再改;目标帖子的编号建好以后不能换;回帖和自己发的帖子建好以后不能互换;
+// 项目帖引用的原帖建好以后不能换、不能去掉(原来没有的,管理员没改过草稿才能补上)。
 // 草稿入库前检查:只许带 defiexit.com 的链接,不许出现私信、客服、加群、转账、授权、助记词、私钥、找回、领取、recover、claim、返佣等词。
 // 不合格的那一条不入库,回执里写明哪条为什么;回执不含任何库里的数据。
 
@@ -69,7 +70,7 @@ const when = (v) => (typeof v === "string" && !Number.isNaN(Date.parse(v)) ? v :
 const itemId = (v) => (/^[a-z0-9][a-z0-9-]{2,63}$/.test(String(v ?? "")) ? String(v) : undefined);
 const drop = (o) => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined));
 
-// 待发有两种:回别人的帖子(要目标帖子),或者自己发一条新帖(kind: "post",没有目标帖子,topic 是一句话的题目)
+// 待发有两种:回别人的帖子(要目标帖子),或者自己发一条新帖(kind: "post",没有目标帖子,topic 是一句话的题目,quote 可选:引用的官方原帖)
 export function cleanOut(x) {
   const id = itemId(x?.id);
   if (!id) return { error: "id 不合格" };
@@ -81,9 +82,12 @@ export function cleanOut(x) {
     target = drop({ id: tweetId(t.id), handle: handle(t.handle), url: xUrl(t.url), postedAt: when(t.postedAt), protocol: str(t.protocol, 60), chain: str(t.chain, 40), type: str(t.type, 40), summary: str(t.summary, 200) });
     if (!target.id || !target.url || !target.url.endsWith("/status/" + target.id)) return { id, error: "目标帖子的编号或链接不合格(两者要对得上)" };
   }
+  // 项目帖可以引用一条官方在 X 上的原帖(quote):发出去下面带着原帖的卡片;链接不写进草稿,草稿照样只许 defiexit.com
+  const quote = x.quote == null ? undefined : xUrl(x.quote);
+  if (x.quote != null && (!post || !quote)) return { id, error: post ? "引用的原帖链接不合格(要 https://x.com/账号/status/编号)" : "回帖不能带引用" };
   const bad = checkText(x.draft);
   if (bad) return { id, error: "草稿" + bad };
-  const mine = post ? drop({ kind: "post", topic: str(x.topic, 40), why: str(x.why), draft: x.draft.trim() }) : drop({ target, why: str(x.why), draft: x.draft.trim() });
+  const mine = post ? drop({ kind: "post", topic: str(x.topic, 40), quote, why: str(x.why), draft: x.draft.trim() }) : drop({ target, why: str(x.why), draft: x.draft.trim() });
   return { id, mine, replyUrl: xUrl(x.replyUrl) };
 }
 
@@ -196,7 +200,7 @@ async function locked(db, raw, body, now) {
   const ids = outs.map((x) => itemId(x?.id)).filter(Boolean);
   const have = new Map();
   if (ids.length) {
-    const { results } = await db.prepare(`SELECT id, mine, status, purged FROM outbox WHERE id IN (${ids.map(() => "?").join(",")})`).bind(...ids).all();
+    const { results } = await db.prepare(`SELECT id, mine, status, purged, draft_admin FROM outbox WHERE id IN (${ids.map(() => "?").join(",")})`).bind(...ids).all();
     for (const r of results) have.set(r.id, r);
   }
   const gone = await goneSet(db, [...ids, ...ins.map((x) => String(x?.id ?? ""))].filter(Boolean));
@@ -217,8 +221,11 @@ async function locked(db, raw, body, now) {
         if (c.replyUrl && !old.purged && old.status === "已发") stmts.push(db.prepare("UPDATE outbox SET reply_url = ?, updated_at = ? WHERE id = ? AND status = '已发' AND purged = 0").bind(c.replyUrl, t, c.id));
         else rejected.push({ kind: "outbox", id: c.id, why: "管理员已经处理过,草稿不再改" });
       } else {
-        // 条件写在语句里:读和写之间管理员点了「已发 / 跳过」,这条就不改
-        stmts.push(db.prepare("UPDATE outbox SET mine = ?, reply_url = COALESCE(?, reply_url), updated_at = ? WHERE id = ? AND status = '待发' AND purged = 0").bind(JSON.stringify(c.mine), c.replyUrl ?? null, t, c.id));
+        // 引用的原帖建好以后不能换、不能去掉(老板可能已经照着它改了草稿);原来没有的,老板没改过草稿才能补上
+        const oldQuote = oldMine.quote || null, newQuote = c.mine.quote || null;
+        if (oldQuote !== newQuote && (oldQuote || old.draft_admin != null)) { rejected.push({ kind: "outbox", id: c.id, why: "引用的原帖建好以后不能换" }); continue; }
+        // 条件写在语句里:读和写之间管理员点了「已发 / 跳过」(补引用时还有:改了草稿),这条就不改
+        stmts.push(db.prepare("UPDATE outbox SET mine = ?, reply_url = COALESCE(?, reply_url), updated_at = ? WHERE id = ? AND status = '待发' AND purged = 0" + (oldQuote !== newQuote ? " AND draft_admin IS NULL" : "")).bind(JSON.stringify(c.mine), c.replyUrl ?? null, t, c.id));
       }
     }
     outN++;

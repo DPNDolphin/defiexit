@@ -48,7 +48,11 @@
     }
     return n;
   }
-  const intent = (text, replyTo) => "https://x.com/intent/tweet?" + (/^\d{1,25}$/.test(String(replyTo || "")) ? "in_reply_to=" + replyTo + "&" : "") + "text=" + encodeURIComponent(text || "");
+  // 引用原帖:原帖链接接在正文末尾(和手动粘贴一样),X 发出去显示成带原帖卡片的引用帖;字数按普通链接多算 24(空格 + 23),宁多勿少
+  const QUOTE = /^https:\/\/(?:x|twitter)\.com\/([A-Za-z0-9_]{1,15})\/status\/\d{1,25}$/;
+  const quoteOf = (d) => (d && d.mine && d.mine.kind === "post" && QUOTE.test(String(d.mine.quote || "")) ? d.mine.quote : null);
+  const withQuote = (text, quote) => (quote ? String(text || "").trimEnd() + " " + quote : text || "");
+  const intent = (text, replyTo, quote) => "https://x.com/intent/tweet?" + (/^\d{1,25}$/.test(String(replyTo || "")) ? "in_reply_to=" + replyTo + "&" : "") + "text=" + encodeURIComponent(withQuote(text, quote));
 
   // ---------- 接口 ----------
   async function api(path, body) {
@@ -179,11 +183,12 @@
     let timer = null, dirty = false;
     const target = () => (el._d && el._d.mine && el._d.mine.target) || {};
     const refresh = () => {
-      const n = xLen(ta.value);
-      count.textContent = "约 " + n + " / 280";
+      const q = quoteOf(el._d);
+      const n = xLen(ta.value) + (q ? 24 : 0);
+      count.textContent = "约 " + n + " / 280" + (q ? "(含引用的原帖)" : "");
       count.classList.toggle("over", n > 280);
       const tid = target().id;
-      if (isPost(el._d) || /^\d{1,25}$/.test(String(tid || ""))) { open.href = intent(ta.value, isPost(el._d) ? null : tid); open.removeAttribute("aria-disabled"); open.classList.remove("off"); }
+      if (isPost(el._d) || /^\d{1,25}$/.test(String(tid || ""))) { open.href = intent(ta.value, isPost(el._d) ? null : tid, q); open.removeAttribute("aria-disabled"); open.classList.remove("off"); }
       else { open.removeAttribute("href"); open.setAttribute("aria-disabled", "true"); open.classList.add("off"); }
     };
     // 草稿存不上:字留在框里(dirty 设回去,之后的刷新不会盖掉),也不往下改状态
@@ -198,8 +203,10 @@
     ta.addEventListener("blur", flush);
     restore.addEventListener("click", () => { dirty = false; save("outbox", id, { draft: null }, saved); });
     copy.addEventListener("click", () => {
-      const fallback = () => { ta.focus(); ta.select(); note(saved, "已选中,长按复制"); };
-      try { navigator.clipboard.writeText(ta.value).then(() => note(saved, "已复制"), fallback); } catch (_) { fallback(); }
+      const q = quoteOf(el._d);
+      // 剪贴板用不了:只能选中框里的正文,原帖链接得另外贴,要说清楚
+      const fallback = () => { ta.focus(); ta.select(); note(saved, q ? "已选中正文,长按复制;发的时候末尾再贴上原帖链接(顶上「看原帖」)" : "已选中,长按复制"); };
+      try { navigator.clipboard.writeText(withQuote(ta.value, q)).then(() => note(saved, q ? "已复制(末尾带着原帖链接,发出去就是引用)" : "已复制"), fallback); } catch (_) { fallback(); }
     });
     sent.addEventListener("click", () => decide("已发"));
     // 点「在 X 打开」就当发了(省得发完再回来点「已发」):回复的链接运营台自己去目标帖子底下找,项目帖的链接晚上机器人补;
@@ -216,9 +223,11 @@
     });
     el._update = (d) => {
       el._d = d;
-      const m = d.mine || {}, t = m.target || {}, post = isPost(d);
+      const m = d.mine || {}, t = m.target || {}, post = isPost(d), q = quoteOf(d);
       fill(head, ...(post
-        ? [h("span", { class: "who" }, "自己发的帖子"), h("span", null, "发一条新帖,不是回复别人")]
+        ? (q
+          ? [h("span", { class: "who" }, "自己发的帖子"), h("span", null, "引用 @" + QUOTE.exec(q)[1] + " 的原帖"), out(q, "看原帖 ↗")]
+          : [h("span", { class: "who" }, "自己发的帖子"), h("span", null, "发一条新帖,不是回复别人")])
         : [h("span", { class: "who" }, "回 @" + (t.handle || "?")),
           t.postedAt ? h("span", null, md(t.postedAt) + " 发的帖") : null,
           safeUrl(t.url) ? out(t.url, "看原帖 ↗") : null]));
@@ -235,7 +244,7 @@
       ta.readOnly = st !== "待发";
       restore.hidden = d.draft_admin == null || st !== "待发";
       open.hidden = st !== "待发";
-      open.textContent = post ? "在 X 打开,发新帖,字已填好 ↗" : "在 X 打开,字已填好 ↗";
+      open.textContent = q ? "在 X 打开,引用原帖发,字已填好 ↗" : post ? "在 X 打开,发新帖,字已填好 ↗" : "在 X 打开,字已填好 ↗";
       if (document.activeElement !== memo && memo.value !== (d.note || "")) memo.value = d.note || "";
       status.className = "pill " + (OUT_STATUS[st] || "mute");
       status.textContent = st + (st !== "待发" && d.decided_at ? " · " + mdhm(d.decided_at) : "");
