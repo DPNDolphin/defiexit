@@ -22,25 +22,30 @@ const baseEnv = (db, extra = {}) => ({ OPS: db, ADMIN_HOSTS: "defiexit.com", OPS
 function world() {
   const w = { db: new LocalD1(), clock: Date.parse("2026-11-03T10:00:00Z"), fetchImpl: async () => new Response("{}", { status: 500 }) };
   w.now = () => new Date(w.clock);
+  // Cloudflare 上的 fetch 只认 redirect: "follow" / "manual",写 "error" 当场报错(Node 却照常跑,11-04 正式站的刷新因此一条都没读到):测试照 Cloudflare 的来
+  w.edge = (u, o = {}) => {
+    if (o.redirect !== undefined && o.redirect !== "follow" && o.redirect !== "manual") throw new TypeError('Invalid redirect value, must be one of "follow" or "manual"');
+    return w.fetchImpl(u, o);
+  };
   w.call = async (path, { method = "GET", body, cookie, origin = HOST, host = HOST, ip = "203.0.113.7", env = {}, type = "application/json" } = {}) => {
     const h = { "CF-Connecting-IP": ip };
     if (body !== undefined) h["Content-Type"] = type;
     if (origin) h.Origin = origin;
     if (cookie) h.Cookie = cookie;
-    const r = await handle(new Request(host + path, { method, headers: h, body: body === undefined ? undefined : JSON.stringify(body) }), baseEnv(w.db, env), w.fetchImpl, w.now());
+    const r = await handle(new Request(host + path, { method, headers: h, body: body === undefined ? undefined : JSON.stringify(body) }), baseEnv(w.db, env), w.edge, w.now());
     return { status: r.status, json: await r.json().catch(() => ({})), headers: r.headers };
   };
   w.ingest = async (payload, { key = PROD.privateKey, envName = "production", ts = w.clock, nonce = randomUUID().replace(/-/g, ""), path = "/api/admin/ingest" } = {}) => {
     const raw = JSON.stringify({ v: 1, ts, nonce, ...payload });
     const sig = sign(null, Buffer.from(signedText(envName, "POST", path, raw)), key).toString("base64url");
-    const r = await handle(new Request(HOST + path, { method: "POST", headers: { "X-DX-Sig": sig, "Content-Type": "application/json" }, body: raw }), baseEnv(w.db), w.fetchImpl, w.now());
+    const r = await handle(new Request(HOST + path, { method: "POST", headers: { "X-DX-Sig": sig, "Content-Type": "application/json" }, body: raw }), baseEnv(w.db), w.edge, w.now());
     return { status: r.status, json: await r.json(), raw, sig };
   };
   // 定时任务(小钥匙)和导出(投递钥匙)各签各的,签的文字开头不一样
   const signedCall = async (path, text, payload, key, { envName = "production", ts = w.clock, nonce = randomUUID().replace(/-/g, "") } = {}) => {
     const raw = JSON.stringify({ v: 1, ts, nonce, ...payload });
     const sig = sign(null, Buffer.from(text(envName, "POST", path, raw)), key).toString("base64url");
-    const r = await handle(new Request(HOST + path, { method: "POST", headers: { "X-DX-Sig": sig, "Content-Type": "application/json" }, body: raw }), baseEnv(w.db), w.fetchImpl, w.now());
+    const r = await handle(new Request(HOST + path, { method: "POST", headers: { "X-DX-Sig": sig, "Content-Type": "application/json" }, body: raw }), baseEnv(w.db), w.edge, w.now());
     return { status: r.status, json: await r.json(), raw, sig, nonce };
   };
   w.task = (payload, o = {}) => signedCall("/api/admin/task", taskText, payload, o.key || TASK.privateKey, o);
@@ -188,7 +193,7 @@ test("投递:签名、环境、时间、nonce、旧包", async () => {
   assert.equal(again.status, 200);
   assert.equal((await w.ingest({ docs: {} }, { ts: w.clock + 3, nonce: "nonce-aaaaaaaaaaaaaaaa" })).json.error, "replay");
   // 改一个字节,签名就对不上
-  const r = await handle(new Request(HOST + "/api/admin/ingest", { method: "POST", headers: { "X-DX-Sig": ok.sig }, body: ok.raw.replace("2026", "2027") }), baseEnv(w.db), w.fetchImpl, w.now());
+  const r = await handle(new Request(HOST + "/api/admin/ingest", { method: "POST", headers: { "X-DX-Sig": ok.sig }, body: ok.raw.replace("2026", "2027") }), baseEnv(w.db), w.edge, w.now());
   assert.equal((await r.json()).error, "sig");
   // 没登录的人拿不到数据:回执里没有库里的内容
   assert.deepEqual(Object.keys(again.json).sort(), ["docs", "inbox", "ok", "outbox", "receipt", "rejected", "setup"]);
@@ -432,8 +437,33 @@ test("刷新:读不到的帖子写进 errors,不算「没有新评论」", async
   await w.ingest({ docs: { x_posts: { posts: [{ name: "X 长文", id: "3000000000000000005", points: [] }] } } });
   w.fetchImpl = async () => { throw new Error("down"); };
   const s = await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c });
-  assert.deepEqual(s.json.errors, ["X 长文"]);
+  assert.deepEqual(s.json.errors, ["X 长文(读不到)"]);
+  assert.equal(s.json.read, 0);
   assert.equal((await w.call("/api/admin/state", { cookie: c })).json.synced.note, "1 条没读到");
+});
+
+test("刷新:回跳转算读不到(不跟着跳);定时任务记下读到几条、哪条为什么没读到;一条都没读到也记下来", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ docs: { x_posts: { posts: [{ name: "项目帖", id: "3000000000000000005", points: [] }, { name: "X 长文", id: "3000000000000000006", points: [] }] } } });
+  w.fetchImpl = async (u, o) => {
+    assert.equal(o.redirect, "manual");
+    const id = String(u).split("/").pop();
+    if (id === "3000000000000000006") return new Response(null, { status: 302, headers: { Location: "https://evil.example/" } });
+    return new Response(JSON.stringify({ status: { id, author: { id: "1", screen_name: "owner_acct" }, views: 5, replies: 0 }, replies: [] }), { status: 200 });
+  };
+  let r = await w.task({ do: "sync" });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  assert.equal(r.json.read, 1);
+  assert.deepEqual(r.json.errors, ["X 长文(HTTP 302)"]);
+  let a = (await w.call("/api/admin/state", { cookie: c })).json.auto.sync;
+  assert.deepEqual([a.ok, a.read, a.failed, a.errors], [true, 1, 1, ["X 长文(HTTP 302)"]]);
+  w.clock += 3 * 60 * 1000;
+  w.fetchImpl = async () => { throw new Error("down"); };
+  r = await w.task({ do: "sync" });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  a = (await w.call("/api/admin/state", { cookie: c })).json.auto.sync;
+  assert.deepEqual([a.ok, a.read, a.failed], [true, 0, 2]);
 });
 
 test("已发的回复:刷新时去目标帖子底下按账号编号找,找到才填链接", async () => {
@@ -547,7 +577,7 @@ test("投递读完状态、还没写的时候管理员点了「已发」:草稿�
   w.clock += 1000;
   const raw = JSON.stringify({ v: 1, ts: w.clock, nonce: randomUUID().replace(/-/g, ""), outbox: [OUT({ draft: "在途的新草稿" })] });
   const sig = sign(null, Buffer.from(signedText("production", "POST", "/api/admin/ingest", raw)), PROD.privateKey).toString("base64url");
-  const r = await handle(new Request(HOST + "/api/admin/ingest", { method: "POST", headers: { "X-DX-Sig": sig }, body: raw }), baseEnv(sneaky), w.fetchImpl, w.now());
+  const r = await handle(new Request(HOST + "/api/admin/ingest", { method: "POST", headers: { "X-DX-Sig": sig }, body: raw }), baseEnv(sneaky), w.edge, w.now());
   assert.equal(r.status, 200);
   const item = (await w.call("/api/admin/state", { cookie: c })).json.outbox[0];
   assert.equal(item.status, "已发");

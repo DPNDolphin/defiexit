@@ -3,7 +3,7 @@
 // - 新回复进收件,只存帖子编号、账号名、时间、原文,状态「等我分析」(分析和起草由 Claude 主窗口做,经签名投递送进来);
 // - 发帖人自己(按账号的固定编号认,不按昵称)回了某条评论,就把那条标成「已回复」,记下他回的话;
 // - 待发里管理员点过「已发」的,去目标帖子底下找他那条回复,找到就填上链接(这才算核到,不靠自报)。
-// 读不到的帖子写进 errors,页面明说「不算没有新评论」;接口给的回复比帖子显示的少,也标「可能没读全」。两分钟内只许刷一次(按钮和定时任务共用)。
+// 读不到的帖子写进 errors(带原因),页面明说「不算没有新评论」;接口给的回复比帖子显示的少,也标「可能没读全」。两分钟内只许刷一次(按钮和定时任务共用)。
 
 import { iso, plusDays, KEEP_DAYS, setKv, getDocs, putDoc, existing, goneSet } from "./db.js";
 
@@ -15,7 +15,8 @@ async function conversation(id, fetchImpl) {
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), 8000);
   try {
-    const r = await fetchImpl(UPSTREAM + id, { headers: { "User-Agent": "defiexit-ops/1.0", Accept: "application/json" }, redirect: "error", signal: ctl.signal });
+    // 不跟跳转:回跳转就当读不到。Cloudflare 的 fetch 只认 "follow" / "manual",写 "error" 会当场报错(11-04 之前正式站的刷新因此一条都没读到)
+    const r = await fetchImpl(UPSTREAM + id, { headers: { "User-Agent": "defiexit-ops/1.0", Accept: "application/json" }, redirect: "manual", signal: ctl.signal });
     if (!r.ok) return { error: "HTTP " + r.status };
     const j = await r.json();
     if (!j || !j.status || String(j.status.id) !== String(id)) return { error: "回的不是这条帖子" };
@@ -42,7 +43,7 @@ export async function sync(db, fetchImpl, now) {
   const posts = (x.posts || []).filter((p) => /^\d{1,25}$/.test(String(p.id)) && !off.has(String(p.id)));
   const t = iso(now);
   const errors = [], partial = [];
-  let newReplies = 0, marked = 0;
+  let newReplies = 0, marked = 0, read = 0;
   const stmts = [];
   const owners = new Set(); // 发帖人账号的固定编号(从被监控帖子本身读出来)
   const fresh = []; // 这次读到的别人的评论,最后一起查重、一起写(查库次数不随评论条数涨)
@@ -50,7 +51,8 @@ export async function sync(db, fetchImpl, now) {
 
   for (const p of posts) {
     const { j, error } = await conversation(p.id, fetchImpl);
-    if (error) { errors.push(p.name || p.id); continue; }
+    if (error) { errors.push(`${p.name || p.id}(${error})`); continue; }
+    read++;
     const st = j.status;
     const owner = String(st.author && st.author.id || "");
     if (owner) owners.add(owner);
@@ -96,7 +98,7 @@ export async function sync(db, fetchImpl, now) {
     let target;
     try { target = String(r.sent_target || JSON.parse(r.mine).target.id); } catch { continue; }
     const { j, error } = await conversation(target, fetchImpl);
-    if (error) { errors.push("待发 " + r.id); continue; }
+    if (error) { errors.push(`待发 ${r.id}(${error})`); continue; }
     const mineReply = (j.replies || []).find((q) => q.replying_to && String(q.replying_to.status) === target && owners.has(String(q.author && q.author.id)));
     if (mineReply && /^\d{1,25}$/.test(String(mineReply.id)) && /^[A-Za-z0-9_]{1,15}$/.test(String(mineReply.author.screen_name))) {
       stmts.push(db.prepare("UPDATE outbox SET reply_url = ?, updated_at = ? WHERE id = ?").bind(`https://x.com/${mineReply.author.screen_name}/status/${mineReply.id}`, t, r.id));
@@ -109,5 +111,5 @@ export async function sync(db, fetchImpl, now) {
   if (posts.length) await putDoc(db, "x_posts", { ...x, posts: (x.posts || []).map((p) => posts.find((q) => q.id === p.id) || p), updatedAt: t }, now);
   const note = errors.length ? `${errors.length} 条没读到` : partial.length ? `${partial.join("、")} 的评论可能没读全` : "";
   await setKv(db, "sync_note", note);
-  return { status: 200, body: { ok: true, at: t, newReplies, marked, errors, partial } };
+  return { status: 200, body: { ok: true, at: t, read, newReplies, marked, errors, partial } };
 }

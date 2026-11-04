@@ -358,6 +358,7 @@
     // 定时任务停了要说出来(「没有新东西」和「根本没跑」不是一回事)
     const late = (x, hrs) => x && x.at && (Date.now() - Date.parse(x.at)) / 3600e3 > hrs;
     if (late(S.auto.sync, 3) || (S.auto.sync && S.auto.sync.ok === false)) items.push({ text: "自动刷新没跑成,看「数据」最下面的「定时任务」", href: "#data", when: "今天" });
+    else if (syncBlind(S.auto.sync)) items.push({ text: "自动刷新一条帖子都没读到,看「数据」最下面的「定时任务」", href: "#data", when: "今天" });
     if (late(S.auto.monitor, 14)) items.push({ text: "项目变动监控超过 14 小时没跑,看「数据」最下面的「定时任务」", href: "#data", when: "今天" });
     const asks = S.docs.summary && S.docs.summary.asks;
     for (const a of Array.isArray(asks) ? asks : []) if (a && typeof a.text === "string") items.push(a);
@@ -604,12 +605,15 @@
       h("p", { class: "src" }, "都只是线索,不等于事实;我核过官方原文再写成帖子。"));
   }
 
+  // 刷新跑了、但被监控的帖子一条都没读到(和「没有新评论」不是一回事)
+  function syncBlind(x) { return !!(x && x.ok !== false && x.failed > 0 && x.read === 0); }
+
   // 定时任务(GitHub 上每小时刷新、每 6 小时监控):上次什么时候跑的、成没成
   function autoPanel(a) {
-    const row = (name, x, maxH, text) => {
+    const row = (name, x, maxH, text, blind = () => false) => {
       if (!x || !x.at) return h("div", { class: "li" }, h("span", { class: "k" }, name), h("span", { class: "nm" }, "还没跑过"), h("span", { class: "pill warn" }, "等第一次"), h("span", { class: "sub" }, ""));
       const ageH = (Date.now() - Date.parse(x.at)) / 3600e3;
-      const late = ageH > maxH, bad = x.ok === false;
+      const late = ageH > maxH, bad = x.ok === false || blind(x);
       return h("div", { class: "li" + (late || bad ? "" : " muted") },
         h("span", { class: "k" }, name), h("span", { class: "nm" }, text(x)),
         h("span", { class: "pill " + (late || bad ? "stop" : "ok") }, late ? "超过 " + Math.round(ageH) + " 小时没跑" : bad ? "没成功" : "正常"),
@@ -617,8 +621,8 @@
     };
     return h("div", { class: "panel" }, h("h3", null, "定时任务"),
       h("div", { class: "list" },
-        row("刷新", a.sync, 3, (x) => (x.ok === false ? "没刷成:" + (x.error || "原因不明") : "新评论 " + (x.newReplies || 0) + " 条" + (x.failed ? ",有 " + x.failed + " 条帖子没读到" : ""))),
-        row("监控", a.monitor, 14, (x) => "读了 " + (x.read == null ? "?" : x.read) + " 个来源,新线索 " + (x.stored || 0) + " 条" + (Array.isArray(x.failed) && x.failed.length ? ";没读到:" + x.failed.join("、") : ""))),
+        row("刷新", a.sync, 3, (x) => (x.ok === false ? "没刷成:" + (x.error || "原因不明") : (x.read == null ? "" : "读到 " + x.read + " 条帖子,") + "新评论 " + (x.newReplies || 0) + " 条" + (x.failed ? ",有 " + x.failed + " 条没读到" + (Array.isArray(x.errors) && x.errors.length ? ":" + x.errors.join("、") : "") : "")), syncBlind),
+        row("监控", a.monitor, 14, (x) => "读了 " + (x.read == null ? "?" : x.read) + " 个来源,新线索 " + (x.stored || 0) + " 条" + (Array.isArray(x.failed) && x.failed.length ? ";没读到:" + x.failed.join("、") : ""), (x) => x.read === 0)),
       h("p", { class: "src" }, "GitHub 上的定时任务:每小时刷新一次评论和读数,每 6 小时盯一次项目变动。超过时间没跑会标红,顶上「今天要你做的」也会提醒。"));
   }
 

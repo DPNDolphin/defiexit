@@ -90,8 +90,10 @@ export async function task(db, { raw, sig, envName, method, path, pubkeys }, now
       if (r.status !== 200) await release(db, "auto_sync_day:" + day); // 没刷成不占名额
       const b = r.body || {};
       // 「刚刷过」「被更新的一次刷新顶掉」都不算失败,不盖掉上一次的结果
-      if (r.status !== 429 && r.status !== 409) await setKv(db, "auto_sync_last", JSON.stringify({ at: iso(now), ok: r.status === 200, error: b.error || null, newReplies: b.newReplies || 0, failed: (b.errors || []).length }));
-      return { status: r.status, body: r.status === 200 ? { ok: true, newReplies: b.newReplies || 0, failed: (b.errors || []).length } : { error: b.error || "sync" } };
+      // read:读到了几条被监控的帖子;errors 留前几条(帖子名和原因),页面和导出能看出是哪条、为什么
+      const errs = (b.errors || []).slice(0, 6).map((e) => String(e).slice(0, 80));
+      if (r.status !== 429 && r.status !== 409) await setKv(db, "auto_sync_last", JSON.stringify({ at: iso(now), ok: r.status === 200, error: b.error || null, read: b.read ?? null, newReplies: b.newReplies || 0, failed: (b.errors || []).length, errors: errs }));
+      return { status: r.status, body: r.status === 200 ? { ok: true, read: b.read ?? null, newReplies: b.newReplies || 0, failed: (b.errors || []).length, errors: errs } : { error: b.error || "sync" } };
     }
 
     if (body.do === "leads") {
