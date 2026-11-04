@@ -1,0 +1,139 @@
+{
+ "note": "项目变动监控的来源和门槛(GitHub Actions 每 6 小时跑一次 scripts/monitor/monitor.mjs)。论坛都是 Discourse,读 /latest.json(公开,不用登录)。挡程序访问的论坛不去绕,列在 skipped。加论坛时,server/ops/task.js 的 LEAD_HOSTS 也要加上它的域名,不然线索送不进运营台。",
+ "llama": {
+  "minTvl": 50000000,
+  "drop1d": -20,
+  "eventMinTvl": 1000000,
+  "firstRunDays": 14,
+  "skipCategories": [
+   "CEX",
+   "Chain"
+  ]
+ },
+ "keywords": [
+  "deprecat",
+  "sunset",
+  "wind[ -]?down",
+  "shut ?down",
+  "offboard",
+  "freez",
+  "frozen",
+  "paus",
+  "halt",
+  "migrat",
+  "withdraw",
+  "discontinu",
+  "retir",
+  "end of (life|support)",
+  "delist",
+  "emergency",
+  "exploit",
+  "incident",
+  "post-?mortem",
+  "hack",
+  "unwind",
+  "close[ds]? (the |all )?(market|pool|vault)",
+  "ltv (to )?0",
+  "关停",
+  "下线",
+  "暂停",
+  "迁移",
+  "只能取"
+ ],
+ "forums": [
+  {
+   "name": "Aave",
+   "url": "https://governance.aave.com"
+  },
+  {
+   "name": "Compound",
+   "url": "https://www.comp.xyz"
+  },
+  {
+   "name": "Lido",
+   "url": "https://research.lido.fi"
+  },
+  {
+   "name": "Uniswap",
+   "url": "https://gov.uniswap.org"
+  },
+  {
+   "name": "Morpho",
+   "url": "https://forum.morpho.org"
+  },
+  {
+   "name": "Balancer",
+   "url": "https://forum.balancer.fi"
+  },
+  {
+   "name": "Arbitrum",
+   "url": "https://forum.arbitrum.foundation"
+  },
+  {
+   "name": "Optimism",
+   "url": "https://gov.optimism.io"
+  },
+  {
+   "name": "Frax",
+   "url": "https://gov.frax.finance"
+  },
+  {
+   "name": "Euler",
+   "url": "https://forum.euler.finance"
+  },
+  {
+   "name": "Yearn",
+   "url": "https://gov.yearn.fi"
+  },
+  {
+   "name": "Venus",
+   "url": "https://community.venus.io"
+  },
+  {
+   "name": "Rocket Pool",
+   "url": "https://dao.rocketpool.net"
+  },
+  {
+   "name": "ZKsync",
+   "url": "https://forum.zknation.io"
+  },
+  {
+   "name": "Polygon",
+   "url": "https://forum.polygon.technology"
+  },
+  {
+   "name": "EigenLayer",
+   "url": "https://forum.eigenlayer.xyz"
+  },
+  {
+   "name": "Fluid(Instadapp)",
+   "url": "https://gov.fluid.io"
+  },
+  {
+   "name": "Radiant",
+   "url": "https://community.radiant.capital"
+  }
+ ],
+ "skipped": [
+  {
+   "name": "Sky(Maker、Spark)",
+   "why": "403,挡程序访问"
+  },
+  {
+   "name": "Gearbox",
+   "why": "不是 Discourse,没有 latest.json"
+  },
+  {
+   "name": "Synthetix",
+   "why": "连不上"
+  },
+  {
+   "name": "Curve",
+   "why": "403,挡程序访问"
+  }
+ ],
+ "windows": {
+  "forumHours": 14,
+  "eventDays": 3
+ }
+}

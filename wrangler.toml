@@ -3,6 +3,7 @@
 # 绑定:Workers AI(截图求助 /api/see 用);运营台的变量(见下)。正式环境和预览环境各写一遍,不靠「会不会继承」。
 # 运营台(defiexit.com/admin/):只在 ADMIN_HOSTS 列的主机上应答;OPS_ENV 写进签名(预览的投递进不了正式库);
 # INGEST_PUBKEYS 是 Claude 主窗口投递用的 Ed25519 公钥(公开的,可以写几把,换钥匙就改这里再发布);
+# TASK_PUBKEYS 是定时任务(GitHub Actions,.github/workflows/ops-cron.yml)用的小钥匙的公钥:只能刷新、加线索,私钥在 GitHub 保密设置 DX_TASK_KEY;
 # 第一次设管理员:维护者用签名投递送一个一次性的设置链接(24 小时内有效),不用在 Cloudflare 加机密;
 # 也可以在 Cloudflare 加机密 SETUP_CODE(至少 16 位)代替。D1 数据库(绑定名 OPS)只建了正式库;预览环境没有库,预览上的后台会说「数据库还没接上」。
 name = "defiexit"
@@ -27,6 +28,7 @@ INGEST_PUBKEYS = "uU-sCviEOGst4OFy6aswMgZFtFNPVvKPUX6LQZi99l0"
 OPS_ENV = "production"
 ADMIN_HOSTS = "defiexit.com"
 INGEST_PUBKEYS = "Ab658gilbT2DCHplN4GUFyeiI1Oac9NAHFl6t7ooXTU"
+TASK_PUBKEYS = "j_xZw2X24dPFmb_jvy1LCUBvPQS9-MwXxd5rE9c2Sto"
 
 [[env.production.d1_databases]]
 binding = "OPS"

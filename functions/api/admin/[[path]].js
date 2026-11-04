@@ -5,6 +5,8 @@
 // POST watch / delete    帖子看不看评论;按要求删掉一条
 // POST sync              经 fxtwitter 刷新读数和评论
 // POST ingest            Claude 主窗口的签名投递(不靠登录,靠签名;见 server/ops/ingest.js)
+// POST task              定时任务的小钥匙:只能刷新、加线索(见 server/ops/task.js)
+// POST export            Claude 主窗口用投递钥匙读管理员点过的决定、状态和线索(见 server/ops/task.js)
 // 改东西的请求(ingest 除外)必须同源、JSON、已登录;登录凭证是只给本主机的 __Host- cookie(SameSite=Strict)。
 
 import { reply, gone, hostOk, sameOrigin, readJson, clientIp } from "../../../server/ops/http.js";
@@ -12,6 +14,7 @@ import { ensure, iso, getKv, getDocs, listOut, listIn, getOut, getIn, purge, gon
 import { MIN_PASSWORD, hashPassword, checkPassword, newSession, hasSession, endSession, endAll, cookie, mustWait, failed, succeeded, same } from "../../../server/ops/auth.js";
 import { ingest, checkText } from "../../../server/ops/ingest.js";
 import { sync } from "../../../server/ops/sync.js";
+import { task, exportFor, listLeads, autoState } from "../../../server/ops/task.js";
 
 const STATUS = ["待发", "已发", "跳过"];
 const DECISIONS = ["采纳", "以后再说", "不采纳"];
@@ -20,13 +23,14 @@ const hex = async (s) => [...new Uint8Array(await crypto.subtle.digest("SHA-256"
 
 async function state(db, admin, now) {
   await purge(db, now);
-  const [docs, outbox, inbox, syncAt, syncNote, off, needs] = await Promise.all([
+  const [docs, outbox, inbox, syncAt, syncNote, off, needs, leads, auto] = await Promise.all([
     getDocs(db), listOut(db), listIn(db), getKv(db, "sync_at_ms"), getKv(db, "sync_note"),
     db.prepare("SELECT id FROM watch WHERE on_ = 0").all(),
     db.prepare("SELECT month, v FROM needs ORDER BY month DESC LIMIT 100").all(),
+    listLeads(db, 30), autoState(db),
   ]);
   const past = needs.results.map((r) => { try { return { month: r.month, ...JSON.parse(r.v) }; } catch { return null; } }).filter(Boolean);
-  return reply({ ok: true, me: { name: admin.name }, docs, outbox, inbox, needs: past, watchOff: off.results.map((r) => r.id), synced: { at: syncAt ? iso(Number(syncAt)) : null, note: syncNote || "" } });
+  return reply({ ok: true, me: { name: admin.name }, docs, outbox, inbox, needs: past, leads, auto, watchOff: off.results.map((r) => r.id), synced: { at: syncAt ? iso(Number(syncAt)) : null, note: syncNote || "" } });
 }
 
 async function editOut(db, b, now) {
@@ -110,6 +114,17 @@ export async function handle(request, env, fetchImpl = fetch, now = new Date()) 
     const raw = await request.text();
     const r = await ingest(db, { raw, sig: request.headers.get("X-DX-Sig") || "", envName: String(env.OPS_ENV || ""), method: "POST", path: url.pathname, pubkeys: env.INGEST_PUBKEYS }, now);
     if (r.status === 200) await purge(db, now);
+    return reply(r.body, r.status);
+  }
+  if (path === "task") {
+    const raw = await request.text();
+    const r = await task(db, { raw, sig: request.headers.get("X-DX-Sig") || "", envName: String(env.OPS_ENV || ""), method: "POST", path: url.pathname, pubkeys: env.TASK_PUBKEYS }, now, fetchImpl);
+    if (r.status === 200) await purge(db, now);
+    return reply(r.body, r.status);
+  }
+  if (path === "export") {
+    const raw = await request.text();
+    const r = await exportFor(db, { raw, sig: request.headers.get("X-DX-Sig") || "", envName: String(env.OPS_ENV || ""), method: "POST", path: url.pathname, pubkeys: env.INGEST_PUBKEYS }, now);
     return reply(r.body, r.status);
   }
 

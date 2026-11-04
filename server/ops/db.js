@@ -20,6 +20,8 @@ const DDL = [
   "CREATE TABLE IF NOT EXISTS gone (id TEXT PRIMARY KEY, at TEXT NOT NULL)",
   // 到期评论留下的需求摘要:不带帖子编号、账号、原文
   "CREATE TABLE IF NOT EXISTS needs (id TEXT PRIMARY KEY, month TEXT NOT NULL, v TEXT NOT NULL)",
+  // 监控找到的项目变动线索(公开信息,定时任务经 /api/admin/task 送进来,只加不改,留 90 天)
+  "CREATE TABLE IF NOT EXISTS leads (id TEXT PRIMARY KEY, v TEXT NOT NULL, found_at TEXT NOT NULL)",
 ];
 const ready = new WeakSet();
 
@@ -124,6 +126,7 @@ export async function purge(db, now) {
       : { target: { protocol: tg.protocol, chain: tg.chain, type: tg.type }, why: scrub(m.why), draft: scrub(m.draft) };
     stmts.push(db.prepare("UPDATE outbox SET mine = ?, draft_admin = ?, sent_text = ?, reply_url = NULL, sent_target = NULL, note = NULL, purged = 1, updated_at = ? WHERE id = ?").bind(JSON.stringify(keep), scrub(r.draft_admin) ?? null, scrub(r.sent_text) ?? null, t, r.id));
   }
+  stmts.push(db.prepare("DELETE FROM leads WHERE found_at <= ?").bind(plusDays(now, -90)));
   stmts.push(db.prepare("DELETE FROM sessions WHERE expires_at <= ?").bind(t));
   stmts.push(db.prepare("DELETE FROM nonces WHERE at <= ?").bind(plusDays(now, -2)));
   await db.batch(stmts);

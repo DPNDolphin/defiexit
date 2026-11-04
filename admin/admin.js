@@ -62,7 +62,7 @@
   const WHY = {
     network: "连不上服务器,看看网络再试", wrong: "用户名或密码不对", wait: "试错太多次了,等一会儿再试",
     weak: "密码至少 8 位", mismatch: "两次输的密码不一样", exists: "管理员已经设过了,请登录", db: "数据库还没接上(Cloudflare 里的 D1 还没绑)",
-    origin: "请求来源不对,刷新页面再试", login: "登录过期了,请重新登录", busy: "刚刷新过,两分钟后再点", bad: "内容不合格,没存",
+    origin: "请求来源不对,刷新页面再试", login: "登录过期了,请重新登录", busy: "刚刷新过,两分钟后再点", superseded: "同时有另一次刷新在跑,这次的结果没写进去,过一会儿再看", bad: "内容不合格,没存",
     nocode: "设置链接还没生成或已经过期,叫我重新发一个", code: "设置码不对", name: "用户名只能用字母、数字、汉字和 _ . -,最多 40 个", locked: "这条已经点过「已发 / 跳过」,先改回待发再改草稿",
     none: "这一条已经不在了,刷新一下", target: "这条没有目标帖子编号,不能发", draftbad: "草稿里有站外链接或不许用的词",
   };
@@ -74,7 +74,7 @@
     if (!bad) setTimeout(() => { if (el.textContent === msg) el.textContent = ""; }, 2500);
   }
 
-  const S = { docs: {}, out: new Map(), inn: new Map(), cards: new Map(), ro: null, watchOff: new Set(), needs: [] };
+  const S = { docs: {}, out: new Map(), inn: new Map(), cards: new Map(), ro: null, watchOff: new Set(), needs: [], leads: [], auto: {} };
 
   function show(view) {
     $("boot-msg").hidden = view !== "boot";
@@ -334,6 +334,8 @@
     S.docs = json.docs || {};
     S.watchOff = new Set(json.watchOff || []);
     S.needs = Array.isArray(json.needs) ? json.needs : [];
+    S.leads = Array.isArray(json.leads) ? json.leads : [];
+    S.auto = json.auto && typeof json.auto === "object" ? json.auto : {};
     S.out = new Map((json.outbox || []).map((d) => [d.id, d]));
     S.inn = new Map((json.inbox || []).map((d) => [d.id, d]));
     sync("out");
@@ -353,6 +355,10 @@
     const items = [];
     if (pendOut) items.push({ text: [pendReplies ? pendReplies + " 条回复" : "", pendPosts ? pendPosts + " 条项目帖" : ""].filter(Boolean).join("、") + "等你点发", href: "#outbox", when: "今天" });
     if (pendIn) items.push({ text: pendIn + " 条评论等你点一个决定", href: "#inbox", when: "今天" });
+    // 定时任务停了要说出来(「没有新东西」和「根本没跑」不是一回事)
+    const late = (x, hrs) => x && x.at && (Date.now() - Date.parse(x.at)) / 3600e3 > hrs;
+    if (late(S.auto.sync, 3) || (S.auto.sync && S.auto.sync.ok === false)) items.push({ text: "自动刷新没跑成,看「数据」最下面的「定时任务」", href: "#data", when: "今天" });
+    if (late(S.auto.monitor, 14)) items.push({ text: "项目变动监控超过 14 小时没跑,看「数据」最下面的「定时任务」", href: "#data", when: "今天" });
     const asks = S.docs.summary && S.docs.summary.asks;
     for (const a of Array.isArray(asks) ? asks : []) if (a && typeof a.text === "string") items.push(a);
     $("todo").replaceChildren(...(items.length ? items.map((a) => h("li", null,
@@ -583,13 +589,46 @@
       b.source ? h("p", { class: "src" }, "来源:" + b.source) : null);
   }
 
+  // 监控找到的项目变动线索(公开信息;来源链接服务器只收白名单里的网站)
+  const LEAD_KIND = { "事件": "hi", "论坛": "mute", "锁仓骤降": "warn" };
+  const hostName = (u) => { try { return new URL(u).hostname; } catch (_) { return ""; } };
+  function leadsPanel(rows) {
+    if (!rows.length) return h("div", { class: "panel" }, h("h3", null, "项目变动线索"),
+      h("p", { class: "empty" }, "还没有。监控每 6 小时跑一次,找到会影响「能不能取、怎么取」的变动就列在这里;我核过官方原文再写成帖子放进「待发」。"));
+    return h("div", { class: "panel" }, h("h3", null, "项目变动线索(最近 " + rows.length + " 条)"),
+      h("div", { class: "list" }, ...rows.map((l) => h("div", { class: "li" },
+        h("span", { class: "k" }, String(l.when || l.found_at || "").slice(5, 10)),
+        h("span", { class: "nm" }, h("b", null, l.protocol || "?"), ":" + (l.text || "")),
+        h("span", { class: "pill " + (LEAD_KIND[l.kind] || "mute") }, l.kind || "线索"),
+        h("span", { class: "sub" }, /^https:\/\//.test(String(l.source || "")) ? out(l.source, "来源 " + hostName(l.source) + " ↗") : "", l.site ? " · 官网 " + l.site : "", l.x ? " · " + l.x : "")))),
+      h("p", { class: "src" }, "都只是线索,不等于事实;我核过官方原文再写成帖子。"));
+  }
+
+  // 定时任务(GitHub 上每小时刷新、每 6 小时监控):上次什么时候跑的、成没成
+  function autoPanel(a) {
+    const row = (name, x, maxH, text) => {
+      if (!x || !x.at) return h("div", { class: "li" }, h("span", { class: "k" }, name), h("span", { class: "nm" }, "还没跑过"), h("span", { class: "pill warn" }, "等第一次"), h("span", { class: "sub" }, ""));
+      const ageH = (Date.now() - Date.parse(x.at)) / 3600e3;
+      const late = ageH > maxH, bad = x.ok === false;
+      return h("div", { class: "li" + (late || bad ? "" : " muted") },
+        h("span", { class: "k" }, name), h("span", { class: "nm" }, text(x)),
+        h("span", { class: "pill " + (late || bad ? "stop" : "ok") }, late ? "超过 " + Math.round(ageH) + " 小时没跑" : bad ? "没成功" : "正常"),
+        h("span", { class: "sub" }, "上次 " + mdhm(x.at)));
+    };
+    return h("div", { class: "panel" }, h("h3", null, "定时任务"),
+      h("div", { class: "list" },
+        row("刷新", a.sync, 3, (x) => (x.ok === false ? "没刷成:" + (x.error || "原因不明") : "新评论 " + (x.newReplies || 0) + " 条" + (x.failed ? ",有 " + x.failed + " 条帖子没读到" : ""))),
+        row("监控", a.monitor, 14, (x) => "读了 " + (x.read == null ? "?" : x.read) + " 个来源,新线索 " + (x.stored || 0) + " 条" + (Array.isArray(x.failed) && x.failed.length ? ";没读到:" + x.failed.join("、") : ""))),
+      h("p", { class: "src" }, "GitHub 上的定时任务:每小时刷新一次评论和读数,每 6 小时盯一次项目变动。超过时间没跑会标红,顶上「今天要你做的」也会提醒。"));
+  }
+
   // 某一块的数据格式不对,只让那一块显示一句话,别的照常
   function safe(fn, d) {
     try { return fn(d); } catch (_) { return h("p", { class: "empty" }, "这一块的数据格式不对,我下次干活时修。"); }
   }
   function renderData() {
     const D = S.docs;
-    const parts = [safe(goalPanel, D.goal_1215), safe(routePanel, D.funnel), safe(viewsPanel, D.x_posts), safe(protocolPanel, D.protocols), safe(needsPanel, S.needs), safe(clocksPanel, D.clocks), safe(botPanel, D.bot)].filter(Boolean);
+    const parts = [safe(goalPanel, D.goal_1215), safe(routePanel, D.funnel), safe(viewsPanel, D.x_posts), safe(leadsPanel, S.leads), safe(protocolPanel, D.protocols), safe(needsPanel, S.needs), safe(clocksPanel, D.clocks), safe(botPanel, D.bot), safe(autoPanel, S.auto)].filter(Boolean);
     $("data-body").replaceChildren(...(parts.length ? parts : [h("p", { class: "empty" }, "还没有数据。我下次干活时送进来。")]));
   }
 

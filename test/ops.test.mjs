@@ -1,5 +1,6 @@
 // 运营台(functions/api/admin、functions/admin、server/ops):用本地 SQLite 当 D1、用假的 fxtwitter 测。不连 Cloudflare、不连 X。
 import { test } from "node:test";
+import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
 import { generateKeyPairSync, sign, randomUUID } from "node:crypto";
 import { LocalD1 } from "../scripts/d1-local.mjs";
@@ -8,14 +9,15 @@ import { serve } from "../functions/admin/[[path]].js";
 import { checkText, signedText, SKEW_MS } from "../server/ops/ingest.js";
 import { waitFor, MIN_PASSWORD } from "../server/ops/auth.js";
 import { hostOk } from "../server/ops/http.js";
+import { taskText, exportText } from "../server/ops/task.js";
 
 const HOST = "https://defiexit.com";
 const kp = () => generateKeyPairSync("ed25519");
 const pubOf = (k) => k.publicKey.export({ type: "spki", format: "der" }).subarray(-32).toString("base64url");
-const PROD = kp(), PREV = kp();
+const PROD = kp(), PREV = kp(), TASK = kp();
 const CODE = "setup-code-0123456789abcdef";
 const PW = "correct-horse-battery-staple-42";
-const baseEnv = (db, extra = {}) => ({ OPS: db, ADMIN_HOSTS: "defiexit.com", OPS_ENV: "production", INGEST_PUBKEYS: pubOf(PROD), SETUP_CODE: CODE, ...extra });
+const baseEnv = (db, extra = {}) => ({ OPS: db, ADMIN_HOSTS: "defiexit.com", OPS_ENV: "production", INGEST_PUBKEYS: pubOf(PROD), TASK_PUBKEYS: pubOf(TASK), SETUP_CODE: CODE, ...extra });
 
 function world() {
   const w = { db: new LocalD1(), clock: Date.parse("2026-11-03T10:00:00Z"), fetchImpl: async () => new Response("{}", { status: 500 }) };
@@ -34,6 +36,15 @@ function world() {
     const r = await handle(new Request(HOST + path, { method: "POST", headers: { "X-DX-Sig": sig, "Content-Type": "application/json" }, body: raw }), baseEnv(w.db), w.fetchImpl, w.now());
     return { status: r.status, json: await r.json(), raw, sig };
   };
+  // 定时任务(小钥匙)和导出(投递钥匙)各签各的,签的文字开头不一样
+  const signedCall = async (path, text, payload, key, { envName = "production", ts = w.clock, nonce = randomUUID().replace(/-/g, "") } = {}) => {
+    const raw = JSON.stringify({ v: 1, ts, nonce, ...payload });
+    const sig = sign(null, Buffer.from(text(envName, "POST", path, raw)), key).toString("base64url");
+    const r = await handle(new Request(HOST + path, { method: "POST", headers: { "X-DX-Sig": sig, "Content-Type": "application/json" }, body: raw }), baseEnv(w.db), w.fetchImpl, w.now());
+    return { status: r.status, json: await r.json(), raw, sig, nonce };
+  };
+  w.task = (payload, o = {}) => signedCall("/api/admin/task", taskText, payload, o.key || TASK.privateKey, o);
+  w.exp = (payload, o = {}) => signedCall("/api/admin/export", exportText, payload, o.key || PROD.privateKey, o);
   w.login = async () => {
     const r = await w.call("/api/admin/setup", { method: "POST", body: { code: CODE, name: "admin1", password: PW } });
     assert.equal(r.status, 200, JSON.stringify(r.json));
@@ -267,6 +278,114 @@ test("自己发的帖子:没有目标帖子也收;点「已发」不要目标,�
   assert.equal(q.mine.topic, "关停提醒");
   assert.equal(q.mine.draft, POST().draft);
   assert.equal(q.status, "已发");
+});
+
+const LEAD = (over = {}) => ({ kind: "事件", key: "event|balancer-v2|1793318400|withdrawals-only", protocol: "Balancer V2", when: "2026-10-30", text: "Most Balancer pools become withdrawals-only", source: "https://defillama.com/protocol/balancer-v2", site: "https://balancer.fi/", x: "@Balancer", category: "Dexs", chains: ["Ethereum"], tvl: 17000000, ...over });
+
+test("定时任务的小钥匙:能刷新、能加线索(去重、来源白名单);改不了别的;和投递钥匙互不通用;nonce 只能用一次", async () => {
+  const w = world();
+  const c = await w.login();
+  let r = await w.task({ do: "sync" });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  w.clock += 1000;
+  assert.equal((await w.task({ do: "sync" })).json.error, "busy"); // 两分钟一次
+  w.clock += 1000;
+  assert.equal((await w.task({ do: "docs", docs: { funnel: { target: 5, stages: [] } } })).json.error, "do");
+  w.clock += 1000;
+  r = await w.task({ do: "leads", read: 19, failed: ["Curve(HTTP 403)"], leads: [LEAD(), LEAD({ key: "forum|aave|25965", kind: "论坛", protocol: "Aave", text: "tBTC Mint & Redeem Pause", source: "https://governance.aave.com/t/x/25965" }), LEAD({ key: "bad", source: "https://evil.example/claim" })] });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  assert.equal(r.json.stored, 2);
+  assert.match(r.json.rejected[0], /白名单/);
+  w.clock += 1000;
+  r = await w.task({ do: "leads", leads: [LEAD()] });
+  assert.equal(r.json.stored, 0);
+  assert.equal(r.json.duplicate, 1);
+  // 同一个 nonce 再来一次
+  w.clock += 1000;
+  const once = await w.task({ do: "leads", leads: [] }, { nonce: "same-nonce-0123456789ab" });
+  assert.equal(once.status, 200);
+  w.clock += 1000;
+  assert.equal((await w.task({ do: "leads", leads: [] }, { nonce: "same-nonce-0123456789ab" })).json.error, "replay");
+  // 小钥匙投不进 ingest,投递钥匙也签不了 task
+  w.clock += 1000;
+  assert.equal((await w.ingest({ outbox: [OUT()] }, { key: TASK.privateKey })).json.error, "sig");
+  assert.equal((await w.task({ do: "sync" }, { key: PROD.privateKey })).json.error, "sig");
+  // 运营台看得到线索和定时任务的情况
+  const st = (await w.call("/api/admin/state", { cookie: c })).json;
+  assert.equal(st.leads.length, 2);
+  assert.deepEqual(st.leads.map((l) => l.kind).sort(), ["事件", "论坛"]);
+  assert.equal(st.leads.find((l) => l.kind === "事件").site, "balancer.fi");
+  assert.equal(st.auto.sync.ok, true);
+  assert.equal(st.auto.monitor.stored, 0);
+  assert.equal(st.outbox.length, 0);
+});
+
+test("监控的论坛和运营台收线索的白名单对得上(加论坛要两边一起加)", async () => {
+  const { LEAD_HOSTS } = await import("../server/ops/task.js");
+  const src = JSON.parse(readFileSync(new URL("../scripts/monitor/sources.json", import.meta.url), "utf8"));
+  for (const f of src.forums) assert.ok(LEAD_HOSTS.has(new URL(f.url).hostname), f.url);
+  assert.ok(LEAD_HOSTS.has("defillama.com"));
+});
+
+test("按钮和定时任务同时刷新:只有一个刷得了", async () => {
+  const w = world();
+  const c = await w.login();
+  const [a, b] = await Promise.all([w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c }), w.task({ do: "sync" })]);
+  assert.deepEqual([a.status, b.status].sort(), [200, 429]);
+});
+
+test("刷新太慢、中间被新的一次刷新顶掉:旧的不写,读数不被盖掉;每天的刷新名额先占后用", async () => {
+  const w = world();
+  await w.login();
+  await w.ingest({ docs: { x_posts: { posts: [{ name: "X 长文", id: "3000000000000000005", points: [] }] } } });
+  w.fetchImpl = async () => {
+    // 读的时候,另一次刷新抢走了锁
+    await w.db.prepare("UPDATE kv SET v = ? WHERE k = 'sync_at_ms'").bind(String(w.clock + 999999)).run();
+    return new Response(JSON.stringify({ code: 200, status: { id: "3000000000000000005", author: { id: "1", screen_name: "owner_acct" }, views: 5 } }), { status: 200 });
+  };
+  w.clock += 1000;
+  const r = await w.task({ do: "sync" });
+  assert.equal(r.json.error, "superseded");
+  const x = JSON.parse((await w.db.prepare("SELECT v FROM docs WHERE k = 'x_posts'").first("v")));
+  assert.equal(x.posts[0].points.length, 0);
+  // 名额:没刷成的退回;到了上限就不刷
+  assert.equal(await w.db.prepare("SELECT v FROM kv WHERE k = ?").bind("auto_sync_day:" + new Date(w.clock).toISOString().slice(0, 10)).first("v"), "0");
+  await w.db.prepare("INSERT INTO kv (k, v) VALUES (?, '48') ON CONFLICT(k) DO UPDATE SET v = '48'").bind("auto_sync_day:" + new Date(w.clock).toISOString().slice(0, 10)).run();
+  w.clock += 10 * 60 * 1000;
+  assert.equal((await w.task({ do: "sync" })).json.error, "sync-day");
+});
+
+test("导出之前先清到期的:30 天前的评论和备注导不出来", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ inbox: [{ id: "3000000000000000301", source: "X 长文", author: "user_y", url: "https://x.com/user_y/status/3000000000000000301", text: "老评论", type: "提问", need: "无" }] });
+  await w.call("/api/admin/inbox", { method: "POST", body: { id: "3000000000000000301", decision: "不采纳", note: "这人是 user_y" }, cookie: c });
+  w.clock += 31 * 864e5;
+  const r = await w.exp({});
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  assert.equal(r.json.inbox.length, 0);
+  assert.equal(JSON.stringify(r.json).includes("user_y"), false);
+});
+
+test("导出:只认投递钥匙;回管理员的决定和状态、线索,不回评论原文和账号", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outbox: [OUT()], inbox: [{ id: "3000000000000000201", source: "X 长文", author: "user_x", url: "https://x.com/user_x/status/3000000000000000201", text: "能不能加个先别取的提醒", type: "产品建议", need: "想知道该不该动", suggestion: "采纳" }] });
+  await w.call("/api/admin/inbox", { method: "POST", body: { id: "3000000000000000201", decision: "采纳", note: "跟下一份指南一起做" }, cookie: c });
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", status: "跳过" }, cookie: c });
+  await w.task({ do: "leads", leads: [LEAD()] });
+  w.clock += 1000;
+  const r = await w.exp({ since: "2026-11-01T00:00:00Z" });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  const it = r.json.inbox.find((x) => x.id === "3000000000000000201");
+  assert.equal(it.decision, "采纳");
+  assert.equal(it.note, "跟下一份指南一起做");
+  assert.equal(JSON.stringify(r.json).includes("能不能加个先别取的提醒"), false);
+  assert.equal(JSON.stringify(r.json).includes("user_x"), false);
+  assert.equal(r.json.outbox.find((x) => x.id === "r-openeden-1").status, "跳过");
+  assert.equal(r.json.leads.length, 1);
+  w.clock += 1000;
+  assert.equal((await w.exp({}, { key: TASK.privateKey })).json.error, "sig");
 });
 
 test("收件:刷新读进来的评论,投递补上分析;管理员的决定不被覆盖;发帖人自己的回复会标成已回复", async () => {

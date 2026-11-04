@@ -3,9 +3,9 @@
 // - 新回复进收件,只存帖子编号、账号名、时间、原文,状态「等我分析」(分析和起草由 Claude 主窗口做,经签名投递送进来);
 // - 发帖人自己(按账号的固定编号认,不按昵称)回了某条评论,就把那条标成「已回复」,记下他回的话;
 // - 待发里管理员点过「已发」的,去目标帖子底下找他那条回复,找到就填上链接(这才算核到,不靠自报)。
-// 读不到的帖子写进 errors,页面明说「不算没有新评论」;接口给的回复比帖子显示的少,也标「可能没读全」。两分钟内只许刷一次。
+// 读不到的帖子写进 errors,页面明说「不算没有新评论」;接口给的回复比帖子显示的少,也标「可能没读全」。两分钟内只许刷一次(按钮和定时任务共用)。
 
-import { iso, plusDays, KEEP_DAYS, getKv, setKv, getDocs, putDoc, existing, goneSet } from "./db.js";
+import { iso, plusDays, KEEP_DAYS, setKv, getDocs, putDoc, existing, goneSet } from "./db.js";
 
 export const UPSTREAM = "https://api.fxtwitter.com/2/conversation/";
 export const MIN_GAP_MS = 120 * 1000;
@@ -32,9 +32,9 @@ const clip = (s, n) => String(s ?? "").replace(/[\u0000-\u0008\u000b-\u001f]/g, 
 const bjIso = (ts) => (Number.isFinite(ts) ? iso(ts * 1000) : null);
 
 export async function sync(db, fetchImpl, now) {
-  const last = Number((await getKv(db, "sync_at_ms")) || 0);
-  if (+now - last < MIN_GAP_MS) return { status: 429, body: { error: "busy" } };
-  await setKv(db, "sync_at_ms", +now);
+  // 两分钟一次:抢锁用一条带条件的写(管理员的按钮和定时任务同时来,只有一个改得动)
+  const lock = await db.prepare("INSERT INTO kv (k, v) VALUES ('sync_at_ms', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v WHERE CAST(kv.v AS INTEGER) <= ?").bind(String(+now), +now - MIN_GAP_MS).run();
+  if (!lock.meta || lock.meta.changes !== 1) return { status: 429, body: { error: "busy" } };
 
   const docs = await getDocs(db);
   const x = docs.x_posts || { posts: [] };
@@ -103,6 +103,8 @@ export async function sync(db, fetchImpl, now) {
     }
   }
 
+  // 写之前再确认锁还是这一次的:中间有更新的一次刷新抢到了(这次太慢),就不写,免得旧读数盖掉新读数
+  if (String(await db.prepare("SELECT v FROM kv WHERE k = 'sync_at_ms'").first("v")) !== String(+now)) return { status: 409, body: { error: "superseded" } };
   if (stmts.length) await db.batch(stmts);
   if (posts.length) await putDoc(db, "x_posts", { ...x, posts: (x.posts || []).map((p) => posts.find((q) => q.id === p.id) || p), updatedAt: t }, now);
   const note = errors.length ? `${errors.length} 条没读到` : partial.length ? `${partial.join("、")} 的评论可能没读全` : "";

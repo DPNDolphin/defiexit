@@ -1,0 +1,45 @@
+# 运营台的定时任务(2026-11-04 起;放在 GitHub 上跑,钥匙放这里的保密设置,不放任何电脑)。
+# 每小时:请运营台刷新一次评论和读数。每 6 小时:跑项目变动监控,把线索送进运营台「项目变动线索」。
+# 钥匙 DX_TASK_KEY 只能做这两件事(见 server/ops/task.js);运营台还没上线新入口时,脚本会跳过、不报错。
+name: ops-cron
+
+on:
+  schedule:
+    - cron: "13 * * * *"
+    - cron: "43 0,6,12,18 * * *"
+  workflow_dispatch:
+    inputs:
+      monitor:
+        description: "这次也跑项目变动监控"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ops-cron
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 刷新运营台(评论、读数)
+        if: github.event.schedule != '43 0,6,12,18 * * *'
+        env:
+          DX_TASK_KEY: ${{ secrets.DX_TASK_KEY }}
+        run: node scripts/ops-task.mjs sync
+      - name: 项目变动监控(这一步拿不到钥匙)
+        if: github.event.schedule == '43 0,6,12,18 * * *' || (github.event_name == 'workflow_dispatch' && inputs.monitor)
+        run: node scripts/monitor/monitor.mjs leads.json
+      - name: 把线索送进运营台
+        if: github.event.schedule == '43 0,6,12,18 * * *' || (github.event_name == 'workflow_dispatch' && inputs.monitor)
+        env:
+          DX_TASK_KEY: ${{ secrets.DX_TASK_KEY }}
+        run: node scripts/ops-task.mjs leads leads.json

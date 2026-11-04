@@ -57,7 +57,7 @@ let OPS_ENV = null;
 async function opsEnv() {
   if (!OPS_ENV) {
     const { LocalD1 } = await import("./d1-local.mjs");
-    OPS_ENV = { OPS: new LocalD1(process.env.DX_OPS_DB || ":memory:"), ADMIN_HOSTS: "localhost,127.0.0.1", OPS_ENV: "local", INGEST_PUBKEYS: process.env.DX_INGEST_PUB || "", SETUP_CODE: process.env.DX_SETUP_CODE || "", ASSETS: fakeEnv.ASSETS };
+    OPS_ENV = { OPS: new LocalD1(process.env.DX_OPS_DB || ":memory:"), ADMIN_HOSTS: "localhost,127.0.0.1", OPS_ENV: "local", INGEST_PUBKEYS: process.env.DX_INGEST_PUB || "", TASK_PUBKEYS: process.env.DX_TASK_PUB || "", SETUP_CODE: process.env.DX_SETUP_CODE || "", ASSETS: fakeEnv.ASSETS };
   }
   return OPS_ENV;
 }
