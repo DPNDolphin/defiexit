@@ -83,7 +83,8 @@
     </section>
 
     <section id="inbox" aria-labelledby="h-in">
-      <div class="sec-h"><h2 id="h-in">收件</h2><span class="hint">你帖子下的评论。每条有我的分析和建议,你点一个决定。</span></div>
+      <div class="sec-h"><h2 id="h-in">收件</h2><span class="hint">你帖子下的评论。每条有我的分析和建议,你点一个决定,这条就挪到「已处理」。</span></div>
+      <p class="saved" id="in-msg" aria-live="polite"></p>
       <div class="cards" id="in-cards"></div>
       <p class="empty" id="in-empty">还没有评论。点上面的「刷新评论和读数」,或者等我下次干活时送进来。</p>
     </section>
@@ -94,10 +95,10 @@
     </section>
 
     <section id="done" aria-labelledby="h-done">
-      <div class="sec-h"><h2 id="h-done">已处理</h2><span class="hint">你点过「已发」或「跳过」的,最近点的在上面。点错了就点「改回待发」。</span></div>
+      <div class="sec-h"><h2 id="h-done">已处理</h2><span class="hint">待发里点过「已发 / 跳过」的,收件里点过决定的,最近点的在上面。点错了就点「改回待发」或「改回待定」。</span></div>
       <p class="saved" id="done-msg" aria-live="polite"></p>
       <div class="cards" id="done-cards"></div>
-      <p class="empty" id="done-empty">还没有。你在「待发」里点了「已发」或「跳过」,那条就挪到这里。</p>
+      <p class="empty" id="done-empty">还没有。你在「待发」里点了「已发 / 跳过」,或者在「收件」里点了决定,那条就挪到这里。</p>
     </section>
 
     <footer>

@@ -99,10 +99,8 @@
     if (el0 && el0._saved) el0._saved(ok, "draft" in patch);
     if (ok) {
       (kind === "outbox" ? S.out : S.inn).set(id, json.item);
-      const el = S.cards.get((kind === "outbox" ? "out:" : "in:") + id);
-      // 待发:状态变了要挪到「待发」或「已处理」(sync 只在顺序变了才挪,改草稿不会让框失焦)
-      if (kind === "outbox") sync("out");
-      else if (el) el._update(json.item);
+      // 状态或决定变了要挪到「待发 / 收件」或「已处理」(sync 只在顺序变了才挪,改草稿不会让框失焦)
+      sync(kind === "outbox" ? "out" : "in");
       renderTop();
       if (kind === "outbox") renderData();
       note(msgEl, "已存");
@@ -240,15 +238,21 @@
     const go = h("a", { class: "btn", target: "_blank", rel: "noopener noreferrer" }, "去 X 回复 ↗");
     const replied = h("button", { class: "btn", type: "button" }, "我已回复");
     const btns = DECISIONS.map((x) => h("button", { class: "btn", type: "button" }, x));
+    const undo = h("button", { class: "btn", type: "button", hidden: true }, "改回待定");
     const status = h("span", { class: "pill" });
     const memo = h("input", { type: "text", id: "memo-in-" + id, placeholder: "备注(可不填)", "aria-label": "备注", maxlength: "500" });
     const saved = h("span", { class: "saved", "aria-live": "polite" });
     const el = h("article", { class: "card", "data-id": id }, head, quote, kv, draftWrap,
       h("div", { class: "row" }, go, replied),
       h("div", { class: "label" }, "你的决定"),
-      h("div", { class: "row" }, ...btns, h("span", { class: "grow" }), status),
+      h("div", { class: "row" }, ...btns, undo, h("span", { class: "grow" }), status),
       memo, h("div", { class: "row" }, saved, h("span", { class: "grow" }), delButton("inbox", id, saved)));
-    btns.forEach((b, i) => b.addEventListener("click", () => save("inbox", id, { decision: DECISIONS[i] }, saved)));
+    // 点了决定就挪到「已处理」;「改回待定」挪回收件
+    btns.forEach((b, i) => b.addEventListener("click", async () => {
+      const was = !(el._d && el._d.decision);
+      if ((await save("inbox", id, { decision: DECISIONS[i] }, saved)) && was) note($("in-msg"), "定了「" + DECISIONS[i] + "」,这条挪到下面的「已处理」了");
+    }));
+    undo.addEventListener("click", async () => { if (await save("inbox", id, { decision: null }, saved)) note($("done-msg"), "这条挪回「收件」了"); });
     replied.addEventListener("click", () => save("inbox", id, { replied: true }, saved));
     memo.addEventListener("change", () => save("inbox", id, { note: memo.value }, saved));
     el._update = (d) => {
@@ -274,48 +278,56 @@
       replied.hidden = !!d.replied || !m.draft;
       const dec = d.decision || null;
       btns.forEach((b, i) => b.setAttribute("aria-pressed", String(dec === DECISIONS[i])));
+      undo.hidden = !dec;
       status.className = "pill " + (dec ? "ok" : "warn");
-      status.textContent = dec ? "你定了:" + dec : "等你定";
+      status.textContent = dec ? "你定了:" + dec + (d.decided_at ? " · " + mdhm(d.decided_at) : "") : "等你定";
       if (document.activeElement !== memo && memo.value !== (d.note || "")) memo.value = d.note || "";
       el.classList.toggle("done", !!dec);
     };
     return el;
   }
 
-  // 按顺序摆卡片:只在顺序变了才挪(挪动会让正在打字的框失焦)
-  // 待发:「待发」里只放还没点的(先送来的在上面);点过「已发 / 跳过」的放「已处理」(最近点的在上面)
-  function place(boxId, kind, rows) {
+  // 按顺序摆卡片:只在顺序变了才挪(挪动会让正在打字的框失焦)。rows 是 [种类, 编号, 数据]
+  // 「待发」只放还没点的(先送来的在上面),「收件」只放还没定的(新的在上面);
+  // 待发里点过「已发 / 跳过」的、收件里点过决定的,一起放「已处理」(最近点的在上面)
+  function place(boxId, rows) {
     const box = $(boxId);
-    const want = rows.map((r) => kind + ":" + r[0]);
-    for (const [id, d] of rows) {
-      const key = kind + ":" + id;
+    const want = rows.map(([k, id]) => k + ":" + id);
+    for (const [k, id, d] of rows) {
+      const key = k + ":" + id;
       let el = S.cards.get(key);
-      if (!el) { el = kind === "out" ? outCard(id) : inCard(id); S.cards.set(key, el); }
+      if (!el) { el = k === "out" ? outCard(id) : inCard(id); el._key = key; S.cards.set(key, el); }
       el._update(d);
     }
-    const now = [...box.children].map((c) => kind + ":" + c.getAttribute("data-id"));
+    const now = [...box.children].map((c) => c._key);
     if (now.join("|") !== want.join("|")) want.forEach((k) => box.append(S.cards.get(k)));
   }
+  const decidedIn = (d) => !!(d && d.decision);
   function sync(kind) {
     const store = kind === "out" ? S.out : S.inn;
-    const rows = [...store.entries()];
-    const keys = new Set(rows.map((r) => kind + ":" + r[0]));
+    const keys = new Set([...store.keys()].map((id) => kind + ":" + id));
     for (const [key, el] of S.cards) if (key.startsWith(kind + ":") && !keys.has(key)) { el.remove(); S.cards.delete(key); }
     if (kind === "out") {
-      const pend = rows.filter((r) => isPend(r[1])).sort((a, b) => String(a[1].created_at || "").localeCompare(String(b[1].created_at || "")));
-      const done = rows.filter((r) => !isPend(r[1])).sort((a, b) => String(b[1].decided_at || "").localeCompare(String(a[1].decided_at || "")) || String(b[1].created_at || "").localeCompare(String(a[1].created_at || "")));
-      place("out-cards", kind, pend);
-      place("done-cards", kind, done);
+      const pend = [...S.out.entries()].filter(([, d]) => isPend(d)).sort((a, b) => String(a[1].created_at || "").localeCompare(String(b[1].created_at || ""))).map(([id, d]) => ["out", id, d]);
+      place("out-cards", pend);
       $("out-empty").hidden = pend.length > 0;
-      $("out-empty").textContent = done.length
+      $("out-empty").textContent = S.out.size > pend.length
         ? "待发的都处理完了。点过「已发 / 跳过」的在下面的「已处理」里。"
         : "还没有待发的。机器人交帖后,我把原帖逐条看过,写好回复放在这里;每天的项目帖也放这里。";
-      $("done-empty").hidden = done.length > 0;
-      return;
+    } else {
+      const pend = [...S.inn.entries()].filter(([, d]) => !decidedIn(d)).sort((a, b) => String((b[1].mine || {}).at || "").localeCompare(String((a[1].mine || {}).at || ""))).map(([id, d]) => ["in", id, d]);
+      place("in-cards", pend);
+      $("in-empty").hidden = pend.length > 0;
+      $("in-empty").textContent = S.inn.size > pend.length
+        ? "收件里的都处理完了。点过决定的在下面的「已处理」里。"
+        : "还没有评论。点上面的「刷新评论和读数」,或者等我下次干活时送进来。";
     }
-    rows.sort((a, b) => (a[1].decision ? 1 : 0) - (b[1].decision ? 1 : 0) || String((b[1].mine || {}).at || "").localeCompare(String((a[1].mine || {}).at || "")));
-    place("in-cards", kind, rows);
-    $("in-empty").hidden = rows.length > 0;
+    const done = [
+      ...[...S.out.entries()].filter(([, d]) => !isPend(d)).map(([id, d]) => ["out", id, d]),
+      ...[...S.inn.entries()].filter(([, d]) => decidedIn(d)).map(([id, d]) => ["in", id, d]),
+    ].sort((a, b) => String(b[2].decided_at || "").localeCompare(String(a[2].decided_at || "")) || String(b[2].created_at || "").localeCompare(String(a[2].created_at || "")));
+    place("done-cards", done);
+    $("done-empty").hidden = done.length > 0;
   }
 
   function apply(json) {
@@ -334,11 +346,10 @@
   function renderTop(json) {
     const pend = [...S.out.values()].filter(isPend);
     const pendOut = pend.length, pendPosts = pend.filter(isPost).length, pendReplies = pendOut - pendPosts;
-    const doneOut = S.out.size - pendOut;
     const pendIn = [...S.inn.values()].filter((d) => !d.decision).length;
     $("n-out").textContent = pendOut; $("n-out").classList.toggle("due", pendOut > 0);
     $("n-in").textContent = pendIn; $("n-in").classList.toggle("due", pendIn > 0);
-    $("n-done").textContent = doneOut;
+    $("n-done").textContent = S.out.size - pendOut + S.inn.size - pendIn;
     const items = [];
     if (pendOut) items.push({ text: [pendReplies ? pendReplies + " 条回复" : "", pendPosts ? pendPosts + " 条项目帖" : ""].filter(Boolean).join("、") + "等你点发", href: "#outbox", when: "今天" });
     if (pendIn) items.push({ text: pendIn + " 条评论等你点一个决定", href: "#inbox", when: "今天" });
