@@ -58,27 +58,28 @@ export async function sync(db, fetchImpl, now) {
   const errors = [], partial = [];
   let newReplies = 0, marked = 0, read = 0;
   const stmts = [];
-  const owners = new Set(); // 发帖人账号的固定编号(从被监控帖子本身读出来)
+  // 我们自己的账号 = 被监控帖子的发帖人;认出来就记住(kv our_ids),以后旧帖子不监控了也认得(管理员贴的链接不算,免得贴错)
+  let stored = [];
+  try { stored = JSON.parse(kv.our_ids || "[]"); } catch { stored = []; }
+  const ours = new Set((Array.isArray(stored) ? stored : []).map(String).filter((v) => /^\d{1,25}$/.test(v)).slice(0, 10));
   const comments = new Map(); // 这次读到的别人的评论(同一条在几条帖子底下都出现只算一次)
-  const ownerReplies = new Map(); // 发帖人自己回了哪条评论 → 他回的话
+  const ownerReplies = new Map(); // 我们回了哪条评论 → 回的话
+  const seenReplies = [], threadNodes = []; // 先攒着:哪条是我们的、哪条是别人的,等这次所有帖子读完、我们的账号都认全了再分
 
-  // 读一条帖子底下的回复:只收这条帖子往下的那一串(父→子一层层找到底;没写回的是哪条的当作直接回它),别的分支不收;
-  // 发帖人编号读不出来就不收(分不清哪条是我们的)。这次读不到的(比如父评论没返回),下次读到了照样收:不记「读到哪里」,每次都拿去查重
+  // 读一条帖子底下的回复:只收这条帖子往下的那一串(父→子一层层找到底,我们自己的回复也算在串里,它底下别人接着回的照样收;
+  // 没写回的是哪条的当作直接回它),别的分支不收;发帖人编号读不出来就不收(分不清哪条是我们的)。
+  // 不记「读到哪里」:这次没返回的(比如父评论),下次返回了照样收
   const take = (name, j) => {
     const st = j.status, focal = String(st.id);
     const owner = String((st.author && st.author.id) || "");
-    if (owner) owners.add(owner);
     const reps = (Array.isArray(j.replies) ? j.replies : []).slice(0, MAX_REPLIES).filter((r) => /^\d{1,25}$/.test(String(r.id || "")));
     if (num(st.replies) != null && reps.length < st.replies) partial.push(name);
     if (!owner) return st;
     const kids = new Map();
     for (const r of reps) {
       const to = r.replying_to && r.replying_to.status != null ? String(r.replying_to.status) : focal;
-      // 发帖人自己的回复:整段里都记下(回的那条这次没返回也算数;那条是不是我们收件里的,由数据库说了算)
-      if (String((r.author && r.author.id) || "") === owner) {
-        if (/^\d{1,25}$/.test(to) && to !== focal && !ownerReplies.has(to)) ownerReplies.set(to, { at: bjIso(r.created_timestamp) || t, text: clip(r.text, 1000) });
-        continue;
-      }
+      // 回复都记下回的是哪条:是我们的账号回的,就把那条标成已回复(回的那条这次没返回也算数;那条在不在我们收件里,由数据库说了算)
+      seenReplies.push({ aid: String((r.author && r.author.id) || ""), to, focal, at: bjIso(r.created_timestamp) || t, text: clip(r.text, 1000) });
       if (!kids.has(to)) kids.set(to, []);
       kids.get(to).push(r);
     }
@@ -91,26 +92,41 @@ export async function sync(db, fetchImpl, now) {
         queue.push(id);
         const a = r.author || {};
         const sn = /^[A-Za-z0-9_]{1,15}$/.test(String(a.screen_name || "")) ? a.screen_name : null;
-        if (sn && !comments.has(id)) comments.set(id, { id, focal, mine: { source: clip(name, 40), url: `https://x.com/${sn}/status/${id}`, author: sn, at: bjIso(r.created_timestamp) || t, replyToId: id }, text: clip(r.text, 2000) });
+        threadNodes.push({ id, focal, aid: String(a.id || ""), sn, name, at: bjIso(r.created_timestamp) || t, text: clip(r.text, 2000) });
       }
     }
     return st;
   };
 
-  for (const p of posts) {
-    if (!canFetch()) { errors.push(`${p.name || p.id}(这次没来得及读)`); continue; }
-    const { j, error } = await read1(p.id);
-    if (error) { errors.push(`${p.name || p.id}(${error})`); continue; }
+  // 读一条(被监控的帖子,或我们自己发出去的):读数记下来,底下的评论交给 take
+  const lastOf = (e) => (typeof reads[e.id] === "string" ? reads[e.id] : "");
+  const readEntry = async (e) => {
+    if (!canFetch()) { if (e.kind === "watch") errors.push(`${e.name}(这次没来得及读)`); return; }
+    reads[e.id] = t; // 读不到也算轮过一次,免得一条坏的一直占着名额
+    const { j, error } = await read1(e.id);
+    if (error) { errors.push(`${e.name}(${error})`); return; }
+    const author = String((j.status.author && j.status.author.id) || "");
+    if (e.kind === "watch") {
+      if (author && ours.size < 10) ours.add(author);
+    } else if (!ours.has(author)) {
+      errors.push(`${e.name}(${ours.size ? "不是我们账号发的" : "没认出我们的账号"},不收评论)`);
+      return;
+    }
     read++;
-    const st = take(p.name || p.id, j);
-    p.points = [...(p.points || []), { at: t, views: num(st.views), likes: num(st.likes), replies: num(st.replies), reposts: num(st.reposts), bookmarks: num(st.bookmarks) }].slice(-MAX_POINTS);
+    const st = take(e.name, j);
+    if (e.kind === "watch") e.p.points = [...(e.p.points || []), { at: t, views: num(st.views), likes: num(st.likes), replies: num(st.replies), reposts: num(st.reposts), bookmarks: num(st.bookmarks) }].slice(-MAX_POINTS);
+    else stats[e.out] = { views: num(st.views), likes: num(st.likes), replies: num(st.replies), reposts: num(st.reposts), at: t };
+  };
+  const watchList = posts.map((p) => ({ kind: "watch", id: String(p.id), name: p.name || String(p.id), p })).sort((a, b) => lastOf(a).localeCompare(lastOf(b)));
+  const done = new Set();
+  // 还不认得我们的账号(第一次):先读一两条被监控的帖子把账号认出来,再去核链接
+  for (const e of ours.size ? [] : watchList.slice(0, 2)) {
+    await readEntry(e);
+    done.add(e.id);
+    if (ours.size) break;
   }
-  // 我们自己的账号 = 被监控帖子的发帖人;认出来就记住(kv our_ids),以后旧帖子不监控了也认得(管理员贴的链接不算,免得贴错)
-  let stored = [];
-  try { stored = JSON.parse(kv.our_ids || "[]"); } catch { stored = []; }
-  const ours = new Set([...owners, ...(Array.isArray(stored) ? stored : []).map(String).filter((v) => /^\d{1,25}$/.test(v))].slice(0, 10));
 
-  // 7 天内点了「已发」的一次查出来:还没核到链接的,去目标帖子底下找管理员那条回复(按账号编号认;一个我们的账号都不认得就先不核);
+  // 7 天内点了「已发」的一次查出来:还没核到链接的,先去目标帖子底下找管理员那条回复(按我们账号的编号认;一个都不认得就这次先不核);
   // 自己发的帖子没有目标帖子(sent_target 是空的),不在这里找。核到的链接先攒着,和别的写一起写
   const { results: sentAll } = await db.prepare("SELECT id, mine, sent_target, reply_url, decided_at FROM outbox WHERE status = '已发' AND purged = 0 AND decided_at >= ? ORDER BY decided_at DESC LIMIT 300").bind(iso(+now - AUTO_DAYS * 864e5)).all();
   const links = [], found = [];
@@ -127,72 +143,71 @@ export async function sync(db, fetchImpl, now) {
     }
   }
 
-  // 我们自己发出去的(链接是服务器自己核到的,或管理员、维护者贴的):已经在被监控帖子里的、管理员停了读评论的不读;没读过的先读,其余轮着读
-  const watched = new Set(posts.map((p) => String(p.id)));
-  const autos = [];
+  // 要读的:被监控的帖子 + 我们自己发出去的(链接是服务器核到的,或管理员、维护者贴的;管理员停了读评论的不读),
+  // 放在一起按上次读的时间轮着来(没读过的先读,同样没读过的被监控的在前):读得慢、一次读不完也不会总轮不到同一批
+  const has = new Set(watchList.map((e) => e.id));
+  const list = [...watchList];
   for (const r of [...found, ...(sentAll || []).filter((q) => q.reply_url)]) {
     const m = /^https:\/\/(?:x|twitter)\.com\/[A-Za-z0-9_]{1,15}\/status\/(\d{1,25})$/.exec(String(r.reply_url || ""));
-    if (!m || watched.has(m[1]) || off.has(m[1]) || autos.some((a) => a.id === m[1])) continue;
+    if (!m || has.has(m[1]) || off.has(m[1])) continue;
+    has.add(m[1]);
     let mine = {};
     try { mine = JSON.parse(r.mine) || {}; } catch { /* 读不出就只用编号 */ }
     const tg = mine.target || {};
     const name = mine.kind === "post" ? "项目帖 · " + (mine.topic || r.id) : "我们的回复 · " + (tg.protocol || "@" + (tg.handle || "?"));
-    autos.push({ out: r.id, id: m[1], name: clip(name, 40), last: typeof reads[m[1]] === "string" ? reads[m[1]] : "" });
+    list.push({ kind: "mine", id: m[1], name: clip(name, 40), out: r.id });
   }
-  autos.sort((a, b) => a.last.localeCompare(b.last)); // 没读过的("")在前;同样新的保持「最近发的在前」
-  for (const a of autos) {
-    if (!canFetch()) break;
-    reads[a.id] = t; // 读不到也算轮过一次,免得一条坏的一直占着名额
-    const { j, error } = await read1(a.id);
-    if (error) { errors.push(`${a.name}(${error})`); continue; }
-    if (!ours.has(String((j.status.author && j.status.author.id) || ""))) { errors.push(`${a.name}(${ours.size ? "不是我们账号发的" : "没认出我们的账号"},不收评论)`); continue; }
-    read++;
-    const st = take(a.name, j);
-    stats[a.out] = { views: num(st.views), likes: num(st.likes), replies: num(st.replies), reposts: num(st.reposts), at: t };
+  list.sort((a, b) => lastOf(a).localeCompare(lastOf(b)) || (a.kind === b.kind ? 0 : a.kind === "watch" ? -1 : 1));
+  for (const e of list) if (!done.has(e.id)) await readEntry(e);
+
+  // 这次所有帖子读完了,我们的账号也认全了:我们回的 → 把它回的那条标成已回复;别人的 → 评论(我们自己的不进收件)
+  for (const r of seenReplies) if (ours.has(r.aid) && /^\d{1,25}$/.test(r.to) && r.to !== r.focal && !ownerReplies.has(r.to)) ownerReplies.set(r.to, { at: r.at, text: r.text });
+  for (const n of threadNodes) {
+    if (ours.has(n.aid) || !n.sn || comments.has(n.id)) continue;
+    comments.set(n.id, { id: n.id, focal: n.focal, mine: { source: clip(n.name, 40), url: `https://x.com/${n.sn}/status/${n.id}`, author: n.sn, at: n.at, replyToId: n.id }, text: n.text });
   }
 
-  // 新评论:读到的全部拿去查重(一条语句);收件里没有的先查到期删过的(全查,不设上限,免得删过的一直占着名额),
-  // 再收最多 MAX_NEW 条:被发帖人回过的先收(收进来就标已回复,证据不丢),其余各条帖子轮流、每条先拿自己最新的(一条帖子评论再多也挤不掉别的);
-  // 没收到的下次照样会再查,不会永远跳过。计数按数据库实际写进去的行数
+  // 新评论:读到的全部拿去查重(一条语句);收件里没有的先查到期删过的(全查,不设上限,免得删过的一直占着名额);
+  // 被我们回过的全收(收进来就标已回复,证据不丢),其余最多再收 MAX_NEW 条:各条帖子轮流、每条先拿自己最新的(一条帖子评论再多也挤不掉别的);
+  // 没收到的下次照样会再查,不会永远跳过。计数按数据库实际改动的行数
   const newest = (a, b) => b.length - a.length || (b > a ? 1 : b < a ? -1 : 0); // 帖子编号是数字串:长的大,一样长按字面比(比转成大整数省 CPU)
-  const fair = (list, n) => {
+  const fair = (arr, n) => {
     const by = new Map();
-    for (const c of list) { if (!by.has(c.focal)) by.set(c.focal, []); by.get(c.focal).push(c); }
+    for (const c of arr) { if (!by.has(c.focal)) by.set(c.focal, []); by.get(c.focal).push(c); }
     const lanes = [...by.values()].map((l) => l.sort((a, b) => newest(a.id, b.id)));
     const out = [];
     for (let i = 0; out.length < n && lanes.some((l) => i < l.length); i++) for (const l of lanes) if (i < l.length && out.length < n) out.push(l[i]);
     return out;
   };
+  const markStmt = (to, it) => db.prepare(
+    "UPDATE inbox SET replied = 1, replied_at = COALESCE(replied_at, ?), mine = CASE WHEN purged = 1 OR json_extract(mine, '$.yourReply') IS NOT NULL THEN mine ELSE json_set(mine, '$.yourReply', ?) END, updated_at = ? WHERE id = ? AND replied = 0",
+  ).bind(it.at, it.text, t, to);
   const all = [...comments.values()];
   const known = await existing(db, "inbox", all.map((c) => c.id));
   const unknown = all.filter((c) => !known.has(c.id));
   const gone = await goneSet(db, unknown.map((c) => c.id));
   const fresh = unknown.filter((c) => !gone.has(c.id));
-  const answered = fair(fresh.filter((c) => ownerReplies.has(c.id)), MAX_NEW);
-  const pick = [...answered, ...fair(fresh.filter((c) => !ownerReplies.has(c.id)), MAX_NEW - answered.length)];
+  const answered = fresh.filter((c) => ownerReplies.has(c.id));
+  const others = fair(fresh.filter((c) => !ownerReplies.has(c.id)), MAX_NEW);
   const insAt = [], markAt = [];
-  for (const c of pick) {
-    const rep = ownerReplies.get(c.id);
+  for (const c of [...answered, ...others]) {
     insAt.push(stmts.length);
-    if (rep) stmts.push(db.prepare("INSERT INTO inbox (id, mine, text, replied, replied_at, created_at, updated_at, purge_after) VALUES (?, ?, ?, 1, ?, ?, ?, ?) ON CONFLICT(id) DO NOTHING").bind(c.id, JSON.stringify({ ...c.mine, yourReply: rep.text }), c.text, rep.at, t, t, plusDays(now, KEEP_DAYS)));
-    else stmts.push(db.prepare("INSERT INTO inbox (id, mine, text, created_at, updated_at, purge_after) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO NOTHING").bind(c.id, JSON.stringify(c.mine), c.text, t, t, plusDays(now, KEEP_DAYS)));
+    stmts.push(db.prepare("INSERT INTO inbox (id, mine, text, created_at, updated_at, purge_after) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO NOTHING").bind(c.id, JSON.stringify(c.mine), c.text, t, t, plusDays(now, KEEP_DAYS)));
   }
-  const more = fresh.length > pick.length;
-  // 收件里已经有、还没标已回复、发帖人回了的:标上,记下他回的话(一条 json_each 查询;一次最多 MAX_NEW 条)
-  const targets = [...ownerReplies.keys()].filter((id) => !pick.some((c) => c.id === id));
-  const open = targets.length ? new Set((((await db.prepare("SELECT value AS id FROM json_each(?) WHERE value IN (SELECT id FROM inbox WHERE replied = 0)").bind(JSON.stringify(targets)).all()).results) || []).map((r) => String(r.id))) : new Set();
-  for (const to of targets.filter((id) => open.has(id)).sort(newest).slice(0, MAX_NEW)) {
-    const it = ownerReplies.get(to);
+  const more = fresh.length > answered.length + others.length;
+  // 我们回了的:这次刚收进来的,和收件里已经有、还没标的(一条 json_each 查询),都标上已回复、记下回的话(新评论先写进去,再标;
+  // 刚收的那条要是同时被投递先写进去了,这一步照样标得上)
+  const fresh1 = new Set(answered.map((c) => c.id));
+  const rest = [...ownerReplies.keys()].filter((id) => !fresh1.has(id));
+  const open = rest.length ? new Set((((await db.prepare("SELECT value AS id FROM json_each(?) WHERE value IN (SELECT id FROM inbox WHERE replied = 0)").bind(JSON.stringify(rest)).all()).results) || []).map((r) => String(r.id))) : new Set();
+  for (const to of [...fresh1, ...rest.filter((id) => open.has(id)).sort(newest).slice(0, MAX_NEW)]) {
     markAt.push(stmts.length);
-    stmts.push(db.prepare(
-      "UPDATE inbox SET replied = 1, replied_at = COALESCE(replied_at, ?), mine = CASE WHEN purged = 1 OR json_extract(mine, '$.yourReply') IS NOT NULL THEN mine ELSE json_set(mine, '$.yourReply', ?) END, updated_at = ? WHERE id = ? AND replied = 0",
-    ).bind(it.at, it.text, t, to));
+    stmts.push(markStmt(to, ownerReplies.get(to)));
   }
   stmts.push(...links);
 
-  // 上次读的时间只记还在 7 天里的;读数留最近 MAX_STATS 条
-  const inWindow = new Set(autos.map((a) => a.id));
-  for (const k of Object.keys(reads)) if (!inWindow.has(k) || typeof reads[k] !== "string") delete reads[k];
+  // 上次读的时间只记还在读的(被监控的、7 天内我们发出去的);读数留最近 MAX_STATS 条
+  for (const k of Object.keys(reads)) if (!has.has(k) || typeof reads[k] !== "string") delete reads[k];
   const keptStats = Object.fromEntries(Object.entries(stats).filter(([, v]) => v && typeof v === "object" && typeof v.at === "string").sort((a, b) => b[1].at.localeCompare(a[1].at)).slice(0, MAX_STATS));
   const note = errors.length ? `${errors.length} 条没读到` : partial.length ? `${partial.join("、")} 的评论可能没读全` : more ? "新评论太多,这次没收完,下次接着收" : "";
 
@@ -202,7 +217,7 @@ export async function sync(db, fetchImpl, now) {
   if (posts.length) stmts.push(docStmt(db, "x_posts", { ...x, posts: (x.posts || []).map((p) => posts.find((q) => q.id === p.id) || p), updatedAt: t }, now));
   const res = await db.batch(stmts);
   const changed = (i) => Number((res && res[i] && res[i].meta && res[i].meta.changes) || 0);
-  for (let k = 0; k < insAt.length; k++) { const n = changed(insAt[k]); newReplies += n; if (n && ownerReplies.has(pick[k].id)) marked++; }
+  for (const i of insAt) newReplies += changed(i);
   for (const i of markAt) marked += changed(i);
   return { status: 200, body: { ok: true, at: t, read, newReplies, marked, errors, partial } };
 }

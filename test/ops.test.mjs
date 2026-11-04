@@ -527,7 +527,7 @@ test("我们发出去的回复:7 天内的也读;别人接着回的进收件(写
   assert.equal((await w.exp({})).json.outStats["r-openeden-1"].views, 41);
 });
 
-test("我们发出去的多了:一次读帖总数有上限(被监控的先读),下一次先读没读过的;7 天前点「已发」的不读", async () => {
+test("我们发出去的多了:一次读帖总数有上限(第一次被监控的在前),下一次先读没读过的;7 天前点「已发」的不读", async () => {
   const w = world();
   const c = await w.login();
   const sid = (i) => "22160000000000001" + String(i).padStart(2, "0");
@@ -551,7 +551,7 @@ test("我们发出去的多了:一次读帖总数有上限(被监控的先读),�
   assert.equal(asked.length, MAX_FETCH);
   const unread = Array.from({ length: 30 }, (_, i) => sid(i + 1)).filter((x) => !first.has(x));
   assert.equal(unread.length, 30 - (MAX_FETCH - 1));
-  assert.deepEqual(asked.slice(1, 1 + unread.length).sort(), unread.sort(), "上次没轮到的先读");
+  assert.deepEqual(asked.slice(0, unread.length).sort(), unread.sort(), "上次没轮到的先读");
   assert.ok(!asked.includes(sid(0)));
 });
 
@@ -612,7 +612,7 @@ test("贴链接:只收 x.com 的帖子链接(去掉 ?s=20 这类尾巴),只给�
   assert.equal((await put("https://x.com/Ilikecoin2023/status/2117778827250409695")).status, 409);
 });
 
-test("评论多:一次收 100 条(被我们回过的先,其余新的先),没收完的下次接着收,不漏;已回复标记也补齐", async () => {
+test("评论多:被我们回过的全收(收进来就标好),其余一次最多 100 条(新的先),没收完的下次接着收,不漏", async () => {
   const w = world();
   const c = await w.login();
   const OWNER = { id: "1000000000000000001", screen_name: "owner_acct" };
@@ -632,7 +632,7 @@ test("评论多:一次收 100 条(被我们回过的先,其余新的先),没收�
     got.push([r.json.newReplies, r.json.marked]);
     w.clock += 121000;
   }
-  assert.deepEqual(got, [[100, 40], [60, 0], [0, 0]]); // 回过的 40 条先收、收进来就标好
+  assert.deepEqual(got, [[140, 40], [20, 0], [0, 0]]); // 回过的 40 条全收、收进来就标好,其余 120 条先收 100
   const inbox = (await w.call("/api/admin/state", { cookie: c })).json.inbox;
   assert.equal(inbox.length, 160);
   assert.equal(inbox.filter((x) => x.replied === true).length, 40);
@@ -738,6 +738,36 @@ test("删过的评论再多也挡不住别的:更早的那条照样收;我们回
   w.db = raw;
   assert.equal(r.status, 200, JSON.stringify(r.json));
   assert.equal(r.json.newReplies, 0);
+});
+
+test("帖子底下:别人 A → 我们回 A(B)→ C 又回我们,C 收进来;我们另一个账号回的不当别人的评论,还把它回的那条标成已回复", async () => {
+  const w = world();
+  const c = await w.login();
+  const BIG = { id: "1000000000000000001", screen_name: "big_acct" }, PROJ = { id: "1000000000000000002", screen_name: "proj_acct" };
+  const P1 = "3000000000000000005", P2 = "3000000000000000006";
+  await w.ingest({ docs: { x_posts: { posts: [{ name: "大号帖", id: P1, points: [] }, { name: "项目帖", id: P2, points: [] }] } } });
+  const A = "2117000000000000001", B = "2117000000000000002", C = "2117000000000000003", D = "2117000000000000004", E = "2117000000000000005";
+  w.fetchImpl = async (u) => {
+    const id = String(u).split("/").pop();
+    if (id === P1) return new Response(JSON.stringify({ status: { id, author: BIG, replies: 4 }, replies: [
+      { id: A, text: "怎么取?", author: { id: "9001", screen_name: "user_a" }, replying_to: { status: P1 } },
+      { id: B, text: "看官方取款页", author: BIG, replying_to: { status: A } },
+      { id: C, text: "谢谢,还是不行", author: { id: "9003", screen_name: "user_c" }, replying_to: { status: B } },
+      { id: E, text: "我们项目号回的", author: PROJ, replying_to: { status: D } },
+      { id: D, text: "另一个问题", author: { id: "9004", screen_name: "user_d" }, replying_to: { status: P1 } },
+    ] }));
+    return new Response(JSON.stringify({ status: { id, author: PROJ, replies: 0 }, replies: [] }));
+  };
+  // 第一次:认出两个账号(大号帖、项目帖的发帖人);第二次项目号就算我们的了
+  await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c });
+  w.clock += 121000;
+  await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c });
+  const inbox = (await w.call("/api/admin/state", { cookie: c })).json.inbox;
+  const ids = inbox.map((x) => x.id).sort();
+  assert.ok(ids.includes(C), "C 回的是我们那条 B,收进来");
+  assert.ok(!ids.includes(B) && !ids.includes(E), "我们自己的(大号、项目号)不进收件");
+  assert.equal(inbox.find((x) => x.id === D).replied, true, "项目号回了 D,D 标已回复");
+  assert.equal(inbox.find((x) => x.id === A).replied, true, "大号回了 A,A 标已回复");
 });
 
 test("一次刷新最坏情况:fetch 加数据库查询不超过 50 个(免费计划的上限)", async () => {
