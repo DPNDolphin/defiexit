@@ -1,0 +1,265 @@
+{
+  "title": "Retirer votre liquidité DYORSwap vers votre portefeuille",
+  "short": "Retirer de DYORSwap",
+  "verified": "En novembre 2026, l'auteur a suivi ce guide avec son propre compte dans l'application OKX : avec un slippage de 1%, le retrait est passé du premier coup, avec 1 signature et 1 transaction ; les montants correspondaient à la page, et les frais étaient inférieurs à 1 cent. Le code source du routeur est vérifié sur l'explorateur d'OKX. Les fenêtres du portefeuille n'ont pas encore d'images : vérifiez leur contenu avec les fiches de contrôle",
+  "covers": "La liquidité (LP) dans le pool USDT/OKB de DYORSwap sur X Layer",
+  "summary": "Si vous avez ajouté de la liquidité au pool USDT/OKB de DYORSwap, elle ne reviendra pas toute seule. La liste du site ne l'affiche souvent pas (elle indique « No liquidity found »), et un retrait avec les réglages par défaut échoue. Suivez ce guide pour trouver le pool, régler le slippage sur 1% et retirer : votre USDT et votre OKB reviennent dans votre portefeuille.",
+  "facts": [
+    ["Signature et transaction", "1 signature (uniquement pour les LP que vous retirez) et 1 transaction"],
+    ["Frais", "Moins de $0.01, payés avec l'OKB de votre portefeuille sur X Layer"],
+    ["Durée", "Environ 5 minutes"],
+    ["Il vous faut", "L'application OKX, sur le compte qui a ajouté la liquidité, avec un peu d'OKB sur X Layer pour les frais"]
+  ],
+  "chips": ["Environ 5 minutes", "1 signature + 1 transaction", "Frais de moins de 1 cent"],
+  "official": [{ "label": "Page « trouver un pool » de DYORSwap" }],
+  "vars": { "addrShort": "votre propre adresse", "got": "ce que vous pouvez retirer" },
+  "pro": [
+    "**Parcours** : dans l'application OKX, choisissez « Web3 » en haut → l'onglet d'exploration en bas → collez `https://dyorswap.finance/find/?chainId=196` dans le champ de recherche → le résultat « site web tiers » → **Connect** → **OKX Wallet** → **Select a Token**, choisissez USDT → **Manage this pool** → l'**engrenage**, choisissez 1.0% → touchez USDT/OKB → **Remove** → **Max** → **Enable** (signature) → **Remove** → **Confirm** (transaction).",
+    "**Une signature** : un Permit EIP-712 sur le contrat DYOR LPs 0x35c185563dFd328256A80Aafc23822200719cD25. Le spender est le routeur 0x1E690F24F704672e44255013C2cB22FC04c46036, et le montant correspond aux LP que vous retirez, pas à un montant illimité.",
+    "**Une transaction** : `removeLiquidityETHWithPermit` vers le routeur, avec 0 OKB envoyé.",
+    "**Vos chiffres** : {{got}}.",
+    "**Pièges** : cet USDT est l'ancienne version de X Layer (USDT_Bridged), et le pool n'est pas dans la liste par défaut du site : « Your Liquidity » indique donc « No liquidity found ». Le retrait commence par créer les LP de frais du protocole, si bien que vous recevez en réalité environ 0.5% de moins que l'estimation du site, soit plus que le slippage par défaut, et le routeur annule la transaction avec `INSUFFICIENT_A_AMOUNT`. C'est pour cela que le slippage doit être à 1%. Ne touchez pas « Bridge »."
+  ],
+  "done": {
+    "where": "dans votre portefeuille, sur X Layer",
+    "from": "envoyé par le contrat routeur de DYORSwap",
+    "look": "Où regarder : accueil du portefeuille dans l'application OKX → ouvrez OKB ou USDT → historique des transactions."
+  },
+  "screens": {
+    "nolist": {
+      "name": "La liste indique « No liquidity found »",
+      "features": ["Intitulée Your Liquidity", "No liquidity found au milieu", "Un bouton Find other LP tokens en dessous"],
+      "img": "dy-nolist-en.webp",
+      "do": "Votre argent n'est pas perdu : ce pool n'est pas dans la liste par défaut du site, c'est pour cela qu'il n'apparaît pas ici. Touchez **Find other LP tokens**, puis choisissez USDT comme à l'étape 2.",
+      "images": [{ "src": "dy-nolist-en.webp", "caption": "① Touchez **Find other LP tokens**" }]
+    },
+    "import": {
+      "name": "La page Import Pool",
+      "img": "dy-select-en.webp",
+      "features": ["Intitulée Import Pool", "Le premier champ indique OKB, le second Select a Token"],
+      "do": "C'est la page de l'étape 2. Portefeuille pas encore connecté ? Touchez d'abord **Connect** en haut à droite. Déjà connecté ? Vérifiez que l'icône en haut à droite est le damier noir et blanc (X Layer), puis touchez **Select a Token** et choisissez USDT."
+    },
+    "settings": {
+      "name": "Le panneau Settings en bas",
+      "img": "dy-slip-en.webp",
+      "features": ["Un panneau s'ouvre par le bas, intitulé Settings", "Sous Slippage Tolerance, il y a des boutons 0.1%, 0.5% et 1.0%"],
+      "do": "C'est l'étape 3 : touchez **1.0%** pour qu'il devienne bleu, puis touchez **×** en haut à droite pour fermer. Laissez « Expert Mode » désactivé."
+    },
+    "remove-page": {
+      "name": "La page Remove USDT-OKB liquidity",
+      "img": "dy-max-en.webp",
+      "features": ["Intitulée Remove USDT-OKB liquidity", "Un grand pourcentage au milieu", "Quatre boutons en dessous : 25%, 50%, 75%, Max"],
+      "do": "C'est l'étape 4 : touchez **Max**, faites défiler jusqu'en bas, vérifiez que « Slippage Tolerance » indique 1%, puis touchez **Enable**."
+    },
+    "fail": {
+      "name": "Un message rouge : This transaction would fail",
+      "img": "dy-fail-en.webp",
+      "features": ["Une erreur rouge (Error) apparaît en haut", "Il est écrit This transaction would fail"],
+      "do": "Votre argent n'a pas bougé. Le slippage est très probablement encore à 0.5% : vous recevez en réalité un peu moins que l'estimation du site, plus que ce que le slippage autorise, donc la transaction ne peut pas passer. Touchez **×** pour fermer le message, fermez la fenêtre, touchez la flèche retour en haut à gauche de la page de retrait pour revenir à la liste, réglez 1% comme à l'étape 3, puis retirez de nouveau (il faudra signer à nouveau).",
+      "images": [{ "src": "dy-fail-en.webp", "caption": "✗ Slippage trop bas : le cadre jaune indique encore 0.5%" }]
+    },
+    "wrong-net": {
+      "name": "Une fenêtre : You are in wrong network",
+      "img": "dy-wrongnet-en.webp",
+      "features": ["Un panneau s'ouvre par le bas, intitulé You are in wrong network", "Un bouton bleu en dessous : Switch to X Layer mainnet"],
+      "do": "Votre portefeuille est sur un autre réseau. Touchez **Switch to X Layer mainnet**, et confirmez si le portefeuille le demande. Votre pool n'apparaît que sur X Layer.",
+      "images": [{ "src": "dy-wrongnet-en.webp", "caption": "① Touchez **Switch to X Layer mainnet**" }]
+    },
+    "chains": {
+      "name": "La liste des réseaux en bas",
+      "img": "dy-chains-en.webp",
+      "features": ["Un panneau s'ouvre par le bas, avec un titre qui parle de changer de réseau", "Une liste de noms de réseaux, dont X Layer mainnet"],
+      "do": "Choisissez **X Layer mainnet**. Ne choisissez aucun autre réseau, et n'en ajoutez pas de nouveau.",
+      "images": [{ "src": "dy-chains-en.webp", "caption": "① Choisissez **X Layer mainnet**. La liste est longue : faites défiler vers le haut pour le trouver" }]
+    },
+    "sign-wrong": {
+      "name": "La signature ne concerne pas DYOR LPs, ou le spender n'est pas 0x1E690F24…FC04c46036",
+      "do": "Touchez **Reject** (refuser). Ce guide ne comporte qu'une seule signature : le contrat est DYOR LPs 0x35c185563dFd328256A80Aafc23822200719cD25 et le spender est le routeur 0x1E690F24F704672e44255013C2cB22FC04c46036. Ne signez pour aucun autre jeton ni aucune autre adresse. Fermez la page et rouvrez-la comme à l'étape 1."
+    },
+    "wrong-to": {
+      "name": "L'adresse d'interaction n'est pas 0x1E690F24…FC04c46036, ou on vous demande d'envoyer de l'OKB ou de l'USDT",
+      "do": "Touchez **Reject** (refuser). Ce retrait passe uniquement par le routeur 0x1E690F24F704672e44255013C2cB22FC04c46036. La seule chose qui quitte votre portefeuille, ce sont les LP, et vous recevez de l'USDT et de l'OKB. Fermez la page et rouvrez-la comme à l'étape 1."
+    },
+    "domain": {
+      "name": "La barre d'adresse n'affiche pas dyorswap.finance",
+      "do": "Fermez cette page immédiatement et ne signez rien. Collez vous-même de nouveau `https://dyorswap.finance/find/?chainId=196` ; ne touchez pas les liens que d'autres personnes vous envoient."
+    },
+    "bridge": {
+      "name": "Une page de pont (un bouton Send, des onglets comme Bridge, Deploy, Referral), ou une demande d'ajout d'un nouveau réseau",
+      "do": "Ne touchez pas « Send » et ne signez rien. Ce n'est pas la sortie : retirer de la liquidité ne nécessite aucun pont. Fermez la page et rouvrez-la depuis l'étape 1. Tant que vous n'avez rien signé ni confirmé, votre argent n'a pas bougé. En septembre 2026, des utilisateurs ont perdu des fonds à cause d'un faux pont sur DYORSwap."
+    }
+  },
+  "steps": {
+    "open": {
+      "title": "Ouvrir DYORSwap dans l'application OKX",
+      "items": [
+        "Touchez d'abord ce lien pour le copier : `https://dyorswap.finance/find/?chainId=196`",
+        "Voici comment faire dans l'application OKX, une image par geste. Nous avons testé l'application en chinois, ses images sont donc en chinois. Si votre application est dans une autre langue, cherchez le bouton qui fait ce que décrit chaque légende, et arrêtez-vous si vous ne le trouvez pas ou si ce que vous voyez ne correspond pas."
+      ],
+      "images": [
+        "① Vous lisez ceci dans l'application OKX ? Une fois le lien copié, touchez le **×** en haut à gauche pour fermer la page, et revenez une fois terminé. Vous lisez dans un autre navigateur ? Ouvrez simplement l'application OKX",
+        "② Choisissez **Web3** en haut ③ Touchez l'onglet d'exploration, la deuxième icône de la barre du bas. Les montants sont masqués sur l'image",
+        "④ Touchez le champ de recherche en haut",
+        "⑤ Appuyez longuement sur le champ de recherche, puis touchez **Paste** (Coller)",
+        "⑥ Touchez le résultat « site web tiers » juste en dessous. La partie masquée de l'image est un autre lien, issu de notre enregistrement ; le vôtre doit commencer exactement par **https://dyorswap.finance/**, et une fois la page ouverte, la barre d'adresse doit indiquer exactement **dyorswap.finance**, sans rien de plus avant ni après"
+      ],
+      "situations": {
+        "third-party": { "see": "Le résultat de recherche indique qu'il s'agit d'un site web tiers", "do": "C'est normal : le portefeuille étiquette ainsi toutes les adresses web. Regardez l'adresse qui suit : elle doit commencer exactement par **https://dyorswap.finance/**, avec une barre oblique juste après finance et rien de plus entre les deux." },
+        "no-paste": { "see": "Un appui long sur le champ de recherche n'affiche pas « Paste » (Coller)", "do": "Revenez sur cette page et touchez de nouveau le lien pour le copier. Si votre iPhone demande s'il faut autoriser le collage, autorisez-le. Toujours rien ? Tapez `https://dyorswap.finance/find/?chainId=196` à la main." },
+        "wrong-account": { "see": "Le portefeuille est sur un autre compte que celui qui a ajouté la liquidité", "do": "Revenez à l'accueil du portefeuille, touchez le petit triangle à côté du nom du compte, passez au compte qui a ajouté la liquidité (un portefeuille OKX peut en contenir plusieurs), puis recommencez. Sur le mauvais compte, vous ne trouverez pas votre pool." },
+        "other-wallet": { "see": "Je n'utilise pas l'application OKX, ou je suis sur un ordinateur", "do": "Ce guide a été écrit pour l'application OKX ; nous n'avons pas vérifié les autres portefeuilles ni les extensions de navigateur. Les pages web sont les mêmes, mais les fenêtres du portefeuille sont différentes. Si elles ne correspondent pas aux fiches de contrôle, ne signez pas : touchez « Un problème ? » en haut à droite et envoyez-nous le rapport." }
+      }
+    },
+    "pool": {
+      "title": "Connecter votre portefeuille et trouver votre pool",
+      "milestone": "Pool",
+      "note": "La connexion est gratuite et ne peut pas déplacer votre argent",
+      "items": [
+        "DYORSwap peut s'afficher en anglais ou en chinois. Les images sont en anglais ; pour changer de langue, touchez le globe en haut."
+      ],
+      "images": [
+        { "src": "dy-find-en.webp", "caption": "① La page Import Pool s'ouvre. Touchez **Connect** en haut à droite ✗ Ne touchez que ce qui est encadré sur les images. Ne touchez pas « Bridge » dans la barre du bas : le retrait n'en a pas besoin, et en septembre 2026 des utilisateurs ont perdu des fonds à cause d'un faux pont sur DYORSwap" },
+        { "src": "dy-wallets-en.webp", "caption": "② Touchez **OKX Wallet**. Quand le portefeuille demande à se connecter, vérifiez qu'il indique dyorswap.finance, puis connectez-vous" },
+        { "src": "dy-select-en.webp", "caption": "③ Une fois la connexion établie, regardez d'abord le cadre jaune : l'icône en haut à droite doit être le damier noir et blanc, qui signifie X Layer. Sinon, voyez les cas courants ci-dessous. Si c'est bien le damier, touchez **Select a Token**" },
+        { "src": "dy-tokens-en.webp", "caption": "④ Touchez **USDT** dans la liste ✗ Ne touchez pas USD₮0 juste en dessous : c'est un autre jeton, et ce pool utilise l'USDT. Les soldes sont masqués sur l'image" },
+        { "src": "dy-found-en.webp", "caption": "⑤ Un bloc USDT-OKB LP apparaît : c'est votre liquidité. Touchez **Manage this pool**. Les chiffres sont masqués sur l'image" }
+      ],
+      "situations": {
+        "connected": { "see": "Il n'y a pas de bouton « Connect », juste une icône de portefeuille", "do": "Votre portefeuille est déjà connecté. Vérifiez que l'icône à sa gauche est le damier noir et blanc (X Layer), puis touchez **Select a Token**." },
+        "wrong-network": { "see": "« You are in wrong network » s'affiche, ou l'icône en haut à droite n'est pas le damier", "do": "Votre portefeuille est sur un autre réseau, donc votre pool n'apparaîtra pas. Touchez **Switch to X Layer mainnet**. Si rien ne s'affiche, touchez cette icône et choisissez **X Layer mainnet** dans la liste des réseaux." },
+        "switch-network": { "see": "Le portefeuille vous demande de changer de réseau", "do": "Passez sur **X Layer**. C'est un changement de réseau, pas l'ajout d'un nouveau réseau. S'il vous demande d'ajouter n'importe quel autre réseau, refusez : DYORSwap a connu un incident de fausse chaîne en septembre." },
+        "not-found": { "see": "Après avoir choisi USDT, aucun bloc USDT-OKB LP n'apparaît", "do": "Vérifiez que l'icône en haut à droite est le damier (X Layer) et que le portefeuille est sur le compte qui a ajouté la liquidité, et laissez à la page quelques secondes pour lire la blockchain. Toujours rien ? Touchez « Un problème ? » en haut à droite : nous vérifions directement sur la blockchain les LP de cette adresse." },
+        "wrong-token": { "see": "J'ai choisi USD₮0 par erreur", "do": "Touchez le second champ et choisissez **USDT**." },
+        "no-pool": { "see": "Il est écrit « No pool found », avec « Create pool » en dessous", "do": "Mauvais jeton : cette paire n'a pas de pool. Ne touchez pas « Create pool ». Touchez le second champ et choisissez **USDT**." },
+        "nolist": { "see": "La page indique « No liquidity found »", "do": "Votre argent n'est pas perdu : ce pool n'est pas dans la liste par défaut du site. Touchez **Find other LP tokens**, puis « Select a Token », et choisissez USDT." },
+        "bridge-page": { "see": "Une page de pont s'est ouverte : elle a un bouton « Send » et des onglets comme Bridge, Deploy, Referral", "do": "Ne touchez pas « Send » et ne signez rien. Ce n'est pas la sortie. Fermez la page et rouvrez-la depuis l'étape 1. Tant que vous n'avez rien signé ni confirmé, votre argent n'a pas bougé." }
+      }
+    },
+    "slippage": {
+      "title": "Régler le slippage sur 1%",
+      "milestone": "Slippage",
+      "note": "Sans ce réglage, le retrait échouera plus tard",
+      "items": [
+        "Quand vous retirez de ce pool, il règle d'abord des frais de protocole : vous recevez donc en réalité un peu moins que l'estimation du site. Le slippage par défaut de 0.5% ne suffit pas et la transaction échoue ; passez-le donc d'abord à 1%. Cela vient d'une simulation sur la blockchain, pas d'une supposition."
+      ],
+      "images": [
+        { "src": "dy-gear-en.webp", "caption": "① De retour sur « Your Liquidity », USDT/OKB figure maintenant dans la liste. Touchez l'**engrenage** en haut à droite. Les chiffres sont masqués sur l'image" },
+        { "src": "dy-slip-en.webp", "caption": "② Touchez **1.0%** pour qu'il devienne bleu ③ Touchez **×** en haut à droite pour fermer" }
+      ],
+      "situations": {
+        "safe": { "see": "1%, est-ce sûr ?", "do": "Le slippage, c'est l'écart en moins par rapport à l'estimation du site que vous acceptez. À 1%, jusqu'à 1% de moins est accepté ; ce retrait donne environ 0.5% de moins. Au-delà, la transaction échoue tout simplement, et votre argent reste où il est." },
+        "expert": { "see": "Il y a un interrupteur « Expert Mode » en dessous", "do": "Laissez-le désactivé. Ce guide n'en a pas besoin." },
+        "no-gear": { "see": "Je ne trouve pas l'engrenage", "do": "La page de retrait n'a pas d'engrenage. Revenez à « Your Liquidity » avec la flèche retour en haut à gauche de la page de retrait." }
+      }
+    },
+    "enable": {
+      "title": "Choisir Max et signer",
+      "milestone": "Signature",
+      "note": "La signature est gratuite et ne porte que sur les LP que vous retirez",
+      "grantsText": "Après votre signature, le contrat routeur de DYORSwap peut prendre vos jetons de liquidité (LP) : exactement le montant que vous retirez maintenant, pas un montant illimité. Vérifiez la fiche ligne par ligne, et refusez si quelque chose ne correspond pas.",
+      "images": [
+        { "src": "dy-row-en.webp", "caption": "① Touchez la ligne **USDT/OKB** pour la déplier. Les chiffres sont masqués sur l'image" },
+        { "src": "dy-expand-en.webp", "caption": "② Touchez **Remove** ✗ Ne touchez pas « Add liquidity » à la place. Les chiffres sont masqués sur l'image" },
+        { "src": "dy-max-en.webp", "caption": "③ Touchez **Max** : 0% passe à 100%" },
+        { "src": "dy-enable-en.webp", "caption": "④ Faites défiler jusqu'en bas et regardez d'abord le cadre jaune : « Slippage Tolerance » doit indiquer **1%**. Touchez ensuite **Enable**. Votre portefeuille affiche une demande de signature : comparez-la avec la fiche de contrôle ci-dessous. Les chiffres sont masqués sur l'image" }
+      ],
+      "check": {
+        "title": "Avant de confirmer, vérifiez 3 points",
+        "lead": "Voici la demande de signature de votre portefeuille. Il n'y a pas encore d'image de cette fenêtre : fiez-vous à ce qu'elle affiche, et touchez chaque point une fois vérifié.",
+        "confirm": [
+          { "title": "La source est dyorswap.finance", "sub": "Le site indiqué dans la fenêtre, sans rien de plus avant ni après" },
+          { "title": "Le contrat est DYOR LPs : 0x35c18556…200719cD25", "sub": "Adresse complète 0x35c185563dFd328256A80Aafc23822200719cD25. Ce sont vos LP, pas de l'USDT ni de l'OKB. Majuscules ou minuscules, peu importe ; vérifiez au moins le début 0x35c18556 et la fin 200719cD25" },
+          { "title": "Le spender est 0x1E690F24…FC04c46036", "sub": "Adresse complète 0x1E690F24F704672e44255013C2cB22FC04c46036, le contrat routeur de DYORSwap. Vérifiez au moins le début 0x1E690F24 et la fin FC04c46036" }
+        ],
+        "reject": [
+          "Elle autorise USDT, OKB ou un autre jeton au lieu des LP",
+          "Le spender ne correspond pas à 0x1E690F24…FC04c46036",
+          "Le montant indique illimité (unlimited)",
+          "La source n'est pas dyorswap.finance",
+          "Elle indique transfer, ou vous demande d'envoyer des jetons",
+          "Le portefeuille affiche un avertissement rouge : risque élevé ou site malveillant"
+        ],
+        "normal": [
+          "La signature ne coûte rien et ne déplace pas d'argent",
+          "Le montant est un nombre court et petit : les unités de LP sont minuscules",
+          "Si le portefeuille n'affiche que les premiers et derniers caractères, comparez ceux-là ; si possible, ouvrez les détails pour tout voir"
+        ]
+      },
+      "situations": {
+        "still-05": { "see": "Le cadre jaune indique encore 0.5%", "do": "Ne touchez pas encore « Enable ». Utilisez la flèche retour en haut à gauche de la page de retrait pour revenir à la liste, réglez 1% comme à l'étape 3, puis revenez." },
+        "approve-tx": { "see": "« Enable » a affiché une transaction au lieu d'une signature", "do": "Refusez. Certains portefeuilles ne savent pas faire ce type de signature, alors le site envoie à la place une transaction d'autorisation. Nous n'avons pas vérifié ce chemin. Touchez « Un problème ? » en haut à droite et envoyez-nous le rapport." },
+        "rejected": { "see": "J'ai refusé par erreur", "do": "Votre argent n'a pas bougé. Touchez de nouveau **Enable**." },
+        "wrong-sign": { "see": "La signature autorise un autre jeton ou une autre adresse", "do": "Refusez immédiatement." }
+      }
+    },
+    "remove": {
+      "title": "Retirer",
+      "milestone": "Retrait",
+      "note": "C'est la seule transaction",
+      "images": [
+        { "src": "dy-remove-en.webp", "caption": "① Le bouton de gauche devient gris et indique « Enabled ». Touchez **Remove** à droite" },
+        { "src": "dy-confirm-en.webp", "caption": "② La fenêtre « You will receive » s'ouvre. Le cadre jaune doit indiquer **1%**. Touchez **Confirm** : votre portefeuille affiche la transaction ; comparez-la avec la fiche de contrôle ci-dessous. Les chiffres sont masqués sur l'image" }
+      ],
+      "check": {
+        "title": "Avant de confirmer, vérifiez 3 points",
+        "lead": "Voici la transaction affichée par votre portefeuille. Il n'y a pas encore d'image de cette fenêtre : fiez-vous à ce qu'elle affiche, et touchez chaque point une fois vérifié.",
+        "confirm": [
+          { "title": "La source est dyorswap.finance et le réseau est X Layer", "sub": "Le site et le réseau indiqués dans la fenêtre" },
+          { "title": "L'adresse d'interaction est le routeur 0x1E690F24…FC04c46036", "sub": "Adresse complète 0x1E690F24F704672e44255013C2cB22FC04c46036. Vérifiez au moins le début 0x1E690F24 et la fin FC04c46036. Un seul caractère différent, et vous vous arrêtez" },
+          { "title": "Vous recevez environ {{got}}, et vous n'envoyez ni OKB ni USDT", "sub": "Seuls les LP quittent votre portefeuille ; un envoi de 0 OKB est correct. Les frais de réseau indiqués en dessous sont inférieurs à $0.01" }
+        ],
+        "reject": [
+          "Elle vous demande d'envoyer de l'OKB, de l'USDT ou un autre jeton",
+          "L'adresse d'interaction ne correspond pas à 0x1E690F24…FC04c46036",
+          "La source n'est pas dyorswap.finance",
+          "Elle indique Approve",
+          "Le portefeuille affiche un avertissement rouge : risque élevé ou site malveillant"
+        ],
+        "normal": [
+          "Vous recevez environ 0.5% de moins que ce qu'indique le site : c'est normal, ce pool règle d'abord des frais que l'estimation du site ne prend pas en compte",
+          "Si le portefeuille n'affiche que les premiers et derniers caractères, comparez ceux-là ; si possible, ouvrez les détails pour tout voir",
+          "La page tourne et indique « Waiting For Confirmation » : elle attend que vous confirmiez dans le portefeuille",
+          "Après la confirmation, il vous faudra Face ID, une empreinte digitale ou votre mot de passe"
+        ]
+      },
+      "situations": {
+        "fail": { "see": "Une erreur rouge indique « This transaction would fail »", "do": "Votre argent n'a pas bougé. Le slippage est très probablement encore à 0.5% : touchez ×, utilisez la flèche retour en haut à gauche de la page de retrait pour revenir à la liste, réglez 1% comme à l'étape 3, puis retirez de nouveau (il faudra signer à nouveau). Déjà à 1% ? Touchez « Un problème ? » en haut à droite." },
+        "rejected": { "see": "J'ai refusé par erreur", "do": "Votre argent n'a pas bougé. Touchez de nouveau **Confirm**." },
+        "spinning": { "see": "J'ai confirmé et ça continue de tourner", "do": "Attendez une minute et ne touchez plus rien. Touchez ensuite « Un problème ? » en haut à droite : nous cherchons sur la blockchain les retraits des dernières minutes." },
+        "low-gas": { "see": "Il est indiqué que les frais ou le solde ne suffisent pas", "do": "Il vous faut un peu d'OKB sur X Layer pour les frais (moins de $0.01). Envoyez d'abord un peu d'OKB à cette adresse sur X Layer (0.001 suffit largement), puis revenez." },
+        "wrong-to": { "see": "L'adresse d'interaction n'est pas 0x1E690F24…FC04c46036", "do": "Refusez immédiatement." },
+        "send-out": { "see": "On vous demande d'envoyer de l'OKB ou de l'USDT", "do": "Refusez immédiatement. Retirer signifie que vous recevez de l'argent ; vous n'envoyez pas ces jetons." }
+      }
+    },
+    "arrive": {
+      "title": "Vérifier l'arrivée des fonds",
+      "milestone": "Arrivée",
+      "images": [
+        "① De retour sur l'accueil du portefeuille (l'icône OKX en bas), touchez l'onglet des jetons : vous avez plus d'OKB, et votre USDT est revenu. Les soldes sont masqués sur l'image",
+        "② Pour finir, touchez l'onglet des autorisations, le dernier de cette rangée, trouvez l'autorisation USDT accordée à DYORSwap (0x1E69…6036) et annulez-la. Vous l'avez donnée en ajoutant de la liquidité et vous n'en avez plus besoin. Cela coûte de petits frais, et votre argent est en sécurité dans les deux cas"
+      ],
+      "check": {
+        "title": "Vérifier l'arrivée des fonds",
+        "rows": [
+          ["Délai", "Quelques secondes après votre confirmation"],
+          ["Où regarder", "Accueil du portefeuille dans l'application OKX → OKB et USDT → historique des transactions"],
+          ["Ce que vous devriez voir", "{{got}} de plus"],
+          ["Sur la blockchain", "Depuis le contrat routeur de DYORSwap 0x1E69…6036, reçu à votre propre adresse"],
+          ["Si rien n'est arrivé", "Touchez « Un problème ? » en haut à droite : nous cherchons sur la blockchain les retraits des dernières minutes"]
+        ],
+        "foot": "Une fois les fonds arrivés, c'est terminé. Vous recevez de l'OKB proprement dit (le jeton natif de X Layer), pas du WOKB"
+      },
+      "situations": {
+        "not-wokb": { "see": "Est-ce de l'OKB ou du WOKB ?", "do": "C'est de l'OKB proprement dit (le jeton natif de X Layer), pas du WOKB." },
+        "old-usdt": { "see": "De quel USDT s'agit-il ?", "do": "C'est l'ancien USDT de X Layer (USDT_Bridged), qu'OKX retire progressivement. Pour passer au nouvel USDT0, déposez-le sur la plateforme d'échange OKX et retirez-le de nouveau." },
+        "less": { "see": "C'est un peu moins que ce qu'indiquait le site", "do": "C'est normal : environ 0.5% de moins. Ce pool règle d'abord des frais que l'estimation du site ne prend pas en compte." },
+        "no-approval": { "see": "Je ne trouve pas cette autorisation", "do": "La liste du portefeuille n'est pas toujours complète : cela ne prouve donc pas qu'elle a disparu. Touchez « Un problème ? » en haut à droite : la vérification en direct lit la blockchain et vous dit si l'autorisation est toujours active. Si elle a disparu, il n'y a rien à faire." }
+      }
+    }
+  },
+  "sources": [
+    "Explorateur d'OKX · Contrat routeur de DYORSwap (code source vérifié)",
+    "Explorateur d'OKX · Pool USDT/OKB (DYOR LPs)",
+    "DYORSwap · Page « trouver un pool »"
+  ]
+}
