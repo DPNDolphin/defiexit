@@ -1,0 +1,244 @@
+{
+  "title": "Tarik saldo Hyperliquid ke dompet Anda",
+  "short": "Hyperliquid ke dompet Anda",
+  "verified": "Diuji di akun sungguhan pada 27 Oktober 2026: dengan mengikuti panduan ini, jumlah yang masuk sesuai perkiraan dengan selisih tidak lebih dari 0.01 USDC.",
+  "fieldTests": [
+    "Sudah ditarik dengan dompet Binance mengikuti panduan ini; jumlah yang masuk sesuai perkiraan. Di tengah proses muncul jendela Account Type Update (Unified Account). Setelah dikonfirmasi, transfer tidak lagi diperlukan, dan panduan ini kini sudah mencakup cabang tersebut."
+  ],
+  "covers": "USDC di akun Anda, dan USDH yang tidak lagi diterbitkan",
+  "summary": "Masih punya USDC di Hyperliquid, atau sedikit USDH, stablecoin yang tidak lagi diterbitkan? Jual USDH ke USDC, lalu tarik semuanya sekaligus ke dompet Anda di Arbitrum.",
+  "movesBy": "Hyperliquid",
+  "facts": [
+    ["Tanda tangan", "2–3 kali, semuanya hanya tanda tangan, tanpa gas"],
+    ["Biaya", "1 USDC dipotong dari penarikan"],
+    ["Waktu", "Sekitar 10 menit untuk langkah-langkahnya; penarikan masuk dalam sekitar 5 menit"],
+    ["Yang Anda perlukan", "Tidak ada. Anda tidak perlu ETH di Arbitrum"]
+  ],
+  "chips": ["Sekitar 10 menit", "2–3 tanda tangan", "Tanpa gas; penarikan berbiaya 1 USDC"],
+  "support": {
+    "label": "Dukungan resmi Hyperliquid",
+    "note": "Dokumentasi Hyperliquid menyebut dukungan hanya diberikan lewat tiket di kanal open-ticket Discord resminya, atau lewat formulir email resminya. \"CS\" apa pun yang mengirimi Anda DM adalah penipu."
+  },
+  "official": [{"label": "Situs resmi Hyperliquid"}],
+  "vars": {
+    "addrShort": "alamat Anda sendiri",
+    "usdhSell": "jumlah USDH Anda (2 desimal)",
+    "orderMin": "jumlah × 0.995",
+    "spotAfter": "hasil penjualan",
+    "withdrawAmt": "seluruh saldo Anda",
+    "arrive": "jumlah penarikan dikurangi 1"
+  },
+  "pro": [
+    "**Rute**: USDH tidak lagi diterbitkan → jual di pasar spot ke USDC dengan order limit di harga {{floorPx}} atau lebih baik → Withdraw to Arbitrum. Biaya 1 USDC, masuk dalam sekitar 5 menit.",
+    "**Mode akun**: akun terpadu (default baru) bisa langsung menarik. Akun terpisah model lama harus memindahkan USDC spot ke Perps dulu lewat Perps ⇄ Spot.",
+    "**Angka Anda**: jual {{usdhSell}} USDH, tarik {{withdrawAmt}} USDC, sekitar {{arrive}} USDC masuk.",
+    "**Tanda tangan**: 2–3 tanda tangan EIP-712, tanpa gas. Periksa dua hal: domainnya app.hyperliquid.xyz, dan destination adalah {{addrShort}}.",
+    "**Jebakan**: mencari USDH juga memunculkan USDHL, jadi pilih yang benar. Mengetuk order book di sebelah kanan akan menimpa harga Anda."
+  ],
+  "done": {
+    "where": "di jaringan Arbitrum di dompet Anda",
+    "from": "Dikirim dari bridge resmi Hyperliquid 0x2Df1…3dF7",
+    "look": "Tempat melihat: aplikasi dompet → Assets (Aset) → USDC → baris Arbitrum."
+  },
+  "steps": {
+    "open": {
+      "title": "Buka situs resmi di aplikasi dompet",
+      "items": [
+        "Buka aplikasi dompet Anda (misalnya tab Wallet di aplikasi Binance) dan pastikan dompet yang dipilih adalah dompet yang menyimpan dana ini.",
+        "Buka `https://app.hyperliquid.xyz` di browser DApp bawaan dompet. Sertakan https://, kalau tidak, alamat itu akan dianggap sebagai kata kunci pencarian.",
+        "Setelah halaman termuat, periksa bilah alamat: domainnya harus persis **app.hyperliquid.xyz**. Kelebihan satu huruf atau kurang satu titik berarti itu bukan situs aslinya.",
+        "✗ Jika halaman menyebut wilayah Anda tidak bisa memakainya (restricted jurisdiction), berhenti di sini. Panduan ini tidak membahas cara mengakali pembatasan wilayah."
+      ],
+      "situations": {
+        "search-instead": {"see": "Mengetik alamat malah memunculkan hasil pencarian", "do": "Ketik alamat lengkap dengan https:// di depannya: `https://app.hyperliquid.xyz`."},
+        "restricted": {"see": "Halaman menyebut wilayah Anda tidak bisa memakainya (restricted jurisdiction)", "do": "Berhenti di sini. Panduan ini tidak membahas cara mengakali pembatasan wilayah."},
+        "not-sure": {"see": "Anda tidak yakin itu situs resmi", "do": "Periksa bilah alamat: domainnya harus persis **app.hyperliquid.xyz**. Jika bukan, tutup halaman dan ketik sendiri alamatnya. Jangan pernah memakai tautan yang dikirim orang lain."}
+      }
+    },
+    "connect": {
+      "title": "Hubungkan dompet",
+      "note": "Hanya menghubungkan. Tanpa tanda tangan, dan tidak ada dana yang berpindah",
+      "images": [
+        "① Ketuk **Connect** di pojok kanan atas",
+        "① Pilih **Default Wallet**. Dompet Anda akan meminta izin terhubung: jika permintaannya dari app.hyperliquid.xyz, ketuk Connect (Hubungkan)",
+        "① Alamat Anda muncul di kanan atas (di gambar ini diburamkan). Alamat itu harus {{addrShort}} ② Ketuk nama pasar di sebelah kiri untuk membuka daftar"
+      ],
+      "situations": {
+        "no-popup": {"see": "Anda sudah mengetuk Connect, tapi dompet tidak meminta izin terhubung", "do": "Buka halaman di browser DApp bawaan aplikasi dompet (langkah 1). Browser biasa di ponsel tidak bisa terhubung ke dompet Anda."},
+        "wrong-address": {"see": "Alamat di kanan atas bukan alamat yang menyimpan dana", "do": "Ganti ke dompet yang benar di aplikasi dompet, lalu hubungkan lagi. Jika alamatnya tidak cocok, jangan lanjut."},
+        "wrong-origin": {"see": "Permintaan koneksi tidak berasal dari app.hyperliquid.xyz", "do": "Ketuk Reject (Tolak) dan tutup halaman. Bisa jadi itu bukan situs resmi."}
+      }
+    },
+    "search": {
+      "title": "Cari pasar USDH",
+      "whenText": "Hanya perlu jika Anda punya USDH (langkah ini sampai langkah 6)",
+      "images": [
+        "① Ketik USDH di kotak pencarian ② Ketuk **USDH/USDC** (bertanda SPOT di bawahnya) ✗ Jangan ketuk USDHL/USDC: itu koin lain, namanya hanya beda satu huruf"
+      ],
+      "situations": {
+        "two-results": {"see": "USDH dan USDHL sama-sama muncul", "do": "Pilih **USDH/USDC**, yang bertanda SPOT. USDHL adalah koin lain; namanya hanya beda satu huruf."},
+        "not-found": {"see": "USDH tidak muncul", "do": "Periksa ejaannya (U-S-D-H). Masih tidak ada? Ketuk **All** di kanan kotak pencarian lalu cari lagi."}
+      }
+    },
+    "panel": {
+      "title": "Buka panel jual dan ganti ke order limit",
+      "images": [
+        "! Kotak kuning adalah pemberitahuan dari Hyperliquid sendiri: USDH tidak lagi diterbitkan, jadi pembeli di pasar ini akan terus berkurang. Makin cepat dijual, makin baik",
+        "① Ketuk **Trade** di bagian bawah",
+        "① Ketuk panah kecil di samping **Market** di kiri atas",
+        "① Pilih **Limit** (order limit hanya terisi di harga Anda atau lebih baik)"
+      ],
+      "situations": {
+        "no-limit": {"see": "Tidak ada Limit di menu tarik-turun", "do": "Ketuk panah kecil di samping Market di kiri atas, di tempat kotak merah pada tangkapan layar di atas."}
+      }
+    },
+    "fill": {
+      "title": "Isi order jual",
+      "note": "Isi sekarang; langkah berikutnya baru mengaktifkan trading",
+      "images": [
+        "① Ketuk **Sell** ② Price (harga): {{floorPx}} ③ Amount (jumlah): {{usdhSell}} (angka di tangkapan layar hanya contoh) ④ Lirik Order Value: sekitar {{orderMin}} USDC, jumlah paling sedikit yang Anda terima ⑤ Ketuk **Enable Trading**"
+      ],
+      "items": [
+        "! Angka hijau di sebelah kanan adalah order beli orang lain. Anda akan menjual ke order itu, biasanya di harga lebih baik dari 0.995. **Jangan ketuk angka itu**: mengetuknya akan menimpa harga yang sudah Anda masukkan."
+      ],
+      "situations": {
+        "value-off": {"see": "Order Value jauh berbeda dari angka di sini", "do": "Kemungkinan harga atau jumlahnya salah: harga {{floorPx}}, jumlah {{usdhSell}}. Jika Anda mengetuk angka hijau di kanan, harga Anda tertimpa; masukkan lagi."},
+        "not-enough": {"see": "Muncul pesan saldo Anda tidak cukup untuk jumlah itu", "do": "Sebagian USDH Anda mungkin sudah terkunci di order jual yang masih terbuka. Pemeriksaan langsung di atas menunjukkan berapa yang benar-benar bisa Anda jual. Jika belum memasukkan alamat, masukkan dulu di atas."},
+        "place-order": {"see": "Tombolnya sudah bertuliskan Place Order, bukan Enable Trading", "do": "Trading sudah diaktifkan sebelumnya. Lewati \"Aktifkan trading\" dan langsung ke \"Pasang order jual\"."}
+      }
+    },
+    "enable": {
+      "title": "Aktifkan trading",
+      "note": "Tanda tangan 1",
+      "grantsText": "Setelah Anda menandatangani, kunci order ini bisa memasang order atas nama Anda di Hyperliquid tanpa memunculkan pop-up dompet. Periksa kartunya baris demi baris, dan ketuk Reject (Tolak) jika ada yang tidak cocok.",
+      "images": [
+        "① Biarkan **Stay Connected** tidak dicentang ② Ketuk **Establish Connection**. Dompet Anda meminta tanda tangan: cocokkan dengan kartu di bawah"
+      ],
+      "check": {
+        "title": "Sebelum menandatangani, periksa 3 hal",
+        "lead": "Setelah Anda mengetuk Establish Connection, dompet menampilkan permintaan tanda tangan. Bandingkan dengan kartu ini dan centang setiap baris setelah dicek.",
+        "skip": "Trading sudah aktif dan tombolnya bertuliskan Place Order? Lewati langkah ini",
+        "confirm": [
+          {"title": "Permintaan berasal dari app.hyperliquid.xyz", "sub": "Kelebihan satu huruf atau kurang satu titik berarti situs yang berbeda"},
+          {"title": "Tertulis ApproveAgent dan Mainnet", "sub": "Ini membuat kunci yang hanya bisa memasang order. Menurut dokumentasi Hyperliquid, kunci ini tidak bisa mengirim uang ke siapa pun atau menarik dana"},
+          {"title": "Hanya tanda tangan: tanpa jumlah, tanpa penerima", "sub": "Tidak ada dana yang terpakai dan tidak ada biaya"}
+        ],
+        "reject": ["Meminta Anda mengirim uang, atau menampilkan jumlah", "Menyebut Permit, atau memberi izin (Approve) untuk token", "Tidak berasal dari app.hyperliquid.xyz"],
+        "normal": [
+          "agentAddress adalah alamat acak yang berubah setiap kali: itu kunci order sementara yang dibuat halaman",
+          "chainId bisa menampilkan 42161 atau 56. Keduanya tidak masalah; nilainya mengikuti jaringan dompet Anda saat ini",
+          "verifyingContract berisi nol semua. Ini juga normal"
+        ]
+      },
+      "situations": {
+        "no-approve-agent": {"see": "Permintaan tanda tangan tidak menyebut ApproveAgent", "do": "Ketuk Reject (Tolak). Jika kartunya tidak cocok, jangan tanda tangani."},
+        "no-change": {"see": "Sudah menandatangani, tapi halaman tidak berubah", "do": "Tunggu beberapa detik. Jika tombolnya masih belum bertuliskan Place Order, muat ulang halaman, hubungkan dompet lagi, dan ketuk Establish Connection sekali lagi. Menandatangani untuk kedua kalinya itu normal."},
+        "chain-id": {"see": "Permintaan menampilkan chainId 42161 atau 56", "do": "Itu normal. Nilainya mengikuti jaringan dompet Anda saat ini dan tidak mengubah apa pun."}
+      }
+    },
+    "order": {
+      "title": "Pasang order jual",
+      "note": "Untuk langkah ini dompet tidak akan muncul",
+      "milestone": "Jual USDH",
+      "movesText": "Order jual di Hyperliquid ini ditandatangani oleh kunci order yang sudah Anda beri izin sebelumnya, jadi tidak ada pop-up dompet. DeFiExit tidak pernah menyentuh uang Anda.",
+      "items": [
+        "Setelah Anda menandatangani, halaman menampilkan Established connection, dan tombol Enable Trading berubah menjadi **Place Order**.",
+        "Periksa sekali lagi: Sell / harga {{floorPx}} / jumlah {{usdhSell}} (masukkan lagi jika terhapus).",
+        "Ketuk Place Order. Jika muncul kotak Confirm Order, periksa tiga hal yang sama lalu konfirmasi. Kunci order milik halaman yang menandatangani order ini, jadi dompet Anda tidak muncul.",
+        "Saat terisi, Anda akan melihat pesan Order filled. Di Balances, USDH turun ke kurang dari 0.01 dan USDC bertambah sekitar {{spotAfter}}. Open Orders kosong.",
+        "! Jika order masih tertahan di Open Orders, bid sudah turun di bawah {{floorPx}}. Jangan pasang order lagi. Ketuk \"Ada kendala?\" di kanan atas untuk pemeriksaan langsung."
+      ],
+      "situations": {
+        "resting": {"see": "Order hanya diam dan tidak terisi", "do": "Saat ini bid lebih rendah dari harga Anda. Jangan pasang order lagi. Pemeriksaan langsung di atas menghitung pilihan Anda berdasarkan bid hari ini."},
+        "too-small": {"see": "Muncul pesan order terlalu kecil", "do": "Hyperliquid punya ukuran order minimum (sekitar $10). Jika USDH Anda di bawah itu, tidak bisa dijual. Biarkan saja dan lanjut menarik USDC Anda."},
+        "dust-left": {"see": "Setelah menjual, masih tersisa sedikit USDH di Balances", "do": "Jumlah hanya sampai dua desimal, jadi sisa kurang dari 0.01 itu normal. Tidak memengaruhi penarikan."}
+      }
+    },
+    "transfer": {
+      "title": "Pindahkan USDC spot Anda ke akun perps",
+      "note": "Tanda tangan 2",
+      "whenText": "Hanya untuk akun terpisah model lama; akun terpadu melewati langkah ini",
+      "milestone": "Transfer",
+      "items": [
+        "! Cek halaman Account dulu. Jika judulnya **Unified Account Summary** dan hanya ada tombol Deposit / Withdraw, berarti Anda memakai akun terpadu: **lewati langkah ini** dan langsung ke penarikan."
+      ],
+      "images": [
+        "! Jika Anda melihat Unified Account Summary, itu akun terpadu (gambar contoh; abaikan angkanya)",
+        "Akun terpadu hanya punya Deposit / Withdraw: ketuk Withdraw dan lompat ke langkah berikutnya",
+        "Akun terpisah menampilkan dua baris, Spot dan Perps: dana ada di dua akun",
+        "① Ketuk **Account** di bagian bawah ② Ketuk **Perps ⇄ Spot**",
+        "① Ketuk tombol tengah ini untuk membalik arah",
+        "① Pastikan sekarang tertulis Spot → Perps ② Ketuk **MAX** (tangkapan layar diambil sebelum menjual, jadi menunjukkan 0.00; punya Anda seharusnya sekitar {{spotAfter}}) ③ Ketuk **Confirm**. Dompet Anda meminta tanda tangan: cocokkan dengan kartunya"
+      ],
+      "check": {
+        "title": "Sebelum menandatangani, periksa 3 hal",
+        "lead": "Setelah Anda mengetuk Confirm, dompet menampilkan permintaan tanda tangan. Bandingkan dengan kartu ini dan centang setiap baris setelah dicek.",
+        "skip": "Akun terpadu (tidak ada Perps ⇄ Spot di halaman Account)? Lewati langkah ini",
+        "confirm": [
+          {"title": "Permintaan berasal dari app.hyperliquid.xyz", "sub": "Kelebihan satu huruf atau kurang satu titik berarti situs yang berbeda"},
+          {"title": "Tertulis SendAsset, dan destination adalah {{addrShort}}", "sub": "Huruf besar atau kecil tidak masalah. Jika bukan alamat Anda, tolak"},
+          {"title": "Dari spot ke perps, sekitar {{spotAfter}} USDC", "sub": "sourceDex adalah spot dan destinationDex kosong; tokennya USDC:0x6d1e…e054"}
+        ],
+        "reject": ["destination bukan alamat Anda sendiri", "Menyebut Permit, atau memberi izin (Approve) untuk token", "Tidak berasal dari app.hyperliquid.xyz"],
+        "normal": ["Ini hanya tanda tangan, tanpa biaya"]
+      },
+      "situations": {
+        "no-button": {"see": "Tidak ada Perps ⇄ Spot di halaman Account", "do": "Jika judulnya Unified Account Summary, itu akun terpadu. Tidak perlu transfer; langsung ke penarikan."},
+        "max-zero": {"see": "MAX menunjukkan 0.00", "do": "Pastikan dulu arahnya Spot → Perps (tombol tengah untuk membaliknya). Jika masih 0, tidak ada USDC tersisa di spot; langsung ke penarikan."},
+        "wrong-destination": {"see": "Permintaan tanda tangan menampilkan destination yang bukan alamat Anda", "do": "Langsung ketuk Reject (Tolak)."}
+      }
+    },
+    "withdraw": {
+      "title": "Tarik ke Arbitrum",
+      "note": "Tanda tangan terakhir",
+      "milestone": "Tarik",
+      "images": [
+        "! Menurut Hyperliquid, biaya 1 USDC dipotong dari penarikan ① Biarkan aset tetap USDC dan chain tetap Arbitrum ② Ketuk **MAX**: seharusnya sekitar {{withdrawAmt}} (angka di tangkapan layar berbeda) ③ Ketuk **Withdraw to Arbitrum**. Dompet Anda meminta tanda tangan: cocokkan dengan kartunya"
+      ],
+      "check": {
+        "title": "Sebelum menandatangani, periksa 3 hal",
+        "lead": "Setelah Anda mengetuk Withdraw to Arbitrum, dompet menampilkan permintaan tanda tangan. Bandingkan dengan kartu ini dan centang setiap baris setelah dicek.",
+        "confirm": [
+          {"title": "Permintaan berasal dari app.hyperliquid.xyz", "sub": "Kelebihan satu huruf atau kurang satu titik berarti situs yang berbeda"},
+          {"title": "Tertulis Withdraw, dan destination adalah {{addrShort}}", "sub": "Jika bukan alamat Anda, tolak"},
+          {"title": "amount sekitar {{withdrawAmt}}", "sub": "Yang masuk = angka ini dikurangi biaya 1 USDC"}
+        ],
+        "reject": ["destination bukan alamat Anda sendiri", "Menyebut Permit, atau memberi izin (Approve) untuk token", "Tidak berasal dari app.hyperliquid.xyz"],
+        "normal": ["Ini hanya tanda tangan, tanpa gas: Hyperliquid yang mengirim transaksi di Arbitrum untuk Anda", "time adalah angka 13 digit. Itu stempel waktu (timestamp)"]
+      },
+      "situations": {
+        "less-than-expected": {"see": "MAX menunjukkan angka lebih kecil dari di sini", "do": "Order dan posisi yang masih terbuka menahan sebagian saldo Anda. Pemeriksaan langsung di atas merinci di mana setiap bagian dana Anda berada."},
+        "cannot-click": {"see": "Tombol Withdraw tidak merespons", "do": "Penarikan harus lebih besar dari biaya 1 USDC. Jumlah yang lebih kecil tidak bisa ditarik."},
+        "wrong-destination": {"see": "Permintaan tanda tangan menampilkan destination yang bukan alamat Anda", "do": "Langsung ketuk Reject (Tolak)."}
+      }
+    },
+    "arrive": {
+      "title": "Cek apakah dana sudah masuk",
+      "milestone": "Masuk",
+      "check": {
+        "title": "Cek dana masuk",
+        "rows": [
+          ["Berapa lama", "Menurut Hyperliquid, dalam 5 menit"],
+          ["Tempat melihat", "Aplikasi dompet → Assets (Aset) → USDC → baris Arbitrum"],
+          ["Yang seharusnya terlihat", "Bertambah sekitar {{arrive}} USDC"],
+          ["Catatan on-chain", "Dikirim dari 0x2Df1…3dF7 (bridge resmi Hyperliquid) ke alamat Anda, sebagai USDC asli Arbitrum (0xaf88…5831)"],
+          ["Belum masuk?", "Setelah 30 menit, jangan menarik lagi. Ambil tangkapan layar dan tanyakan kepada kami"]
+        ],
+        "foot": "Begitu dana masuk, selesai"
+      },
+      "situations": {
+        "not-in-wallet": {"see": "USDC tidak terlihat di dompet", "do": "Pastikan Anda melihat USDC di jaringan **Arbitrum**. Pemeriksaan langsung di atas mencari penarikan ini langsung di Arbitrum."},
+        "one-less": {"see": "Yang masuk 1 lebih sedikit dari yang ditarik", "do": "Itu biaya penarikan 1 USDC. Normal."},
+        "late": {"see": "Sudah lebih dari 30 menit dan belum ada yang masuk", "do": "Jangan menarik lagi. Lihat pemeriksaan langsung di atas. Jika dana masuk tidak ditemukan, atau tidak cocok, bawa tangkapan layar ke dukungan resmi Hyperliquid (di bawah)."}
+      }
+    }
+  },
+  "sources": [
+    "Dokumentasi Hyperliquid · How to start trading",
+    "Dokumentasi Hyperliquid · Bridge / USDC",
+    "Dokumentasi Hyperliquid · Account abstraction modes",
+    "Dokumentasi Hyperliquid · Nonces and API wallets",
+    "Pengumuman Bridge · An update on USDH",
+    "Dokumentasi Hyperliquid · Support"
+  ]
+}

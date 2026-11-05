@@ -1,0 +1,265 @@
+{
+  "title": "Tarik likuiditas DYORSwap ke dompet Anda",
+  "short": "Tarik dari DYORSwap",
+  "verified": "Pada November 2026 penulis mengikuti panduan ini dengan akunnya sendiri di aplikasi OKX: dengan slippage 1%, penarikan langsung berhasil pada percobaan pertama, dengan 1 tanda tangan dan 1 transaksi, jumlahnya cocok dengan halaman, dan biayanya di bawah 1 sen. Kode sumber router sudah terverifikasi di explorer OKX. Pop-up dompet belum ada gambarnya: cocokkan isinya dengan kartu periksa",
+  "covers": "Likuiditas (LP) di pool USDT/OKB DYORSwap di X Layer",
+  "summary": "Jika Anda menambahkan likuiditas ke pool USDT/OKB DYORSwap, dana itu tidak akan kembali dengan sendirinya. Daftar di situsnya sering tidak menampilkannya (tertulis No liquidity found), dan penarikan dengan pengaturan default akan gagal. Ikuti panduan ini untuk menemukan pool, atur slippage ke 1% lalu tarik, dan USDT serta OKB Anda kembali ke dompet.",
+  "facts": [
+    ["Tanda tangan dan transaksi", "1 tanda tangan (hanya untuk LP yang Anda tarik) dan 1 transaksi"],
+    ["Biaya", "Di bawah $0.01, dibayar dari OKB di dompet Anda di X Layer"],
+    ["Waktu", "Sekitar 5 menit"],
+    ["Yang Anda perlukan", "Aplikasi OKX, di akun yang menambahkan likuiditas, dengan sedikit OKB di X Layer untuk biaya"]
+  ],
+  "chips": ["Sekitar 5 menit", "1 tanda tangan + 1 transaksi", "Biaya di bawah 1 sen"],
+  "official": [{ "label": "Halaman cari pool DYORSwap" }],
+  "vars": { "addrShort": "alamat Anda sendiri", "got": "yang bisa Anda tarik" },
+  "pro": [
+    "**Rute**: di aplikasi OKX, pilih Web3 di bagian atas → tab jelajah di bagian bawah → tempel `https://dyorswap.finance/find/?chainId=196` di kotak pencarian → hasil situs web pihak ketiga → **Connect** → **OKX Wallet** → **Select a Token**, pilih USDT → **Manage this pool** → **ikon roda gigi**, pilih 1.0% → ketuk USDT/OKB → **Remove** → **Max** → **Enable** (tanda tangan) → **Remove** → **Confirm** (transaksi).",
+    "**Satu tanda tangan**: Permit EIP-712 pada kontrak DYOR LPs 0x35c185563dFd328256A80Aafc23822200719cD25. Spender-nya router 0x1E690F24F704672e44255013C2cB22FC04c46036, dan jumlahnya adalah LP yang Anda tarik, bukan tak terbatas.",
+    "**Satu transaksi**: `removeLiquidityETHWithPermit` ke router, mengirim 0 OKB.",
+    "**Angka Anda**: {{got}}.",
+    "**Jebakan**: USDT ini versi lama X Layer (USDT_Bridged), dan pool-nya tidak ada di daftar default situs, jadi Your Liquidity menampilkan No liquidity found. Penarikan lebih dulu mencetak LP biaya protokol, jadi yang Anda terima sebenarnya sekitar 0.5% lebih sedikit dari perkiraan situs, melebihi slippage default, dan router membatalkan transaksi dengan `INSUFFICIENT_A_AMOUNT`. Karena itu slippage harus 1%. Jangan ketuk Bridge."
+  ],
+  "done": {
+    "where": "di dompet Anda di X Layer",
+    "from": "dikirim oleh kontrak router DYORSwap",
+    "look": "Tempat melihat: beranda dompet di aplikasi OKX → buka OKB atau USDT → riwayat transaksi."
+  },
+  "screens": {
+    "nolist": {
+      "name": "Daftar bertuliskan No liquidity found",
+      "features": ["Berjudul Your Liquidity", "No liquidity found di tengah", "Tombol Find other LP tokens di bawahnya"],
+      "img": "dy-nolist-en.webp",
+      "do": "Dana Anda tidak hilang: pool ini tidak ada di daftar default situs, jadi tidak muncul di sini. Ketuk **Find other LP tokens**, lalu pilih USDT seperti di langkah 2.",
+      "images": [{ "src": "dy-nolist-en.webp", "caption": "① Ketuk **Find other LP tokens**" }]
+    },
+    "import": {
+      "name": "Halaman Import Pool",
+      "img": "dy-select-en.webp",
+      "features": ["Berjudul Import Pool", "Kotak pertama bertuliskan OKB, kotak kedua bertuliskan Select a Token"],
+      "do": "Ini halaman dari langkah 2. Belum terhubung? Ketuk **Connect** di kanan atas dulu. Sudah terhubung? Periksa ikon di kanan atas adalah papan catur hitam-putih (X Layer), lalu ketuk **Select a Token** dan pilih USDT."
+    },
+    "settings": {
+      "name": "Panel Settings di bagian bawah",
+      "img": "dy-slip-en.webp",
+      "features": ["Panel bergeser naik, berjudul Settings", "Di bawah Slippage Tolerance ada tombol 0.1%, 0.5%, dan 1.0%"],
+      "do": "Ini langkah 3: ketuk **1.0%** sampai berubah biru, lalu ketuk **×** di kanan atas untuk menutup. Biarkan Expert Mode mati."
+    },
+    "remove-page": {
+      "name": "Halaman Remove USDT-OKB liquidity",
+      "img": "dy-max-en.webp",
+      "features": ["Berjudul Remove USDT-OKB liquidity", "Persentase besar di tengah", "Empat tombol di bawahnya: 25%, 50%, 75%, Max"],
+      "do": "Ini langkah 4: ketuk **Max**, gulir ke paling bawah, periksa Slippage Tolerance bertuliskan 1%, lalu ketuk **Enable**."
+    },
+    "fail": {
+      "name": "Pesan merah: This transaction would fail",
+      "img": "dy-fail-en.webp",
+      "features": ["Muncul Error merah di bagian atas", "Tertulis This transaction would fail"],
+      "do": "Dana Anda belum berpindah. Kemungkinan besar slippage masih 0.5%: yang Anda terima sebenarnya sedikit lebih kecil dari perkiraan situs, melebihi slippage yang diizinkan, jadi transaksinya tidak bisa berjalan. Ketuk **×** untuk menutup pesan, tutup pop-up, ketuk panah kembali di kiri atas halaman penarikan untuk kembali ke daftar, atur 1% seperti di langkah 3, lalu tarik lagi (Anda perlu menandatangani lagi).",
+      "images": [{ "src": "dy-fail-en.webp", "caption": "✗ Slippage terlalu rendah: kotak kuning masih bertuliskan 0.5%" }]
+    },
+    "wrong-net": {
+      "name": "Pop-up: You are in wrong network",
+      "img": "dy-wrongnet-en.webp",
+      "features": ["Panel bergeser naik, berjudul You are in wrong network", "Tombol biru di bawahnya: Switch to X Layer mainnet"],
+      "do": "Dompet Anda berada di jaringan lain. Ketuk **Switch to X Layer mainnet**, dan konfirmasi jika dompet meminta. Pool Anda hanya muncul di X Layer.",
+      "images": [{ "src": "dy-wrongnet-en.webp", "caption": "① Ketuk **Switch to X Layer mainnet**" }]
+    },
+    "chains": {
+      "name": "Daftar jaringan di bagian bawah",
+      "img": "dy-chains-en.webp",
+      "features": ["Panel bergeser naik dengan judul tentang ganti jaringan", "Daftar nama jaringan, termasuk X Layer mainnet"],
+      "do": "Pilih **X Layer mainnet**. Jangan pilih jaringan lain, dan jangan tambahkan jaringan baru.",
+      "images": [{ "src": "dy-chains-en.webp", "caption": "① Pilih **X Layer mainnet**. Daftarnya panjang, jadi gulir ke atas untuk menemukannya" }]
+    },
+    "sign-wrong": {
+      "name": "Tanda tangannya bukan untuk DYOR LPs, atau spender-nya bukan 0x1E690F24…FC04c46036",
+      "do": "Ketuk **Reject** (Tolak). Panduan ini hanya punya satu tanda tangan: kontraknya DYOR LPs 0x35c185563dFd328256A80Aafc23822200719cD25 dan spender-nya router 0x1E690F24F704672e44255013C2cB22FC04c46036. Jangan menandatangani untuk token atau alamat lain. Tutup halaman dan buka lagi seperti di langkah 1."
+    },
+    "wrong-to": {
+      "name": "Alamat interaksi bukan 0x1E690F24…FC04c46036, atau Anda diminta mengirim OKB atau USDT",
+      "do": "Ketuk **Reject** (Tolak). Penarikan ini hanya ditujukan ke router 0x1E690F24F704672e44255013C2cB22FC04c46036. Satu-satunya yang keluar dari dompet Anda adalah LP, dan Anda menerima USDT dan OKB. Tutup halaman dan buka lagi seperti di langkah 1."
+    },
+    "domain": {
+      "name": "Bilah alamat bukan dyorswap.finance",
+      "do": "Segera tutup halaman ini dan jangan tanda tangani apa pun. Tempel lagi sendiri `https://dyorswap.finance/find/?chainId=196`; jangan ketuk tautan yang dikirim orang lain."
+    },
+    "bridge": {
+      "name": "Halaman bridge (ada tombol Send, tab seperti Bridge, Deploy, Referral), atau permintaan menambahkan jaringan baru",
+      "do": "Jangan ketuk Send dan jangan tanda tangani apa pun. Ini bukan jalan keluarnya: menarik likuiditas tidak memerlukan bridge. Tutup halaman dan buka lagi dari langkah 1. Selama Anda tidak menandatangani atau mengonfirmasi apa pun, dana Anda belum berpindah. Pada September 2026, ada pengguna yang kehilangan dana lewat bridge palsu di DYORSwap."
+    }
+  },
+  "steps": {
+    "open": {
+      "title": "Buka DYORSwap di aplikasi OKX",
+      "items": [
+        "Pertama, ketuk tautan ini untuk menyalinnya: `https://dyorswap.finance/find/?chainId=196`",
+        "Di bawah ini langkah-langkahnya di aplikasi OKX, satu gambar untuk setiap ketukan. Kami menguji aplikasinya dalam bahasa Mandarin, jadi gambarnya berbahasa Mandarin. Jika aplikasi Anda memakai bahasa lain, misalnya bahasa Inggris, cari tombol yang fungsinya sesuai keterangan tiap gambar, dan berhenti jika Anda tidak menemukannya atau yang Anda lihat tidak cocok."
+      ],
+      "images": [
+        "① Membaca ini di dalam aplikasi OKX? Setelah tautan tersalin, ketuk **×** di kiri atas untuk menutup halaman, dan kembali setelah selesai. Membaca di browser lain? Cukup buka aplikasi OKX",
+        "② Pilih **Web3** di bagian atas ③ Ketuk tab jelajah, ikon kedua di bilah bawah. Jumlah di gambar disembunyikan",
+        "④ Ketuk kotak pencarian di bagian atas",
+        "⑤ Tekan lama kotak pencarian, lalu ketuk **Paste** (Tempel)",
+        "⑥ Ketuk hasil situs web pihak ketiga di bawahnya. Bagian yang disembunyikan di gambar adalah tautan berbeda dari rekaman kami; tautan Anda harus diawali persis dengan **https://dyorswap.finance/**, dan setelah terbuka, bilah alamat harus bertuliskan persis **dyorswap.finance**, tanpa tambahan apa pun di depan atau belakangnya"
+      ],
+      "situations": {
+        "third-party": { "see": "Hasil pencarian menyebutnya situs web pihak ketiga", "do": "Itu normal: dompet melabeli setiap alamat web seperti ini. Lihat alamat sesudahnya: harus diawali persis dengan **https://dyorswap.finance/**, dengan garis miring tepat setelah finance dan tanpa sisipan apa pun di antaranya." },
+        "no-paste": { "see": "Menekan lama kotak pencarian tidak memunculkan Paste", "do": "Kembali ke halaman ini dan ketuk tautannya lagi untuk menyalin. Jika iPhone bertanya apakah mengizinkan tempel, izinkan. Masih tidak bisa? Ketik `https://dyorswap.finance/find/?chainId=196` secara manual." },
+        "wrong-account": { "see": "Dompet berada di akun lain, bukan akun yang menambahkan likuiditas", "do": "Kembali ke beranda dompet, ketuk segitiga kecil di samping nama akun, ganti ke akun yang menambahkan likuiditas (satu dompet OKX bisa berisi beberapa akun), lalu mulai lagi. Di akun yang salah, pool Anda tidak akan ditemukan." },
+        "other-wallet": { "see": "Saya tidak memakai aplikasi OKX, atau saya di komputer", "do": "Panduan ini ditulis untuk aplikasi OKX; kami belum mengecek dompet lain atau ekstensi browser. Halaman webnya sama, tapi pop-up dompetnya terlihat berbeda. Jika tidak cocok dengan kartu periksa, jangan tanda tangani: ketuk \"Ada kendala?\" di kanan atas dan kirimkan laporannya kepada kami." }
+      }
+    },
+    "pool": {
+      "title": "Hubungkan dompet dan temukan pool Anda",
+      "milestone": "Cari pool",
+      "note": "Menghubungkan itu gratis dan tidak bisa memindahkan dana Anda",
+      "items": [
+        "DYORSwap bisa tampil dalam bahasa Inggris atau Mandarin. Gambarnya berbahasa Inggris; untuk mengganti bahasa, ketuk ikon bola dunia di bagian atas."
+      ],
+      "images": [
+        { "src": "dy-find-en.webp", "caption": "① Halaman Import Pool terbuka. Ketuk **Connect** di kanan atas ✗ Hanya ketuk yang diberi kotak di gambar. Jangan ketuk Bridge di bilah bawah: penarikan tidak memerlukannya, dan pada September 2026 ada pengguna yang kehilangan dana lewat bridge palsu di DYORSwap" },
+        { "src": "dy-wallets-en.webp", "caption": "② Ketuk **OKX Wallet**. Saat dompet meminta izin terhubung, periksa tertulis dyorswap.finance, lalu hubungkan" },
+        { "src": "dy-select-en.webp", "caption": "③ Setelah terhubung, cek kotak kuning dulu: ikon di kanan atas harus papan catur hitam-putih, yang berarti X Layer. Jika bukan, lihat situasi umum di bawah. Jika ya, ketuk **Select a Token**" },
+        { "src": "dy-tokens-en.webp", "caption": "④ Ketuk **USDT** di daftar ✗ Jangan ketuk USD₮0 di bawahnya: itu token lain, dan pool ini memakai USDT. Saldo di gambar disembunyikan" },
+        { "src": "dy-found-en.webp", "caption": "⑤ Muncul blok USDT-OKB LP: itulah likuiditas Anda. Ketuk **Manage this pool**. Angka di gambar disembunyikan" }
+      ],
+      "situations": {
+        "connected": { "see": "Tidak ada tombol Connect, hanya ikon dompet", "do": "Anda sudah terhubung. Periksa ikon di sebelah kirinya adalah papan catur hitam-putih (X Layer), lalu ketuk **Select a Token**." },
+        "wrong-network": { "see": "Muncul You are in wrong network, atau ikon di kanan atas bukan papan catur", "do": "Dompet Anda berada di jaringan lain, jadi pool Anda tidak akan muncul. Ketuk **Switch to X Layer mainnet**. Jika tidak ada yang muncul, ketuk ikon itu dan pilih **X Layer mainnet** di daftar jaringan." },
+        "switch-network": { "see": "Dompet meminta Anda mengganti jaringan", "do": "Ganti ke **X Layer**. Itu pergantian jaringan, bukan jaringan baru. Jika diminta menambahkan jaringan lain apa pun, tolak: DYORSwap pernah mengalami insiden chain palsu pada September." },
+        "not-found": { "see": "Setelah memilih USDT, blok USDT-OKB LP tidak muncul", "do": "Periksa ikon di kanan atas adalah papan catur (X Layer) dan dompet berada di akun yang menambahkan likuiditas, lalu beri halaman beberapa detik untuk membaca chain. Masih tidak ada? Ketuk \"Ada kendala?\" di kanan atas: kami mengecek LP alamat ini langsung di chain." },
+        "wrong-token": { "see": "Saya tidak sengaja memilih USD₮0", "do": "Ketuk kotak kedua dan pilih **USDT**." },
+        "no-pool": { "see": "Tertulis No pool found, dengan Create pool di bawahnya", "do": "Token salah: pasangan itu tidak punya pool. Jangan ketuk Create pool. Ketuk kotak kedua dan pilih **USDT**." },
+        "nolist": { "see": "Halaman bertuliskan No liquidity found", "do": "Dana Anda tidak hilang: pool ini tidak ada di daftar default situs. Ketuk **Find other LP tokens**, lalu Select a Token, dan pilih USDT." },
+        "bridge-page": { "see": "Saya berakhir di halaman bridge: ada tombol Send dan tab seperti Bridge, Deploy, Referral", "do": "Jangan ketuk Send dan jangan tanda tangani apa pun. Ini bukan jalan keluarnya. Tutup halaman dan buka lagi dari langkah 1. Selama Anda tidak menandatangani atau mengonfirmasi apa pun, dana Anda belum berpindah." }
+      }
+    },
+    "slippage": {
+      "title": "Atur slippage ke 1%",
+      "milestone": "Slippage",
+      "note": "Lewati ini dan penarikannya akan gagal nanti",
+      "items": [
+        "Saat Anda menarik dari pool ini, pool lebih dulu menyelesaikan biaya protokol, jadi yang Anda terima sebenarnya sedikit lebih kecil dari perkiraan situs. Slippage default 0.5% tidak cukup dan transaksinya gagal, jadi ubah dulu ke 1%. Ini berdasarkan simulasi on-chain, bukan tebakan."
+      ],
+      "images": [
+        { "src": "dy-gear-en.webp", "caption": "① Kembali di Your Liquidity, USDT/OKB kini ada di daftar. Ketuk **ikon roda gigi** di kanan atas. Angka di gambar disembunyikan" },
+        { "src": "dy-slip-en.webp", "caption": "② Ketuk **1.0%** sampai berubah biru ③ Ketuk **×** di kanan atas untuk menutup" }
+      ],
+      "situations": {
+        "safe": { "see": "Apakah 1% aman?", "do": "Slippage adalah seberapa jauh lebih sedikit dari perkiraan situs yang mau Anda terima. Dengan 1%, kurang sampai 1% masih diterima; penarikan ini kurang sekitar 0.5%. Kalau lebih buruk dari itu, transaksinya gagal saja, dan dana Anda tetap di tempat." },
+        "expert": { "see": "Ada sakelar Expert Mode di bawah", "do": "Biarkan mati. Panduan ini tidak memerlukannya." },
+        "no-gear": { "see": "Saya tidak menemukan ikon roda gigi", "do": "Halaman penarikan tidak punya ikon roda gigi. Kembali ke Your Liquidity dengan panah kembali di kiri atas halaman penarikan." }
+      }
+    },
+    "enable": {
+      "title": "Pilih Max dan tanda tangani",
+      "milestone": "Tanda tangan",
+      "note": "Menandatangani itu gratis dan hanya mencakup LP yang Anda tarik",
+      "grantsText": "Setelah Anda menandatangani, kontrak router DYORSwap bisa mengambil token likuiditas (LP) Anda: persis sejumlah yang Anda tarik sekarang, bukan jumlah tak terbatas. Periksa kartunya baris demi baris, dan ketuk Reject (Tolak) jika ada yang tidak cocok.",
+      "images": [
+        { "src": "dy-row-en.webp", "caption": "① Ketuk baris **USDT/OKB** untuk membukanya. Angka di gambar disembunyikan" },
+        { "src": "dy-expand-en.webp", "caption": "② Ketuk **Remove** ✗ Jangan malah mengetuk Add liquidity. Angka di gambar disembunyikan" },
+        { "src": "dy-max-en.webp", "caption": "③ Ketuk **Max**: 0% berubah menjadi 100%" },
+        { "src": "dy-enable-en.webp", "caption": "④ Gulir ke paling bawah dan cek kotak kuning dulu: Slippage Tolerance harus bertuliskan **1%**. Lalu ketuk **Enable**. Dompet Anda menampilkan permintaan tanda tangan: bandingkan dengan kartu periksa di bawah. Angka di gambar disembunyikan" }
+      ],
+      "check": {
+        "title": "Sebelum konfirmasi, periksa 3 hal",
+        "lead": "Ini permintaan tanda tangan dari dompet Anda. Belum ada gambar pop-up ini: berpeganglah pada isinya, dan ketuk setiap poin setelah Anda cek.",
+        "confirm": [
+          { "title": "Sumbernya dyorswap.finance", "sub": "Situs yang disebut di pop-up, tanpa tambahan apa pun di depan atau belakangnya" },
+          { "title": "Kontraknya DYOR LPs: 0x35c18556…200719cD25", "sub": "Alamat lengkap 0x35c185563dFd328256A80Aafc23822200719cD25. Ini LP Anda, bukan USDT atau OKB. Huruf besar atau kecil tidak masalah; minimal cocokkan awalan 0x35c18556 dan akhiran 200719cD25" },
+          { "title": "Spender-nya 0x1E690F24…FC04c46036", "sub": "Alamat lengkap 0x1E690F24F704672e44255013C2cB22FC04c46036, kontrak router DYORSwap. Minimal cocokkan awalan 0x1E690F24 dan akhiran FC04c46036" }
+        ],
+        "reject": [
+          "Memberi izin untuk USDT, OKB, atau token lain, bukan LP",
+          "Spender tidak cocok dengan 0x1E690F24…FC04c46036",
+          "Jumlahnya tertulis unlimited (tak terbatas)",
+          "Sumbernya bukan dyorswap.finance",
+          "Tertulis transfer, atau meminta Anda mengirim token",
+          "Dompet menampilkan peringatan merah: risiko tinggi atau situs berbahaya"
+        ],
+        "normal": [
+          "Menandatangani tidak memakan biaya dan tidak memindahkan dana",
+          "Jumlahnya angka pendek yang kecil: satuan LP memang sangat kecil",
+          "Jika dompet hanya menampilkan beberapa karakter awal dan akhir, cocokkan itu; jika bisa, buka detailnya untuk melihat semuanya"
+        ]
+      },
+      "situations": {
+        "still-05": { "see": "Kotak kuning masih bertuliskan 0.5%", "do": "Jangan ketuk Enable dulu. Gunakan panah kembali di kiri atas halaman penarikan untuk kembali ke daftar, atur 1% seperti di langkah 3, lalu kembali." },
+        "approve-tx": { "see": "Enable memunculkan transaksi, bukan tanda tangan", "do": "Ketuk Reject (Tolak). Beberapa dompet tidak bisa membuat tanda tangan jenis ini, jadi situs mengirim transaksi izin sebagai gantinya. Kami belum mengecek jalur itu. Ketuk \"Ada kendala?\" di kanan atas dan kirimkan laporannya kepada kami." },
+        "rejected": { "see": "Saya tidak sengaja mengetuk Reject", "do": "Dana Anda belum berpindah. Ketuk **Enable** lagi." },
+        "wrong-sign": { "see": "Tanda tangannya memberi izin untuk token lain atau alamat lain", "do": "Langsung ketuk Reject (Tolak)." }
+      }
+    },
+    "remove": {
+      "title": "Tarik",
+      "milestone": "Tarik",
+      "note": "Ini satu-satunya transaksi",
+      "images": [
+        { "src": "dy-remove-en.webp", "caption": "① Tombol kiri berubah abu-abu dan bertuliskan Enabled. Ketuk **Remove** di kanan" },
+        { "src": "dy-confirm-en.webp", "caption": "② You will receive terbuka. Kotak kuning harus bertuliskan **1%**. Ketuk **Confirm**, dan dompet menampilkan transaksinya: bandingkan dengan kartu periksa di bawah. Angka di gambar disembunyikan" }
+      ],
+      "check": {
+        "title": "Sebelum konfirmasi, periksa 3 hal",
+        "lead": "Ini transaksi dari dompet Anda. Belum ada gambar pop-up ini: berpeganglah pada isinya, dan ketuk setiap poin setelah Anda cek.",
+        "confirm": [
+          { "title": "Sumbernya dyorswap.finance dan jaringannya X Layer", "sub": "Situs dan jaringan yang disebut di pop-up" },
+          { "title": "Alamat interaksinya router 0x1E690F24…FC04c46036", "sub": "Alamat lengkap 0x1E690F24F704672e44255013C2cB22FC04c46036. Minimal cocokkan awalan 0x1E690F24 dan akhiran FC04c46036. Salah satu karakter berarti berhenti" },
+          { "title": "Anda menerima sekitar {{got}}, dan tidak mengirim OKB atau USDT", "sub": "Hanya LP yang keluar dari dompet Anda; mengirim 0 OKB itu benar. Biaya jaringan di bawahnya kurang dari $0.01" }
+        ],
+        "reject": [
+          "Meminta Anda mengirim OKB, USDT, atau token lain",
+          "Alamat interaksi tidak cocok dengan 0x1E690F24…FC04c46036",
+          "Sumbernya bukan dyorswap.finance",
+          "Tertulis Approve",
+          "Dompet menampilkan peringatan merah: risiko tinggi atau situs berbahaya"
+        ],
+        "normal": [
+          "Anda menerima sekitar 0.5% lebih sedikit dari yang tertulis di situs: itu normal, pool ini menyelesaikan biaya lebih dulu dan perkiraan situs tidak menghitungnya",
+          "Jika dompet hanya menampilkan beberapa karakter awal dan akhir, cocokkan itu; jika bisa, buka detailnya untuk melihat semuanya",
+          "Halaman berputar dan bertuliskan Waiting For Confirmation: halaman sedang menunggu Anda mengonfirmasi di dompet",
+          "Setelah konfirmasi, Anda perlu Face ID, sidik jari, atau kata sandi"
+        ]
+      },
+      "situations": {
+        "fail": { "see": "Error merah bertuliskan This transaction would fail", "do": "Dana Anda belum berpindah. Kemungkinan besar slippage masih 0.5%: ketuk ×, gunakan panah kembali di kiri atas halaman penarikan untuk kembali ke daftar, atur 1% seperti di langkah 3, lalu tarik lagi (Anda perlu menandatangani lagi). Sudah 1%? Ketuk \"Ada kendala?\" di kanan atas." },
+        "rejected": { "see": "Saya tidak sengaja mengetuk Reject", "do": "Dana Anda belum berpindah. Ketuk **Confirm** lagi." },
+        "spinning": { "see": "Saya sudah konfirmasi dan halaman terus berputar", "do": "Tunggu satu menit dan jangan ketuk lagi. Lalu ketuk \"Ada kendala?\" di kanan atas: kami mengecek chain untuk penarikan dalam beberapa menit terakhir." },
+        "low-gas": { "see": "Tertulis biaya atau saldo tidak cukup", "do": "Anda perlu sedikit OKB di X Layer untuk biaya (di bawah $0.01). Kirim dulu sedikit OKB ke alamat ini di X Layer (0.001 sudah lebih dari cukup), lalu kembali." },
+        "wrong-to": { "see": "Alamat interaksi bukan 0x1E690F24…FC04c46036", "do": "Langsung ketuk Reject (Tolak)." },
+        "send-out": { "see": "Diminta mengirim OKB atau USDT", "do": "Langsung ketuk Reject (Tolak). Menarik berarti Anda menerima dana; Anda tidak mengirim token-token ini." }
+      }
+    },
+    "arrive": {
+      "title": "Cek apakah sudah masuk",
+      "milestone": "Masuk",
+      "images": [
+        "① Kembali di beranda dompet (ikon OKX di bagian bawah), ketuk tab token: OKB Anda bertambah, dan USDT Anda sudah kembali. Saldo di gambar disembunyikan",
+        "② Terakhir, ketuk tab izin, tab terakhir di baris itu, cari izin USDT untuk DYORSwap (0x1E69…6036) dan batalkan. Izin itu Anda berikan saat menambahkan likuiditas dan sekarang tidak diperlukan lagi. Pembatalannya memakan biaya kecil, dan dana Anda tetap aman dibatalkan atau tidak"
+      ],
+      "check": {
+        "title": "Cek apakah sudah masuk",
+        "rows": [
+          ["Berapa lama", "Beberapa detik setelah Anda konfirmasi"],
+          ["Tempat melihat", "Beranda dompet di aplikasi OKX → OKB dan USDT → riwayat transaksi"],
+          ["Yang seharusnya terlihat", "Bertambah {{got}}"],
+          ["Di chain", "Dari kontrak router DYORSwap 0x1E69…6036, diterima di alamat Anda sendiri"],
+          ["Jika belum masuk", "Ketuk \"Ada kendala?\" di kanan atas: kami mengecek chain untuk penarikan dalam beberapa menit terakhir"]
+        ],
+        "foot": "Begitu sudah masuk, selesai. Anda menerima OKB itu sendiri (token asli X Layer), bukan WOKB"
+      },
+      "situations": {
+        "not-wokb": { "see": "Ini OKB atau WOKB?", "do": "Ini OKB itu sendiri (token asli X Layer), bukan WOKB." },
+        "old-usdt": { "see": "USDT yang mana ini?", "do": "Ini USDT lama X Layer (USDT_Bridged), yang sedang dihapus bertahap oleh OKX. Untuk beralih ke USDT0 yang baru, deposit ke exchange OKX lalu tarik lagi." },
+        "less": { "see": "Jumlahnya sedikit lebih kecil dari yang tertulis di situs", "do": "Itu normal: sekitar 0.5% lebih sedikit. Pool ini menyelesaikan biaya lebih dulu dan perkiraan situs tidak menghitungnya." },
+        "no-approval": { "see": "Saya tidak menemukan izin ini", "do": "Daftar di dompet tidak selalu lengkap, jadi itu belum membuktikan izinnya sudah hilang. Ketuk \"Ada kendala?\" di kanan atas: pemeriksaan langsung membaca chain dan memberi tahu apakah izinnya masih aktif. Jika sudah hilang, tidak ada yang perlu dilakukan." }
+      }
+    }
+  },
+  "sources": [
+    "Explorer OKX · Kontrak router DYORSwap (kode sumber terverifikasi)",
+    "Explorer OKX · Pool USDT/OKB (DYOR LPs)",
+    "DYORSwap · Halaman cari pool"
+  ]
+}
