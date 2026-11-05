@@ -1,0 +1,244 @@
+{
+  "title": "Dein Hyperliquid-Guthaben in deine Wallet abheben",
+  "short": "Von Hyperliquid in deine Wallet",
+  "verified": "Am 2026-10-27 mit einem echten Konto getestet: Mit dieser Anleitung lag der eingegangene Betrag bis auf 0.01 USDC genau bei der Schätzung.",
+  "fieldTests": [
+    "Mit der Binance-Wallet nach dieser Anleitung abgehoben; der eingegangene Betrag entsprach der Schätzung. Unterwegs erschien ein Fenster „Account Type Update“ (Unified Account). Nach dem Bestätigen war kein Übertrag nötig, und die Anleitung deckt diesen Fall jetzt ab."
+  ],
+  "covers": "USDC in deinem Konto und USDH, das nicht mehr ausgegeben wird",
+  "summary": "Du hast noch USDC auf Hyperliquid oder etwas USDH, einen Stablecoin, der nicht mehr ausgegeben wird? Verkauf das USDH gegen USDC und heb dann alles auf einmal in deine Wallet auf Arbitrum ab.",
+  "movesBy": "Hyperliquid",
+  "facts": [
+    ["Signaturen", "2–3, nur Signaturen, kein Gas"],
+    ["Gebühr", "1 USDC wird von der Auszahlung abgezogen"],
+    ["Dauer", "Etwa 10 Minuten für die Schritte; die Auszahlung kommt nach etwa 5 Minuten an"],
+    ["Du brauchst", "Nichts. Du brauchst kein ETH auf Arbitrum"]
+  ],
+  "chips": ["Etwa 10 Minuten", "2–3 Signaturen", "Kein Gas; Abheben kostet 1 USDC"],
+  "support": {
+    "label": "Offizieller Hyperliquid-Support",
+    "note": "Laut der Doku von Hyperliquid läuft Support nur über ein Ticket im Kanal open-ticket seines offiziellen Discord oder über sein offizielles E-Mail-Formular. Jeder „Support“, der dir eine Direktnachricht schreibt, ist ein Betrüger."
+  },
+  "official": [{"label": "Offizielle Website von Hyperliquid"}],
+  "vars": {
+    "addrShort": "deine eigene Adresse",
+    "usdhSell": "deine USDH-Menge (2 Nachkommastellen)",
+    "orderMin": "Menge × 0.995",
+    "spotAfter": "der Verkaufserlös",
+    "withdrawAmt": "dein gesamtes Guthaben",
+    "arrive": "die Auszahlung minus 1"
+  },
+  "pro": [
+    "**Route**: USDH wird nicht mehr ausgegeben → im Spot per Limit-Order zu {{floorPx}} oder besser gegen USDC verkaufen → „Withdraw to Arbitrum“. 1 USDC Gebühr, kommt nach etwa 5 Minuten an.",
+    "**Kontomodus**: Vereinheitlichte Konten (der neue Standard) heben direkt ab. Ältere getrennte Konten verschieben zuerst Spot-USDC mit „Perps ⇄ Spot“ zu „Perps“.",
+    "**Deine Zahlen**: {{usdhSell}} USDH verkaufen, {{withdrawAmt}} USDC abheben, etwa {{arrive}} USDC kommen an.",
+    "**Signaturen**: 2–3 EIP-712-Signaturen, kein Gas. Prüf zwei Dinge: Die Domain ist app.hyperliquid.xyz, und destination ist deine eigene {{addrShort}}.",
+    "**Stolperfallen**: Die Suche nach USDH zeigt auch USDHL, also wähl das richtige. Ein Tippen ins Orderbuch rechts überschreibt deinen Preis."
+  ],
+  "done": {
+    "where": "im Netzwerk Arbitrum in deiner Wallet",
+    "from": "Gesendet von der offiziellen Bridge von Hyperliquid 0x2Df1…3dF7",
+    "look": "Wo nachsehen: deine Wallet-App → „Assets“ → USDC → die Zeile Arbitrum."
+  },
+  "steps": {
+    "open": {
+      "title": "Offizielle Website in der Wallet-App öffnen",
+      "items": [
+        "Öffne deine Wallet-App (zum Beispiel den Tab „Wallet“ in der Binance-App) und achte darauf, dass die Wallet ausgewählt ist, auf der dieses Geld liegt.",
+        "Öffne `https://app.hyperliquid.xyz` im integrierten DApp-Browser der Wallet. Schreib https:// mit dazu, sonst wird es als Suche behandelt.",
+        "Wenn die Seite geladen ist, prüf die Adresszeile: Die Domain muss genau **app.hyperliquid.xyz** lauten. Ein Buchstabe zu viel oder ein fehlender Punkt bedeutet: Das ist nicht die echte Website.",
+        "✗ Wenn die Seite sagt, dass deine Region sie nicht nutzen darf (restricted jurisdiction), hör hier auf. Diese Anleitung behandelt nicht, wie man regionale Beschränkungen umgeht."
+      ],
+      "situations": {
+        "search-instead": {"see": "Beim Eintippen der Adresse erscheinen Suchergebnisse", "do": "Gib die vollständige Adresse mit https:// davor ein: `https://app.hyperliquid.xyz`."},
+        "restricted": {"see": "Die Seite sagt, dass deine Region sie nicht nutzen darf (restricted jurisdiction)", "do": "Hör hier auf. Diese Anleitung behandelt nicht, wie man regionale Beschränkungen umgeht."},
+        "not-sure": {"see": "Du bist nicht sicher, ob es die offizielle Website ist", "do": "Prüf die Adresszeile: Die Domain muss genau **app.hyperliquid.xyz** lauten. Wenn nicht, schließ die Seite und tipp die Adresse selbst ein. Nutze nie einen Link, den dir jemand geschickt hat."}
+      }
+    },
+    "connect": {
+      "title": "Wallet verbinden",
+      "note": "Nur verbinden. Keine Signatur, es wird kein Geld bewegt",
+      "images": [
+        "① Tippe oben rechts auf **Connect**",
+        "① Wähle **Default Wallet**. Deine Wallet fragt nach der Verbindung: Wenn die Anfrage von app.hyperliquid.xyz kommt, tippe auf „Connect“",
+        "① Oben rechts erscheint deine Adresse (hier unkenntlich gemacht). Es sollte {{addrShort}} sein ② Tippe links auf den Marktnamen, um die Liste zu öffnen"
+      ],
+      "situations": {
+        "no-popup": {"see": "Du hast auf „Connect“ getippt, aber deine Wallet hat nicht nach einer Verbindung gefragt", "do": "Öffne die Seite im integrierten DApp-Browser deiner Wallet-App (Schritt 1). Ein normaler Handy-Browser kommt nicht an deine Wallet heran."},
+        "wrong-address": {"see": "Die Adresse oben rechts ist nicht die, auf der das Geld liegt", "do": "Wechsle in deiner Wallet-App zur richtigen Wallet und verbinde dich neu. Wenn die Adresse nicht passt, mach nicht weiter."},
+        "wrong-origin": {"see": "Die Verbindungsanfrage kommt nicht von app.hyperliquid.xyz", "do": "Lehne ab und schließ die Seite. Es ist vielleicht nicht die offizielle Website."}
+      }
+    },
+    "search": {
+      "title": "USDH-Markt suchen",
+      "whenText": "Nur nötig, wenn du USDH hast (dieser Schritt bis Schritt 6)",
+      "images": [
+        "① Gib USDH ins Suchfeld ein ② Tippe auf **USDH/USDC** (darunter steht SPOT) ✗ Tippe nicht auf USDHL/USDC: Das ist ein anderer Token, nur ein Buchstabe Unterschied"
+      ],
+      "situations": {
+        "two-results": {"see": "Sowohl USDH als auch USDHL werden angezeigt", "do": "Wähle **USDH/USDC**, das mit SPOT gekennzeichnete. USDHL ist ein anderer Token; die Namen unterscheiden sich nur um einen Buchstaben."},
+        "not-found": {"see": "USDH wird nicht angezeigt", "do": "Prüf die Schreibweise (U-S-D-H). Immer noch nichts? Tippe rechts neben dem Suchfeld auf **All** und such noch einmal."}
+      }
+    },
+    "panel": {
+      "title": "Verkaufsbereich öffnen und auf Limit-Order umstellen",
+      "images": [
+        "! Der gelbe Kasten ist ein Hinweis von Hyperliquid selbst: USDH wird nicht mehr ausgegeben, daher werden die Käufer auf diesem Markt immer weniger. Je früher du verkaufst, desto besser",
+        "① Tippe unten auf **Trade**",
+        "① Tippe oben links auf den kleinen Pfeil neben **Market**",
+        "① Wähle **Limit** (eine Limit-Order wird nur zu deinem Preis oder besser ausgeführt)"
+      ],
+      "situations": {
+        "no-limit": {"see": "Im Dropdown gibt es kein „Limit“", "do": "Tippe oben links auf den kleinen Pfeil neben „Market“, dort, wo im Screenshot oben der rote Rahmen ist."}
+      }
+    },
+    "fill": {
+      "title": "Verkaufsorder ausfüllen",
+      "note": "Jetzt ausfüllen; als Nächstes aktivierst du das Trading",
+      "images": [
+        "① Tippe auf **Sell** ② Preis: {{floorPx}} ③ Menge: {{usdhSell}} (der Screenshot zeigt Beispielzahlen) ④ Wirf einen Blick auf „Order Value“: etwa {{orderMin}} USDC, das Mindeste, was du bekommst ⑤ Tippe auf **Enable Trading**"
+      ],
+      "items": [
+        "! Die grünen Zahlen rechts sind Kauforders anderer Leute. An sie verkaufst du, meist zu besser als 0.995. **Tippe sie nicht an**: Ein Tippen überschreibt den Preis, den du eingegeben hast."
+      ],
+      "situations": {
+        "value-off": {"see": "„Order Value“ weicht stark von der Zahl hier ab", "do": "Wahrscheinlich stimmt der Preis oder die Menge nicht: Preis {{floorPx}}, Menge {{usdhSell}}. Wenn du die grünen Zahlen rechts angetippt hast, wurde dein Preis überschrieben; gib ihn noch einmal ein."},
+        "not-enough": {"see": "Es heißt, dein Guthaben reicht für diese Menge nicht", "do": "Ein Teil deines USDH steckt vielleicht schon in einer offenen Verkaufsorder. Die Live-Prüfung oben zeigt, wie viel du tatsächlich verkaufen kannst. Wenn du deine Adresse noch nicht eingegeben hast, gib sie zuerst oben ein."},
+        "place-order": {"see": "Auf dem Button steht schon „Place Order“, nicht „Enable Trading“", "do": "Das Trading wurde schon früher aktiviert. Überspring „Trading aktivieren“ und geh direkt zu „Verkaufsorder aufgeben“."}
+      }
+    },
+    "enable": {
+      "title": "Trading aktivieren",
+      "note": "Signatur 1",
+      "grantsText": "Nachdem du signiert hast, kann dieser Order-Schlüssel auf Hyperliquid für dich Orders platzieren, ohne dass sich deine Wallet meldet. Prüf die Karte Zeile für Zeile und lehne ab, wenn etwas nicht passt.",
+      "images": [
+        "① Lass **Stay Connected** ohne Haken ② Tippe auf **Establish Connection**. Deine Wallet fragt nach einer Signatur: Vergleiche sie mit der Karte unten"
+      ],
+      "check": {
+        "title": "Prüf vor dem Signieren 3 Dinge",
+        "lead": "Nachdem du auf „Establish Connection“ getippt hast, zeigt deine Wallet eine Signaturanfrage. Vergleiche sie mit dieser Karte und hake jede Zeile ab, sobald du sie geprüft hast.",
+        "skip": "Trading schon aktiviert und auf dem Button steht „Place Order“? Überspring diesen Schritt",
+        "confirm": [
+          {"title": "Die Anfrage kommt von app.hyperliquid.xyz", "sub": "Ein Buchstabe zu viel oder ein fehlender Punkt – und es ist eine andere Website"},
+          {"title": "Dort steht ApproveAgent und Mainnet", "sub": "Damit entsteht ein Schlüssel, der nur Orders platzieren kann. Laut der Doku von Hyperliquid kann er weder Geld an jemanden senden noch abheben"},
+          {"title": "Nur eine Signatur: kein Betrag, kein Empfänger", "sub": "Es wird nichts ausgegeben und keine Gebühr berechnet"}
+        ],
+        "reject": ["Sie verlangt, dass du Geld sendest, oder zeigt einen Betrag", "Sie erwähnt Permit oder die Freigabe (Approve) eines Tokens", "Sie kommt nicht von app.hyperliquid.xyz"],
+        "normal": [
+          "agentAddress ist eine zufällige Adresse, die sich jedes Mal ändert: Das ist der vorübergehende Order-Schlüssel, den die Seite erstellt",
+          "chainId kann 42161 oder 56 zeigen. Beides ist in Ordnung; es folgt dem aktuellen Netzwerk deiner Wallet",
+          "verifyingContract besteht nur aus Nullen. Auch in Ordnung"
+        ]
+      },
+      "situations": {
+        "no-approve-agent": {"see": "Die Signaturanfrage erwähnt ApproveAgent nicht", "do": "Lehne ab. Wenn die Karte nicht passt, signiere nicht."},
+        "no-change": {"see": "Du hast signiert, aber auf der Seite hat sich nichts geändert", "do": "Warte ein paar Sekunden. Steht auf dem Button immer noch nicht „Place Order“, lade die Seite neu, verbinde deine Wallet erneut und tippe noch einmal auf „Establish Connection“. Ein zweites Mal zu signieren ist normal."},
+        "chain-id": {"see": "Die Anfrage zeigt chainId 42161 oder 56", "do": "Das ist normal. Es folgt dem aktuellen Netzwerk deiner Wallet und ändert nichts."}
+      }
+    },
+    "order": {
+      "title": "Verkaufsorder aufgeben",
+      "note": "Hier meldet sich deine Wallet nicht",
+      "milestone": "USDH verkaufen",
+      "movesText": "Diese Verkaufsorder auf Hyperliquid wird von dem Order-Schlüssel signiert, den du vorhin freigegeben hast; deshalb erscheint kein Wallet-Pop-up. DeFiExit fasst dein Geld nie an.",
+      "items": [
+        "Sobald du signiert hast, zeigt die Seite „Established connection“, und aus dem Button „Enable Trading“ wird **Place Order**.",
+        "Prüf noch einmal: Sell / Preis {{floorPx}} / Menge {{usdhSell}} (gib sie erneut ein, falls sie gelöscht wurden).",
+        "Tippe auf „Place Order“. Erscheint ein Fenster „Confirm Order“, prüf dieselben drei Dinge und bestätige. Diese Order signiert der Order-Schlüssel der Seite, deine Wallet bleibt also still.",
+        "Wenn die Order ausgeführt ist, solltest du die Meldung „Order filled“ sehen. Unter „Balances“ fällt USDH auf unter 0.01, und USDC steigt um etwa {{spotAfter}}. „Open Orders“ ist leer.",
+        "! Wenn die Order weiterhin unter „Open Orders“ steht, ist das Kaufgebot unter {{floorPx}} gefallen. Gib keine weitere Order auf. Tippe oben rechts auf „Hängst du fest?“ für eine Live-Prüfung."
+      ],
+      "situations": {
+        "resting": {"see": "Die Order steht einfach da und wird nicht ausgeführt", "do": "Das Kaufgebot liegt gerade unter deinem Preis. Gib keine weitere Order auf. Die Live-Prüfung oben berechnet deine Möglichkeiten anhand der heutigen Kaufgebote."},
+        "too-small": {"see": "Es heißt, die Order ist zu klein", "do": "Hyperliquid hat eine Mindestgröße für Orders (etwa $10). Liegt dein USDH darunter, lässt es sich nicht verkaufen. Lass es liegen und heb dein USDC ab."},
+        "dust-left": {"see": "Nach dem Verkauf bleibt unter „Balances“ ein winziger Rest USDH", "do": "Beträge haben nur zwei Nachkommastellen, ein Rest unter 0.01 ist also normal. Das beeinflusst die Auszahlung nicht."}
+      }
+    },
+    "transfer": {
+      "title": "Spot-USDC auf das Perps-Konto verschieben",
+      "note": "Signatur 2",
+      "whenText": "Nur für ältere getrennte Konten; vereinheitlichte Konten überspringen das",
+      "milestone": "Übertrag",
+      "items": [
+        "! Schau zuerst auf die Seite „Account“. Steht in der Überschrift **Unified Account Summary** und gibt es nur die Buttons „Deposit“ / „Withdraw“, hast du ein vereinheitlichtes Konto: **Überspring diesen Schritt** und geh direkt zur Auszahlung."
+      ],
+      "images": [
+        "! Siehst du „Unified Account Summary“, ist es ein vereinheitlichtes Konto (Beispielbild; ignorier die Zahlen)",
+        "Ein vereinheitlichtes Konto hat nur „Deposit“ / „Withdraw“: Tippe auf „Withdraw“ und spring zum nächsten Schritt",
+        "Getrennte Konten zeigen zwei Zeilen, „Spot“ und „Perps“: Geld auf zwei Konten",
+        "① Tippe unten auf **Account** ② Tippe auf **Perps ⇄ Spot**",
+        "① Tippe auf diesen mittleren Button, um die Richtung umzudrehen",
+        "① Achte darauf, dass jetzt Spot → Perps dasteht ② Tippe auf **MAX** (der Screenshot entstand vor dem Verkauf, daher 0.00; bei dir sollten es etwa {{spotAfter}} sein) ③ Tippe auf **Confirm**. Deine Wallet fragt nach einer Signatur: Vergleiche sie mit der Karte"
+      ],
+      "check": {
+        "title": "Prüf vor dem Signieren 3 Dinge",
+        "lead": "Nachdem du auf „Confirm“ getippt hast, zeigt deine Wallet eine Signaturanfrage. Vergleiche sie mit dieser Karte und hake jede Zeile ab, sobald du sie geprüft hast.",
+        "skip": "Vereinheitlichtes Konto (kein „Perps ⇄ Spot“ auf der Seite „Account“)? Überspring diesen Schritt",
+        "confirm": [
+          {"title": "Die Anfrage kommt von app.hyperliquid.xyz", "sub": "Ein Buchstabe zu viel oder ein fehlender Punkt – und es ist eine andere Website"},
+          {"title": "Dort steht SendAsset, und destination ist deine eigene Adresse {{addrShort}}", "sub": "Groß- oder Kleinschreibung spielt keine Rolle. Ist es nicht deine Adresse, lehne ab"},
+          {"title": "Von Spot zu Perps, etwa {{spotAfter}} USDC", "sub": "sourceDex ist spot und destinationDex ist leer; der Token ist USDC:0x6d1e…e054"}
+        ],
+        "reject": ["destination ist nicht deine eigene Adresse", "Sie erwähnt Permit oder die Freigabe (Approve) eines Tokens", "Sie kommt nicht von app.hyperliquid.xyz"],
+        "normal": ["Es ist nur eine Signatur, ohne Gebühr"]
+      },
+      "situations": {
+        "no-button": {"see": "Auf der Seite „Account“ gibt es kein „Perps ⇄ Spot“", "do": "Steht in der Überschrift „Unified Account Summary“, ist es ein vereinheitlichtes Konto. Kein Übertrag nötig; geh direkt zur Auszahlung."},
+        "max-zero": {"see": "„MAX“ zeigt 0.00", "do": "Achte zuerst darauf, dass die Richtung Spot → Perps ist (der mittlere Button dreht sie um). Steht dann immer noch 0 da, ist kein USDC mehr im Spot; geh direkt zur Auszahlung."},
+        "wrong-destination": {"see": "Die Signaturanfrage zeigt eine destination, die nicht deine Adresse ist", "do": "Sofort ablehnen."}
+      }
+    },
+    "withdraw": {
+      "title": "Auf Arbitrum abheben",
+      "note": "Letzte Signatur",
+      "milestone": "Auszahlung",
+      "images": [
+        "! Laut Hyperliquid wird die Gebühr von 1 USDC von der Auszahlung abgezogen ① Lass das Asset auf USDC und die Chain auf Arbitrum ② Tippe auf **MAX**: Es sollten etwa {{withdrawAmt}} sein (der Screenshot zeigt eine andere Zahl) ③ Tippe auf **Withdraw to Arbitrum**. Deine Wallet fragt nach einer Signatur: Vergleiche sie mit der Karte"
+      ],
+      "check": {
+        "title": "Prüf vor dem Signieren 3 Dinge",
+        "lead": "Nachdem du auf „Withdraw to Arbitrum“ getippt hast, zeigt deine Wallet eine Signaturanfrage. Vergleiche sie mit dieser Karte und hake jede Zeile ab, sobald du sie geprüft hast.",
+        "confirm": [
+          {"title": "Die Anfrage kommt von app.hyperliquid.xyz", "sub": "Ein Buchstabe zu viel oder ein fehlender Punkt – und es ist eine andere Website"},
+          {"title": "Dort steht Withdraw, und destination ist deine eigene Adresse {{addrShort}}", "sub": "Ist es nicht deine Adresse, lehne ab"},
+          {"title": "amount ist etwa {{withdrawAmt}}", "sub": "Was ankommt = diese Zahl minus 1 USDC Gebühr"}
+        ],
+        "reject": ["destination ist nicht deine eigene Adresse", "Sie erwähnt Permit oder die Freigabe (Approve) eines Tokens", "Sie kommt nicht von app.hyperliquid.xyz"],
+        "normal": ["Es ist nur eine Signatur, ohne Gas: Hyperliquid sendet die Arbitrum-Transaktion für dich", "time ist eine 13-stellige Zahl. Das ist ein Zeitstempel"]
+      },
+      "situations": {
+        "less-than-expected": {"see": "„MAX“ zeigt weniger als die Zahl hier", "do": "Offene Orders und Positionen binden einen Teil deines Guthabens. Die Live-Prüfung oben listet auf, wo jeder Teil deines Geldes liegt."},
+        "cannot-click": {"see": "Der Button „Withdraw“ reagiert nicht", "do": "Die Auszahlung muss höher sein als die Gebühr von 1 USDC. Kleinere Beträge lassen sich nicht abheben."},
+        "wrong-destination": {"see": "Die Signaturanfrage zeigt eine destination, die nicht deine Adresse ist", "do": "Sofort ablehnen."}
+      }
+    },
+    "arrive": {
+      "title": "Prüfen, ob es angekommen ist",
+      "milestone": "Angekommen",
+      "check": {
+        "title": "Eingangsprüfung",
+        "rows": [
+          ["Wie lange", "Laut Hyperliquid innerhalb von 5 Minuten"],
+          ["Wo nachsehen", "Deine Wallet-App → „Assets“ → USDC → die Zeile Arbitrum"],
+          ["Du solltest sehen", "Etwa {{arrive}} USDC mehr"],
+          ["Eintrag auf der Blockchain", "Gesendet von 0x2Df1…3dF7 (der offiziellen Bridge von Hyperliquid) an deine Adresse, als natives Arbitrum-USDC (0xaf88…5831)"],
+          ["Nicht da?", "Heb nach 30 Minuten nicht noch einmal ab. Mach einen Screenshot und frag uns"]
+        ],
+        "foot": "Sobald es angekommen ist, bist du fertig"
+      },
+      "situations": {
+        "not-in-wallet": {"see": "Du siehst das USDC nicht in deiner Wallet", "do": "Achte darauf, dass du dir USDC im Netzwerk **Arbitrum** ansiehst. Die Live-Prüfung oben sucht diese Auszahlung direkt auf Arbitrum."},
+        "one-less": {"see": "Es ist 1 weniger angekommen, als du abgehoben hast", "do": "Das ist die Auszahlungsgebühr von 1 USDC. Normal."},
+        "late": {"see": "Es sind mehr als 30 Minuten vergangen, und nichts ist angekommen", "do": "Heb nicht noch einmal ab. Sieh dir die Live-Prüfung oben an. Findet sie den Eingang nicht oder passt etwas nicht, schick Screenshots an den offiziellen Hyperliquid-Support (unten)."}
+      }
+    }
+  },
+  "sources": [
+    "Hyperliquid-Doku · „How to start trading“",
+    "Hyperliquid-Doku · Bridge / USDC",
+    "Hyperliquid-Doku · „Account abstraction modes“",
+    "Hyperliquid-Doku · „Nonces and API wallets“",
+    "Ankündigung von Bridge · „An update on USDH“",
+    "Hyperliquid-Doku · Support"
+  ]
+}
