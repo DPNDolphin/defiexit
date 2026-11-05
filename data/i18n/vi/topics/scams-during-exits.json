@@ -1,0 +1,102 @@
+{
+  "title": "Các trò lừa đảo phổ biến nhất khi đóng cửa và chuyển đổi",
+  "summary": "Thường gặp nhất là \"nhân viên hỗ trợ\" nhắn tin cho bạn trước, trang chuyển đổi hoặc airdrop giả, yêu cầu \"approve\" hay chữ ký cho phép người khác lấy token của bạn, và dịch vụ \"lấy lại tiền\" có thu phí. Một quy tắc chặn được hầu hết: dự án thật không nhắn tin riêng cho bạn trước, không bao giờ hỏi cụm từ khôi phục hay khóa riêng tư, và không bao giờ bắt bạn gửi tiền trước — và chỉ nên tin những đường dẫn do chính tài khoản chính thức đăng và trang web chính thức.",
+  "sections": [
+    {
+      "h": "Vì sao lừa đảo tăng vọt vào những lúc này",
+      "p": [
+        "Các đợt đóng cửa và chuyển đổi đều có hạn chót, và nhiều người vội vàng hỏi han công khai. ethereum.org cho biết kẻ lừa đảo giả danh hỗ trợ dò các kênh công khai để tìm người đặt câu hỏi, rồi nhắn tin riêng đề nghị giúp đỡ, nhằm lấy khóa riêng tư hoặc tiền của bạn.",
+        "MetaMask cũng liệt kê việc tạo áp lực thời gian quanh các hạn chót là dấu hiệu điển hình của một yêu cầu cấp quyền độc hại. Càng gần hạn chót, bạn càng nên đi chậm lại."
+      ],
+      "list": []
+    },
+    {
+      "h": "Các trò lừa đảo phổ biến nhất",
+      "p": [
+        "Mỗi trò dưới đây đều đã được một dự án hoặc nhà cung cấp ví cảnh báo công khai."
+      ],
+      "list": [
+        "\"Hỗ trợ\" tự tìm đến bạn: bạn nhắc đến một vấn đề trên X, Discord hoặc Telegram, và có người nhắn tin riêng tự xưng là bộ phận hỗ trợ chính thức, hoặc trả lời kèm một đường dẫn \"trợ giúp\". Horizen cho biết đội ngũ của họ sẽ không bao giờ nhắn tin riêng cho bạn trước; MetaMask cho biết họ sẽ không bao giờ nhắn tin riêng đề nghị hỗ trợ, không có hỗ trợ qua điện thoại, và không bao giờ liên hệ bạn về một yêu cầu hỗ trợ trên X.",
+        "Trang chuyển đổi và airdrop giả trông y như thật. Sophon cảnh báo: \"chỉ dùng đường dẫn chính thức của Sophon và cẩn thận với các trang chuyển đổi giả.\" Abstract cảnh báo về việc mạo danh, trang chuyển đổi giả và tin nhắn riêng tự xưng đại diện Abstract. Tài liệu của Sophon bổ sung: không bao giờ làm theo một đường dẫn nhận thưởng, chuyển đổi hay đổi token mà bạn không hề yêu cầu.",
+        "\"Cấp quyền để mở khóa / chuyển đổi\": một lần cấp quyền cho phép một trang web hoặc hợp đồng chuyển một token nhất định ra khỏi ví của bạn, và một chữ ký không tốn gas như permit cũng làm được điều tương tự. Lời khuyên của MetaMask: kiểm tra chính xác trang web đang yêu cầu gì trước khi cấp quyền, và giới hạn số lượng khi có thể; nếu một trang yêu cầu bạn cấp quyền cho toàn bộ NFT để nhận airdrop, đừng mắc bẫy, vì bạn không cần loại quyền đó để nhận bất cứ thứ gì.",
+        "Token hoặc NFT bạn không hề yêu cầu, kèm lời nhắn dẫn bạn đến một trang web để nhận. MetaMask gọi đây là trò lừa airdrop phổ biến: trang đó nhiều khả năng nhắm đến cụm từ khôi phục hoặc một lần cấp quyền của bạn, nên đừng tương tác; hãy ẩn nó đi. ethereum.org bổ sung rằng các trang như vậy yêu cầu bạn kết nối ví và \"approve\" một giao dịch trao tài sản của bạn cho kẻ lừa đảo.",
+        "\"Lấy lại tiền\" có thu phí: có người tự nhận có thể lấy lại số tiền bị đánh cắp hoặc bị kẹt của bạn, với điều kiện trả phí trước. FBI cảnh báo những kẻ này xuất hiện trên mạng xã hội, trong phần bình luận và trong kết quả tìm kiếm; chúng nhận khoản tiền đầu rồi biến mất, hoặc đưa ra một \"báo cáo truy vết\" không đầy đủ hay không chính xác rồi đòi thêm tiền. Một số giả danh công ty luật hoặc cơ quan nhà nước. Công ty tư nhân không thể ra lệnh tịch thu, và cơ quan thực thi pháp luật không thu phí nạn nhân để điều tra."
+      ]
+    },
+    {
+      "h": "Cách kiểm tra một đường dẫn",
+      "p": [
+        "Đường dẫn lừa đảo có thể trông giống hệt đường dẫn thật, nên hãy đánh giá theo nơi nó xuất phát."
+      ],
+      "list": [
+        "Chỉ lấy đường dẫn từ bài đăng của chính tài khoản chính thức, hoặc bấm vào từ trang chủ chính thức. Lời khuyên của Abstract: chỉ dùng đường dẫn chính thức và đối chiếu chéo trên Discord cùng các kênh chính thức khác.",
+        "Kiểm tra chính tài khoản đó: đảm bảo @tên tài khoản khớp với tên ghi trên trang web chính thức, thay vì dựa vào ảnh đại diện và tên hiển thị.",
+        "Đừng dùng đường dẫn từ kết quả tìm kiếm, quảng cáo, chuỗi bình luận hay tin nhắn riêng. FBI lưu ý rằng các dịch vụ lấy lại tiền giả xuất hiện trong phần bình luận và kết quả tìm kiếm.",
+        "Kiểm tra lại trong cửa sổ bật lên của ví: MetaMask cho biết hộp yêu cầu cấp quyền hiện tên và địa chỉ web của trang ở phía trên để bạn xác nhận đúng là trang bạn định dùng. Sau đó xem bước này là chuyển tiền, cấp quyền hay ký.",
+        "Nếu bạn không hiểu cửa sổ bật lên đang làm gì, đừng xác nhận; hãy hỏi trên Discord chính thức trước."
+      ]
+    },
+    {
+      "h": "Những điều dự án chân chính không làm",
+      "p": [
+        "Gặp bất kỳ điều nào dưới đây, bạn có thể dừng lại ngay."
+      ],
+      "list": [
+        "Nhắn tin riêng cho bạn trước. (Horizen: đội ngũ của họ sẽ không bao giờ nhắn tin riêng cho bạn trước. MetaMask: họ sẽ không bao giờ nhắn tin riêng đề nghị hỗ trợ.)",
+        "Hỏi cụm từ khôi phục, khóa riêng tư hay mật khẩu của bạn. ethereum.org cho biết không dịch vụ, nhân viên hỗ trợ hay trang web chân chính nào lại hỏi những thứ đó; MetaMask cho biết lúc duy nhất bạn cần nhập cụm từ khôi phục là khi tạo ví và khi khôi phục ví.",
+        "Yêu cầu bạn gửi tiền cho họ. (Horizen: \"Chúng tôi sẽ không bao giờ yêu cầu bạn gửi tiền cho chúng tôi.\")",
+        "Gọi điện cho bạn, hoặc xin quyền truy cập từ xa vào máy tính của bạn. (MetaMask không có hỗ trợ qua điện thoại. ethereum.org: không bao giờ cho phép bất kỳ ai truy cập từ xa vào máy tính của bạn.)",
+        "Thu phí để \"tăng tốc\", \"mở khóa\" hay \"lấy lại\" tiền của bạn.",
+        "DeFiExit chỉ đề nghị ví của bạn chia sẻ địa chỉ — không bao giờ yêu cầu bạn ký, cấp quyền hay gửi bất cứ thứ gì, và chúng tôi không bao giờ nhắn tin cho bạn trước."
+      ]
+    },
+    {
+      "h": "Nếu bạn đã lỡ bấm hoặc lỡ ký",
+      "p": [
+        "Hành động càng nhanh, cơ hội hạn chế thiệt hại càng lớn."
+      ],
+      "list": [
+        "Nếu bạn đã cấp quyền cho một trang đáng ngờ: MetaMask khuyên hãy thu hồi quyền đó càng nhanh càng tốt (ví dụ, xem lại và thu hồi trong MetaMask Portfolio) trước khi tiền bị lấy đi. Một khi ví đã bị rút sạch, bạn gần như không làm được gì.",
+        "Nếu cụm từ khôi phục hoặc khóa riêng tư bị lộ, hoặc xuất hiện giao dịch không phải do bạn thực hiện: MetaMask khuyên hãy tạo ví mới ngay, chuyển phần còn lại sang đó và bỏ ví cũ; nếu nghi có script tự động quét tiền (sweeper), đừng gửi thêm gas vào ví cũ.",
+        "Giao dịch trên chuỗi không thể đảo ngược. Hãy giữ lại bản ghi giao dịch và trình báo với công an địa phương; ở Mỹ, bạn có thể báo cáo với IC3 của FBI.",
+        "Hãy lường trước sẽ có người nhắn tin riêng đề nghị lấy lại tiền giúp bạn. Đó chính là trò lừa tiếp theo mà FBI cảnh báo; đừng đưa cho họ bất kỳ khoản tiền hay thông tin cá nhân nào."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Một tài khoản \"hỗ trợ chính thức\" nhắn tin riêng đề nghị giúp tôi lấy số tiền bị kẹt ra. Có thật không?",
+      "a": "Gần như chắc chắn là lừa đảo. Horizen tuyên bố đội ngũ của họ sẽ không bao giờ nhắn tin riêng cho bạn trước, và MetaMask cho biết họ sẽ không bao giờ nhắn tin riêng đề nghị hỗ trợ. Đừng trả lời hay bấm vào bất cứ thứ gì; hãy tự hỏi qua các kênh chính thức được liệt kê trên trang web của dự án, chẳng hạn một ticket trên Discord chính thức."
+    },
+    {
+      "q": "Một trang chuyển đổi muốn tôi kết nối ví và ký một thứ gì đó. Tôi có nên làm không?",
+      "a": "Trước hết hãy xác nhận đường dẫn đến từ bài đăng của chính tài khoản chính thức. Sau đó đọc cửa sổ bật lên của ví: đó là một lệnh rút hay chuyển tiền thông thường, hay là một chữ ký \"approve\" hoặc permit? Approve và permit cho phép người khác chuyển token của bạn; nếu thật sự cần, chỉ cấp quyền cho hợp đồng được nêu trong hướng dẫn chính thức, và chỉ với số lượng bạn đang dùng. Nếu bạn không hiểu cửa sổ bật lên, đừng ký; hãy hỏi trên Discord chính thức trước."
+    },
+    {
+      "q": "Trong ví tôi xuất hiện token mà tôi chưa từng mua, kèm lời nhắn bảo vào một trang web.",
+      "a": "Đừng động vào. MetaMask mô tả đây là trò lừa airdrop phổ biến: khi bạn đi \"nhận\", thứ bạn ký có thể là một lần cấp quyền cho phép chúng lấy token của bạn, hoặc bạn có thể bị dụ nhập cụm từ khôi phục. Hãy phớt lờ và ẩn nó đi."
+    },
+    {
+      "q": "Có người nói họ có thể lấy lại số crypto bị đánh cắp của tôi nếu tôi trả phí.",
+      "a": "FBI đã cảnh báo đúng về chuyện này: chúng nhận phí trả trước rồi biến mất, hoặc đưa ra một \"báo cáo truy vết\" không đầy đủ hay không chính xác rồi đòi thêm. Công ty tư nhân không thể ra lệnh tịch thu để lấy lại tiền mã hóa, và cơ quan thực thi pháp luật không thu phí nạn nhân để điều tra. Đừng đưa tiền hay thông tin cá nhân cho họ."
+    },
+    {
+      "q": "Làm sao biết một đường dẫn có phải chính thức không?",
+      "a": "Chỉ tin hai nơi: bài đăng của chính tài khoản chính thức, và trang chủ chính thức. Lời khuyên của Abstract là chỉ dùng đường dẫn chính thức và đối chiếu chéo trên Discord cùng các kênh chính thức khác. Đường dẫn trong bình luận trả lời, tin nhắn riêng hay quảng cáo tìm kiếm đều không tính, dù trông giống hệt đến đâu."
+    }
+  ],
+  "sources": [
+    "Sophon trên X: chỉ dùng đường dẫn chính thức, cẩn thận trang chuyển đổi giả (19/10/2026)",
+    "Tài liệu Sophon: Câu hỏi thường gặp về rút tiền (không bao giờ làm theo đường dẫn không mời mà đến)",
+    "Abstract trên X: \"Abstract is Winding Down\" (mạo danh, trang chuyển đổi giả, tin nhắn riêng; 6/10/2026)",
+    "Blog Horizen: nhắc nhở bảo mật (không bao giờ nhắn tin trước, không bao giờ hỏi khóa, không bao giờ đòi tiền; 23/10/2026)",
+    "Hỗ trợ MetaMask: Mẹo bảo mật cơ bản (cụm từ khôi phục, khóa riêng tư)",
+    "Hỗ trợ MetaMask: Các kênh hỗ trợ chính thức (không nhắn tin riêng, không gọi điện, không liên hệ trên X)",
+    "Hỗ trợ MetaMask: Cấp quyền token là gì? (permit, cấp quyền độc hại, thu hồi quyền)",
+    "Hỗ trợ MetaMask: Tránh kẻ lừa đảo, rug pull và lừa đảo airdrop",
+    "Hỗ trợ MetaMask: Tôi bị hack hoặc bị lừa",
+    "ethereum.org: Bảo mật và phòng tránh lừa đảo (lừa đảo giả danh hỗ trợ, lừa đảo airdrop)",
+    "Thông báo của FBI IC3: các công ty mạo nhận có thể lấy lại crypto bị mất (11/8/2023)",
+    "Thông báo của FBI IC3: các công ty luật giả mạo đề nghị lấy lại tiền (13/8/2025)"
+  ]
+}
