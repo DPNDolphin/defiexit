@@ -133,6 +133,16 @@ code { font: 0.92em var(--font-mono); background: var(--surface-2); border: 1px 
 .route .node.next { border: 2px solid var(--future); }
 .route .node.ring { width: 12px; height: 12px; border: 2px solid var(--hi); }
 .route .node.here { width: 18px; height: 18px; border: 4px solid var(--hi); background: var(--bg); box-shadow: 0 0 0 5px var(--hi-soft); }
+/* 会动资产的那几站:换成红色菱形(形状也不同,不只靠颜色) */
+.route .node.moves { border-radius: 2px; transform: rotate(45deg); }
+.route .node.moves.past { background: var(--stop); }
+.route .node.moves.next { border-color: var(--stop); }
+.route .node.moves.here { border-color: var(--stop); box-shadow: 0 0 0 5px var(--stop-bg); }
+/* 只给权限的签名那几站:黄色方块(和红色菱形、普通的圆点形状都不一样) */
+.route .node.grants { border-radius: 2px; }
+.route .node.grants.past { background: var(--warn); }
+.route .node.grants.next { border-color: var(--warn); }
+.route .node.grants.here { border-color: var(--warn); box-shadow: 0 0 0 5px var(--warn-bg); }
 .route .from { flex: none; padding: 6px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--sub); font-size: 12px; white-space: nowrap; }
 .exit-sign { flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 10px; background: var(--accent); color: var(--on-accent); font: 800 15px/1 var(--font-display); letter-spacing: 0.12em; box-shadow: 0 0 18px var(--glow); }
 .exit-sign .i { width: 16px; height: 16px; stroke-width: 2.6; }
@@ -234,6 +244,12 @@ code { font: 0.92em var(--font-mono); background: var(--surface-2); border: 1px 
 .route-cap { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; color: var(--sub); font-size: 13px; line-height: 1.4; }
 .route-cap .pos { flex: none; color: var(--hi); font-weight: 700; white-space: nowrap; }
 .route-cap > span:last-child { min-width: 0; text-align: right; }
+/* 路线下面一行:哪几步会动资产、哪几步只给权限;每一组(小标签 + 第几步)换行时不拆开 */
+.route-marks { margin: -4px 0 0; display: flex; flex-wrap: wrap; gap: 2px 16px; color: var(--sub); font-size: 13px; line-height: 1.4; }
+.route-marks > span { display: inline-flex; align-items: center; gap: 8px; }
+.tag-moves, .tag-grants { display: inline-flex; align-items: center; gap: 4px; padding: 0 8px; border-radius: 999px; background: var(--stop-bg); color: var(--stop); font-size: 12px; font-weight: 700; }
+.tag-grants { background: var(--warn-bg); color: var(--warn); }
+.tag-moves .i, .tag-grants .i { width: 13px; height: 13px; stroke-width: 2.6; }
 .intro, .step, .done { display: flex; flex-direction: column; gap: 14px; padding: 18px 0 24px; }
 .intro .display, .done .display { font-size: 34px; }
 .facts { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
@@ -272,6 +288,12 @@ code { font: 0.92em var(--font-mono); background: var(--surface-2); border: 1px 
 .detour .shot { padding: 0 12px 12px; }
 .when { align-self: flex-start; margin: 0; padding: 4px 10px; border-radius: 999px; background: var(--warn-bg); color: var(--warn); font-size: 13px; }
 .guide.personal .when { display: none; }
+/* 会动资产的那一步:标题下面一块红框,说清钱是谁在动;只给权限的签名:黄框,说清给出去的权限能做什么 */
+.step-moves, .step-grants { margin: 0; display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border: 1.5px solid var(--stop); border-radius: var(--r-m); background: var(--stop-bg); color: var(--text); font-size: 15px; line-height: 1.55; }
+.step-moves .i, .step-grants .i { margin-top: 2px; color: var(--stop); }
+.step-moves b, .step-grants b { display: block; margin-bottom: 2px; color: var(--stop); font-size: 17px; line-height: 1.4; }
+.step-grants { border-color: var(--warn); background: var(--warn-bg); }
+.step-grants .i, .step-grants b { color: var(--warn); }
 .items { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 8px; font-size: 16px; line-height: 1.6; }
 .tip { margin: 0; display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: var(--r-m); background: var(--warn-bg); color: var(--warn); font-size: 15px; line-height: 1.55; }
 .tip.bad { background: var(--stop-bg); color: var(--stop); }

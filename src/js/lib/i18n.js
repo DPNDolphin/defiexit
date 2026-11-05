@@ -1,6 +1,10 @@
 // 界面文字,中英两套。构建脚本(拼静态页面)和浏览器(动态内容)共用这一份。
 // 中文照常写半角标点,显示前由 zh() 统一换成全角。英文按英文习惯写,不逐字对译。
 // 两套的键必须一一对应(测试会查);缺键直接报错,不悄悄退回另一种语言。
+
+// 中文句子里嵌进一个词:词的头尾是英文就和汉字空一格,是汉字就不空(「由 Hyperliquid 执行」「由 WOOFi 的合约执行」)
+const embed = (w) => `${/^[一-鿿]/.test(w) ? "" : " "}${w}${/[一-鿿]$/.test(w) ? "" : " "}`;
+
 export const STR = {
   zh: {
     // 外壳
@@ -171,6 +175,17 @@ export const STR = {
     checkStop: "对不上?先停下,看怎么办",
     rejectH: "看到这些,马上点「拒绝」",
     normalH: "这些是正常的",
+    // 会动资产的那几步(步骤写着 moves: true):步骤顶上一块红框,路线下面也列出来。
+    // 执行方默认是「<协议> 的合约」,配方可以换(movesBy);不弹钱包的步骤整句换成配方里自己的(movesText)
+    movesH: "这一步会动你的资产",
+    movesBy: (p) => `${p} 的合约`,
+    movesP: (by) => `你在自己钱包里签名后,由${embed(by)}执行。DeFiExit 不经手你的钱。`,
+    movesTag: "动资产",
+    // 只给权限的签名(签名的步骤写着 moves: false,比如开启交易、Permit):签了不直接动钱,但给出去的权限要看清,黄框;
+    // 下面那句写这个权限能做什么,由配方照核对卡写(grantsText)
+    grantsH: "这一步给权限,不直接动钱",
+    grantsTag: "给权限",
+    stepsAt: (ns) => `第 ${ns.join("、")} 步`,
     copy: "复制",
     copied: (x) => `已复制:${x}`,
     copyFail: "复制失败,请长按手动复制",
@@ -453,6 +468,13 @@ export const STR = {
     checkStop: "Doesn't match? Stop and see what to do",
     rejectH: "See any of these? Tap Reject right away",
     normalH: "These are normal",
+    movesH: "This step moves your funds",
+    movesBy: (p) => `${p}'s contract`,
+    movesP: (by) => `After you sign in your own wallet, ${by} carries it out. DeFiExit never touches your money.`,
+    movesTag: "Moves funds",
+    grantsH: "This step grants permission; it doesn't move funds by itself",
+    grantsTag: "Grants permission",
+    stepsAt: (ns) => (ns.length === 1 ? `Step ${ns[0]}` : `Steps ${ns.slice(0, -1).join(", ")} and ${ns[ns.length - 1]}`),
     copy: "Copy",
     copied: (x) => `Copied: ${x}`,
     copyFail: "Couldn't copy. Press and hold to copy it yourself",

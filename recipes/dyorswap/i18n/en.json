@@ -156,6 +156,7 @@
       "title": "Pick Max and sign",
       "milestone": "Sign",
       "note": "Signing is free and only covers the LP you're withdrawing",
+      "grantsText": "After you sign, DYORSwap's router contract can take your liquidity tokens (LP): exactly the amount you're withdrawing now, not an unlimited amount. Check the card line by line, and tap Reject if anything doesn't match.",
       "images": [
         { "src": "dy-row-en.webp", "caption": "① Tap the **USDT/OKB** row to expand it. The numbers in the picture are hidden" },
         { "src": "dy-expand-en.webp", "caption": "② Tap **Remove** ✗ Don't tap Add liquidity instead. The numbers in the picture are hidden" },

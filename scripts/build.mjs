@@ -352,14 +352,22 @@ function guide(tx, R, shot) {
     const dt = s.detour;
     const thumbSize = dt && webpSize(join(ROOT, "recipes", R.id, "img", dt.thumb));
     const detour = dt ? `<details class="detour"><summary><img src="/r/${esc(R.id)}/img/${esc(dt.thumb)}" alt=""${thumbSize ? ` width="${thumbSize.w}" height="${thumbSize.h}"` : ""} loading="lazy" decoding="async"><span>${r(dt.see)}</span></summary>${dt.images.map((im) => shotHtml(im)).join("")}</details>` : "";
+    // 会动资产的这一步(步骤写着 moves: true):标题下面先说清楚,钱是谁在动。默认那句是「你在自己钱包里签名后,由 <协议> 的合约执行」;
+    // 配方可以换执行方(movesBy,比如 Hyperliquid 是它自己的链在处理),不弹钱包的步骤整句换成自己的(movesText)。
+    // 只给权限的签名(moves: false)换成黄框,写清这个权限能做什么(grantsText),免得被当成「签了也没事」
+    const grants = !!c && c.kind !== "arrive" && s.moves === false;
+    const funds = s.moves ? `<p class="step-moves">${ico("alert")}<span><b>${tx.h("movesH")}</b> ${s.movesText ? r(s.movesText) : tx.h("movesP", R.movesBy || tx.t("movesBy", R.protocol))}</span></p>`
+      : grants ? `<p class="step-grants">${ico("key")}<span><b>${tx.h("grantsH")}</b> ${r(s.grantsText)}</span></p>` : "";
     const attrs = [
       `data-id="${esc(s.id)}"`,
       s.when ? `data-when="${esc(s.when)}"` : "",
       c?.confirm ? `data-checks="${c.confirm.length}"` : "",
+      s.moves ? 'data-funds="moves"' : grants ? 'data-funds="grants"' : "",
       s.note ? `data-note="${plain(s.note, lang)}"` : "",
     ].filter(Boolean).join(" ");
     return `<section class="step" id="s-${esc(s.id)}" ${attrs}>
   <h2 class="step-title">${r(s.title)}</h2>
+  ${funds}
   ${R.screens ? `<button class="lost-btn" type="button" data-lost>${ico("help")}${tx.h("lostBtn")}</button>` : ""}
   ${s.note ? `<p class="step-note">${r(s.note)}</p>` : ""}
   ${s.whenText ? `<p class="when">${r(s.whenText)}</p>` : ""}
@@ -458,6 +466,7 @@ function guide(tx, R, shot) {
   <div class="route-bar" id="routeBar" hidden>
     <div class="route" id="route" role="img"></div>
     <div class="route-cap"><span class="pos" id="routePos"></span><span id="routeLeft"></span></div>
+    <p class="route-marks" id="routeMarks" hidden><span data-mark="moves"><span class="tag-moves">${ico("alert")}${tx.h("movesTag")}</span><span></span></span><span data-mark="grants"><span class="tag-grants">${ico("key")}${tx.h("grantsTag")}</span><span></span></span></p>
   </div>
   <section class="intro" id="intro">
     <h1 class="display">${esc(punct(R.title, lang))}</h1>
@@ -560,6 +569,8 @@ export function localize(r, o, file) {
     : { ...im, src: need(y?.src, `${path}.src`), caption: need(y?.caption, `${path}.caption`) });
   const L = JSON.parse(JSON.stringify(r));
   for (const k of ["title", "short", "verified", "covers", "summary"]) L[k] = need(o[k], k);
+  // 「这一步会动你的资产」下面那句的执行方:配方写了(比如 Hyperliquid),英文版也要写
+  if (r.movesBy) L.movesBy = need(o.movesBy, "movesBy");
   L.facts = same(r.facts, o.facts, "facts").map((x, i) => [need(x?.[0], `facts[${i}][0]`), need(x?.[1], `facts[${i}][1]`)]);
   L.chips = same(r.chips || [], o.chips || [], "chips").map((x, i) => ({ ...r.chips[i], text: need(x, `chips[${i}]`) }));
   if (r.support) L.support = { ...r.support, label: need(o.support?.label, "support.label"), note: need(o.support?.note, "support.note"), ...(o.support?.url ? { url: need(o.support.url, "support.url") } : {}) };
@@ -574,7 +585,7 @@ export function localize(r, o, file) {
     const x = o.steps?.[s.id] || {};
     const p = `steps.${s.id}`;
     const S = { ...s, title: need(x.title, `${p}.title`) };
-    for (const k of ["note", "whenText", "milestone"]) if (s[k]) S[k] = need(x[k], `${p}.${k}`);
+    for (const k of ["note", "whenText", "milestone", "movesText", "grantsText"]) if (s[k]) S[k] = need(x[k], `${p}.${k}`);
     if (s.items) S.items = same(s.items, x.items, `${p}.items`).map((y, i) => need(y, `${p}.items[${i}]`));
     // 要复制的网址同上:英文版可以换,不写就和中文一样
     if (s.copy && x.copy) S.copy = same(s.copy, x.copy, `${p}.copy`).map((y, i) => need(y, `${p}.copy[${i}]`));
@@ -650,6 +661,15 @@ function loadRecipes() {
         ids.add(x.id);
       }
       if (s.check && s.check.kind !== "arrive" && !(s.check.confirm?.length && s.check.reject?.length)) throw new Error(`${d}/${s.id}: 核对卡缺 confirm 或 reject`);
+      // 会不会动资产:签名的步骤都要写 moves(签名本身不动钱的授权写 false);不弹钱包也会动资产的步骤写 moves: true,
+      // 再配一句自己的 movesText(默认那句说的是「你在自己钱包里签名后」)。页面上「这一步会动你的资产」只按它标,不靠猜
+      const signs = s.check && s.check.kind !== "arrive";
+      if (signs && typeof s.moves !== "boolean") throw new Error(`${d}/${s.id}: 签名的步骤要写 moves(true:签完会动你的资产;false:只是授权或开启交易,签名本身不动钱)`);
+      if (!signs && s.moves && !s.movesText) throw new Error(`${d}/${s.id}: 不签名也会动资产的步骤要写 movesText:默认那句说的是「你在自己钱包里签名后」,对不上`);
+      if (s.movesText && !s.moves) throw new Error(`${d}/${s.id}: 写了 movesText,就要写 moves: true`);
+      // 只给权限的签名(moves: false)要写清这个权限能做什么(grantsText,照核对卡写);别的步骤不写
+      if (signs && s.moves === false && !s.grantsText) throw new Error(`${d}/${s.id}: 只给权限的签名(moves: false)要写 grantsText:签了以后这个权限能做什么,照核对卡写`);
+      if (s.grantsText && !(signs && s.moves === false)) throw new Error(`${d}/${s.id}: grantsText 只写在只给权限的签名步骤上(有签名核对卡、moves: false)`);
       if (s.detour && !(s.detour.see && s.detour.thumb && s.detour.images?.length)) throw new Error(`${d}/${s.id}: 岔路缺 see、thumb 或 images`);
     }
     const enFile = join(dir, d, "i18n", "en.json");

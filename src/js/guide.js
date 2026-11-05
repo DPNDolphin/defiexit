@@ -42,6 +42,8 @@ const finished = (d) => d?.arrival?.state === "arrived" && d.step === "arrive";
 const hhmm = (ms) => new Date(ms).toTimeString().slice(0, 5);
 const visible = () => steps.filter((s) => !flags || !s.dataset.when || flags[s.dataset.when]);
 const clean = (s) => s.replace(/\s+/g, "");
+// 每一步在路线上另外怎么标(构建时按步骤的 moves 标的):"moves" 会动资产,"grants" 只给权限,别的不标
+const marksOf = (vs) => vs.map((s) => s.dataset.funds || "");
 
 // ---------- 一页一步 ----------
 
@@ -74,12 +76,21 @@ function refresh() {
 }
 
 function drawRoute(vs, i) {
-  const r = route(vs.length, i);
+  const marks = marksOf(vs);
+  const r = route(vs.length, i, false, marks);
   r.id = "route";
   r.setAttribute("aria-label", zh(t("routeAriaStep", i + 1, vs.length)));
   $("route").replaceWith(r);
   setText($("routePos"), t("stepOf", i + 1, vs.length));
   setText($("routeLeft"), vs[i].dataset.note || t("stepsLeft", vs.length - 1 - i));
+  // 路线下面再写一行:这个账户要走的步骤里,哪几步会动资产、哪几步只给权限(跳过的步骤不算)
+  const box = $("routeMarks");
+  for (const g of box.children) {
+    const ns = marks.flatMap((m, k) => (m === g.dataset.mark ? [k + 1] : []));
+    g.hidden = !ns.length;
+    if (ns.length) setText(g.lastElementChild, t("stepsAt", ns));
+  }
+  box.hidden = [...box.children].every((g) => g.hidden);
 }
 
 const label = (btn, text, arrow) => btn.replaceChildren(el("span", {}, text), ...(arrow ? [icon("arrowRight")] : []));
@@ -425,7 +436,7 @@ function renderDiag(d) {
     const vs = visible(), n = vs.indexOf(target) + 1;
     // 比用户正在看的那一步靠后才说恭喜:往回退的只是提示
     const ahead = !!sheetFor && n - 1 > vs.indexOf(sheetFor);
-    out.push(el("div", { class: "where" }, route(vs.length, n - 1), el("p", {}, target === sheetFor ? t("whereHere") : t("whereAt", n, titleOf(target), ahead))));
+    out.push(el("div", { class: "where" }, route(vs.length, n - 1, false, marksOf(vs)), el("p", {}, target === sheetFor ? t("whereHere") : t("whereAt", n, titleOf(target), ahead))));
     if (target !== sheetFor && !finished(d)) out.push(el("button", { class: "btn primary block", type: "button", "data-goto": target.dataset.id }, t("goStep", n, titleOf(target)), icon("arrowRight")));
   }
   if (d.choice?.options) out.push(renderChoice(d.choice.options));

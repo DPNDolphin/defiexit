@@ -207,6 +207,8 @@
         { "src": "dy-max.webp", "caption": "③ 点 **最大**(Max),上面的 0% 变成 100%" },
         { "src": "dy-enable.webp", "caption": "④ 往上滑到底,先看黄框:滑点容差(Slippage Tolerance)要是 **1%**。再点 **启用**(Enable),钱包弹出签名,对照下面的核对卡。图里的数已打码" }
       ],
+      "moves": false,
+      "grantsText": "签名后,DYORSwap 的路由合约能取用你的流动性代币(LP),数量就是这一次要撤的,不是无限额。照核对卡逐项核对,对不上就拒绝。",
       "check": {
         "title": "点确认前,先核对 3 件事",
         "lead": "这是钱包弹出的签名。这个弹窗还没有配图,按内容对,核对完一项就点一下。",
@@ -245,6 +247,7 @@
         { "src": "dy-remove.webp", "caption": "① 左边变成灰色的「批准」(Enabled),点右边的 **移除**(Remove)" },
         { "src": "dy-confirm.webp", "caption": "② 弹出「你将获得」(You will receive)。黄框里要写着 **1%**。点 **确认**(Confirm),钱包弹出交易,对照下面的核对卡。图里的数已打码" }
       ],
+      "moves": true,
       "check": {
         "title": "点确认前,先核对 3 件事",
         "lead": "这是钱包弹出的交易。这个弹窗还没有配图,按内容对,核对完一项就点一下。",

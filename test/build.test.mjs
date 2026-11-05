@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { build, splitMarks, localize } from "../scripts/build.mjs";
 import { STR } from "../src/js/lib/i18n.js";
+import { svgString } from "../src/js/lib/icons.js";
 import { site } from "../scripts/site.mjs";
 
 const read = (f) => readFileSync(f, "utf8");
@@ -121,6 +122,74 @@ test("DYORSwap 指南:签名、交易各一张核对卡;网址是能直接打开
   assert.ok(zh.includes("底部导航栏的「桥」（Bridge）不要点"));
   assert.ok(/data-sit="bridge-page"/.test(zh) && /data-sit="wrong-network"/.test(zh), "点进跨链桥、网络不对都有说法");
   assert.ok(/<b>DYORSwap<\/b>(?:(?!<\/li>)[\s\S])*tag-ok/.test(read("dist/index.html")), "实测过了,首页标已实测");
+});
+
+test("会动资产的步骤标红框,只给权限的签名标黄框:标题下面写明钱是谁在动、给出去的权限能做什么;别的步骤都不标", () => {
+  const recipes = ["hyperliquid", "woofi", "okx-boost", "dyorswap"].map((id) => JSON.parse(read(`recipes/${id}/recipe.json`)));
+  const signs = (s) => s.check && s.check.kind !== "arrive";
+  // 每个签名的步骤都写明签完会不会动资产(构建也查)
+  for (const r of recipes) for (const s of r.steps) if (signs(s)) assert.equal(typeof s.moves, "boolean", `${r.id}/${s.id} 没写 moves`);
+  const pick = (f) => Object.fromEntries(recipes.map((r) => [r.id, r.steps.filter(f).map((s) => s.id)]));
+  const MOVES = pick((s) => s.moves), GRANTS = pick((s) => signs(s) && s.moves === false);
+  // Hyperliquid 的「下单卖出」不弹钱包(之前批准的下单密钥签),但会把 USDH 卖成 USDC,也标
+  assert.deepEqual(MOVES, { hyperliquid: ["order", "transfer", "withdraw"], woofi: ["claim", "unstake", "vault"], "okx-boost": ["unstake"], dyorswap: ["remove"] });
+  // 只给权限、签名本身不动钱的两步:Hyperliquid 开启交易(ApproveAgent)、DYORSwap 的 Permit
+  assert.deepEqual(GRANTS, { hyperliquid: ["enable"], woofi: [], "okx-boost": [], dyorswap: ["enable"] });
+  const HEAD = { moves: ["这一步会动你的资产", "This step moves your funds"], grants: ["这一步给权限，不直接动钱", "This step grants permission; it doesn't move funds by itself"] };
+  const ICON = { moves: svgString("alert"), grants: svgString("key") };
+  // 红框那句默认「由 <协议> 的合约执行」;Hyperliquid 的划转、提现是它自己的链在处理,写「由 Hyperliquid 执行」(英文名两边空一格,挨着汉字不空)
+  const SIGNED = {
+    hyperliquid: ["你在自己钱包里签名后，由 Hyperliquid 执行。DeFiExit 不经手你的钱。", "After you sign in your own wallet, Hyperliquid carries it out. DeFiExit never touches your money."],
+    woofi: ["你在自己钱包里签名后，由 WOOFi 的合约执行。DeFiExit 不经手你的钱。", "After you sign in your own wallet, WOOFi's contract carries it out. DeFiExit never touches your money."],
+    "okx-boost": ["你在自己钱包里签名后，由 OKX Boost 的合约执行。DeFiExit 不经手你的钱。", "After you sign in your own wallet, OKX Boost's contract carries it out. DeFiExit never touches your money."],
+    dyorswap: ["你在自己钱包里签名后，由 DYORSwap 的合约执行。DeFiExit 不经手你的钱。", "After you sign in your own wallet, DYORSwap's contract carries it out. DeFiExit never touches your money."],
+  };
+  // 整句换掉的:不弹钱包的「下单卖出」;黄框那两步照各自的核对卡写,给出去的权限能做什么
+  const OWN = {
+    "hyperliquid/order": ["这一步在 Hyperliquid 上卖出，由你之前批准的下单密钥签名，钱包不会弹窗。DeFiExit 不经手你的钱。", "This sell order on Hyperliquid is signed by the order key you approved earlier, so no wallet pop-up appears. DeFiExit never touches your money."],
+    "hyperliquid/enable": ["签名后，这个下单密钥能替你在 Hyperliquid 上下单，不再弹钱包。照核对卡逐项核对，对不上就拒绝。", "After you sign, this order key can place orders for you on Hyperliquid without your wallet popping up. Check the card line by line, and tap Reject if anything doesn't match."],
+    "dyorswap/enable": ["签名后，DYORSwap 的路由合约能取用你的流动性代币（LP），数量就是这一次要撤的，不是无限额。照核对卡逐项核对，对不上就拒绝。", "After you sign, DYORSwap's router contract can take your liquidity tokens (LP): exactly the amount you're withdrawing now, not an unlimited amount. Check the card line by line, and tap Reject if anything doesn't match."],
+  };
+  for (const r of recipes) {
+    for (const [k, f] of [[0, `dist/r/${r.id}/index.html`], [1, `dist/en/r/${r.id}/index.html`]]) {
+      const g = read(f);
+      const line = (s) => OWN[`${r.id}/${s.id}`]?.[k] || SIGNED[r.id][k];
+      r.steps.forEach((s, i) => {
+        const next = r.steps[i + 1];
+        const sec = g.slice(g.indexOf(`id="s-${s.id}"`), g.indexOf(next ? `id="s-${next.id}"` : 'id="done"'));
+        const tag = sec.slice(0, sec.indexOf(">"));
+        const found = Object.fromEntries(["moves", "grants"].map((x) => [x, sec.match(new RegExp(`<p class="step-${x}">[\\s\\S]*?</p>`))?.[0]]));
+        const kind = MOVES[r.id].includes(s.id) ? "moves" : GRANTS[r.id].includes(s.id) ? "grants" : null;
+        for (const x of ["moves", "grants"]) if (x !== kind) assert.equal(found[x], undefined, `${f} ${s.id} 不该有 step-${x}`);
+        if (!kind) return assert.ok(!tag.includes("data-funds"), `${f} ${s.id} 不该带 data-funds`);
+        const badge = found[kind];
+        assert.ok(badge, `${f} ${s.id} 缺 step-${kind}`);
+        assert.match(sec, new RegExp(`</h2>\\s*<p class="step-${kind}">`), `${f} ${s.id}:要紧跟在标题下面`);
+        // 字是真文字(读屏能读),图标只是装饰(aria-hidden);两种的图标也不一样,不只靠颜色;里面没有能点的东西,焦点顺序不变
+        assert.ok(badge.includes(`${ICON[kind]}<span><b>${HEAD[kind][k]}</b> ${line(s)}</span>`), `${f} ${s.id} 的字不对:${badge}`);
+        assert.ok(!/<(button|a|input)\b/.test(badge), `${f} ${s.id}`);
+        assert.ok(tag.includes(` data-funds="${kind}"`), `${f} ${s.id} 缺 data-funds,路线上标不出来`);
+      });
+      assert.equal((g.match(/class="step-moves"/g) || []).length, MOVES[r.id].length, f);
+      assert.equal((g.match(/class="step-grants"/g) || []).length, GRANTS[r.id].length, f);
+      // 路线下面那一行先藏着:页面按这个账户用得到的步骤,两组各填上第几步(没有的那组藏起来)
+      assert.ok(g.includes(`<p class="route-marks" id="routeMarks" hidden><span data-mark="moves"><span class="tag-moves">${ICON.moves}${k ? "Moves funds" : "动资产"}</span><span></span></span><span data-mark="grants"><span class="tag-grants">${ICON.grants}${k ? "Grants permission" : "给权限"}</span><span></span></span></p>`), f);
+    }
+  }
+  assert.ok(!read("dist/r/hyperliquid/index.html").includes("Hyperliquid 的合约") && !read("dist/en/r/hyperliquid/index.html").includes("Hyperliquid's contract"));
+  // 换了执行方、整句换掉的、黄框那句,英文版都要有;缺了构建直接报错
+  const en = JSON.parse(read("recipes/hyperliquid/i18n/en.json"));
+  const noBy = structuredClone(en), noText = structuredClone(en), noGrant = structuredClone(en);
+  delete noBy.movesBy;
+  delete noText.steps.order.movesText;
+  delete noGrant.steps.enable.grantsText;
+  assert.throws(() => localize(recipes[0], noBy, "en.json"), /movesBy/);
+  assert.throws(() => localize(recipes[0], noText, "en.json"), /steps\.order\.movesText/);
+  assert.throws(() => localize(recipes[0], noGrant, "en.json"), /steps\.enable\.grantsText/);
+  assert.equal(STR.zh.stepsAt([7, 8, 9]), "第 7、8、9 步");
+  assert.equal(STR.en.stepsAt([6]), "Step 6");
+  assert.equal(STR.en.stepsAt([8, 9]), "Steps 8 and 9");
+  assert.equal(STR.en.stepsAt([7, 8, 9]), "Steps 7, 8 and 9");
 });
 
 test("查到用户往前走了才说恭喜;往回退的只是提示", () => {

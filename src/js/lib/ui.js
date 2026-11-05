@@ -27,11 +27,12 @@ export function icon(name, cls = "") {
   return s;
 }
 
-// 「你在这里 → 出口」路线:n 个站,cur 是当前站(从 0 数),done 表示整条走完了
-export function route(n, cur, done = false) {
+// 「你在这里 → 出口」路线:n 个站,cur 是当前站(从 0 数),done 表示整条走完了;
+// marks 是每一站另外怎么标(从 0 数:"moves" 会动资产,"grants" 只给权限),没有就不标
+export function route(n, cur, done = false, marks = []) {
   const box = el("div", { class: "route", role: "img" });
   for (let i = 0; i < n; i++) {
-    box.append(el("span", { class: `node ${done || i < cur ? "past" : i === cur ? "here" : "next"}` }));
+    box.append(el("span", { class: `node ${done || i < cur ? "past" : i === cur ? "here" : "next"}${marks[i] ? ` ${marks[i]}` : ""}` }));
     box.append(el("span", { class: `seg ${done || i < cur ? "past" : "next"}` }));
   }
   box.append(el("span", { class: `exit-box${done ? " lit" : ""}` }, icon("exit")));

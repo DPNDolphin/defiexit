@@ -142,6 +142,7 @@
       "images": [
         {"src": "claim.webp", "caption": "往下滑到 Stake / Unstake 这一块。① 点 **Claim**(上面的 USDC reward 是你没领的奖励,图里已打码,应约 {{rewards}}) ✗ 不要点 Compound:它会把奖励换成 WOO 再存回去,方向反了"}
       ],
+      "moves": true,
       "check": {
         "title": "确认前,先核对 3 件事",
         "lead": "点 Claim 后,钱包会弹出交易确认(币安钱包的标题是「合约调用」)。对照着看,核对完一项就点一下。",
@@ -188,6 +189,7 @@
         {"src": "unstake-3.webp", "caption": "③ 数量填好后(约 {{woo}},官网会多显示几位小数),点 **UNSTAKE**"},
         {"src": "unstake-4.webp", "caption": "④ 弹出 Unstake Confirmation,核对数量后点 **UNSTAKE**,钱包会弹出交易确认,对照下面的核对卡 ! 它说会清掉你的 XP(积分):XP 不能交易,对取回的钱没有影响"}
       ],
+      "moves": true,
       "check": {
         "title": "确认前,先核对 3 件事",
         "lead": "点 UNSTAKE 后,钱包会弹出交易确认(币安钱包的标题是「合约调用」)。对照着看,核对完一项就点一下。",
@@ -236,6 +238,7 @@
       "items": [
         "! 结算好的钱不会自动打到钱包,要自己点这一下。很多人就差这一步。"
       ],
+      "moves": true,
       "check": {
         "title": "确认前,先核对 3 件事",
         "lead": "点 WITHDRAW 后,钱包会弹出交易确认(币安钱包的标题是「合约调用」)。对照着看,核对完一项就点一下。",

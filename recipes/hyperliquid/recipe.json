@@ -3,6 +3,7 @@
   "title": "Hyperliquid 余额提回钱包",
   "short": "Hyperliquid 提回钱包",
   "protocol": "Hyperliquid",
+  "movesBy": "Hyperliquid",
   "route": "Hyperliquid → Arbitrum",
   "chain": "hyperliquid",
   "detector": "hyperliquid",
@@ -145,6 +146,8 @@
       "images": [
         {"src": "enable.webp", "caption": "① **Stay Connected** 不要勾 ② 点 **Establish Connection**。钱包弹出签名请求,对照下面的核对卡"}
       ],
+      "moves": false,
+      "grantsText": "签名后,这个下单密钥能替你在 Hyperliquid 上下单,不再弹钱包。照核对卡逐项核对,对不上就拒绝。",
       "check": {
         "title": "签名前,先核对 3 件事",
         "lead": "点 Establish Connection 后,钱包会弹出签名请求。对照着看,核对完一项就点一下。",
@@ -173,6 +176,8 @@
       "when": "needsSell",
       "note": "这一步不弹钱包",
       "milestone": "卖出 USDH",
+      "moves": true,
+      "movesText": "这一步在 Hyperliquid 上卖出,由你之前批准的下单密钥签名,钱包不会弹窗。DeFiExit 不经手你的钱。",
       "items": [
         "签完后页面提示 Established connection,原来写着 Enable Trading 的按钮变成 **Place Order**。",
         "再核一眼:Sell / 价格 {{floorPx}} / 数量 {{usdhSell}}(被清空了就重填)。",
@@ -204,6 +209,7 @@
         {"src": "transfer-3.webp", "caption": "① 点中间这个按钮,把方向换过来"},
         {"src": "transfer-4.webp", "caption": "① 确认变成 Spot → Perps ② 点 **MAX**(截图是卖之前拍的所以是 0.00,你这里应约 {{spotAfter}}) ③ 点 **Confirm**,钱包弹出签名,对照核对卡"}
       ],
+      "moves": true,
       "check": {
         "title": "签名前,先核对 3 件事",
         "lead": "点 Confirm 后,钱包会弹出签名请求。对照着看,核对完一项就点一下。",
@@ -230,6 +236,7 @@
       "images": [
         {"src": "withdraw.webp", "caption": "! 官方写明:从提现金额里扣 1 USDC 手续费 ① 资产 USDC、链 Arbitrum,保持不动 ② 点 **MAX**,应约 {{withdrawAmt}}(截图里是别的数) ③ 点 **Withdraw to Arbitrum**,钱包弹出签名,对照核对卡"}
       ],
+      "moves": true,
       "check": {
         "title": "签名前,先核对 3 件事",
         "lead": "点 Withdraw to Arbitrum 后,钱包会弹出签名请求。对照着看,核对完一项就点一下。",

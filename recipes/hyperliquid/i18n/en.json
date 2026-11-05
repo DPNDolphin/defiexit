@@ -7,6 +7,7 @@
   ],
   "covers": "USDC in your account, and USDH that's no longer issued",
   "summary": "Still have USDC on Hyperliquid, or some USDH, a stablecoin that's no longer issued? Sell the USDH for USDC, then withdraw everything in one go to your wallet on Arbitrum.",
+  "movesBy": "Hyperliquid",
   "facts": [
     ["Signatures", "2–3, all signatures, no gas"],
     ["Fee", "1 USDC comes out of the withdrawal"],
@@ -109,6 +110,7 @@
     "enable": {
       "title": "Enable trading",
       "note": "Signature 1",
+      "grantsText": "After you sign, this order key can place orders for you on Hyperliquid without your wallet popping up. Check the card line by line, and tap Reject if anything doesn't match.",
       "images": [
         "① Leave **Stay Connected** unticked ② Tap **Establish Connection**. Your wallet asks for a signature: check it against the card below"
       ],
@@ -138,6 +140,7 @@
       "title": "Place the sell order",
       "note": "Your wallet won't pop up for this one",
       "milestone": "Sell USDH",
+      "movesText": "This sell order on Hyperliquid is signed by the order key you approved earlier, so no wallet pop-up appears. DeFiExit never touches your money.",
       "items": [
         "Once you've signed, the page says Established connection, and the Enable Trading button turns into **Place Order**.",
         "Check once more: Sell / price {{floorPx}} / amount {{usdhSell}} (enter them again if they were cleared).",
