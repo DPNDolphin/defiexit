@@ -243,7 +243,7 @@
       "situations": {
         "no-woo": {"see": "WOO ist in der Wallet nicht zu sehen", "do": "Manche Wallets zeigen neue Token nicht von selbst an. Such in deiner Wallet nach WOO (Arbitrum) oder füge ihn mit der Contract-Adresse `0xcafcd85d8ca7ad1e1c6f82f651fa15e33aefd07b` hinzu."},
         "eth-not-weth": {"see": "Angekommen ist ETH, nicht WETH", "do": "Das ist normal: Der Vault-Auszahlungs-Contract wandelt WETH zurück und schickt dir natives ETH."},
-        "want-usdc": {"see": "Du willst die WOO gegen USDC tauschen", "do": "Die WOO liegen schon in deiner eigenen Wallet, du kannst also den eingebauten Swap deiner Wallet nutzen. Diese Anleitung behandelt das Tauschen nicht. Prüf vor dem Tausch den Kurs und den Slippage."}
+        "want-usdc": {"see": "Du willst die WOO gegen USDC tauschen", "do": "Die WOO liegen schon in deiner eigenen Wallet, du kannst also den eingebauten Swap deiner Wallet nutzen. Diese Anleitung behandelt das Tauschen nicht. Prüf vor dem Tausch den Kurs und die Slippage."}
       }
     }
   },
