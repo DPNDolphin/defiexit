@@ -2,6 +2,7 @@
 // 用法:node scripts/serve.mjs [端口]
 // /api/see(截图求助)跑的是真的 functions/api/see.js,只是 AI 换成本地假的:不连 Cloudflare、不花额度。
 // 假 AI 回什么由环境变量 DX_FAKE_AI 定:页面编号(如 stake)/ none / secret / quota(额度用完)/ slow(超时),默认 none。
+// /api/hit(体检计数)跑的是真的 functions/api/hit.js,记在下面运营台用的同一个本地库里(Node 22.5 以前没有这个库,回 503)。
 import { createServer } from "node:http";
 import { readFileSync, existsSync, statSync } from "node:fs";
 import { join, dirname, extname, normalize } from "node:path";
@@ -10,6 +11,7 @@ import { headers } from "./build.mjs";
 import { site } from "./site.mjs";
 import { onRequest as see } from "../functions/api/see.js";
 import { handle as assets } from "../functions/api/assets.js";
+import { handle as hit } from "../functions/api/hit.js";
 import { handle as adminApi } from "../functions/api/admin/[[path]].js";
 import { serve as adminPage } from "../functions/admin/[[path]].js";
 
@@ -62,7 +64,7 @@ async function opsEnv() {
   return OPS_ENV;
 }
 
-createServer(async (req, res) => {
+const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://127.0.0.1:${PORT}`);
   if (url.pathname === "/api/assets") {
     const chunks = [];
@@ -84,6 +86,16 @@ createServer(async (req, res) => {
     res.writeHead(r.status, h);
     return res.end(Buffer.from(await r.arrayBuffer()));
   }
+  // 体检计数:本地库要 Node 自带的 SQLite(22.5 起才有),用到时才加载;加载不了就当没接数据库(hit.js 回 503),预览别的照常
+  if (url.pathname === "/api/hit") {
+    const chunks = [];
+    for await (const c of req) chunks.push(c);
+    const body = ["GET", "HEAD"].includes(req.method) ? undefined : Buffer.concat(chunks);
+    const env = await opsEnv().catch(() => ({}));
+    const r = await hit(new Request(new URL(req.url, `http://${req.headers.host || "localhost:" + PORT}`), { method: req.method, headers: req.headers, body }), env);
+    res.writeHead(r.status, Object.fromEntries(r.headers));
+    return res.end(Buffer.from(await r.arrayBuffer()));
+  }
   if (url.pathname === "/api/see") {
     const chunks = [];
     for await (const c of req) chunks.push(c);
@@ -96,4 +108,6 @@ createServer(async (req, res) => {
   if (r.status === 403) { res.writeHead(403); return res.end(); }
   res.writeHead(r.status, { "Content-Type": r.type, ...SEC });
   res.end(r.body);
-}).listen(PORT, "127.0.0.1", () => console.log(`http://127.0.0.1:${PORT}/  (/api/see 用假 AI:${process.env.DX_FAKE_AI || "none"})`));
+});
+// 端口写 0 就随便挑一个空着的(测试用),打出来的是实际的端口
+server.listen(PORT, "127.0.0.1", () => console.log(`http://127.0.0.1:${server.address().port}/  (/api/see 用假 AI:${process.env.DX_FAKE_AI || "none"})`));

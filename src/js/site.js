@@ -1,4 +1,9 @@
-// 每一页都加载:深浅色切换;换语言时记住选择,并带上 # 后面的地址(地址只在 # 后面,不会发给服务器)。
+// 每一页都加载:深浅色切换;换语言时记住选择,并带上 # 后面的地址(地址只在 # 后面,不会发给服务器);
+// 打开的是 #owner:记成管理员自己的浏览器,在这里体检不计数(见 lib/count.js)。
+import { takeOwnerHash } from "./lib/count.js";
+import { toast } from "./lib/ui.js";
+import { makeT, pageLang } from "./lib/i18n.js";
+
 const root = document.documentElement;
 const meta = document.querySelector('meta[name="theme-color"]');
 const BG = { dark: "#0A0F1E", light: "#F6F8FC" };
@@ -31,3 +36,9 @@ for (const a of document.querySelectorAll("a[data-lang]")) {
 }
 
 paint();
+// #owner:打开页面时带着的,和已经开着的页面在地址后面补上的(只改 # 不会重新加载页面)都算
+const owner = () => {
+  if (takeOwnerHash()) toast(makeT(pageLang())("ownerOn"));
+};
+owner();
+window.addEventListener("hashchange", owner);

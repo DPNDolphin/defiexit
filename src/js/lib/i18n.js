@@ -11,10 +11,12 @@ export const STR = {
     navHow: "怎么用", navSafety: "安全", navSupported: "能查什么",
     footOfficial: "**官方网站只有 defiexit.com**。我们不收私钥和助记词,不代签,从不先私信你。钱包里弹出来自本站的签名、代币授权或转账请求,一律拒绝。",
     footOpen: "开源 · MIT",
-    footData: "本站只读:地址可以粘贴,也可以从钱包读取;本站不发起签名、代币授权或交易,不保存你的地址。网站托管在 Cloudflare,访问日志(含 IP)由它处理。只有你主动「发截图给 AI 认」时,那张图会经本站接口交给 Cloudflare 的 AI 识别,本站不保存。另有一个只有管理员能看的运营后台,保存我们 X 帖子下的公开评论、我们准备回复的公开帖子、回复草稿和处理记录;评论原文和对方账号最多留 30 天。",
+    footData: "本站只读:地址可以粘贴,也可以从钱包读取;本站不发起签名、代币授权或交易,不保存你的地址。体检查完时,浏览器给本站发一次计数,不带地址,也不带任何编号;同一个地址在同一个浏览器里大致只数一次(浏览器自己记着最近数过的 500 个,不发出去;换个浏览器查会再数),本站只存每天的总数。网站托管在 Cloudflare,访问日志(含 IP)由它处理。只有你主动「发截图给 AI 认」时,那张图会经本站接口交给 Cloudflare 的 AI 识别,本站不保存。另有一个只有管理员能看的运营后台,保存我们 X 帖子下的公开评论、我们准备回复的公开帖子、回复草稿和处理记录;评论原文和对方账号最多留 30 天。",
     footVersion: "版本",
     footDirty: "(含未提交的改动,不是正式版本)",
     footFine: "本站内容不构成投资建议。操作前请对照官方页面和核对卡,自己确认每一步。",
+    // 打开 #owner 以后(管理员自己的浏览器,见 lib/count.js)
+    ownerOn: "这个浏览器已记成管理员的:在这里体检不计数。",
 
     // 首页
     homeTitle: "DeFiExit · 安全出口:链上资产体检",
@@ -296,10 +298,11 @@ export const STR = {
     navHow: "How it works", navSafety: "Safety", navSupported: "Supported",
     footOfficial: "**The only official site is defiexit.com.** We never ask for keys or seed phrases, never sign for you, and never DM you first. If your wallet shows a signature, token approval or transfer request coming from this site, reject it.",
     footOpen: "Open source · MIT",
-    footData: "Read-only: paste an address or read it from your wallet. We never start a signature, token approval or transaction, and we don't keep your address. The site is hosted on Cloudflare, which handles access logs (including IP addresses). Only if you choose to let AI check a screenshot does that image go through our server to Cloudflare's AI for recognition; we don't keep it. A separate admin console, visible only to our admin, keeps public replies to our posts on X, public posts we plan to answer, our draft replies and decisions; reply text and account names are kept for at most 30 days.",
+    footData: "Read-only: paste an address or read it from your wallet. We never start a signature, token approval or transaction, and we don't keep your address. When a checkup finishes, your browser sends us one count with no address and no identifier. Each address is counted roughly once per browser (your browser remembers the last 500 it has counted, and that list never leaves it; another browser counts it again). We only keep a daily total. The site is hosted on Cloudflare, which handles access logs (including IP addresses). Only if you choose to let AI check a screenshot does that image go through our server to Cloudflare's AI for recognition; we don't keep it. A separate admin console, visible only to our admin, keeps public replies to our posts on X, public posts we plan to answer, our draft replies and decisions; reply text and account names are kept for at most 30 days.",
     footVersion: "Version",
     footDirty: " (has uncommitted changes; not a release build)",
     footFine: "Nothing here is financial advice. Check every step against the official site and the check cards yourself.",
+    ownerOn: "This browser is now marked as the owner's: checkups here aren't counted.",
 
     homeTitle: "DeFiExit: a free checkup for money left on-chain",
     homeDesc: "Paste a wallet address to check for funds left behind on-chain, free. If we find any, you get a step-by-step route through the official site. Read-only: no signatures, no approvals, no keys.",

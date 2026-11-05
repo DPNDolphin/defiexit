@@ -4,6 +4,7 @@
 //   其余 —— 管理员在页面上点的(状态、决定、备注、他改过的草稿),投递永远不碰。
 // 评论原文、目标帖子的账号信息 30 天后删(Pages 没有定时任务:每次有人打开运营台、刷新、投递时顺手删)。
 // 到期的评论整行删掉,需求摘要另存一张表(不带帖子编号和账号);编号只留哈希,用来防止下次刷新又收进来。
+// 体检计数(公开接口 /api/hit)也记在这个库里:每天一个数,不带地址和任何访客信息。
 
 export const KEEP_DAYS = 30;
 const DDL = [
@@ -22,6 +23,8 @@ const DDL = [
   "CREATE TABLE IF NOT EXISTS needs (id TEXT PRIMARY KEY, month TEXT NOT NULL, v TEXT NOT NULL)",
   // 监控找到的项目变动线索(公开信息,定时任务经 /api/admin/task 送进来,只加不改,留 90 天)
   "CREATE TABLE IF NOT EXISTS leads (id TEXT PRIMARY KEY, v TEXT NOT NULL, found_at TEXT NOT NULL)",
+  // 体检计数(functions/api/hit.js):每个北京日、每种一行,只有日期、种类、次数;不记地址、IP、每一次的时间
+  "CREATE TABLE IF NOT EXISTS hits (day TEXT NOT NULL, kind TEXT NOT NULL, n INTEGER NOT NULL, PRIMARY KEY (day, kind))",
 ];
 const ready = new WeakSet();
 
@@ -77,6 +80,24 @@ export async function getDoc(db, k) {
 }
 export const docStmt = (db, k, v, now) => db.prepare("INSERT INTO docs (k, v, updated_at) VALUES (?, ?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v, updated_at = excluded.updated_at").bind(k, JSON.stringify(v), iso(now));
 export const putDoc = (db, k, v, now) => docStmt(db, k, v, now).run();
+
+// ---------- 体检计数 ----------
+// 数哪几种(/api/hit 只收这几个);「每天」按北京时间(UTC+8),日期写成 2026-11-05
+export const HIT_KINDS = ["checkup"];
+export const HIT_DAYS = 60;
+export const bjDay = (now) => iso(+now + 8 * 3600e3).slice(0, 10);
+// 给运营台和导出:每种一个从开始数起的总数 total、开始数的那天 since,加上最近 HIT_DAYS 天每天的数 byDay(没人来的那天不列)
+export async function hitCounts(db, now) {
+  const [all, recent] = await Promise.all([
+    db.prepare("SELECT kind, SUM(n) AS total, MIN(day) AS since FROM hits GROUP BY kind").all(),
+    db.prepare("SELECT day, kind, n FROM hits WHERE day >= ? ORDER BY day").bind(bjDay(+now - (HIT_DAYS - 1) * 864e5)).all(),
+  ]);
+  return Object.fromEntries(HIT_KINDS.map((k) => {
+    const a = all.results.find((r) => r.kind === k);
+    const byDay = Object.fromEntries(recent.results.filter((r) => r.kind === k).map((r) => [r.day, r.n]));
+    return [k, { total: a ? Number(a.total) : 0, since: a ? a.since : null, byDay }];
+  }));
+}
 
 // ---------- 待发、收件:给页面的样子 ----------
 export function outRow(r) {

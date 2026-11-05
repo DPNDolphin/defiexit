@@ -59,9 +59,9 @@ class FakeEl extends FakeNode {
 const find = (el, ok) => { for (const k of el.children) { if (ok(k)) return k; const x = find(k, ok); if (x) return x; } return null; };
 const tick = () => new Promise((r) => setTimeout(r, 5));
 
-// 起一个运营台:state 是 /api/admin/state 回的;改待发照服务器的规矩回(草稿过 checkText,不合格回 400 draftbad)
+// 起一个运营台:state 是 /api/admin/state 回的(status 不是 200 就是没登进去);改待发照服务器的规矩回(草稿过 checkText,不合格回 400 draftbad)
 let copies = 0;
-async function desk(state) {
+async function desk(state, status = 200) {
   const els = new Map();
   globalThis.document = {
     getElementById: (id) => { if (!els.has(id)) { const e = new FakeEl("div"); e.setAttribute("id", id); els.set(id, e); } return els.get(id); },
@@ -77,7 +77,7 @@ async function desk(state) {
   globalThis.fetch = async (url, opt) => {
     const path = String(url).replace("/api/admin/", ""), b = opt.body ? JSON.parse(opt.body) : {};
     calls.push([path, b]);
-    if (path === "state") return res(200, state);
+    if (path === "state") return res(status, state);
     if (path !== "outbox") return res(200, { ok: true });
     const it = state.outbox.find((x) => x.id === b.id);
     if (typeof b.draft === "string") { const why = checkText(b.draft, undefined, outHosts(it.mine)); if (why) return res(400, { error: "draftbad", why }); }
@@ -87,7 +87,7 @@ async function desk(state) {
   };
   await import(new URL("../admin/admin.js?" + ++copies, import.meta.url).href);
   await tick();
-  assert.equal($("desk").hidden, false, "进了运营台");
+  assert.equal($("desk").hidden, status !== 200, status === 200 ? "进了运营台" : "没进运营台");
   const card = (id) => {
     const c = find($("out-cards"), (e) => e.getAttribute("data-id") === id) || find($("done-cards"), (e) => e.getAttribute("data-id") === id);
     const btn = (text) => find(c, (e) => e.tagName === "BUTTON" && e.textContent === text);
@@ -172,4 +172,33 @@ test("每天的上限:到了上限,多的排队(「在 X 打开」「复制」�
   await tick();
   assert.equal(q("r2")[1], "排队:今天已到上限 2 条,明天放出");
   assert.match(d.$("todo").textContent, /2 条回复在排队:今天已到上限 2 条,明天放出/);
+});
+
+test("登进运营台的浏览器记成管理员的(dx-owner,主站在这个浏览器里体检就不计数);没登进去的不记", async () => {
+  const m = new Map();
+  globalThis.localStorage = { getItem: (k) => (m.has(k) ? m.get(k) : null), setItem: (k, v) => { m.set(k, String(v)); } };
+  try {
+    await desk({ need: "login" }, 401);
+    assert.equal(m.get("dx-owner"), undefined);
+    await desk(base([]));
+    assert.equal(m.get("dx-owner"), "1");
+  } finally {
+    delete globalThis.localStorage;
+  }
+  await desk(base([])); // 没有本地存储(或者存不了)也照常进运营台
+});
+
+test("目标里「陌生人来体检」那一行下面加一行网站自己数的(总数、今天、从哪天起);别的行不加;服务器没给就不加", async () => {
+  const today = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
+  const goal = { deadline: "2026-12-15", items: [
+    { key: "recipes", label: "网站上的取回指南", value: 4, goal: 15, unit: " 份" },
+    { key: "checks", label: "陌生人来体检", value: null, goal: 100, unit: " 个地址", note: "我送来的说明" },
+  ] };
+  const d = await desk({ ...base([]), docs: { goal_1215: goal }, hits: { checkup: { total: 12, since: "2026-11-05", byDay: { [today]: 3, "2000-01-01": 9 } } } });
+  const text = d.$("data-body").textContent;
+  assert.ok(text.includes("陌生人来体检还没开始数我送来的说明网站自己数的:共 12 个地址,今天 3 个(11-05 起)。"), text);
+  assert.equal(text.match(/网站自己数的/g).length, 1);
+  const d2 = await desk({ ...base([]), docs: { goal_1215: goal }, hits: { checkup: { total: "x" } } });
+  assert.ok(!d2.$("data-body").textContent.includes("网站自己数的"));
+  assert.ok(d2.$("data-body").textContent.includes("陌生人来体检还没开始数"));
 });

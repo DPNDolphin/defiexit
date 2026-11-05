@@ -1,5 +1,5 @@
 // 运营台接口(Cloudflare Pages Function,路径 /api/admin/*),只在 admin 主机上应答,别的主机一律 404。
-// GET  state            看板数据、待发、收件(要登录;没设管理员就回 need: setup)
+// GET  state            看板数据、待发、收件、体检次数(要登录;没设管理员就回 need: setup)
 // POST setup / login / logout / logout-all
 // POST outbox / inbox    管理员点的状态、决定、备注、改过的草稿
 // POST watch / delete    帖子看不看评论;按要求删掉一条
@@ -10,7 +10,7 @@
 // 改东西的请求(ingest 除外)必须同源、JSON、已登录;登录凭证是只给本主机的 __Host- cookie(SameSite=Strict)。
 
 import { reply, gone, hostOk, sameOrigin, readJson, clientIp } from "../../../server/ops/http.js";
-import { ensure, iso, getKv, getDocs, listOut, listIn, getOut, getIn, purge, goneStmt } from "../../../server/ops/db.js";
+import { ensure, iso, getKv, getDocs, listOut, listIn, getOut, getIn, purge, goneStmt, hitCounts } from "../../../server/ops/db.js";
 import { MIN_PASSWORD, hashPassword, checkPassword, newSession, hasSession, endSession, endAll, cookie, mustWait, failed, succeeded, same } from "../../../server/ops/auth.js";
 import { ingest, checkText, outHosts } from "../../../server/ops/ingest.js";
 import { sync } from "../../../server/ops/sync.js";
@@ -23,16 +23,16 @@ const hex = async (s) => [...new Uint8Array(await crypto.subtle.digest("SHA-256"
 
 async function state(db, admin, now) {
   await purge(db, now);
-  const [docs, outbox, inbox, syncAt, syncNote, off, needs, leads, auto, outStats] = await Promise.all([
+  const [docs, outbox, inbox, syncAt, syncNote, off, needs, leads, auto, outStats, hits] = await Promise.all([
     getDocs(db), listOut(db), listIn(db), getKv(db, "sync_at_ms"), getKv(db, "sync_note"),
     db.prepare("SELECT id FROM watch WHERE on_ = 0").all(),
     db.prepare("SELECT month, v FROM needs ORDER BY month DESC LIMIT 100").all(),
-    listLeads(db, 30), autoState(db), getKv(db, "out_stats"),
+    listLeads(db, 30), autoState(db), getKv(db, "out_stats"), hitCounts(db, now),
   ]);
   const past = needs.results.map((r) => { try { return { month: r.month, ...JSON.parse(r.v) }; } catch { return null; } }).filter(Boolean);
   let stats = {};
   try { stats = JSON.parse(outStats || "{}") || {}; } catch { stats = {}; }
-  return reply({ ok: true, me: { name: admin.name }, docs, outbox, inbox, needs: past, leads, auto, outStats: stats, watchOff: off.results.map((r) => r.id), synced: { at: syncAt ? iso(Number(syncAt)) : null, note: syncNote || "" } });
+  return reply({ ok: true, me: { name: admin.name }, docs, outbox, inbox, needs: past, leads, auto, outStats: stats, hits, watchOff: off.results.map((r) => r.id), synced: { at: syncAt ? iso(Number(syncAt)) : null, note: syncNote || "" } });
 }
 
 // 管理员贴的帖子链接:只收 x.com(或 twitter.com)上的帖子链接,统一成 https://x.com/<账号>/status/<编号>,去掉 ?s=20 这类尾巴

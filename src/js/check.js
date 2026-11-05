@@ -4,6 +4,7 @@
 //   ③ Zerion 查不到的链(X Layer、Merlin):浏览器直接只读查公共节点的钱包余额。
 // 只列查到的,没查到的项目不列:只显示有什么。查不成的照实说,给「重试」。
 // 每一张都有「取回」:有指南的进指南;没有的打开取回弹层,按仓位类型给通用取法,钱包里的币说怎么转出、手续费够不够。
+// 三路都查完、至少一路查成了,数一次体检(不带地址,同一个浏览器同一个地址只数一次;见 lib/count.js)。
 import "./site.js";
 import { detectors } from "./detectors/index.js";
 import { isEvmAddress, shortAddr, floorTo } from "./lib/net.js";
@@ -11,6 +12,7 @@ import { el, icon, rowsTable, setText, copy, toast } from "./lib/ui.js";
 import { makeT, pageLang, prefix, errText } from "./lib/i18n.js";
 import { chainLogo, chainKey, gasSym, mergeDefi, EXTRA } from "./lib/chains.js";
 import { HOW } from "./lib/xlayer.text.js";
+import { countCheckup } from "./lib/count.js";
 
 const lang = pageLang(), t = makeT(lang), P = prefix(lang);
 const recipes = [...document.querySelectorAll("#recipes li")].map((li) => ({
@@ -29,6 +31,7 @@ const results = new Map(); // 配方 id → { res } 或 { err }
 const extra = new Map(); // Zerion 查不到的链:链编号 → { res } 或 { err }
 let assets = { state: "pending", res: null }; // 全部资产:pending / ok / empty / off / busy / error
 let lists = { defi: [], wallet: [] }; // 清单上正显示的,「取回」按钮按序号找
+let counted = false; // 这一页数过体检没有:数过了,重试、取完回来再查都不再数
 
 // 对得上配方才算有指南:我们自己查到的仓位带 how(配方编号);Zerion 查到的,项目名和链都要对上配方 JSON 的 zerion 字段,同名项目在别的链上不算。
 // DYORSwap 不写 zerion 字段:Zerion 查到的可能是别的池子,指南只核对过 USDT/OKB 这一个。
@@ -209,6 +212,11 @@ function paint() {
       el("p", { class: "fine" }, t("assetsPriv")));
   }
   cards.replaceChildren(...nodes.filter(Boolean));
+  // 体检计数:三路都查完、至少一路查成了才算查过;不等它,出错也不影响页面
+  if (done && !counted && (all.some((x) => x.res) || xs.length || assets.state === "ok" || assets.state === "empty")) {
+    counted = true;
+    countCheckup(addr);
+  }
 }
 
 // ---------- 取回弹层(没有指南的项目、钱包里的币) ----------

@@ -83,8 +83,8 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     if (!bad) setTimeout(() => { if (el.textContent === msg) el.textContent = ""; }, 2500);
   }
 
-  // quota:今天对人的首回放出几条(上限、已发、排队的编号),每次摆待发卡片前重算
-  const S = { docs: {}, out: new Map(), inn: new Map(), cards: new Map(), ro: null, watchOff: new Set(), needs: [], leads: [], auto: {}, outStats: {}, quota: gate([], [], capOf(null)) };
+  // quota:今天对人的首回放出几条(上限、已发、排队的编号),每次摆待发卡片前重算;hits:网站自己数的体检次数
+  const S = { docs: {}, out: new Map(), inn: new Map(), cards: new Map(), ro: null, watchOff: new Set(), needs: [], leads: [], auto: {}, outStats: {}, hits: {}, quota: gate([], [], capOf(null)) };
 
   function show(view) {
     $("boot-msg").hidden = view !== "boot";
@@ -93,9 +93,15 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     $("desk").hidden = view !== "desk";
   }
 
+  // 登进了运营台,这个浏览器就是管理员自己的:记上 dx-owner,在这个浏览器里体检不计数(运营台和主站是同一个网站 defiexit.com,
+  // 本地存储是同一份;主站那边见 src/js/lib/count.js。钱包里的浏览器不登运营台,打开一次 defiexit.com/#owner 也能记上)
+  function ownerBrowser() {
+    try { localStorage.setItem("dx-owner", "1"); } catch (_) { /* 存不了:这个浏览器本来也数不了 */ }
+  }
+
   async function load() {
     const { status, json } = await api("state");
-    if (status === 200 && json.ok) { show("desk"); apply(json); return; }
+    if (status === 200 && json.ok) { show("desk"); ownerBrowser(); apply(json); return; }
     if (json.need === "setup") return show("setup");
     if (json.need === "login" || status === 401) return show("login");
     show("boot");
@@ -406,6 +412,7 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     S.leads = Array.isArray(json.leads) ? json.leads : [];
     S.auto = json.auto && typeof json.auto === "object" ? json.auto : {};
     S.outStats = json.outStats && typeof json.outStats === "object" ? json.outStats : {};
+    S.hits = json.hits && typeof json.hits === "object" ? json.hits : {};
     S.out = new Map((json.outbox || []).map((d) => [d.id, d]));
     S.inn = new Map((json.inbox || []).map((d) => [d.id, d]));
     sync("out");
@@ -445,6 +452,14 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
   }
 
   // ---------- 数据 ----------
+  // 网站自己数的体检次数(/api/hit,不带地址):放在目标里「陌生人来体检」那一行下面,和我送来的数分开写
+  function hitLine(c) {
+    if (!c || typeof c.total !== "number") return null;
+    const today = new Date(todayBJ()).toISOString().slice(0, 10);
+    const n = c.byDay && typeof c.byDay[today] === "number" ? c.byDay[today] : 0;
+    return h("p", { class: "note" }, "网站自己数的:共 " + fmt(c.total) + " 个地址,今天 " + fmt(n) + " 个" + (c.since ? "(" + String(c.since).slice(5) + " 起)" : "")
+      + "。同一个浏览器同一个地址只算一次;你登过运营台的浏览器不算,钱包里的浏览器打开一次 defiexit.com/#owner 也不算。");
+  }
   function goalPanel(g) {
     if (!g || !g.deadline) return null;
     const left = daysUntil(g.deadline);
@@ -461,7 +476,8 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
         fill.style.width = Math.min(100, Math.round((v / it.goal) * 100)) + "%";
         meter = h("div", { class: "meter", role: "img", "aria-label": it.label + " " + v + " / " + it.goal }, fill);
       }
-      return h("div", { class: "g-row" }, h("span", { class: "name" }, it.label), valEl, meter, it.note ? h("p", { class: "note" }, it.note) : null);
+      return h("div", { class: "g-row" }, h("span", { class: "name" }, it.label), valEl, meter, it.note ? h("p", { class: "note" }, it.note) : null,
+        it.key === "checks" ? hitLine(S.hits.checkup) : null);
     });
     return h("div", { class: "panel" },
       h("div", { class: "goal-head" },

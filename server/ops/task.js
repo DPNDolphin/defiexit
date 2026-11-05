@@ -5,11 +5,12 @@
 //   { do: "leads", leads: [...], read, failed }  往「项目变动线索」里加监控找到的线索(只加不改,按编号去重,每次、每天有上限)
 //   改不了待发、收件、看板,也设不了管理员。钥匙丢了,别人最多让它多刷新几次、塞几条线索(来源链接只认白名单里的网站)。
 // POST /api/admin/export  维护者(Claude 主窗口)用投递那把钥匙读:管理员点的决定、状态、时间,管理员自己写的备注(可能提到别人),
-//   我们自己发出去的回复的链接和读数(浏览、点赞、回复数),线索(公开信息),定时任务的情况。不回评论原文、评论人账号、目标帖子信息。导出前先跑一遍到期清理,过期的不会导出。
+//   我们自己发出去的回复的链接和读数(浏览、点赞、回复数),线索(公开信息),定时任务的情况,
+//   体检次数 hits(每种的总数、开始数的那天、最近 60 天每天的数,北京时间;见 db.js 的 hitCounts)。不回评论原文、评论人账号、目标帖子信息。导出前先跑一遍到期清理,过期的不会导出。
 // 两个入口都查:签名、时间(±10 分钟)、nonce 只能用一次;task 还要求 ts 比上一次大,同一时刻只处理一包(锁 5 分钟,比最慢的一次刷新长)。
 // 「每天」按 UTC 算。
 
-import { iso, getKv, setKv, purge } from "./db.js";
+import { iso, getKv, setKv, purge, hitCounts } from "./db.js";
 import { verify, SKEW_MS } from "./ingest.js";
 import { sync } from "./sync.js";
 
@@ -149,5 +150,6 @@ export async function exportFor(db, { raw, sig, envName, method, path, pubkeys }
     .map((r) => ({ id: r.id, found_at: r.found_at, ...(parse(r.v, {}) || {}) }));
   let outStats = {};
   try { outStats = JSON.parse((await getKv(db, "out_stats")) || "{}") || {}; } catch { outStats = {}; }
-  return { status: 200, body: { ok: true, at: iso(now), inbox, outbox, leads, auto: await autoState(db), outStats } };
+  // 体检次数不看 since:总是给总数和最近 60 天
+  return { status: 200, body: { ok: true, at: iso(now), inbox, outbox, leads, auto: await autoState(db), outStats, hits: await hitCounts(db, now) } };
 }
