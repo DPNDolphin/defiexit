@@ -12,7 +12,7 @@
 import { reply, gone, hostOk, sameOrigin, readJson, clientIp } from "../../../server/ops/http.js";
 import { ensure, iso, getKv, getDocs, listOut, listIn, getOut, getIn, purge, goneStmt } from "../../../server/ops/db.js";
 import { MIN_PASSWORD, hashPassword, checkPassword, newSession, hasSession, endSession, endAll, cookie, mustWait, failed, succeeded, same } from "../../../server/ops/auth.js";
-import { ingest, checkText } from "../../../server/ops/ingest.js";
+import { ingest, checkText, outHosts } from "../../../server/ops/ingest.js";
 import { sync } from "../../../server/ops/sync.js";
 import { task, exportFor, listLeads, autoState } from "../../../server/ops/task.js";
 
@@ -79,8 +79,8 @@ async function editOut(db, b, now) {
     if ((b.status || cur.status) !== "待发") return reply({ error: "locked" }, 409);
     if (b.draft === null) sets.push("draft_admin = NULL");
     else if (typeof b.draft === "string" && b.draft.length <= 2000) {
-      // 管理员改的草稿也过一遍:只许本站链接、不许敏感词(就算账号被人登进去,也塞不进站外链接)
-      const bad = checkText(b.draft);
+      // 管理员改的草稿也过一遍,和投递的规矩一样:对人的首回不带链接,项目帖只许本站链接;不许敏感词(就算账号被人登进去,也塞不进站外链接)
+      const bad = checkText(b.draft, undefined, outHosts(cur.mine));
       if (bad) return reply({ error: "draftbad", why: bad }, 400);
       sets.push("draft_admin = ?");
       args.push(b.draft);

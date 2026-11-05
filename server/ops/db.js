@@ -65,10 +65,15 @@ export async function getKv(db, k) {
 export const setKv = (db, k, v) => db.prepare("INSERT INTO kv (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(k, String(v)).run();
 
 // ---------- 看板的几份 JSON ----------
-export const DOC_KEYS = ["summary", "x_posts", "goal_1215", "funnel", "protocols", "clocks", "bot"];
+// rules 不是看板,是运营规则(每天放出几条对人的首回、收件续答能带哪些官方网址):改它不用重新发布,和看板一样签名送进来
+export const DOC_KEYS = ["summary", "x_posts", "goal_1215", "funnel", "protocols", "clocks", "bot", "rules"];
 export async function getDocs(db) {
   const { results } = await db.prepare("SELECT k, v FROM docs").all();
   return Object.fromEntries(results.filter((r) => DOC_KEYS.includes(r.k)).map((r) => [r.k, parse(r.v, null)]));
+}
+export async function getDoc(db, k) {
+  const r = await db.prepare("SELECT v FROM docs WHERE k = ?").bind(k).first();
+  return r ? parse(r.v, null) : null;
 }
 export const docStmt = (db, k, v, now) => db.prepare("INSERT INTO docs (k, v, updated_at) VALUES (?, ?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v, updated_at = excluded.updated_at").bind(k, JSON.stringify(v), iso(now));
 export const putDoc = (db, k, v, now) => docStmt(db, k, v, now).run();

@@ -6,6 +6,7 @@ import { hostOk, gone, PAGE_HEADERS } from "../../server/ops/http.js";
 export const FILES = {
   "/admin/": "/admin/",
   "/admin/admin.js": "/admin/admin.js",
+  "/admin/pace.js": "/admin/pace.js",
   "/admin/admin.css": "/admin/admin.css",
   "/admin/favicon.svg": "/admin/favicon.svg",
   "/admin/fonts/atkinson-next.woff2": "/admin/fonts/atkinson-next.woff2",

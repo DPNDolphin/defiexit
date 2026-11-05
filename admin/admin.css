@@ -129,6 +129,10 @@ textarea:focus, input:focus { outline: 2px solid var(--hi); outline-offset: 0; b
 .pill.mute { background: var(--surface-2); color: var(--faint); border: 1px solid var(--line-3); }
 .saved { font-size: 13px; color: var(--faint); min-height: 1.2em; }
 .saved.bad { color: var(--stop); font-weight: 600; }
+/* 回复今天放出的到了上限:卡片上写「排队」;发得快了的提醒(不拦人,点「知道了」收起) */
+.queue { font-size: 14px; font-weight: 600; color: var(--warn); }
+.pace { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 8px 12px; border-radius: 12px; background: var(--warn-bg); color: var(--warn); font-size: 14px; font-weight: 600; }
+.pace .linkbtn { margin-left: auto; }
 
 /* 数据 */
 #data-body { display: grid; gap: 8px; }

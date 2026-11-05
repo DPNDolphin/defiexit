@@ -1,5 +1,7 @@
 // 运营台(只在 admin 主机上打开):登录 → 读 /api/admin/state → 待发、收件、数据、已处理。管理员点的「已发 / 采纳」、改的草稿,
 // 都经 /api/admin/* 存进数据库。页面里的评论、帖子是别人写的:一律用 textContent 放进页面,不当 HTML。
+// 每天放出几条回复、发得快了提醒,算法在 pace.js(测试也用它)。
+import { capOf, gate, waitText, paceNote } from "./pace.js";
 (function () {
   "use strict";
   const H8 = 8 * 3600e3;
@@ -70,7 +72,7 @@
     weak: "密码至少 8 位", mismatch: "两次输的密码不一样", exists: "管理员已经设过了,请登录", db: "数据库还没接上(Cloudflare 里的 D1 还没绑)",
     origin: "请求来源不对,刷新页面再试", login: "登录过期了,请重新登录", busy: "刚刷新过,两分钟后再点", superseded: "同时有另一次刷新在跑,这次的结果没写进去,过一会儿再看", bad: "内容不合格,没存",
     nocode: "设置链接还没生成或已经过期,叫我重新发一个", code: "设置码不对", name: "用户名只能用字母、数字、汉字和 _ . -,最多 40 个", locked: "这条已经点过「已发 / 跳过」,先改回待发再改草稿",
-    none: "这一条已经不在了,刷新一下", target: "这条没有目标帖子编号,不能发", draftbad: "草稿里有站外链接或不许用的词",
+    none: "这一条已经不在了,刷新一下", target: "这条没有目标帖子编号,不能发", draftbad: "草稿里有不许带的链接或不许用的词",
     badlink: "链接不对:要 x.com 上那一条的链接(帖子右下角「分享」→「复制链接」)",
   };
   const why = (j) => (WHY[j && (j.error || j.need)] || "出错了(" + ((j && (j.error || j.need)) || "未知") + "),再试一次") + (j && j.why ? ":" + j.why : "");
@@ -81,7 +83,8 @@
     if (!bad) setTimeout(() => { if (el.textContent === msg) el.textContent = ""; }, 2500);
   }
 
-  const S = { docs: {}, out: new Map(), inn: new Map(), cards: new Map(), ro: null, watchOff: new Set(), needs: [], leads: [], auto: {}, outStats: {} };
+  // quota:今天对人的首回放出几条(上限、已发、排队的编号),每次摆待发卡片前重算
+  const S = { docs: {}, out: new Map(), inn: new Map(), cards: new Map(), ro: null, watchOff: new Set(), needs: [], leads: [], auto: {}, outStats: {}, quota: gate([], [], capOf(null)) };
 
   function show(view) {
     $("boot-msg").hidden = view !== "boot";
@@ -103,7 +106,7 @@
     const { status, json } = await api(kind, { id, ...patch });
     const ok = status === 200 && !!json.item;
     const el0 = S.cards.get((kind === "outbox" ? "out:" : "in:") + id);
-    if (el0 && el0._saved) el0._saved(ok, "draft" in patch);
+    if (el0 && el0._saved) el0._saved(ok, "draft" in patch, status);
     if (ok) {
       (kind === "outbox" ? S.out : S.inn).set(id, json.item);
       // 状态或决定变了要挪到「待发 / 收件」或「已处理」(sync 只在顺序变了才挪,改草稿不会让框失焦)
@@ -161,6 +164,7 @@
     const restore = h("button", { class: "linkbtn", type: "button", hidden: true }, "用回我原来写的");
     const open = h("a", { class: "btn primary wide", target: "_blank", rel: "noopener noreferrer" }, "在 X 打开,字已填好 ↗");
     const copy = h("button", { class: "btn", type: "button" }, "复制");
+    const wait = h("p", { class: "queue", hidden: true });
     const sent = h("button", { class: "btn", type: "button" }, "已发");
     const skip = h("button", { class: "btn", type: "button" }, "跳过");
     const back = h("button", { class: "btn", type: "button", hidden: true }, "改回待发");
@@ -177,10 +181,11 @@
     const el = h("article", { class: "card", "data-id": id }, head, chips, kv,
       h("div", { class: "row" }, lab, h("span", { class: "grow" }), restore), ta,
       h("div", { class: "row" }, count, h("span", { class: "grow" }), copy),
-      open,
+      wait, open,
       h("div", { class: "row" }, sent, skip, back, h("span", { class: "grow" }), status),
       link, pasteRow, memo, h("div", { class: "row" }, saved, h("span", { class: "grow" }), delButton("outbox", id, saved)));
-    let timer = null, dirty = false;
+    // bad:框里的字服务器刚拒过(带了不许带的链接或词)。「在 X 打开」「复制」先收起来,免得把拒掉的字发出去;改好存上了、或点「用回我原来写的」才放开
+    let timer = null, dirty = false, bad = false;
     const target = () => (el._d && el._d.mine && el._d.mine.target) || {};
     const refresh = () => {
       const q = quoteOf(el._d);
@@ -188,16 +193,26 @@
       count.textContent = "约 " + n + " / 280" + (q ? "(含引用的原帖)" : "");
       count.classList.toggle("over", n > 280);
       const tid = target().id;
-      if (isPost(el._d) || /^\d{1,25}$/.test(String(tid || ""))) { open.href = intent(ta.value, isPost(el._d) ? null : tid, q); open.removeAttribute("aria-disabled"); open.classList.remove("off"); }
+      if (!el._wait && !bad && (isPost(el._d) || /^\d{1,25}$/.test(String(tid || "")))) { open.href = intent(ta.value, isPost(el._d) ? null : tid, q); open.removeAttribute("aria-disabled"); open.classList.remove("off"); }
       else { open.removeAttribute("href"); open.setAttribute("aria-disabled", "true"); open.classList.add("off"); }
+      copy.disabled = !!el._wait || bad;
+      restore.hidden = !isPend(el._d) || !(bad || (el._d && el._d.draft_admin != null));
     };
-    // 草稿存不上:字留在框里(dirty 设回去,之后的刷新不会盖掉),也不往下改状态
+    // 草稿存不上:字留在框里(dirty 设回去,之后的刷新不会盖掉),也不往下改状态。服务器拒了(400)才算 bad,网络断了这类不算;
+    // 存上了、而且存的时候框里的字没再改过,才放开(存的路上又改了,等这次改的存上)
     const flush = async () => { clearTimeout(timer); if (!dirty) return true; dirty = false; return save("outbox", id, { draft: ta.value }, saved); };
-    el._saved = (ok, wasDraft) => { if (wasDraft && !ok) dirty = true; };
+    el._saved = (ok, wasDraft, status) => {
+      if (!wasDraft) return;
+      if (!ok) dirty = true;
+      if (ok) { if (!dirty) bad = false; } else if (status === 400) bad = true;
+      refresh();
+    };
     const decide = async (st, msg) => {
       if (!(await flush())) return note(saved, "草稿没存上,先别点「" + st + "」;字还在框里", true);
       const was = isPend(el._d);
-      if ((await save("outbox", id, { status: st }, saved)) && was) note($("out-msg"), msg || "点了「" + st + "」,这条挪到下面的「已处理」了");
+      const ok = await save("outbox", id, { status: st }, saved);
+      if (ok && was) note($("out-msg"), msg || "点了「" + st + "」,这条挪到下面的「已处理」了");
+      return ok;
     };
     ta.addEventListener("input", () => { dirty = true; refresh(); clearTimeout(timer); timer = setTimeout(flush, 1200); });
     ta.addEventListener("blur", flush);
@@ -208,11 +223,11 @@
       const fallback = () => { ta.focus(); ta.select(); note(saved, q ? "已选中正文,长按复制;发的时候末尾再贴上原帖链接(顶上「看原帖」)" : "已选中,长按复制"); };
       try { navigator.clipboard.writeText(withQuote(ta.value, q)).then(() => note(saved, q ? "已复制(末尾带着原帖链接,发出去就是引用)" : "已复制"), fallback); } catch (_) { fallback(); }
     });
-    sent.addEventListener("click", () => decide("已发"));
+    sent.addEventListener("click", async () => { if (await decide("已发")) paceCheck(); });
     // 点「在 X 打开」就当发了(省得发完再回来点「已发」):回复的链接运营台自己去目标帖子底下找,项目帖的链接晚上机器人补;
-    // 一天还没在 X 上找到你那条回复,顶上会提醒(可能没发出去,点「改回待发」就回来)
-    open.addEventListener("click", () => {
-      if (isPend(el._d) && !open.classList.contains("off")) decide("已发", "打开了 X,发出去就行,不用再点「已发」;这条挪到下面的「已处理」了");
+    // 一天还没在 X 上找到你那条回复,顶上会提醒(可能没发出去,点「改回待发」就回来)。记下以后看看是不是发得太快(只提醒,不拦;点「已发」也一样)
+    open.addEventListener("click", async () => {
+      if (isPend(el._d) && !open.classList.contains("off") && (await decide("已发", "打开了 X,发出去就行,不用再点「已发」;这条挪到下面的「已处理」了"))) paceCheck();
     });
     skip.addEventListener("click", () => decide("跳过"));
     back.addEventListener("click", async () => { if (await save("outbox", id, { status: "待发" }, saved)) note($("done-msg"), "这条挪回「待发」了"); });
@@ -237,12 +252,16 @@
         : [h("dt", null, "卡在"), h("dd", null, t.summary || (d.purged ? "(30 天到了,原帖信息已删)" : "—")),
           m.why ? h("dt", null, "为什么回") : null, m.why ? h("dd", null, m.why) : null]));
       const st = d.status || "待发";
+      // 对人的首回今天放出的到了上限(运营规则 dailyReplyCap):多的这条排队,「在 X 打开」「复制」「已发」先点不了,明天放出;「跳过」照样能点
+      el._wait = st === "待发" && S.quota.queued.has(id) ? waitText(S.quota) : null;
+      wait.textContent = el._wait || "";
+      wait.hidden = !el._wait;
+      sent.disabled = !!el._wait;
       const draft = d.draft_admin != null ? d.draft_admin : (m.draft || "");
       if (document.activeElement !== ta && !dirty && ta.value !== draft) ta.value = draft;
       // 点过「已发 / 跳过」的草稿改不了(服务器也不收),「在 X 打开」也收起来,免得同一条发两次
       lab.textContent = (post ? "我写的帖子" : "我写的回复") + (st === "待发" ? "(可以直接改)" : "");
       ta.readOnly = st !== "待发";
-      restore.hidden = d.draft_admin == null || st !== "待发";
       open.hidden = st !== "待发";
       open.textContent = q ? "在 X 打开,引用原帖发,字已填好 ↗" : post ? "在 X 打开,发新帖,字已填好 ↗" : "在 X 打开,字已填好 ↗";
       if (document.activeElement !== memo && memo.value !== (d.note || "")) memo.value = d.note || "";
@@ -263,6 +282,14 @@
       refresh();
     };
     return el;
+  }
+
+  // 发得快了提醒一句(不拦人):点「在 X 打开」(自动记成已发)或「已发」以后算一下;点「知道了」收起,下次发了再算
+  function paceCheck() {
+    const msg = paceNote([...S.out.values()].filter((d) => d.status === "已发").map((d) => d.decided_at));
+    if (!msg) return;
+    $("pace-text").textContent = msg;
+    $("pace").hidden = false;
   }
 
   // ---------- 收件卡片 ----------
@@ -349,6 +376,8 @@
     for (const [key, el] of S.cards) if (key.startsWith(kind + ":") && !keys.has(key)) { el.remove(); S.cards.delete(key); }
     if (kind === "out") {
       const pend = [...S.out.entries()].filter(([, d]) => isPend(d)).sort((a, b) => String(a[1].created_at || "").localeCompare(String(b[1].created_at || ""))).map(([id, d]) => ["out", id, d]);
+      // 今天(北京时间)还能放出几条对人的首回:按这个顺序放,多的排队。先算好,卡片照着显示
+      S.quota = gate([...S.out.values()], pend.map((r) => r[2]), capOf(S.docs.rules));
       place("out-cards", pend);
       $("out-empty").hidden = pend.length > 0;
       $("out-empty").textContent = S.out.size > pend.length
@@ -389,12 +418,14 @@
   function renderTop(json) {
     const pend = [...S.out.values()].filter(isPend);
     const pendOut = pend.length, pendPosts = pend.filter(isPost).length, pendReplies = pendOut - pendPosts;
+    const queued = S.quota.queued.size, ready = pendReplies - queued; // 排队的回复今天发不了,不催
     const pendIn = [...S.inn.values()].filter((d) => !handledIn(d)).length;
-    $("n-out").textContent = pendOut; $("n-out").classList.toggle("due", pendOut > 0);
+    $("n-out").textContent = pendOut; $("n-out").classList.toggle("due", pendOut - queued > 0);
     $("n-in").textContent = pendIn; $("n-in").classList.toggle("due", pendIn > 0);
     $("n-done").textContent = S.out.size - pendOut + S.inn.size - pendIn;
     const items = [];
-    if (pendOut) items.push({ text: [pendReplies ? pendReplies + " 条回复" : "", pendPosts ? pendPosts + " 条项目帖" : ""].filter(Boolean).join("、") + "等你发(点「在 X 打开」发出去就行)", href: "#outbox", when: "今天" });
+    if (ready || pendPosts) items.push({ text: [ready ? ready + " 条回复" : "", pendPosts ? pendPosts + " 条项目帖" : ""].filter(Boolean).join("、") + "等你发(点「在 X 打开」发出去就行)", href: "#outbox", when: "今天" });
+    if (queued) items.push({ text: queued + " 条回复在排队:今天" + (S.quota.used >= S.quota.cap ? "已到上限 " : "上限 ") + S.quota.cap + " 条,明天放出", href: "#outbox", when: "明天" });
     if (pendIn) items.push({ text: pendIn + " 条评论等你看(回一句,或点一个决定)", href: "#inbox", when: "今天" });
     const lost = [...S.out.values()].filter((d) => !isPost(d) && d.status === "已发" && !safeUrl(d.reply_url) && Date.now() - Date.parse(d.decided_at || 0) > 864e5 && Date.now() - Date.parse(d.decided_at || 0) < 7 * 864e5).length;
     if (lost) items.push({ text: lost + " 条回复点了「在 X 打开」,一天了还没在 X 上找到你发的,可能没发出去(在「已处理」里点「改回待发」)", href: "#done", when: "今天" });
@@ -407,7 +438,7 @@
     const asks = S.docs.summary && S.docs.summary.asks;
     for (const a of Array.isArray(asks) ? asks : []) if (a && typeof a.text === "string") items.push(a);
     $("todo").replaceChildren(...(items.length ? items.map((a) => h("li", null,
-      h("span", { class: "when " + (a.when === "不急" ? "later" : "now") }, a.when || "今天"),
+      h("span", { class: "when " + (a.when === "不急" || a.when === "明天" ? "later" : "now") }, a.when || "今天"),
       a.href && /^#[a-z]+$/.test(a.href) ? h("a", { href: a.href }, a.text) : h("span", null, a.text))) : [h("li", { class: "none" }, "今天没有要你做的。")]));
     const upd = S.docs.summary && S.docs.summary.updatedAt;
     $("upd").textContent = upd ? "我 " + mdhm(upd) + " 更新" : "";
@@ -733,6 +764,7 @@
       else note(msg, why(json) + ";已把最新的内容拉下来", true);
       load();
     });
+    $("pace-ok").addEventListener("click", () => { $("pace").hidden = true; });
     $("logout").addEventListener("click", async () => { await api("logout", {}); show("login"); });
     $("logout-all").addEventListener("click", async () => { await api("logout-all", {}); show("login"); });
     document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && !$("desk").hidden) load(); });

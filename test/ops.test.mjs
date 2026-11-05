@@ -1,4 +1,4 @@
-// 运营台(functions/api/admin、functions/admin、server/ops):用本地 SQLite 当 D1、用假的 fxtwitter 测。不连 Cloudflare、不连 X。
+// 运营台(functions/api/admin、functions/admin、server/ops、admin/pace.js):用本地 SQLite 当 D1、用假的 fxtwitter 测。不连 Cloudflare、不连 X。
 import { test } from "node:test";
 import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
@@ -10,6 +10,7 @@ import { checkText, signedText, SKEW_MS } from "../server/ops/ingest.js";
 import { waitFor, MIN_PASSWORD } from "../server/ops/auth.js";
 import { hostOk } from "../server/ops/http.js";
 import { taskText, exportText, LIMIT } from "../server/ops/task.js";
+import { capOf, gate, waitText, paceNote } from "../admin/pace.js";
 
 const HOST = "https://defiexit.com";
 const kp = () => generateKeyPairSync("ed25519");
@@ -61,7 +62,8 @@ function world() {
 }
 
 const TARGET = { id: "2116000000000000001", handle: "someone", url: "https://x.com/someone/status/2116000000000000001", postedAt: "2026-11-01T08:00:00Z", protocol: "OpenEden", chain: "BNB Chain", type: "到期", summary: "活动结束后官网没有提取按钮" };
-const OUT = (over = {}) => ({ id: "r-openeden-1", target: TARGET, why: "原帖写明自己的钱卡在到期金库", draft: "到期金库可以在官方合约上自己取出,步骤在 defiexit.com/r/woofi 。", ...over });
+// 对人的首回不带任何链接、域名(回复写法 11-05)
+const OUT = (over = {}) => ({ id: "r-openeden-1", target: TARGET, why: "原帖写明自己的钱卡在到期金库", draft: "到期金库可以在官方合约上自己取出,不用等官网的按钮。我们不会主动找你,也不会要你的钱包信息。", ...over });
 
 test("主机名门禁:只认 ADMIN_HOSTS;没配就谁都不认", () => {
   const r = (u) => new Request(u);
@@ -170,15 +172,20 @@ test("登录凭证:勾了「30 天内免登录」30 天有效、不勾 1 天;退
   assert.equal((await w.call("/api/admin/state", { cookie: c4 })).json.need, "login");
 });
 
-test("管理员改的草稿也只许本站链接、不许敏感词", async () => {
+test("管理员改的草稿也过一样的检查:不许敏感词;对人的首回一个链接都不许(连本站也不许),项目帖只许本站链接", async () => {
   const w = world();
   const c = await w.login();
-  await w.ingest({ outbox: [OUT()] });
-  const bad = await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", draft: "去 https://evil.example/claim 领" }, cookie: c });
+  await w.ingest({ outbox: [OUT(), { id: "p-edit-1106", kind: "post", topic: "关停提醒", why: "测试", draft: "测试项目帖。" }] });
+  const edit = (id, draft) => w.call("/api/admin/outbox", { method: "POST", body: { id, draft }, cookie: c });
+  const bad = await edit("r-openeden-1", "去 https://evil.example/claim 领");
   assert.equal(bad.json.error, "draftbad");
   assert.ok(bad.json.why);
-  const ok = await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", draft: "步骤在 defiexit.com/r/woofi 。" }, cookie: c });
-  assert.equal(ok.json.item.draft_admin, "步骤在 defiexit.com/r/woofi 。");
+  const site = await edit("r-openeden-1", "步骤在 defiexit.com/r/woofi 。");
+  assert.equal(site.json.error, "draftbad");
+  assert.match(site.json.why, /对人的首回一个都不带/);
+  assert.equal((await edit("r-openeden-1", "到期金库可以在官方合约上自己取出。")).json.item.draft_admin, "到期金库可以在官方合约上自己取出。");
+  assert.equal((await edit("p-edit-1106", "步骤在 defiexit.com/r/woofi 。")).json.item.draft_admin, "步骤在 defiexit.com/r/woofi 。");
+  assert.equal((await edit("p-edit-1106", "去 app.uniswap.org 撤")).json.error, "draftbad");
 });
 
 test("投递:签名、环境、时间、nonce、旧包", async () => {
@@ -859,7 +866,7 @@ test("一次刷新最坏情况:fetch 加数据库查询不超过 50 个(免费�
 test("30 天到期:评论整行删掉、编号只留哈希,只留不带账号的需求摘要;再投递也收不回来", async () => {
   const w = world();
   const c = await w.login();
-  await w.ingest({ inbox: [{ id: "3000000000000000004", source: "X 长文", author: "user_b", url: "https://x.com/user_b/status/3000000000000000004", text: "@某个机器人 画个图", type: "提问", need: "想看行情数据", suggestion: "不采纳", draft: "数据已经有人答了" }], outbox: [OUT({ draft: "@someone 步骤在 defiexit.com/r/woofi 。" })] });
+  await w.ingest({ inbox: [{ id: "3000000000000000004", source: "X 长文", author: "user_b", url: "https://x.com/user_b/status/3000000000000000004", text: "@某个机器人 画个图", type: "提问", need: "想看行情数据", suggestion: "不采纳", draft: "数据已经有人答了" }], outbox: [OUT({ draft: "@someone 到期金库可以在官方合约上自己取出。" })] });
   await w.call("/api/admin/inbox", { method: "POST", body: { id: "3000000000000000004", note: "这人是 user_b", decision: "不采纳" }, cookie: c });
   await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", status: "已发" }, cookie: c });
   w.clock += 31 * 864e5;
@@ -885,7 +892,8 @@ test("30 天到期:评论整行删掉、编号只留哈希,只留不带账号的
 });
 
 test("草稿里的链接:带协议的、IP、中文域名都拦;本站的放行", () => {
-  assert.equal(checkText("在defiexit.com上查一下"), null);
+  assert.equal(checkText("在 defiexit.com 上查一下"), null);
+  assert.match(checkText("在defiexit.com上查一下"), /可疑网址「defiexit\.com」/); // 紧挨着汉字:真正的网址比它长,前后要空开
   assert.equal(checkText("https://defiexit.com/r/woofi/"), null);
   assert.match(checkText("http://defiexit.com/r/woofi/"), /站外链接/); // 只认 https
   assert.match(checkText("打开 http://1.2.3.4/claim"), /站外|IP|claim/);
@@ -913,6 +921,215 @@ test("按要求删掉一条;帖子可以停止读评论", async () => {
   assert.equal((await w.call("/api/admin/delete", { method: "POST", body: { kind: "admin", id: "1" }, cookie: c })).status, 400);
   await w.call("/api/admin/watch", { method: "POST", body: { id: "3000000000000000005", on: false }, cookie: c });
   assert.deepEqual((await w.call("/api/admin/state", { cookie: c })).json.watchOff, ["3000000000000000005"]);
+});
+
+// ---------- 扩大可回复范围(决策记录 11-05):草稿链接分三种、运营规则、每天放出的上限、发送节奏 ----------
+test("草稿里的链接分三种:对人的首回一个都不许(连 defiexit.com 也不许);项目帖照旧只许本站;收件续答照旧许本站", async () => {
+  const w = world();
+  await w.login();
+  const tg = (n) => ({ ...TARGET, id: "21160000000000005" + n, url: "https://x.com/someone/status/21160000000000005" + n });
+  const POST = (over = {}) => ({ id: "p-link-1106", kind: "post", topic: "关停提醒", why: "测试", draft: "官方取款页的步骤在 defiexit.com/r/woofi 。", ...over });
+  const r = await w.ingest({
+    outbox: [
+      OUT({ id: "r-link-1", target: tg("01"), draft: "步骤在 defiexit.com/r/woofi 。" }),
+      OUT({ id: "r-link-2", target: tg("02"), draft: "看 https://defiexit.com/r/woofi/" }),
+      OUT({ id: "r-link-3", target: tg("03"), draft: "去 www.defiexit.com 查" }),
+      OUT({ id: "r-link-4", target: tg("04"), draft: "官方入口在 app.example.org 。" }),
+      OUT({ id: "r-ok-5", target: tg("05") }),
+      POST(),
+      POST({ id: "p-link-2", draft: "去 app.example.org 撤" }),
+    ],
+    inbox: [{ id: "3000000000000000401", text: "钱还在里面,怎么取?", author: "user_q", draft: "步骤在 defiexit.com/r/woofi 。" }],
+  });
+  assert.deepEqual(r.json.rejected.map((x) => x.id), ["r-link-1", "r-link-2", "r-link-3", "r-link-4", "p-link-2"]);
+  for (const x of r.json.rejected.slice(0, 3)) assert.match(x.why, /^草稿含链接或域名「(www\.)?defiexit\.com」\(对人的首回一个都不带,连 defiexit\.com 也不带\)$/);
+  assert.match(r.json.rejected[3].why, /含链接或域名「app\.example\.org」/);
+  assert.match(r.json.rejected[4].why, /含站外链接「app\.example\.org」/);
+  assert.deepEqual([r.json.outbox, r.json.inbox], [2, 1]);
+  assert.equal(checkText("到期金库可以自己取出", undefined, []), null);
+  assert.match(checkText("访问 1.2.3.4 就行", undefined, []), /IP/);
+  assert.match(checkText("可以私信我", undefined, []), /私信/);
+});
+
+test("长得像的写法绕不过去(三种规矩都一样):英文之间的「。」「．」「｡」、全角字母照网址查;英文网址紧挨着别的字母、数字、附加符号、连字号不收;正常的中文句号照旧", () => {
+  const REPLY = [], POST = ["defiexit.com", "www.defiexit.com"], IN = [...POST, "blast.io"];
+  // 看着像点的,换成点再查:首回一个都不许,项目帖只许本站,续答只许名单里的
+  for (const s of ["evil。com", "evil．com", "evil｡com", "ｅｖｉｌ．ｃｏｍ", "https：／／evil．com"]) {
+    assert.match(checkText("去 " + s + " 看", undefined, REPLY), /含链接或域名「evil\.com」/, s);
+    assert.match(checkText("去 " + s + " 看", undefined, POST), /含站外链接「evil\.com」/, s);
+    assert.match(checkText("去 " + s + " 看", undefined, IN), /含站外链接「evil\.com」/, s);
+  }
+  assert.match(checkText("访问 1。2。3。4 就行"), /IP/);
+  // 换完就是名单里的那个:照样放行
+  for (const s of ["blast。io", "ｂｌａｓｔ．ｉｏ"]) assert.equal(checkText("官方页面是 " + s + " 。", undefined, IN), null, s);
+  assert.equal(checkText("在 defiexit。com 上查", undefined, POST), null);
+  // 紧挨着别的字母、数字、附加符号、连字号:真正的主机名比看上去的长(éblast.io 其实是 xn--blast-9ra.io),名单里有也不收
+  for (const s of ["éblast.io", "e\u0301blast.io", "官网blast.io上", "官网blast.io", "\u0661blast.io", "é-blast.io", "blast.ioé", "x\u0334blast.io", "blast.io\u0301"]) {
+    assert.match(checkText("去 " + s + " 看", undefined, IN), /可疑网址/, s);
+    assert.notEqual(checkText("去 " + s + " 看", undefined, POST), null, s);
+    assert.notEqual(checkText("去 " + s + " 看", undefined, REPLY), null, s);
+  }
+  // 正常的中文句号、标点不受影响
+  for (const s of ["钱还在 Lisk。官方入口在官方 X 上。", "我们不会主动找你。钱包信息不要给任何人。", "取出0.5个ETH,1.2美元", "版本1.2.3已经发布", "U.S. 的用户"]) {
+    for (const hosts of [REPLY, POST, IN]) assert.equal(checkText(s, undefined, hosts), null, s);
+  }
+  for (const s of ["官方页面是 blast.io。不要点别的链接。", "去官方页面。blast.io 上看"]) assert.equal(checkText(s, undefined, IN), null, s);
+  // 代价:英文、「。」、英文连着写,会当成网址(写成「Withdraw。 Scroll」或中间夹汉字)
+  assert.match(checkText("点 Withdraw。Scroll 那边", undefined, REPLY), /「withdraw\.scroll」/);
+});
+
+test("新规矩以前收进库里的、带链接的首回:照常显示、照常能点;再送来的改动才按新规矩查", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ docs: {} }); // 建表
+  const OLD = "步骤在 defiexit.com/r/woofi 。", t = new Date(w.clock).toISOString();
+  await w.db.prepare("INSERT INTO outbox (id, mine, created_at, updated_at, purge_after) VALUES (?, ?, ?, ?, ?)").bind("r-old-1104", JSON.stringify({ target: TARGET, why: "旧的", draft: OLD }), t, t, "2099-01-01T00:00:00.000Z").run();
+  const mineOf = async () => (await w.call("/api/admin/state", { cookie: c })).json.outbox.find((x) => x.id === "r-old-1104");
+  assert.equal((await mineOf()).mine.draft, OLD);
+  w.clock += 1000;
+  assert.match((await w.ingest({ outbox: [OUT({ id: "r-old-1104", draft: OLD })] })).json.rejected[0].why, /含链接或域名/);
+  assert.equal((await mineOf()).mine.draft, OLD, "不收的那次不动库里的");
+  const sent = await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-old-1104", status: "已发" }, cookie: c });
+  assert.equal(sent.status, 200, JSON.stringify(sent.json));
+  assert.equal(sent.json.item.sent_text, OLD);
+});
+
+test("收件续答:本站以外只放行运营规则里列的官方网址(主机名一模一样,带协议的只认 https);首回和项目帖不认这份名单;敏感词照旧", async () => {
+  const w = world();
+  const c = await w.login();
+  const IN = (n, draft) => ({ id: "30000000000000005" + n, text: "钱还在里面,怎么取?", author: "user_" + n, draft });
+  const push = async (payload) => { w.clock += 1000; return (await w.ingest(payload)).json; };
+  // 还没有运营规则:官方网址也不收
+  let r = await push({ inbox: [IN("01", "官方页面在 https://blast.io/ 。")] });
+  assert.match(r.rejected[0].why, /含站外链接「blast\.io」/);
+  // 规则和草稿同一包:按这一包的规则查
+  r = await push({ docs: { rules: { dailyReplyCap: 15, officialHosts: ["blast.io", "withdraw.example.org"] } }, inbox: [IN("02", "官方页面在 https://blast.io/withdraw 。"), IN("03", "去 blast.io 看看"), IN("04", "官方页面:https://withdraw.example.org/x?y=1")] });
+  assert.deepEqual([r.rejected, r.inbox], [[], 3]);
+  // 之后的包不带规则:按库里的;子域名、后缀、前缀、http、借道 @ 和路径的,都不算
+  const tricks = ["blast.io.evil.com", "xblast.io", "https://blast.io.evil.com/", "https://xblast.io/", "http://blast.io/", "https://blast.io@evil.com/", "https://evil.com/blast.io", "app.blast.io", "withdraw.example.org.evil.com", "example.org"];
+  r = await push({ inbox: [IN("05", "去 BLAST.IO 看看"), ...tricks.map((s, i) => IN(String(10 + i), "官方页面 " + s))] });
+  assert.equal(r.inbox, 1);
+  assert.deepEqual(r.rejected.map((x) => x.id), tricks.map((s, i) => "30000000000000005" + (10 + i)));
+  for (const x of r.rejected) assert.match(x.why, /含站外链接/, x.id);
+  // 名单只给续答用:对人的首回、项目帖照旧
+  r = await push({ outbox: [OUT({ draft: "官方页面在 blast.io 。" }), { id: "p-blast-1106", kind: "post", topic: "提醒", why: "测试", draft: "官方页面在 blast.io 。" }] });
+  assert.deepEqual(r.rejected.map((x) => x.id), ["r-openeden-1", "p-blast-1106"]);
+  // 敏感词照旧:名单里有也写不进去(名单换成只有这一个,blast.io 就不在了)
+  r = await push({ docs: { rules: { officialHosts: ["claim.example.org"] } }, inbox: [IN("06", "官方页面在 claim.example.org")] });
+  assert.match(r.rejected[0].why, /含不许用的词「claim」/);
+  // 不合格的规则不收,也不会放宽名单:还按库里的
+  r = await push({ docs: { rules: { dailyReplyCap: 99, officialHosts: ["blast.io"] } }, inbox: [IN("07", "去 blast.io 看看")] });
+  assert.deepEqual(r.rejected.map((x) => [x.kind, x.id]), [["doc", "rules"], ["inbox", "3000000000000000507"]]);
+  // 名单里去掉以后:库里已有的照常显示,再送来不收
+  const st = (await w.call("/api/admin/state", { cookie: c })).json;
+  assert.equal(st.inbox.find((x) => x.id === "3000000000000000502").mine.draft, "官方页面在 https://blast.io/withdraw 。");
+  r = await push({ inbox: [IN("02", "官方页面在 https://blast.io/withdraw 。")] });
+  assert.match(r.rejected[0].why, /含站外链接「blast\.io」/);
+});
+
+test("运营规则(rules):上限只收 1–50 的整数,官方网址只收小写主机名、最多 200 个;不合格整份不收、库里的照旧;没送过就按 15", async () => {
+  const w = world();
+  const c = await w.login();
+  const state = async () => (await w.call("/api/admin/state", { cookie: c })).json;
+  assert.equal((await state()).docs.rules, undefined);
+  assert.equal(capOf((await state()).docs.rules), 15);
+  const push = async (rules) => { w.clock += 1000; return (await w.ingest({ docs: { rules } })).json; };
+  const good = { dailyReplyCap: 20, officialHosts: ["blast.io", "www.example.org"], note: "11-09 升到 20", updatedAt: "2026-11-09T21:00:00+08:00" };
+  assert.equal((await push(good)).docs, 1);
+  const bads = [{ dailyReplyCap: 0 }, { dailyReplyCap: 51 }, { dailyReplyCap: 15.5 }, { dailyReplyCap: "20" }, { dailyReplyCap: null },
+    { officialHosts: "blast.io" }, { officialHosts: ["Blast.io"] }, { officialHosts: ["https://blast.io"] }, { officialHosts: ["blast.io/x"] }, { officialHosts: ["*.blast.io"] },
+    { officialHosts: ["blast"] }, { officialHosts: ["1.2.3.4"] }, { officialHosts: ["xn--80ak6aa92e.com"] }, { officialHosts: [""] },
+    { officialHosts: Array.from({ length: 201 }, (_, i) => "h" + i + ".example.org") }, { note: "x".repeat(301) }, []];
+  for (const bad of bads) {
+    const r = await push(bad);
+    assert.deepEqual([r.docs, r.rejected.map((x) => [x.kind, x.id])], [0, [["doc", "rules"]]], JSON.stringify(bad).slice(0, 80));
+  }
+  const st = await state();
+  assert.deepEqual(st.docs.rules, good);
+  assert.equal(capOf(st.docs.rules), 20);
+  // 页面那边也兜一层:读出来不像样的按 15
+  for (const r of [null, {}, { dailyReplyCap: 0 }, { dailyReplyCap: 51 }, { dailyReplyCap: "30" }]) assert.equal(capOf(r), 15);
+  assert.equal(capOf({ dailyReplyCap: 35 }), 35);
+});
+
+test("每天放出的对人首回:按北京时间的一天数今天已发的,剩下的名额按待发的顺序给,多的排队;项目帖、跳过的、收件续答、到期删了目标的不算;过了北京零点重新数", () => {
+  const reply = (id, status = "待发", decided_at = null) => ({ id, mine: { target: { id: "2116000000000000001" }, draft: "x" }, status, decided_at });
+  const post = (id, status = "待发", decided_at = null) => ({ id, mine: { kind: "post", topic: "提醒", draft: "x" }, status, decided_at });
+  // 30 天到期删掉了目标帖子编号的(状态可能还是待发):发不出去,不占名额,也不排队
+  const purged = (id, status = "待发", decided_at = null) => ({ id, mine: { target: { protocol: "OpenEden" }, draft: "x" }, status, decided_at, purged: true });
+  const done = [
+    purged("old2", "已发", "2026-11-06T10:00:00.000Z"),
+    reply("c", "已发", "2026-11-05T15:59:59.000Z"), // 北京 11-05 23:59:59:昨天的,不算
+    reply("a", "已发", "2026-11-05T16:00:00.000Z"), // 北京 11-06 00:00:00(UTC 还是 11-05):今天的
+    reply("b", "已发", "2026-11-06T15:59:00.000Z"), // 北京 11-06 23:59
+    reply("d", "跳过", "2026-11-06T10:00:00.000Z"), // 跳过的不算
+    post("e", "已发", "2026-11-06T10:00:00.000Z"), // 项目帖不算
+    // 收件里的续答(回过了、点了决定)不算
+    { id: "3000000000000000001", mine: { source: "我们的回复 · X", replyToId: "3000000000000000001", draft: "x" }, decision: "采纳", decided_at: "2026-11-06T10:00:00.000Z", replied: true, replied_at: "2026-11-06T10:00:00.000Z" },
+  ];
+  const pend = [purged("old1"), reply("p1"), post("p2"), reply("p3"), reply("p4")];
+  const all = [...done, ...pend];
+  const lastSecond = Date.parse("2026-11-06T15:59:59Z"); // 北京 11-06 23:59:59
+  let g = gate(all, pend, 4, lastSecond);
+  assert.deepEqual([g.cap, g.used, [...g.queued]], [4, 2, ["p4"]]); // 名额 4 - 2:p1、p3 放出,项目帖不占名额
+  assert.equal(waitText(g), "排队:今天上限 4 条(已发 2 条,上面 2 条先发),明天放出");
+  g = gate(all, pend, 2, lastSecond);
+  assert.deepEqual([...g.queued], ["p1", "p3", "p4"]);
+  assert.equal(waitText(g), "排队:今天已到上限 2 条,明天放出");
+  // 北京零点一过重新数;零点整发的算新的一天
+  const midnight = Date.parse("2026-11-06T16:00:00Z");
+  assert.deepEqual([gate(all, pend, 2, midnight).used, [...gate(all, pend, 2, midnight).queued]], [0, ["p4"]]);
+  assert.equal(gate([...all, reply("f", "已发", "2026-11-06T16:00:00.000Z")], pend, 2, midnight).used, 1);
+  // 上限往下调了(已发的比上限多):剩下的全排队,不出负数
+  assert.deepEqual([...gate(all, pend, 1, lastSecond).queued], ["p1", "p3", "p4"]);
+});
+
+test("30 天到期删了目标帖子编号、还挂在待发里的回复:不占当天的名额,也不排队(不然会一直挡着后面新来的)", async () => {
+  const w = world();
+  await w.login();
+  await w.ingest({ outbox: [OUT()] });
+  w.clock += 31 * 864e5;
+  await w.ingest({ outbox: [OUT({ id: "r-new-1", target: { ...TARGET, id: "2116000000000000099", url: "https://x.com/someone/status/2116000000000000099" } })] });
+  const c2 = (await w.call("/api/admin/login", { method: "POST", body: { name: "admin1", password: PW } })).headers.get("Set-Cookie").split(";")[0];
+  const st = (await w.call("/api/admin/state", { cookie: c2 })).json;
+  const old = st.outbox.find((x) => x.id === "r-openeden-1");
+  assert.deepEqual([old.purged, old.status, old.mine.target.id, old.mine.target.protocol], [true, "待发", undefined, "OpenEden"]);
+  const pend = st.outbox.filter((x) => x.status === "待发").sort((a, b) => a.created_at.localeCompare(b.created_at));
+  assert.deepEqual(pend.map((x) => x.id), ["r-openeden-1", "r-new-1"]);
+  const g = gate(st.outbox, pend, 1, w.clock);
+  assert.deepEqual([g.used, [...g.queued]], [0, []]); // 名额 1 给了新来的那条
+});
+
+test("发送节奏提醒(不拦人):30 分钟里第 6 条请他歇一会儿;一次坐下(相邻隔不到 2 小时)第 10 条请他隔两小时;隔够 2 小时重新算", () => {
+  const at = (min) => new Date(Date.parse("2026-11-06T02:00:00Z") + min * 60e3).toISOString();
+  const every = (n, gap) => Array.from({ length: n }, (_, i) => at(i * gap));
+  assert.equal(paceNote([]), null);
+  assert.equal(paceNote(every(5, 5)), null);
+  assert.equal(paceNote(every(6, 5)), "30 分钟里已经发了 6 条,歇一会儿");
+  assert.equal(paceNote(every(6, 6)), "30 分钟里已经发了 6 条,歇一会儿"); // 头尾正好 30 分钟也算
+  assert.equal(paceNote(every(6, 7)), null); // 最早那条在 30 分钟以外
+  // 每 20 分钟一条:30 分钟里最多 2 条,但一次坐下到第 10 条就提醒
+  assert.equal(paceNote(every(9, 20)), null);
+  assert.equal(paceNote(every(10, 20)), "这一次已经发了 10 条,隔两小时再来");
+  assert.equal(paceNote(every(12, 20)), "这一次已经发了 12 条,隔两小时再来");
+  assert.equal(paceNote([...every(9, 20), at(160 + 120)]), null, "隔了正好 2 小时:新的一次坐下");
+  assert.equal(paceNote([...every(9, 20), at(160 + 119)]), "这一次已经发了 10 条,隔两小时再来", "隔 1 小时 59 分:还是同一次");
+  assert.equal(paceNote(every(10, 3)), "这一次已经发了 10 条,隔两小时再来", "两条都够:先说隔两小时");
+  assert.equal(paceNote([...every(6, 5).reverse(), null, "bad"]), "30 分钟里已经发了 6 条,歇一会儿", "顺序乱的、读不出的时间不影响");
+});
+
+test("运营台网页:admin.js 按模块加载,它引的文件都在放行名单里(少一个整页都跑不起来)", async () => {
+  const { FILES } = await import("../functions/admin/[[path]].js");
+  assert.match(readFileSync(new URL("../admin/index.html", import.meta.url), "utf8"), /<script type="module" src="\/admin\/admin\.js"><\/script>/);
+  const deps = [...readFileSync(new URL("../admin/admin.js", import.meta.url), "utf8").matchAll(/^import [^;]+ from "\.\/([a-z]+\.js)";$/gm)].map((m) => m[1]);
+  assert.deepEqual(deps, ["pace.js"]);
+  const env = { ADMIN_HOSTS: "defiexit.com", ASSETS: { fetch: async () => new Response("export {};", { status: 200 }) } };
+  for (const d of deps) {
+    assert.ok(FILES["/admin/" + d], d);
+    const r = await serve(new Request(HOST + "/admin/" + d), env);
+    assert.equal(r.status, 200, d);
+    assert.match(r.headers.get("Content-Type"), /^text\/javascript/);
+  }
 });
 
 // ---------- 代码审查复现过的问题(修了以后留着防回归) ----------
