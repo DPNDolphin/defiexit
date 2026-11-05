@@ -116,7 +116,7 @@
       ],
       "check": {
         "title": "Avant de signer, vérifiez 3 points",
-        "lead": "Après avoir touché « Establish Connection », votre portefeuille affiche une demande de signature. Comparez-la avec cette fiche et cochez chaque ligne au fur et à mesure.",
+        "lead": "Une fois que vous avez touché « Establish Connection », votre portefeuille affiche une demande de signature. Comparez-la avec cette fiche et cochez chaque ligne au fur et à mesure.",
         "skip": "Le trading est déjà activé et le bouton affiche « Place Order » ? Sautez cette étape",
         "confirm": [
           {"title": "La demande vient de app.hyperliquid.xyz", "sub": "Une lettre en trop ou un point manquant, et c'est un autre site"},
@@ -172,7 +172,7 @@
       ],
       "check": {
         "title": "Avant de signer, vérifiez 3 points",
-        "lead": "Après avoir touché « Confirm », votre portefeuille affiche une demande de signature. Comparez-la avec cette fiche et cochez chaque ligne au fur et à mesure.",
+        "lead": "Une fois que vous avez touché « Confirm », votre portefeuille affiche une demande de signature. Comparez-la avec cette fiche et cochez chaque ligne au fur et à mesure.",
         "skip": "Compte unifié (pas de « Perps ⇄ Spot » sur la page « Account ») ? Sautez cette étape",
         "confirm": [
           {"title": "La demande vient de app.hyperliquid.xyz", "sub": "Une lettre en trop ou un point manquant, et c'est un autre site"},
@@ -197,7 +197,7 @@
       ],
       "check": {
         "title": "Avant de signer, vérifiez 3 points",
-        "lead": "Après avoir touché « Withdraw to Arbitrum », votre portefeuille affiche une demande de signature. Comparez-la avec cette fiche et cochez chaque ligne au fur et à mesure.",
+        "lead": "Une fois que vous avez touché « Withdraw to Arbitrum », votre portefeuille affiche une demande de signature. Comparez-la avec cette fiche et cochez chaque ligne au fur et à mesure.",
         "confirm": [
           {"title": "La demande vient de app.hyperliquid.xyz", "sub": "Une lettre en trop ou un point manquant, et c'est un autre site"},
           {"title": "On y lit Withdraw, et destination est votre propre adresse {{addrShort}}", "sub": "Si ce n'est pas votre adresse, refusez"},

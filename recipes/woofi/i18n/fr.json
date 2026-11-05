@@ -73,7 +73,7 @@
         "restricted": {"see": "Un message WE'RE SORRY indique que votre région n'est pas prise en charge", "do": "Arrêtez-vous ici. WOOFi ne dessert pas votre région, et ce guide ne vous aidera pas à contourner les restrictions régionales. Vous pouvez poser la question sur le Discord officiel de WOOFi (voir ci-dessous)."},
         "not-sure": {"see": "Un doute : est-ce bien le site officiel ?", "do": "Regardez la barre d'adresse : le domaine doit être exactement **woofi.com**. Sinon, fermez la page et tapez l'adresse vous-même. Ne touchez pas les liens que d'autres personnes vous envoient."},
         "old-domain": {"see": "Votre favori indique fi.woo.org", "do": "C'est l'ancienne adresse de WOOFi, qui redirige désormais vers woofi.com. Fiez-vous à ce que la barre d'adresse affiche au final : woofi.com."},
-        "history": {"see": "Après avoir touché WOOFi sous « History », la page de présentation s'affiche (grand titre SWAP AND EARN, bouton LAUNCH APP)", "do": "Touchez le bouton orange **LAUNCH APP** au milieu. Il ouvre d'abord la page de trading avec le graphique des prix ; touchez ensuite les trois traits en haut à gauche → **Stake** pour arriver sur la page de staking. La prochaine fois, collez l'adresse complète au lieu de passer par « History »."},
+        "history": {"see": "Vous avez touché WOOFi sous « History », et la page de présentation s'affiche (grand titre SWAP AND EARN, bouton LAUNCH APP)", "do": "Touchez le bouton orange **LAUNCH APP** au milieu. Il ouvre d'abord la page de trading avec le graphique des prix ; touchez ensuite les trois traits en haut à gauche → **Stake** pour arriver sur la page de staking. La prochaine fois, collez l'adresse complète au lieu de passer par « History »."},
         "no-paste": {"see": "Un appui long sur le champ de recherche n'affiche pas « Paste » (Coller)", "do": "Revenez sur cette page et touchez de nouveau l'adresse pour la copier. Sur iPhone, touchez « Allow Paste » (Autoriser le collage) quand on vous le demande. Si cela ne marche toujours pas, tapez `https://woofi.com/stake` à la main."}
       }
     },
@@ -114,7 +114,7 @@
       ],
       "check": {
         "title": "Avant de confirmer, vérifiez 3 points",
-        "lead": "Après avoir touché « Claim », votre portefeuille vous demande de confirmer une transaction (dans le portefeuille Binance, elle s'intitule « Contract call »). Comparez-la avec cette liste et touchez chaque point une fois qu'il correspond.",
+        "lead": "Une fois que vous avez touché « Claim », votre portefeuille vous demande de confirmer une transaction (dans le portefeuille Binance, elle s'intitule « Contract call »). Comparez-la avec cette liste et touchez chaque point une fois qu'il correspond.",
         "skip": "Déjà réclamé (« USDC reward » est à 0) ? Sautez cette étape",
         "confirm": [
           {"title": "La demande vient de woofi.com, sur Arbitrum", "sub": "Le portefeuille Binance indique Arbitrum One. Une lettre en trop ou un point manquant dans le site, et vous vous arrêtez"},
@@ -142,7 +142,7 @@
       "title": "Retirer vos WOO du staking",
       "whenText": "Seulement si vous avez des WOO en staking",
       "note": "Transaction 2",
-      "milestone": "Staking",
+      "milestone": "Sortie du staking",
       "detour": {
         "see": "Vous voyez un graphique des prix (trois traits en haut à gauche) ? Deux gestes pour revenir à la page de staking",
         "thumb": "perps-1-en.webp",
@@ -159,7 +159,7 @@
       ],
       "check": {
         "title": "Avant de confirmer, vérifiez 3 points",
-        "lead": "Après avoir touché « UNSTAKE », votre portefeuille vous demande de confirmer une transaction (dans le portefeuille Binance, elle s'intitule « Contract call »). Comparez-la avec cette liste et touchez chaque point une fois qu'il correspond.",
+        "lead": "Une fois que vous avez touché « UNSTAKE », votre portefeuille vous demande de confirmer une transaction (dans le portefeuille Binance, elle s'intitule « Contract call »). Comparez-la avec cette liste et touchez chaque point une fois qu'il correspond.",
         "skip": "Pas de WOO en staking ? Sautez cette étape",
         "confirm": [
           {"title": "La demande vient de woofi.com, sur Arbitrum", "sub": "Le portefeuille Binance indique Arbitrum One. Une lettre en trop ou un point manquant dans le site, et vous vous arrêtez"},
@@ -205,7 +205,7 @@
       ],
       "check": {
         "title": "Avant de confirmer, vérifiez 3 points",
-        "lead": "Après avoir touché « WITHDRAW », votre portefeuille vous demande de confirmer une transaction (dans le portefeuille Binance, elle s'intitule « Contract call »). Comparez-la avec cette liste et touchez chaque point une fois qu'il correspond.",
+        "lead": "Une fois que vous avez touché « WITHDRAW », votre portefeuille vous demande de confirmer une transaction (dans le portefeuille Binance, elle s'intitule « Contract call »). Comparez-la avec cette liste et touchez chaque point une fois qu'il correspond.",
         "skip": "Rien n'attend dans le coffre ? Sautez cette étape",
         "confirm": [
           {"title": "La demande vient de woofi.com, sur Arbitrum", "sub": "Le portefeuille Binance indique Arbitrum One. Une lettre en trop ou un point manquant dans le site, et vous vous arrêtez"},
