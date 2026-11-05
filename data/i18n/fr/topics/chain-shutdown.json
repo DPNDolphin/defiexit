@@ -1,0 +1,107 @@
+{
+  "title": "Une chaîne ferme : comment sortir mon argent ?",
+  "summary": "Commencez par trouver le « dernier jour pour retirer » officiel : il tombe souvent avant la date de fermeture. Ensuite, dans l'ordre : sortez de vos positions dans les applications de cette chaîne et récupérez vos récompenses, faites passer vos fonds par le pont qu'indique le guide officiel, et gardez un peu de gas des deux côtés. Après une date limite, certains projets ouvrent une voie de récupération officielle et d'autres disent que les fonds deviennent inaccessibles : ne comptez donc pas sur une seconde chance.",
+  "sections": [
+    {
+      "h": "Étape 1 : avoir les bonnes dates",
+      "p": [
+        "Les annonces de fermeture donnent souvent deux dates : le dernier jour où vous pouvez retirer, et le jour où la chaîne s'arrête vraiment. Fiez-vous à la première, et n'attendez pas le dernier jour. Ne croyez que les dates publiées par le compte et le site officiels, pas celles qu'on vous rapporte."
+      ],
+      "list": [
+        "Sophon : le 25 novembre est la date limite de retrait ; les infrastructures clés et les sites associés commencent ensuite à fermer, avant l'arrêt définitif du mainnet le 30 novembre. Selon les mots de Sophon : « C'est le 25 novembre qu'il faut agir, pas le 30 novembre. »",
+        "Abstract : la chaîne ferme le 15 décembre 2026, et les fonds qui n'auront pas été sortis via le pont d'ici là deviendront inaccessibles.",
+        "Horizen L3 : la fermeture du pont (4 novembre, 13:00 UTC) a été fixée un jour avant l'arrêt définitif, pour que l'instantané (snapshot) soit propre et que rien ne soit en transit au moment où la chaîne s'arrête."
+      ]
+    },
+    {
+      "h": "Étape 2 : sortir de vos positions et récupérer vos récompenses avant de passer par le pont",
+      "p": [
+        "L'argent placé en staking, dans des farms, des pools de liquidité ou des prêts ne fait pas partie du solde de votre portefeuille. Ramenez-le d'abord dans votre portefeuille depuis l'application d'origine ; ensuite seulement, vous pourrez le faire passer par le pont."
+      ],
+      "list": [
+        "Horizen : retirez d'abord votre mise sur la page de staking, puis réclamez les récompenses, puis passez par le pont vers Base.",
+        "Sophon : en plus de retirer vos SOPH, ETH, USDC et autres actifs, réclamez les récompenses de staking ou Guardian encore en attente, et retirez tout ce qui reste dans la Sophon Farm.",
+        "Certaines positions sont traitées pour vous, alors n'y touchez pas de vous-même : Sophon indique que les NFT Guardian, le vSOPH et le SOPH en staking passent automatiquement sur Ethereum. Lisez le guide officiel en entier avant d'agir."
+      ]
+    },
+    {
+      "h": "Étape 3 : suivre la voie indiquée par le guide officiel, et garder du gas des deux côtés",
+      "p": [
+        "Le guide officiel précise en général la voie à suivre, combien de gas garder, et quels jetons ne sont pas couverts par le plan officiel."
+      ],
+      "list": [
+        "N'utilisez que les ponts ou les pages de migration listés par le guide officiel. Par exemple, Abstract a indiqué son Migration Hub (migrate.abs.xyz) et son pont natif (native-bridge.abs.xyz, qui a selon lui un délai d'environ 3 heures) ; Sophon renvoie vers claim.sophon.com.",
+        "Revenir sur Ethereum par un pont natif officiel implique généralement une attente, et la plupart des chaînes demandent un « Claim » supplémentaire sur Ethereum. Pour les détails, voyez « Retirer d'un L2 vers Ethereum ».",
+        "Gardez du gas : laissez un peu du jeton natif sur la chaîne qui ferme pour les frais, et un peu d'ETH sur Ethereum pour la dernière étape. Horizen a conseillé aux utilisateurs à court de gas de déposer une toute petite quantité d'ETH depuis Base via le pont natif, uniquement le minimum autorisé par le pont.",
+        "Les jetons émis par un tiers peuvent échapper au plan officiel : Horizen a indiqué que l'USDC.e est géré par Stargate, et non par Horizen ; il n'était donc pas couvert par le reversement de la DAO, et les utilisateurs devaient le sortir eux-mêmes via un pont.",
+        "Portefeuilles de contrat intelligent et multisigs : vérifiez si le projet prévoit une voie ou un contact à part. Le site de récupération de Blast permet au propriétaire d'un Safe ou d'un autre portefeuille intelligent de récupérer les fonds de celui-ci ; Horizen a demandé aux utilisateurs de portefeuilles de contrat intelligent d'écrire à son adresse e-mail de sécurité officielle avant la date limite."
+      ]
+    },
+    {
+      "h": "Après la date limite : y a-t-il encore un moyen ?",
+      "p": [
+        "Cela dépend du projet. Voici les dispositions annoncées par les projets eux-mêmes (vérifiées le 2026-11-05) ; elles ne valent pas pour d'autres chaînes."
+      ],
+      "list": [
+        "Blast : le L2 a fermé le 4 novembre 2026. Le site de récupération officiel, blast.io, reste ouvert 12 mois, avec une fin du support fixée au 4 novembre 2027. L'ETH, le WETH et l'USDB détenus sur Blast, ainsi que les retraits jamais terminés, se récupèrent sur le mainnet d'Ethereum. Les utilisateurs de Blast Mobile sont invités à importer la phrase de récupération de ce portefeuille dans une application de portefeuille comme MetaMask ou Rabby, puis à connecter ce portefeuille ; ne tapez une phrase de récupération que dans une application de portefeuille, jamais sur un site web.",
+        "Lisk : la Lisk Chain a fermé le 2 novembre 2026, et son portail comme son pont sont fermés. Lisk indique développer un contrat intelligent dédié et prévoit une procédure de récupération manuelle en janvier 2027, dont les détails suivront ; les retraits en cours au moment de la fermeture seront crédités à leur adresse de destination sur Ethereum. Les LSK sur Ethereum ou sur les plateformes d'échange ne sont pas concernés.",
+        "Horizen L3 : un instantané a été pris le 4 novembre à 13:00 UTC. Après une semaine d'examen public de cet instantané, la DAO Horizen enverra les ZEN restants (y compris les récompenses de staking non réclamées) et les soldes d'ETH supérieurs à 0.001 ETH à la même adresse sur Base, ce qui est attendu dans la seconde moitié de novembre. L'ETH en dessous de 0.001 n'est pas restitué, et l'USDC.e n'est pas couvert.",
+        "D'autres projets disent clairement que manquer la date limite signifie perdre l'accès : Abstract indique que les fonds non sortis via le pont à cette date seront inaccessibles, et Sophon que les actifs restants après la date limite risquent de devenir définitivement inaccessibles.",
+        "Toute solution officielle est annoncée sur le compte et le site officiels. Si quelqu'un vous écrit en privé au sujet d'un « canal de récupération », considérez que c'est une arnaque."
+      ]
+    },
+    {
+      "h": "Les arnaques qui apparaissent autour des fermetures",
+      "p": [
+        "Plus la date limite approche, plus les escrocs sont nombreux. Les projets eux-mêmes ont publiquement mis en garde contre chacune de ces arnaques."
+      ],
+      "list": [
+        "Faux sites de migration : Sophon a demandé aux utilisateurs de « n'utiliser que les liens officiels de Sophon et de se méfier des faux sites de migration » ; Abstract a mis en garde contre l'usurpation d'identité, les faux sites de migration et les messages privés prétendant représenter Abstract.",
+        "Messages privés du « support » : Horizen indique que son équipe ne vous écrira jamais en premier, ne vous demandera jamais vos clés privées ni votre phrase de récupération, et ne vous demandera jamais de lui envoyer des fonds.",
+        "« Approuvez pour débloquer » : une autorisation permet à quelqu'un d'autre de sortir un jeton de votre portefeuille. MetaMask cite la pression du temps construite autour d'une date limite comme un signe typique d'une demande d'autorisation malveillante.",
+        "DeFiExit demande seulement à votre portefeuille de partager son adresse : il ne vous demande jamais de signer, d'autoriser ou d'envoyer quoi que ce soit, et nous ne vous écrivons jamais en premier."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Dois-je déplacer les jetons de mon portefeuille froid ?",
+      "a": "Cela dépend de la chaîne sur laquelle se trouvent les jetons, pas du type de portefeuille. Un portefeuille froid ne fait que garder vos clés ; seuls les actifs présents sur la chaîne qui ferme doivent en sortir. Par exemple, Lisk a indiqué que les LSK sur Ethereum ou sur les plateformes d'échange n'étaient pas concernés par la fermeture de sa chaîne, et Sophon indique que le SOPH est natif d'Ethereum : seule la partie sur la Sophon Chain doit être retirée. Vérifiez dans votre portefeuille ou sur un explorateur de blocs sur quelle chaîne se trouve le solde."
+    },
+    {
+      "q": "La date limite est passée. Mon argent est-il perdu ?",
+      "a": "Pas forcément, mais n'y comptez pas. Consultez le site et le compte X officiels de la chaîne pour connaître les dispositions prévues après la fermeture : Blast a ouvert un site de récupération officiel pour 12 mois, Lisk prévoit une procédure de récupération en janvier 2027, et la DAO Horizen renvoie les soldes sur Base. D'autres projets disent que manquer la date limite signifie perdre l'accès. Ne faites jamais confiance à un « canal de récupération » que le projet lui-même n'a pas annoncé."
+    },
+    {
+      "q": "Dois-je « vérifier mon portefeuille » ou payer des frais avant de pouvoir migrer ?",
+      "a": "Payer quelqu'un d'abord : non. Horizen indique que son équipe ne vous demandera jamais de lui envoyer des fonds ; le seul coût est le gas que votre propre portefeuille paie pour envoyer une transaction. « Vérifier votre portefeuille » : MetaMask indique que les messages urgents vous demandant de suivre un lien pour « vérifier » votre compte sont une arnaque courante. Si le guide officiel vous demande vraiment de signer une confirmation, faites-le uniquement sur la page indiquée dans la publication officielle, et lisez attentivement la fenêtre du portefeuille."
+    },
+    {
+      "q": "Je n'ai pas de gas sur la chaîne qui ferme, donc je ne peux pas sortir via le pont.",
+      "a": "Consultez d'abord le guide officiel. Certaines chaînes coupent les dépôts pendant une fermeture : Sophon a désactivé les nouveaux dépôts le 25 juin 2026, tandis qu'Horizen a laissé ouverts les dépôts d'ETH depuis Base uniquement pour que les utilisateurs puissent payer le gas, en conseillant de déposer le minimum. Si le guide n'en parle pas, posez la question sur le Discord officiel, pas à quelqu'un qui vous propose en privé de « payer votre gas »."
+    },
+    {
+      "q": "J'ai déjà lancé le transfert sur le pont officiel. Pourquoi rien n'est arrivé ?",
+      "a": "Les ponts natifs officiels vers Ethereum impliquent une attente, et la plupart demandent aussi un « Claim » supplémentaire de votre part sur Ethereum. Abstract, par exemple, indique que son pont natif a un délai d'environ 3 heures, alors qu'OP Mainnet prend généralement 7 jours. Pour les détails, voyez « Retirer d'un L2 vers Ethereum »."
+    }
+  ],
+  "sources": [
+    "Sophon sur X : calendrier de fermeture 1/4, arrêt du mainnet le 30 novembre (19 octobre 2026)",
+    "Sophon sur X : 2/4, date limite de retrait le 25 novembre (19 octobre 2026)",
+    "Sophon sur X : 3/4, retraits, récompenses et actifs de la Farm (19 octobre 2026)",
+    "Sophon sur X : 4/4, n'utiliser que les liens officiels, se méfier des faux sites de migration (19 octobre 2026)",
+    "Sophon sur X : rappel du 2 novembre (le SOPH lui-même subsiste)",
+    "Documentation de Sophon : guide de migration de la chaîne (positions déplacées automatiquement, dépôts coupés depuis le 25 juin)",
+    "Abstract sur X : « Abstract is Winding Down » (6 octobre 2026)",
+    "Blog d'Horizen : « Changes for Horizen » (arrêt du L3, reversement par la DAO, rappel de sécurité ; 23 octobre 2026)",
+    "Horizen sur X : le pont ferme le 4 novembre à 13:00 UTC (4 novembre 2026)",
+    "Blast sur X : le L2 a fermé ; site de récupération ouvert 12 mois (4 novembre 2026)",
+    "Site de récupération officiel de Blast (ETH, WETH, USDB ; Blast Mobile ; Safe)",
+    "Blog de Lisk : « The Lisk Chain has closed »",
+    "Support de Lisk : « Lisk Chain claims » (procédure de récupération manuelle en janvier 2027)",
+    "Lisk sur X : contrat dédié ; retraits en cours crédités sur Ethereum (3 novembre 2026)",
+    "Documentation OP : retraits de 7 jours via le Standard Bridge sur OP Mainnet",
+    "Assistance MetaMask : « What is a token approval? » (signes d'une autorisation malveillante)",
+    "Assistance MetaMask : « Official support channels » (messages frauduleux « vérifiez votre compte »)"
+  ]
+}
