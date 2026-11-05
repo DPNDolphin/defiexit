@@ -1,0 +1,257 @@
+{
+  "title": "Lấy khoản stake và vault WOOFi về ví của bạn",
+  "short": "WOOFi về ví của bạn",
+  "verified": "Đã thử ngày 29/10/2026 bằng chính tài khoản của tác giả trong ví Binance, làm theo hướng dẫn này: lệnh nhận thưởng, lệnh hủy stake và lệnh rút từ vault đều gửi đến đúng hợp đồng và mang đúng dữ liệu như trên thẻ kiểm tra, và cả ba khoản đều đã về. Các màn hình được đối chiếu trên trang chính thức ngày 28/10/2026 bằng một ví thử nghiệm chỉ đọc.",
+  "fieldTests": [
+    "Đã lấy lại bằng ví Binance theo hướng dẫn này; cả ba giao dịch đều đã về. Sau khi kết nối, bạn có thể bị đưa đến trang giao dịch có biểu đồ giá, và hai ô hiện 0 trên trang vault rất dễ đọc nhầm. Cả hai điều này nay đã có trong hướng dẫn."
+  ],
+  "covers": "WOO đã stake trên Arbitrum, phần thưởng chưa nhận, và ETH đã tất toán đang chờ trong vault",
+  "summary": "WOO đã stake trên WOOFi (Arbitrum), phần thưởng USDC bạn chưa từng nhận, tiền trong vault ETH đã tất toán nhưng chưa rút về: ba lần nhấn trên trang chính thức, mỗi lần là một giao dịch thông thường, và tiền về thẳng ví của bạn.",
+  "facts": [
+    ["Giao dịch", "1–3 (tùy bạn có những gì). Giao dịch thông thường, không cấp quyền"],
+    ["Phí", "Khoảng 0.00002 ETH cho cả ba, vài cent, trả bằng ETH trong ví của bạn trên Arbitrum"],
+    ["Thời gian", "Khoảng 5 phút, không phải chờ tất toán"],
+    ["Bạn cần", "Ít nhất 0.0002 ETH trên Arbitrum trong ví. Ít hơn mức đó, trang chính thức sẽ không cho bạn làm tiếp"]
+  ],
+  "chips": ["Khoảng 5 phút", "1–3 giao dịch, không cấp quyền", "Phí vài cent"],
+  "support": {
+    "label": "Discord chính thức của WOOFi",
+    "note": "Các kênh chính thức ghi ở cuối trang WOOFi là Discord và X (@_WOOFi). WOOFi không bao giờ nhắn tin riêng cho bạn trước. Bất kỳ \"nhân viên hỗ trợ\" nào nhắn tin riêng cho bạn đều là kẻ lừa đảo."
+  },
+  "official": [{"label": "Trang chính thức của WOOFi"}],
+  "vars": {
+    "addrShort": "địa chỉ của chính bạn",
+    "woo": "số WOO bạn đã stake",
+    "rewards": "phần thưởng bạn chưa nhận",
+    "eth": "số ETH bạn có thể rút từ vault"
+  },
+  "pro": [
+    "**Lộ trình**: woofi.com/stake → **Claim** phần thưởng → **Unstake** toàn bộ → **Earn** ở dưới cùng → My vaults → thẻ ETH trên Arbitrum → tab WITHDRAW → **WITHDRAW** cạnh Available for Withdrawals.",
+    "**Ba giao dịch**: claimRewards đến 0xa9E2…24Fb; unstake (toàn bộ) đến 0x2CFa…d8e2; withdraw đến 0xE77A…Ad6a. Cả ba đều gửi 0 ETH, không cần cấp quyền và không cần ký thông điệp.",
+    "**Số liệu của bạn**: nhận {{rewards}}, hủy stake {{woo}} WOO, rút {{eth}} ETH từ vault.",
+    "**Dễ nhầm**: đừng nhấn Compound hay auto-compound. Ở vault, nhấn nút WITHDRAW nhỏ, không phải nút to. Có dưới 0.0002 ETH trên Arbitrum thì trang chính thức sẽ không cho làm tiếp."
+  ],
+  "done": {
+    "where": "trên mạng Arbitrum trong ví của bạn",
+    "from": "Gửi từ các hợp đồng chính thức của WOOFi",
+    "look": "Xem ở đâu: ứng dụng ví → Assets (Tài sản), chọn mạng Arbitrum."
+  },
+  "screens": {
+    "perps": {"img": "perps-1-en.webp", "name": "Trang giao dịch có biểu đồ giá", "features": ["Một biểu đồ giá dạng nến lớn chiếm giữa trang", "ETH ở góc trên bên trái, bên dưới có 100x", "Ba tab phía trên biểu đồ: Chart / Trades / Data"], "do": "Đây là trang giao dịch hợp đồng vĩnh cửu của WOOFi, không phải trang staking. Làm theo hai hình bên dưới để quay lại: bạn đã đến nơi khi góc trên bên trái có công tắc Spot / Perps và thanh dưới cùng có Stake. Nếu địa chỉ của bạn hiện ở góc trên bên phải thì làm tiếp; nếu thấy ghi Connect Wallet, hãy kết nối lại.", "images": [{"src": "perps-1-en.webp", "caption": "① Nhấn biểu tượng ba gạch ở góc trên bên trái"}, {"src": "perps-2-en.webp", "caption": "② Nhấn **Stake**"}]},
+    "home": {"name": "Trang giới thiệu WOOFi (có LAUNCH APP)", "features": ["Tiêu đề lớn: SWAP AND EARN ON REAL-WORLD ASSETS", "Một nút LAUNCH APP màu cam ở giữa", "Các con số lớn ở phía dưới, như Spot volume và Perps volume"], "do": "Đây là trang giới thiệu của WOOFi, không phải trang staking. Làm theo ba hình bên dưới để quay lại: nhấn **LAUNCH APP** (trước tiên nó mở trang giao dịch có biểu đồ giá), rồi nhấn biểu tượng ba gạch ở góc trên bên trái → **Stake**. Nếu địa chỉ của bạn hiện ở góc trên bên phải thì làm tiếp; nếu thấy ghi Connect Wallet, hãy kết nối lại.", "images": [{"src": "home-launch.webp", "caption": "① Nhấn nút **LAUNCH APP** màu cam ở giữa"}, {"src": "perps-1-en.webp", "caption": "① Ở trang biểu đồ giá, nhấn biểu tượng ba gạch ở góc trên bên trái"}, {"src": "perps-2-en.webp", "caption": "② Nhấn **Stake**"}]},
+    "stake-new": {"name": "Trang staking, chưa kết nối ví", "features": ["Công tắc Spot / Perps ở góc trên bên trái", "Weekly rewards ở gần phía trên", "Một nút Connect Wallet màu cam"], "do": "Đây là trang staking, chỉ là bạn chưa kết nối. Hãy kết nối ví như ở bước 2."},
+    "wallets": {"name": "Yêu cầu bạn chọn ví", "features": ["Tiêu đề ghi Connect your wallet", "Một hàng biểu tượng ví: Detected Wallet, Binance, Coinbase Wallet…", "Dưới cùng có dòng powered by thirdweb"], "do": "Đây là phần chọn ví. Chọn **Detected Wallet**; trong ứng dụng Binance, chọn **Binance** cũng được. Khi ví hỏi kết nối và yêu cầu đến từ woofi.com, nhấn Connect (Kết nối)."},
+    "networks": {"name": "Yêu cầu bạn chọn mạng", "features": ["Tiêu đề ghi Switch Network", "Hai cột tên mạng dưới Mainnet: Ethereum, Arbitrum, Base…", "Một dấu × ở góc trên bên phải"], "do": "Đây là menu chọn mạng. Chọn **Arbitrum** và xác nhận chuyển mạng trong ví."},
+    "stake": {"name": "Trang staking, đã kết nối ví", "features": ["Các tab Stake / Unstake, Stake màu cam", "USDC reward và XP", "Một nút Claim màu cam cạnh Compound"], "do": "Đây là trang staking và ví của bạn đã được kết nối. Nhấn nút bên dưới để đến bước bạn cần, rồi làm theo hình và thẻ kiểm tra của bước đó. Khoan nhấn các nút trên trang này."},
+    "unstake": {"name": "Tab Unstake", "features": ["Các tab Stake / Unstake, Unstake màu cam", "Một ô nhập hiện 0 WOO, bên phải có nút UNSTAKE", "Bên dưới có Claim và Compound, giống tab Stake"], "do": "Đây là tab Unstake. Nhấn nút bên dưới để đến bước \"Hủy stake WOO\", rồi làm theo hình và thẻ kiểm tra của bước đó."},
+    "earn": {"name": "Trang Earn có danh sách vault", "features": ["My earnings, với Holdings, Monthly Profits và Average APR", "Hai tab: All vaults / My vaults", "Một ô tìm kiếm ghi Try \"USDT\""], "do": "Đây là trang vault. Tìm thẻ ETH trên Arbitrum và làm theo bước \"Rút ETH từ vault\"."},
+    "vault": {"name": "Tab WITHDRAW của vault", "features": ["Hai khối hướng dẫn ghi STEP 1 và STEP 2", "Một nút REQUEST WITHDRAWAL màu xám", "Dòng cuối ghi Available for Withdrawals, bên phải có nút WITHDRAW nhỏ"], "do": "Đây là tab rút tiền của vault. Nhấn nút bên dưới để đến bước \"Rút ETH từ vault\", rồi làm theo hình và thẻ kiểm tra của bước đó."},
+    "domain": {"name": "Thanh địa chỉ không ghi woofi.com", "do": "Đóng trang ngay và đừng ký bất cứ thứ gì. Tự gõ `https://woofi.com/stake`; đừng nhấn vào đường dẫn người khác gửi cho bạn."},
+    "sign": {"name": "Ví yêu cầu bạn ký một thông điệp, hoặc cấp quyền (Approve / Permit)", "do": "Nhấn Reject (Từ chối). Mọi bước trong hướng dẫn này đều là giao dịch thông thường: không ký thông điệp, không cấp quyền. Đóng trang và quay lại bước 1 để kiểm tra địa chỉ."},
+    "blocked": {"name": "Hiện thông báo Blocked Address", "do": "WOOFi đã chặn địa chỉ này dựa trên danh sách trừng phạt. Hướng dẫn này không giúp được."},
+    "sorry": {"name": "WE'RE SORRY: khu vực của bạn không được hỗ trợ", "do": "Dừng ở đây. WOOFi không phục vụ khu vực của bạn, và hướng dẫn này sẽ không giúp bạn lách giới hạn khu vực. Bạn có thể hỏi trên Discord chính thức của WOOFi."}
+  },
+  "steps": {
+    "open": {
+      "title": "Mở trang chính thức trong ứng dụng ví",
+      "items": [
+        "Trước tiên nhấn vào địa chỉ này để sao chép: `https://woofi.com/stake`",
+        "Dưới đây là các bước trong ví Binance, mỗi lần nhấn một hình. Ảnh chụp là ứng dụng Binance bản tiếng Trung; bản tiếng Anh có bố cục giống hệt. Nếu dùng ví khác, hãy dán địa chỉ này vào trình duyệt DApp của ví đó."
+      ],
+      "images": [
+        "① Mở ứng dụng Binance và nhấn **Wallet** (Ví) ở trên cùng (số dư trong hình đã được che)",
+        "② Nhấn **Discover** (Khám phá) ở dưới cùng. Ví đang chọn ở góc trên bên trái phải là ví chứa số tiền này (ví dụ Wallet1). Nếu không phải, nhấn vào đó để chuyển",
+        "③ Nhấn ô tìm kiếm ở trên cùng (Search DApp or enter URL)",
+        "④ iPhone sẽ hỏi có cho phép dán không: nhấn **Allow Paste** (Cho phép dán) (điện thoại Android bỏ qua bước này)",
+        "⑤ Nhấn giữ ô tìm kiếm, rồi nhấn **Paste** (Dán)",
+        "⑥ Nhấn vào dòng hiện ra bên dưới: **woofi.com/stake**",
+        "✗ Đừng nhấn WOOFi trong History (Lịch sử): mục đó chỉ lưu trang chủ, sẽ mở trang giới thiệu và bạn phải nhấn thêm ba lần",
+        "⑦ Trang mở thẳng vào trang staking. Kiểm tra phía trên ghi **woofi.com**: thừa một chữ cái hay thiếu một dấu chấm thì dừng lại"
+      ],
+      "situations": {
+        "search-instead": {"see": "Gõ địa chỉ thì lại ra kết quả tìm kiếm", "do": "Gõ cả `https://` và nhập đầy đủ địa chỉ: `https://woofi.com/stake`."},
+        "restricted": {"see": "Thông báo WE'RE SORRY cho biết khu vực của bạn không được hỗ trợ", "do": "Dừng ở đây. WOOFi không phục vụ khu vực của bạn, và hướng dẫn này sẽ không giúp bạn lách giới hạn khu vực. Bạn có thể hỏi trên Discord chính thức của WOOFi (xem bên dưới)."},
+        "not-sure": {"see": "Không chắc đây là trang chính thức", "do": "Nhìn thanh địa chỉ: tên miền phải đúng chính xác là **woofi.com**. Nếu không phải, hãy đóng trang và tự gõ địa chỉ. Đừng nhấn vào đường dẫn người khác gửi cho bạn."},
+        "old-domain": {"see": "Dấu trang của bạn ghi fi.woo.org", "do": "Đó là địa chỉ cũ của WOOFi và giờ tự chuyển sang woofi.com. Hãy dựa vào địa chỉ cuối cùng hiện trên thanh địa chỉ: woofi.com."},
+        "history": {"see": "Bạn nhấn WOOFi trong History và vào trang giới thiệu (tiêu đề lớn SWAP AND EARN, có nút LAUNCH APP)", "do": "Nhấn nút **LAUNCH APP** màu cam ở giữa. Trước tiên nó mở trang giao dịch có biểu đồ giá; sau đó nhấn biểu tượng ba gạch ở góc trên bên trái → **Stake** để đến trang staking. Lần sau, hãy dán đầy đủ địa chỉ thay vì dùng History."},
+        "no-paste": {"see": "Nhấn giữ ô tìm kiếm mà không thấy Paste", "do": "Quay lại trang này và nhấn vào địa chỉ lần nữa để sao chép. Trên iPhone, nhấn Allow Paste (Cho phép dán) khi được hỏi. Nếu vẫn không được, hãy tự gõ `https://woofi.com/stake`."}
+      }
+    },
+    "connect": {
+      "title": "Kết nối ví và chuyển sang Arbitrum",
+      "note": "Chỉ kết nối. Không có chữ ký, không có tiền nào bị chuyển",
+      "images": [
+        "① Nhấn **Connect Wallet** (nút ở góc trên bên phải cũng được)",
+        "① Chọn **Detected Wallet**: đó là ví trong ứng dụng bạn đang dùng ② Trong ứng dụng Binance, chọn **Binance** cũng được. Khi ví hỏi kết nối và yêu cầu đến từ woofi.com, nhấn Connect (Kết nối)",
+        "① Địa chỉ của bạn hiện ở góc trên bên phải (trong ảnh đã được che). Địa chỉ đó phải là {{addrShort}} ② Biểu tượng này là mạng hiện tại. Nhấn vào đó",
+        "① Chọn **Arbitrum** và xác nhận chuyển mạng trong ví. Nếu đã là Arbitrum (có một chấm nhỏ sau tên), hãy đóng menu bằng dấu × ở góc trên bên phải"
+      ],
+      "items": ["✗ Nếu khi kết nối hiện thông báo WE'RE SORRY cho biết khu vực của bạn không được hỗ trợ, hãy dừng ở đây. Hướng dẫn này sẽ không giúp bạn lách giới hạn khu vực."],
+      "situations": {
+        "perps-page": {"see": "Sau khi kết nối, tôi thấy trang giao dịch có biểu đồ giá, không phải trang staking", "do": "Đó là trang giao dịch hợp đồng vĩnh cửu của WOOFi. Nhấn biểu tượng ba gạch ở góc trên bên trái → **Stake** để quay lại trang staking. Nếu góc trên bên phải ghi Connect Wallet, hãy kết nối lại."},
+        "no-popup": {"see": "Đã nhấn Connect Wallet nhưng ví không hỏi kết nối", "do": "Mở trang bên trong trình duyệt DApp của chính ứng dụng ví (bước 1). Nếu Detected Wallet không phản hồi, hãy mở lại trang và thử Binance."},
+        "wrong-address": {"see": "Địa chỉ ở góc trên bên phải không phải địa chỉ có tiền", "do": "Trong ứng dụng ví, chuyển sang ví đang chứa số tiền này, rồi kết nối lại. Địa chỉ không khớp thì đừng làm tiếp."},
+        "sign-on-connect": {"see": "Ví yêu cầu bạn ký một thông điệp khi kết nối", "do": "Nhấn Reject (Từ chối), đóng trang và kiểm tra lại địa chỉ. WOOFi không cần chữ ký để kết nối (mã nguồn trang của WOOFi không gửi yêu cầu chữ ký nào)."},
+        "wrong-network": {"see": "Phía trên trang ghi Wrong Network", "do": "Nhấn biểu tượng mạng ở góc trên bên phải, chọn **Arbitrum** và xác nhận chuyển mạng trong ví."},
+        "blocked-address": {"see": "Hiện thông báo Blocked Address", "do": "WOOFi đã chặn địa chỉ này dựa trên danh sách trừng phạt. Hướng dẫn này không giúp được."}
+      }
+    },
+    "claim": {
+      "title": "Nhận phần thưởng",
+      "whenText": "Chỉ cần nếu bạn có phần thưởng chưa nhận",
+      "note": "Giao dịch 1",
+      "milestone": "Nhận thưởng",
+      "detour": {
+        "see": "Đang thấy biểu đồ giá (có biểu tượng ba gạch ở góc trên bên trái)? Nhấn hai lần để quay lại trang staking",
+        "thumb": "perps-1-en.webp",
+        "images": [
+          {"src": "perps-1-en.webp", "caption": "① Nhấn biểu tượng ba gạch ở góc trên bên trái"},
+          {"src": "perps-2-en.webp", "caption": "② Nhấn **Stake** để quay lại trang staking, rồi làm tiếp phần bên dưới"}
+        ]
+      },
+      "images": [
+        "Cuộn xuống đến khung Stake / Unstake. ① Nhấn **Claim** (USDC reward ở phía trên là phần bạn chưa nhận. Trong ảnh đã được che, và phải vào khoảng {{rewards}}) ✗ Đừng nhấn Compound: nút đó đổi phần thưởng thành WOO rồi stake lại, ngược với điều bạn muốn"
+      ],
+      "check": {
+        "title": "Trước khi xác nhận, kiểm tra 3 điều",
+        "lead": "Sau khi bạn nhấn Claim, ví sẽ yêu cầu xác nhận một giao dịch (trong ví Binance, tiêu đề là Contract call). Hãy đối chiếu với danh sách này và nhấn vào từng mục khi đã khớp.",
+        "skip": "Đã nhận rồi (USDC reward là 0)? Bỏ qua bước này",
+        "confirm": [
+          {"title": "Yêu cầu đến từ woofi.com, trên Arbitrum", "sub": "Ví Binance ghi Arbitrum One. Tên trang thừa một chữ cái hay thiếu một dấu chấm thì dừng lại"},
+          {"title": "Hợp đồng là 0xa9E2…24Fb (hợp đồng staking của WOOFi)", "sub": "Trong ví Binance, đó là dòng hợp đồng (ví khác có thể ghi To). 6 ký tự đầu và 4 ký tự cuối phải khớp"},
+          {"title": "Bạn không trả gì ngoài một khoản phí mạng nhỏ", "sub": "Ví Binance hiện một số tiền dương mà bạn sẽ nhận: phần thưởng của bạn (khoảng {{rewards}}). Phí mạng dưới một cent"}
+        ],
+        "reject": ["Yêu cầu bạn gửi bất kỳ token nào (số tiền có dấu trừ, hoặc có chữ send hay pay)", "Có ghi Approve hoặc Permit", "Yêu cầu bạn ký một thông điệp (Sign)", "Không đến từ woofi.com"],
+        "normal": [
+          "Dòng thao tác thường ghi claimRewards",
+          "Số tiền bạn sẽ nhận còn có một ít USDC.e và ARB: lệnh này trả nhiều loại token thưởng cùng lúc (lịch sử của Binance hiện 3 lần thay đổi số dư)",
+          "Phí mạng trừ vào ETH của bạn trên Arbitrum, dưới một cent",
+          "Ví có thể cảnh báo đây là lệnh gọi hợp đồng. Nếu cả trang lẫn địa chỉ đều khớp, cứ tiếp tục"
+        ]
+      },
+      "situations": {
+        "perps-page": {"see": "Trang là biểu đồ giá và không có Claim", "do": "Bạn đang ở trang giao dịch hợp đồng vĩnh cửu của WOOFi. Nhấn biểu tượng ba gạch ở góc trên bên trái → **Stake**. Claim nằm ở trang staking."},
+        "cancelled": {"see": "Trang hiện Cancelled · User denied transaction signature", "do": "Bạn đã nhấn Reject (Từ chối) trong ví, nên không có gì bị chuyển. Kiểm tra lại, rồi nhấn Claim lần nữa."},
+        "insufficient-gas": {"see": "Nút ghi INSUFFICIENT GAS", "do": "Trang chính thức cần ít nhất 0.0002 ETH trên Arbitrum trong ví của bạn. Trước tiên hãy gửi một ít ETH vào ví này trên Arbitrum (0.0005 là dư), rồi quay lại."},
+        "compound-clicked": {"see": "Lỡ nhấn Compound", "do": "Phần thưởng của bạn đã được đổi thành WOO và cộng vào khoản stake. Không mất gì cả: số đó sẽ ra cùng phần còn lại khi bạn hủy stake ở bước tiếp theo."},
+        "auto-compound": {"see": "Giao dịch thất bại với lỗi !COMPOUND", "do": "Auto-compound đang bật. Khi đang bật thì không nhận thưởng được, và trong 7 ngày sau khi bật thì không tắt được. Nhấn \"Bị kẹt?\" ở góc trên bên phải để xem tình trạng của bạn. Nếu không chắc, hãy hỏi trên Discord chính thức của WOOFi."},
+        "wrong-to": {"see": "Yêu cầu gửi đến một địa chỉ khác 0xa9E2…24Fb", "do": "Nhấn Reject (Từ chối) ngay."}
+      }
+    },
+    "unstake": {
+      "title": "Hủy stake WOO",
+      "whenText": "Chỉ cần nếu bạn có WOO đang stake",
+      "note": "Giao dịch 2",
+      "milestone": "Hủy stake",
+      "detour": {
+        "see": "Đang thấy biểu đồ giá (có biểu tượng ba gạch ở góc trên bên trái)? Nhấn hai lần để quay lại trang staking",
+        "thumb": "perps-1-en.webp",
+        "images": [
+          {"src": "perps-1-en.webp", "caption": "① Nhấn biểu tượng ba gạch ở góc trên bên trái"},
+          {"src": "perps-2-en.webp", "caption": "② Nhấn **Stake** để quay lại trang staking, rồi làm tiếp phần bên dưới"}
+        ]
+      },
+      "images": [
+        "① Ở trang staking, nhấn tab **Unstake**",
+        "② Nhấn con số bên phải ô nhập (toàn bộ WOO bạn đã stake, trong ảnh đã được che). Ô sẽ tự điền toàn bộ số lượng",
+        "③ Khi đã điền số lượng (khoảng {{woo}}; trang chính thức hiện nhiều chữ số thập phân hơn một chút), nhấn **UNSTAKE**",
+        "④ Trong Unstake Confirmation, kiểm tra số lượng rồi nhấn **UNSTAKE**. Ví sẽ yêu cầu xác nhận một giao dịch: hãy đối chiếu với thẻ bên dưới ! Trang báo XP (điểm) của bạn sẽ bị xóa. XP không giao dịch được và không ảnh hưởng đến số tiền bạn nhận lại"
+      ],
+      "check": {
+        "title": "Trước khi xác nhận, kiểm tra 3 điều",
+        "lead": "Sau khi bạn nhấn UNSTAKE, ví sẽ yêu cầu xác nhận một giao dịch (trong ví Binance, tiêu đề là Contract call). Hãy đối chiếu với danh sách này và nhấn vào từng mục khi đã khớp.",
+        "skip": "Không có WOO đang stake? Bỏ qua bước này",
+        "confirm": [
+          {"title": "Yêu cầu đến từ woofi.com, trên Arbitrum", "sub": "Ví Binance ghi Arbitrum One. Tên trang thừa một chữ cái hay thiếu một dấu chấm thì dừng lại"},
+          {"title": "Hợp đồng là 0x2CFa…d8e2 (hợp đồng staking của WOOFi)", "sub": "Địa chỉ này khác với bước nhận thưởng. Điều đó là bình thường"},
+          {"title": "Bạn không trả gì ngoài một khoản phí mạng nhỏ", "sub": "Ví Binance hiện một số tiền dương mà bạn sẽ nhận: số WOO trả về cho bạn (khoảng {{woo}}). Phí mạng dưới một cent"}
+        ],
+        "reject": ["Yêu cầu bạn gửi bất kỳ token nào (số tiền có dấu trừ, hoặc có chữ send hay pay)", "Có ghi Approve hoặc Permit", "Yêu cầu bạn ký một thông điệp (Sign)", "Không đến từ woofi.com"],
+        "normal": [
+          "Dòng thao tác thường ghi unstake",
+          "Hủy stake không có thời gian khóa và không mất phí"
+        ]
+      },
+      "situations": {
+        "amount-not-full": {"see": "Số lượng chưa phải toàn bộ", "do": "Nhấn con số bên phải ô nhập để điền toàn bộ số lượng. Tự gõ dễ bị sót lại một ít."},
+        "insufficient-balance": {"see": "Nút ghi INSUFFICIENT BALANCE", "do": "Số lượng lớn hơn số bạn đã stake. Nhấn con số bên phải ô nhập để điền lại."},
+        "xp": {"see": "Hộp xác nhận báo XP của bạn sẽ bị xóa", "do": "XP là hệ thống điểm của WOOFi. XP không giao dịch được, và mất XP không ảnh hưởng đến số tiền bạn nhận lại."},
+        "cancelled": {"see": "Trang hiện Cancelled · User denied transaction signature", "do": "Bạn đã nhấn Reject (Từ chối) trong ví, nên không có gì bị chuyển. Kiểm tra lại, rồi nhấn UNSTAKE lần nữa."},
+        "wrong-to": {"see": "Yêu cầu gửi đến một địa chỉ khác 0x2CFa…d8e2", "do": "Nhấn Reject (Từ chối) ngay."}
+      }
+    },
+    "vault": {
+      "title": "Rút ETH từ vault",
+      "whenText": "Chỉ cần nếu có tiền đã tất toán đang chờ bạn trong vault ETH",
+      "note": "Giao dịch 3",
+      "milestone": "Vault",
+      "detour": {
+        "see": "Đang thấy biểu đồ giá (có biểu tượng ba gạch ở góc trên bên trái)? Nhấn hai lần để đến trang Earn",
+        "thumb": "perps-1-en.webp",
+        "images": [
+          {"src": "perps-1-en.webp", "caption": "① Nhấn biểu tượng ba gạch ở góc trên bên trái"},
+          {"src": "perps-earn-en.webp", "caption": "② Nhấn **Earn**. Khi đã vào trang Earn, làm tiếp từ hình 2 bên dưới"}
+        ]
+      },
+      "images": [
+        "① Ở cuối cùng của trang staking, nhấn **Earn**",
+        "② Cuộn xuống một chút và nhấn **My vaults** (chỉ các vault bạn đã gửi tiền vào)",
+        "③ Nhấn thẻ **ETH** trên Arbitrum (My Deposits là số của bạn, trong ảnh đã được che)",
+        "④ Thẻ mở ở tab DEPOSIT. Nhấn tab **WITHDRAW** bên cạnh",
+        "⑤ Cuộn đến dòng cuối, Available for Withdrawals (số bạn có thể rút, trong ảnh đã được che; trang hiện 4 chữ số thập phân, khoảng {{eth}} ETH), rồi nhấn **WITHDRAW** bên phải dòng đó ✗ Đừng động vào hai ô hiện 0, nút UNSTAKE màu cam và nút REQUEST WITHDRAWAL màu xám"
+      ],
+      "items": [
+        "! Tiền đã tất toán không tự động gửi về ví. Bạn phải tự nhấn nút này, và đây là bước nhiều người bỏ sót."
+      ],
+      "check": {
+        "title": "Trước khi xác nhận, kiểm tra 3 điều",
+        "lead": "Sau khi bạn nhấn WITHDRAW, ví sẽ yêu cầu xác nhận một giao dịch (trong ví Binance, tiêu đề là Contract call). Hãy đối chiếu với danh sách này và nhấn vào từng mục khi đã khớp.",
+        "skip": "Không có gì đang chờ trong vault? Bỏ qua bước này",
+        "confirm": [
+          {"title": "Yêu cầu đến từ woofi.com, trên Arbitrum", "sub": "Ví Binance ghi Arbitrum One. Tên trang thừa một chữ cái hay thiếu một dấu chấm thì dừng lại"},
+          {"title": "Hợp đồng là 0xE77A…Ad6a (hợp đồng rút tiền vault của WOOFi)", "sub": "Mỗi bước trong ba bước dùng một địa chỉ khác nhau. Điều đó là bình thường"},
+          {"title": "Bạn không trả gì ngoài một khoản phí mạng nhỏ", "sub": "Ví Binance hiện một số tiền dương mà bạn sẽ nhận: số ETH được rút ra (khoảng {{eth}}). Phí mạng dưới một cent"}
+        ],
+        "reject": ["Yêu cầu bạn gửi bất kỳ token nào (số tiền có dấu trừ, hoặc có chữ send hay pay)", "Có ghi Approve hoặc Permit", "Yêu cầu bạn ký một thông điệp (Sign)", "Không đến từ woofi.com"],
+        "normal": [
+          "Dòng thao tác ghi withdraw, và dữ liệu thô bắt đầu bằng 0x3ccfd60b",
+          "Bạn nhận ETH gốc, không phải WETH. Lịch sử của Binance gọi đây là một lần quy đổi (redemption)"
+        ]
+      },
+      "situations": {
+        "no-available": {"see": "Available for Withdrawals là 0", "do": "Hoặc là đã rút rồi, hoặc là chưa tất toán. Nhấn \"Bị kẹt?\" ở góc trên bên phải để kiểm tra trực tiếp."},
+        "big-button": {"see": "Không nhấn được nút to REQUEST WITHDRAWAL", "do": "Điều đó là bình thường: bạn không cần nút đó. Nhấn nút **WITHDRAW** nhỏ bên phải Available for Withdrawals."},
+        "shares-left": {"see": "My Deposits lớn hơn Available for Withdrawals", "do": "Một phần tiền của bạn trong vault chưa được yêu cầu rút. Hiện hướng dẫn này chỉ bao gồm tiền đã tất toán đang chờ rút. Với phần còn lại, hãy dùng Instant Withdraw trong tab WITHDRAW (về ngay, phí 1%) hoặc REQUEST WITHDRAWAL (miễn phí, nhưng phải chờ đến thứ Ba tuần sau)."},
+        "cancelled": {"see": "Trang hiện Cancelled · User denied transaction signature", "do": "Bạn đã nhấn Reject (Từ chối) trong ví, nên không có gì bị chuyển. Kiểm tra lại, rồi nhấn WITHDRAW lần nữa."},
+        "wrong-to": {"see": "Yêu cầu gửi đến một địa chỉ khác 0xE77A…Ad6a", "do": "Nhấn Reject (Từ chối) ngay."}
+      }
+    },
+    "arrive": {
+      "title": "Kiểm tra tiền đã về",
+      "milestone": "Đã về",
+      "check": {
+        "title": "Kiểm tra tiền đã về",
+        "rows": [
+          ["Mất bao lâu", "Vài giây sau khi mỗi giao dịch được xác nhận"],
+          ["Xem ở đâu", "Ứng dụng ví → Assets (Tài sản), chọn mạng Arbitrum"],
+          ["Bạn sẽ thấy", "Thêm khoảng {{woo}} WOO, {{rewards}} và {{eth}} ETH (tùy bạn có khoản nào)"],
+          ["Bản ghi trên chuỗi", "WOO đến từ hợp đồng staking của WOOFi 0x2CFa…d8e2, token thưởng đến từ các hợp đồng phần thưởng của WOOFi, ETH đến từ hợp đồng rút tiền vault của WOOFi 0xE77A…Ad6a. Tất cả đều về địa chỉ của bạn"],
+          ["Nếu chưa về", "Nhấn \"Bị kẹt?\" ở góc trên bên phải để kiểm tra trực tiếp. Nếu giao dịch đã thành công mà không thấy WOO, hãy thêm token đó vào ví"]
+        ],
+        "foot": "Tiền về là xong. WOO là token thông thường: cứ giữ hoặc đổi sang token khác trong ví"
+      },
+      "situations": {
+        "no-woo": {"see": "Không thấy WOO trong ví", "do": "Một số ví không tự hiện token mới. Hãy tìm WOO (Arbitrum) trong ví, hoặc thêm bằng địa chỉ hợp đồng `0xcafcd85d8ca7ad1e1c6f82f651fa15e33aefd07b`."},
+        "eth-not-weth": {"see": "Thứ nhận được là ETH, không phải WETH", "do": "Điều đó là bình thường: hợp đồng rút tiền vault chuyển WETH thành ETH gốc rồi gửi cho bạn."},
+        "want-usdc": {"see": "Muốn đổi WOO sang USDC", "do": "WOO đã nằm trong ví của chính bạn, nên bạn có thể dùng chức năng swap có sẵn trong ví. Hướng dẫn này không bao gồm việc đổi token. Hãy kiểm tra giá báo và độ trượt giá trước khi đổi."}
+      }
+    }
+  },
+  "sources": [
+    "Tài liệu WOOFi · Cách hoạt động của vault Earn",
+    "Tài liệu WOOFi · Địa chỉ hợp đồng trên Arbitrum",
+    "Bản lưu tài liệu WOOFi · Staking WOO (trang gốc đã gỡ)",
+    "Chainlink · Nguồn giá WOO/USD (Arbitrum)",
+    "Discord chính thức của WOOFi"
+  ]
+}
