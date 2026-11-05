@@ -6,7 +6,8 @@
 
 const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
 const md = (iso) => String(iso).split("-").slice(1).map(Number);
-const data = (m, d) => `${d} de ${MESES[m - 1]}`;
+// No Brasil o primeiro dia do mês se escreve 1º ("1º de dezembro")
+const data = (m, d) => `${d === 1 ? "1º" : d} de ${MESES[m - 1]}`;
 const lc = (s) => s.charAt(0).toLowerCase() + s.slice(1);
 // Contagem regressiva (x é o timeLeft de lib/deadline.js): só com a data, nesse dia (UTC) diz "Dia do prazo (UTC)", sem horas;
 // a menos de 48 horas, as horas inteiras que faltam; nunca "hoje" / "amanhã" sem UTC; se já passou, diz isso.
