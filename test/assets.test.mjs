@@ -96,6 +96,7 @@ test("接口:密钥按 Basic 方式只发给 Zerion;一次请求查全部(钱包
     assert.ok(!body.includes("zk_test_key"));
     assert.ok(logs.every((l) => !l.includes(A) && !l.includes("zk_test_key")), logs.join("\n"));
     assert.equal(JSON.parse(body).status, "ok");
+    assert.equal(r.headers.get("Cache-Control"), "no-store", "只回给查的那个浏览器,谁都不缓存");
   } finally {
     console.log = log;
   }
@@ -117,4 +118,23 @@ test("接口:Zerion 额度用完回 busy,密钥不对回 key,超时回 timeout",
   } finally {
     console.log = log;
   }
+});
+
+test("全部资产:一条链只列最值钱的 8 种币,排在后面的只传符号和合约地址(rest,给截止提醒按地址对币用);没价格的、不到 1 美分的不进 rest", () => {
+  const at = (i) => `0x${String(i).padStart(40, "0")}`;
+  const row = (i, sym, value, addr = at(i)) => ({
+    type: "positions", id: `w${i}`,
+    attributes: { position_type: "wallet", quantity: { float: 1 }, value, fungible_info: { symbol: sym, implementations: [{ chain_id: "arbitrum", address: addr }] }, flags: { displayable: true, is_trash: false } },
+    relationships: { chain: { data: { id: "arbitrum" } } },
+  });
+  const syms = ["ETH", "USDC", "ARB", "GMX", "LINK", "UNI", "WBTC", "USDT", "STG", "PENDLE"];
+  // 第 11 种也叫 STG,合约不一样(空投来的仿冒币):两个都传,各带各的地址,页面按地址分得开;合约大写的也转成小写
+  const out = shape({ data: [...syms.map((s, i) => row(i, s, 100 - i)), row(10, "STG", 50, `0x${"AB".repeat(20)}`), row(20, "FAKE", null), row(21, "DUST", 0.001)] });
+  const [w] = out.wallet;
+  assert.deepEqual(w.tokens.map((x) => x.sym), syms.slice(0, 8));
+  assert.equal(w.more, 3);
+  assert.deepEqual(w.rest, [{ sym: "STG", addr: at(8) }, { sym: "PENDLE", addr: at(9) }, { sym: "STG", addr: `0x${"ab".repeat(20)}` }]);
+  assert.ok(!JSON.stringify(w.rest).includes("FAKE") && !JSON.stringify(w.rest).includes("DUST"));
+  // 8 种以内的:rest 是空的
+  assert.deepEqual(shape(FIX).wallet.find((g) => g.chain === "Base").rest, []);
 });

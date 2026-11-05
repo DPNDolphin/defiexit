@@ -5,6 +5,7 @@
 // 只列查到的,没查到的项目不列:只显示有什么。查不成的照实说,给「重试」。
 // 每一张都有「取回」:有指南的进指南;没有的打开取回弹层,按仓位类型给通用取法,钱包里的币说怎么转出、手续费够不够。
 // 三路都查完、至少一路查成了,数一次体检(不带地址,同一个浏览器同一个地址只数一次;见 lib/count.js)。
+// 查到的东西在快要关停的链、要结束的项目上:结果最上面一个事件一张卡,说清哪天前要提回(截止日历构建时嵌在页面里,不另外发请求;见 lib/due.js)。
 import "./site.js";
 import { detectors } from "./detectors/index.js";
 import { isEvmAddress, shortAddr, floorTo } from "./lib/net.js";
@@ -13,6 +14,7 @@ import { makeT, pageLang, prefix, errText } from "./lib/i18n.js";
 import { chainLogo, chainKey, gasSym, mergeDefi, EXTRA } from "./lib/chains.js";
 import { HOW } from "./lib/xlayer.text.js";
 import { countCheckup } from "./lib/count.js";
+import { holdings, dueView, dueCard } from "./lib/due.js";
 
 const lang = pageLang(), t = makeT(lang), P = prefix(lang);
 const recipes = [...document.querySelectorAll("#recipes li")].map((li) => ({
@@ -32,6 +34,16 @@ const extra = new Map(); // Zerion 查不到的链:链编号 → { res } 或 { e
 let assets = { state: "pending", res: null }; // 全部资产:pending / ok / empty / off / busy / error
 let lists = { defi: [], wallet: [] }; // 清单上正显示的,「取回」按钮按序号找
 let counted = false; // 这一页数过体检没有:数过了,重试、取完回来再查都不再数
+// 截止日历里还没过的事件(构建时按页面语言嵌进来的);读不出来就当没有,不挡体检
+const dues = [...document.querySelectorAll("#due li")].flatMap((li) => {
+  try {
+    return [JSON.parse(li.dataset.event)];
+  } catch {
+    return [];
+  }
+});
+const dueBox = $("dueBox");
+let dueShown = ""; // 顶上正显示的截止提醒(哪几个事件、对上了什么、倒数、下一步,见 due.js 的 dueKey),没变就不重画
 
 // 对得上配方才算有指南:我们自己查到的仓位带 how(配方编号);Zerion 查到的,项目名和链都要对上配方 JSON 的 zerion 字段,同名项目在别的链上不算。
 // DYORSwap 不写 zerion 字段:Zerion 查到的可能是别的池子,指南只核对过 USDT/OKB 这一个。
@@ -212,12 +224,35 @@ function paint() {
       el("p", { class: "fine" }, t("assetsPriv")));
   }
   cards.replaceChildren(...nodes.filter(Boolean));
+  paintDue(done, [...found, ...dust], zDefi, wallets);
   // 体检计数:三路都查完、至少一路查成了才算查过;不等它,出错也不影响页面
   if (done && !counted && (all.some((x) => x.res) || xs.length || assets.state === "ok" || assets.state === "empty")) {
     counted = true;
     countCheckup(addr);
   }
 }
+
+// 截止提醒:查到的东西(配方仓位、项目仓位、钱包余额)对上截止日历,放在结果最上面。
+// 重查还没查完时接着按上一轮查完的算(取完回来重查时不闪),截止过了的照样去掉;卡上的字没变不重画(见 due.js 的 dueView);出了错也不挡下面的结果
+let dueArgs = null; // 上一次拿来对的东西:页面开着不动时按它重算(见下面的 tickDue)
+let dueLast = null; // 上一轮三路都查完时查到的东西
+function paintDue(done, found, defi, wallet) {
+  dueArgs = [done, found, defi, wallet];
+  try {
+    const now = new Date(), v = dueView(dues, holdings({ found, defi, wallet }), done, dueLast, now);
+    dueLast = v.last;
+    if (v.skip || v.key === dueShown) return;
+    dueShown = v.key;
+    dueBox.replaceChildren(...v.list.map((m) => dueCard(m, t, lang, now)));
+    dueBox.hidden = !v.list.length;
+  } catch { /* 截止提醒画不出来就不画 */ }
+}
+// 页面开着不动,倒数也跟着走:每分钟、切回这个标签页、从浏览器缓存里回来时都重算一遍(卡上的字没变就不重画);
+// 截止过了的卡这时候去掉。不连任何接口,只用已经查到的东西
+const tickDue = () => { if (dueArgs && document.visibilityState !== "hidden") paintDue(...dueArgs); };
+setInterval(tickDue, 60000);
+document.addEventListener("visibilitychange", tickDue);
+window.addEventListener("pageshow", tickDue);
 
 // ---------- 取回弹层(没有指南的项目、钱包里的币) ----------
 

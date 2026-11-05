@@ -1,0 +1,1411 @@
+{
+  "checked": "2026-11-06",
+  "events": [
+    {
+      "id": "aster-apollox-offline",
+      "name": {"zh": "Aster：ApolloX 网页和 API 下线", "en": "Aster: ApolloX website and API going offline"},
+      "summary": {"zh": "Aster 的旧品牌 ApolloX 网页和 API 下线,11 月 5 日前后收尾完成;还有余额、仓位的要尽快平仓提走。", "en": "Aster is shutting down the old ApolloX website and API, finishing around Nov 5. If you still have a balance or positions there, close them and withdraw now."},
+      "protocol": "Aster (ApolloX)",
+      "chains": ["BNB Chain"],
+      "chainKeys": ["bsc"],
+      "protocolKeys": ["apollox"],
+      "matchBy": "protocol",
+      "type": "frontend-down",
+      "deadline": "2026-11-05",
+      "deadlineAt": "2026-11-05T10:00:00Z",
+      "deadlineNote": {"zh": "11 月 3 日 10:00(UTC)起开始收尾旧的 APX 合约,官方说约 48 小时完成,也就是约 11 月 5 日 10:00(UTC)。apollox.finance 网页和 API 随之下线。", "en": "From Nov 3, 10:00 UTC, Aster began winding down the old APX contracts and said this would take about 48 hours, so it ends around Nov 5, 10:00 UTC. The apollox.finance website and API go offline with it."},
+      "who": {"zh": "在 ApolloX(`apollox.finance`)上还有余额或仓位的人。", "en": "Anyone who still has a balance or open positions on ApolloX (`apollox.finance`)."},
+      "todo": {"zh": "平掉仓位,把钱提回自己的钱包。遇到问题,官方让找它 Discord 上的客服。", "en": "Close your positions and withdraw to your own wallet. If something goes wrong, Aster says to contact its support on Discord."},
+      "caution": {"zh": "收尾完成以后还能不能直接调合约取,官方没有说。", "en": "Aster hasn't said whether the contracts can still be used directly once the wind-down is finished."},
+      "official": [
+        {"label": {"zh": "Aster 官方 X：11 月 3 日收尾公告", "en": "Aster on X: Nov 3 wind-down post"}, "url": "https://x.com/Aster_DEX/status/2117527263730429959"}
+      ],
+      "announced": null,
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "meth-cmeth-rewards",
+      "name": {"zh": "mETH Protocol：cmETH 往期活动奖励入口下线", "en": "mETH Protocol: page for past cmETH campaign rewards closing"},
+      "summary": {"zh": "mETH Protocol 往期 cmETH 活动的奖励入口 11 月 7 日下线,没领的奖励要在这之前领完。", "en": "The page for rewards from past cmETH campaigns closes on Nov 7. Collect any rewards you haven't taken before then."},
+      "protocol": "mETH Protocol",
+      "chains": ["Ethereum", "Mantle"],
+      "chainKeys": ["ethereum", "mantle"],
+      "protocolKeys": ["meth-protocol"],
+      "tokenKeys": ["cmeth"],
+      "tokenContracts": [
+        {"chain": "ethereum", "token": "cmeth", "symbol": "cmETH", "address": "0xe6829d9a7ee3040e1276fa75293bde931859e8fa", "source": "https://docs.mantle.xyz/meth/components/smart-contracts/restaking-cmeth"},
+        {"chain": "mantle", "token": "cmeth", "symbol": "cmETH", "address": "0xe6829d9a7ee3040e1276fa75293bde931859e8fa", "source": "https://docs.mantle.xyz/meth/components/smart-contracts/restaking-cmeth"}
+      ],
+      "matchBy": "token",
+      "type": "rewards-deadline",
+      "deadline": "2026-11-07",
+      "deadlineAt": "2026-11-07T00:00:00Z",
+      "deadlineNote": {"zh": "11 月 7 日往期 cmETH 活动的奖励入口下线。cmETH 本身随时可以解押成 mETH 或跨链,不设截止。", "en": "On Nov 7 the page for rewards from past cmETH campaigns closes. cmETH itself can still be unstaked to mETH or bridged at any time; there's no deadline for that."},
+      "who": {"zh": "参加过 cmETH 往期活动、还有奖励没领的人。", "en": "Anyone who joined past cmETH campaigns and still has rewards waiting."},
+      "todo": {"zh": "11 月 7 日前到 mETH Protocol 官网把奖励领完。cmETH 不急,随时可以解押成 mETH 或跨链。", "en": "Collect your rewards on the mETH Protocol site before Nov 7. Your cmETH can wait: you can unstake it to mETH or bridge it at any time."},
+      "caution": {"zh": "官方说解押和跨链的合约「预计」在领取期过后仍可用,但会按剩下的量复查。", "en": "mETH Protocol says the unstaking and bridging contracts are \"expected\" to keep working after the reward window, but it will review this based on how much is left."},
+      "official": [
+        {"label": {"zh": "mETH Protocol 官方博客:cmETH 停用时间表", "en": "mETH Protocol blog: cmETH wind-down timeline"}, "url": "https://www.methprotocol.xyz/blog/announcements/cmeth-wind-down-timeline"}
+      ],
+      "announced": "2026-05-07",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "gmo-gyen-zusd-redemption",
+      "name": {"zh": "GMO Trust：GYEN、ZUSD 稳定币清盘", "en": "GMO Trust: GYEN and ZUSD stablecoins winding down"},
+      "summary": {"zh": "GYEN、ZUSD 稳定币清盘:11 月 11 日前可按面值赎回;没赎回的,年底前按 11 月 12 日的汇率换成 USDC 发回。", "en": "GYEN and ZUSD are winding down. Redeem at face value by Nov 11, or receive USDC at the Nov 12 rate by the end of the year."},
+      "protocol": "GMO Trust",
+      "chains": ["Ethereum", "Arbitrum", "Stellar"],
+      "chainKeys": ["ethereum", "arbitrum", "stellar"],
+      "protocolKeys": ["gmo-trust"],
+      "tokenKeys": ["gyen", "zusd"],
+      "tokenContracts": [
+        {"chain": "ethereum", "token": "gyen", "symbol": "GYEN", "address": "0xc08512927d12348f6620a698105e1baac6ecd911", "source": "https://support.stablecoin.z.com/hc/en-us/articles/60491926674585-GYEN-and-ZUSD-Wind-down-How-to-Redeem-Before-the-November-11-2026-Deadline"},
+        {"chain": "ethereum", "token": "zusd", "symbol": "ZUSD", "address": "0xc56c2b7e71b54d38aab6d52e94a04cbfa8f604fa", "source": "https://support.stablecoin.z.com/hc/en-us/articles/60491926674585-GYEN-and-ZUSD-Wind-down-How-to-Redeem-Before-the-November-11-2026-Deadline"},
+        {"chain": "arbitrum", "token": "gyen", "symbol": "GYEN", "address": "0x589d35656641d6ab57a545f08cf473ecd9b6d5f7", "source": "https://support.stablecoin.z.com/hc/en-us/articles/60491926674585-GYEN-and-ZUSD-Wind-down-How-to-Redeem-Before-the-November-11-2026-Deadline"}
+      ],
+      "matchBy": "token",
+      "type": "stablecoin-redemption",
+      "deadline": "2026-11-11",
+      "deadlineAt": "2026-11-11T23:59:59-05:00",
+      "deadlineNote": {"zh": "按面值赎回截止到 11 月 11 日 23:59:59(美东时间),币要在截止前到账。没赎回的,官方年底前按 11 月 12 日定的汇率,在同一条链上发等值的 USDC。", "en": "Redemption at face value closes on Nov 11 at 23:59:59 US Eastern time, and your tokens must arrive before then. For anything not redeemed, GMO Trust will send the equivalent in USDC on the same chain by the end of the year, at the rate set on Nov 12."},
+      "who": {"zh": "持有 GYEN 或 ZUSD 的人(以太坊、Arbitrum、Stellar 等链上)。", "en": "Anyone holding GYEN or ZUSD (on Ethereum, Arbitrum, Stellar and other chains)."},
+      "todo": {"zh": "要按面值赎回:在 `stablecoin.z.com` 开户、完成身份认证(KYC),绑定日元(GYEN)或美元(ZUSD)的银行账户,币要在截止前到账。不赎回的:等年底强制换成 USDC。以太坊、Arbitrum 上也有 Uniswap 池子可以卖。", "en": "To redeem at face value, open an account at `stablecoin.z.com`, pass the identity checks (KYC) and link a bank account in yen (GYEN) or US dollars (ZUSD). Your tokens must arrive before the deadline. If you don't redeem, they are converted to USDC at the end of the year. On Ethereum and Arbitrum there are also Uniswap pools where you can sell."},
+      "caution": {"zh": "这几种拿不到强制换的 USDC:跨到官方不支持的链上的、没通过反洗钱筛查的、低于那条链最小转账额的。Stellar 上要先开 USDC trustline。Arbitrum 上的 GYEN:官方没写过了 11 月 11 日会不会自动换成 USDC。", "en": "You won't get the automatic USDC if your tokens were bridged to a chain GMO Trust doesn't support, didn't pass anti-money-laundering screening, or are below that chain's minimum transfer amount. On Stellar, open a USDC trustline first. For GYEN on Arbitrum, GMO Trust hasn't said whether it will be converted to USDC automatically after Nov 11."},
+      "official": [
+        {"label": {"zh": "GMO Trust 帮助中心:11 月 11 日前怎么赎回", "en": "GMO Trust help center: how to redeem before Nov 11"}, "url": "https://support.stablecoin.z.com/hc/en-us/articles/60491926674585-GYEN-and-ZUSD-Wind-down-How-to-Redeem-Before-the-November-11-2026-Deadline"},
+        {"label": {"zh": "GMO Trust 帮助中心:没赎回的会怎样", "en": "GMO Trust help center: what happens if you don't redeem"}, "url": "https://support.stablecoin.z.com/hc/en-us/articles/62115331118745-Mandatory-Redemption-What-Happens-to-GYEN-and-ZUSD-Not-Redeemed-by-November-11-2026"},
+        {"label": {"zh": "GMO Trust 官方 X：8 月 20 日提醒", "en": "GMO Trust on X: Aug 20 reminder"}, "url": "https://x.com/GMOTrust/status/2090428656568959127"},
+        {"label": {"zh": "GMO Trust 官方 X：9 月 10 日强制赎回通知", "en": "GMO Trust on X: Sep 10 mandatory redemption notice"}, "url": "https://x.com/GMOTrust/status/2098059413445652604"}
+      ],
+      "announced": null,
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "blur-frontend-blend",
+      "name": {"zh": "Blur：blur.io 网站下线,Blend 停止新借款", "en": "Blur: blur.io going offline, Blend stops new loans"},
+      "summary": {"zh": "Blur 的网站 11 月 12 日下线,Blend 同一天停止新借款:借款人要在这之前还款。", "en": "Blur's website goes offline on Nov 12, and Blend stops new loans the same day. Borrowers need to repay before then."},
+      "protocol": "Blur",
+      "chains": ["Ethereum", "Blast"],
+      "chainKeys": ["ethereum", "blast"],
+      "protocolKeys": ["blur"],
+      "matchBy": "protocol",
+      "type": "frontend-down",
+      "deadline": "2026-11-12",
+      "deadlineNote": {"zh": "11 月 12 日 blur.io 网站停用;Blend 同一天停止撮合新借款,借款人要在这天之前还款,否则按协议违约。市场合约照常在链上运行。", "en": "On Nov 12 the blur.io website stops working. Blend stops matching new loans the same day: borrowers must repay before then, or the loan defaults under the protocol's rules. The marketplace contracts keep running on-chain."},
+      "who": {"zh": "Blend 的借款人;以及在 Blur 上还有资产、要靠 blur.io 网站操作的人。", "en": "Blend borrowers, and anyone with assets on Blur who relies on the blur.io website."},
+      "todo": {"zh": "Blend 借款人:11 月 12 日前还款。其他人:等官方 11 月 12 日以后发布的 Blend 取回工具,只用 @blur_io 发的链接。", "en": "Blend borrowers: repay before Nov 12. Everyone else: wait for the Blend withdrawal tool Blur says it will release after Nov 12, and only use links posted by @blur_io."},
+      "caution": {"zh": "官方说只认 @blur_io。Blur Pool(出价池)里的 ETH 怎么取,官方帖子没有单独说;取回工具哪天上线也还没公布。", "en": "Blur says to trust only @blur_io. Its posts don't say separately how to withdraw ETH from Blur Pool (the bidding pool), and there's no release date yet for the withdrawal tool."},
+      "official": [
+        {"label": {"zh": "Blur 官方 X：下线公告", "en": "Blur on X: shutdown announcement"}, "url": "https://x.com/blur_io/status/2109735810857861203"},
+        {"label": {"zh": "Blur 官方 X：Blend 怎么安排", "en": "Blur on X: what happens to Blend"}, "url": "https://x.com/blur_io/status/2109735871377289375"}
+      ],
+      "announced": "2026-10-12",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "universal-uassets-winddown",
+      "name": {"zh": "Universal：uAssets 包装资产关停", "en": "Universal: uAssets wrapped assets shutting down"},
+      "summary": {"zh": "Universal 的 uAssets 11 月 17 日关停:之前在 Universal app 卖掉或赎回原币,之后只能走合约赎回。", "en": "Universal's uAssets shut down on Nov 17. Sell or redeem them in the Universal app before then; after that, only a redemption contract remains."},
+      "protocol": "Universal",
+      "chains": ["Base"],
+      "chainKeys": ["base"],
+      "protocolKeys": ["universal"],
+      "tokenKeys": ["usol", "uxrp", "udoge", "uada", "ubtc", "ultc"],
+      "tokenContracts": [
+        {"chain": "base", "token": "usol", "symbol": "uSOL", "address": "0x9b8df6e244526ab5f6e6400d331db28c8fdddb55", "source": "https://docs.universal.xyz/docs/developers/contract-addresses"},
+        {"chain": "base", "token": "uxrp", "symbol": "uXRP", "address": "0x2615a94df961278dcbc41fb0a54fec5f10a693ae", "source": "https://docs.universal.xyz/docs/developers/contract-addresses"},
+        {"chain": "base", "token": "udoge", "symbol": "uDOGE", "address": "0x12e96c2bfea6e835cf8dd38a5834fa61cf723736", "source": "https://docs.universal.xyz/docs/developers/contract-addresses"},
+        {"chain": "base", "token": "uada", "symbol": "uADA", "address": "0xa3a34a0d9a08ccddb6ed422ac0a28a06731335aa", "source": "https://docs.universal.xyz/docs/developers/contract-addresses"},
+        {"chain": "base", "token": "ubtc", "symbol": "uBTC", "address": "0xf1143f3a8d76f1ca740d29d5671d365f66c44ed1", "source": "https://docs.universal.xyz/docs/developers/contract-addresses"},
+        {"chain": "base", "token": "ultc", "symbol": "uLTC", "address": "0x3eb097375fc2fc361e4a472f5e7067238c547c52", "source": "https://docs.universal.xyz/docs/developers/contract-addresses"}
+      ],
+      "matchBy": "token",
+      "type": "other",
+      "deadline": "2026-11-17",
+      "deadlineNote": {"zh": "11 月 17 日协议关停。之后剩下的 uAssets 走合约赎回:Base 上的 uSOL、uXRP、uDOGE、uADA、uBTC、uLTC 分别换成 Base 上的 SOL、cbXRP、cbDOGE、cbADA、cbBTC、cbLTC,其余换成 USDC(官方说可能还会变)。", "en": "The protocol shuts down on Nov 17. After that, remaining uAssets are redeemed through a contract: on Base, uSOL, uXRP, uDOGE, uADA, uBTC and uLTC become SOL on Base, cbXRP, cbDOGE, cbADA, cbBTC and cbLTC, and everything else becomes USDC (Universal says this may still change)."},
+      "who": {"zh": "持有 uAssets(uSOL、uBTC、uXRP 等)的人。", "en": "Anyone holding uAssets (uSOL, uBTC, uXRP and others)."},
+      "todo": {"zh": "11 月 17 日前在 Universal app 里卖掉,或在 mint and redeem 界面赎回原币。金额大的,照官方关停页上的邮箱联系官方。", "en": "Before Nov 17, sell them in the Universal app or redeem them for the original asset on the mint and redeem page. For large amounts, email Universal at the address on its wind-down page."},
+      "caution": {"zh": "官方说会在 11 月 17 日前公布赎回合约和步骤,赎回的人多时可能变慢。放在第三方池子、借贷里的 uAssets 怎么办,官方没说。", "en": "Universal says it will publish the redemption contract and steps before Nov 17, and redemptions may slow down when demand is high. It hasn't said what happens to uAssets held in third-party pools or lending markets."},
+      "official": [
+        {"label": {"zh": "Universal 官方关停页", "en": "Universal wind-down page"}, "url": "https://www.universal.xyz/winddown"}
+      ],
+      "announced": "2026-09-18",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "pancakeswap-opbnb-cake",
+      "name": {"zh": "PancakeSwap：opBNB 上的 CAKE 跨链路线停用", "en": "PancakeSwap: CAKE bridge route from opBNB ending"},
+      "summary": {"zh": "opBNB 上的 CAKE 要在 11 月 23 日前桥回 BNB Chain,因为 LayerZero 停止支持 opBNB。", "en": "CAKE on opBNB needs to be bridged back to BNB Chain before Nov 23, because LayerZero is ending support for opBNB."},
+      "protocol": "PancakeSwap",
+      "chains": ["opBNB"],
+      "chainKeys": ["opbnb"],
+      "protocolKeys": ["pancakeswap"],
+      "tokenKeys": ["cake"],
+      "tokenContracts": [
+        {"chain": "opbnb", "token": "cake", "symbol": "CAKE", "address": "0x2779106e4f4a8a28d77a24c18283651a2ae22d1c", "source": "https://docs.pancakeswap.finance/bridge/bridging"}
+      ],
+      "matchBy": "token",
+      "type": "bridge-route-end",
+      "deadline": "2026-11-23",
+      "deadlineAt": "2026-11-23T00:00:00Z",
+      "deadlineNote": {"zh": "11 月 23 日 00:00(UTC)起,经 LayerZero 从 opBNB 桥出 CAKE 的路线停止。", "en": "From Nov 23, 00:00 UTC, the LayerZero route for bridging CAKE out of opBNB stops."},
+      "who": {"zh": "在 opBNB 上持有 CAKE 的人。", "en": "Anyone holding CAKE on opBNB."},
+      "todo": {"zh": "到 PancakeSwap 的跨链桥页面,选 opBNB → BNB Chain,把 CAKE 桥出来。官方帖子里有操作步骤。", "en": "Go to PancakeSwap's bridge page, choose opBNB → BNB Chain and bridge your CAKE out. PancakeSwap's post has the steps."},
+      "caution": {"zh": "原因是 LayerZero 停止支持 opBNB,所以 opBNB 上别的走 LayerZero 的代币也可能受影响,看各自项目的公告。", "en": "The cause is LayerZero ending support for opBNB, so other tokens on opBNB that use LayerZero may be affected too. Check each project's own announcements."},
+      "official": [
+        {"label": {"zh": "PancakeSwap 官方 X：公告", "en": "PancakeSwap on X: announcement"}, "url": "https://x.com/PancakeSwap/status/2114579020952330593"},
+        {"label": {"zh": "PancakeSwap 官方 X：操作步骤", "en": "PancakeSwap on X: how to bridge"}, "url": "https://x.com/PancakeSwap/status/2114579021447270411"}
+      ],
+      "announced": "2026-10-26",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "sophon-chain-shutdown",
+      "name": {"zh": "Sophon 链关停", "en": "Sophon chain shutting down"},
+      "summary": {"zh": "Sophon 链 11 月 30 日关停,11 月 25 日是把钱提回以太坊的最后一天。", "en": "The Sophon chain shuts down on Nov 30. Nov 25 is the last day to withdraw your funds to Ethereum."},
+      "protocol": "Sophon",
+      "chains": ["Sophon"],
+      "chainKeys": ["sophon"],
+      "protocolKeys": ["sophon"],
+      "matchBy": "chain",
+      "type": "chain-shutdown",
+      "deadline": "2026-11-25",
+      "deadlineNote": {"zh": "11 月 25 日是提款截止日,之后基础设施和相关网站开始关闭;11 月 30 日主网最终关停。", "en": "Nov 25 is the last day to withdraw. After that the infrastructure and related websites start shutting down, and mainnet shuts down for good on Nov 30."},
+      "who": {"zh": "在 Sophon 链上还有 SOPH、ETH、USDC 等资产的人,农场里还有资产的人,以及质押、Guardian 奖励没领的人。", "en": "Anyone with SOPH, ETH, USDC or other assets on Sophon, anyone with assets in Sophon's farm, and anyone with uncollected staking or Guardian rewards."},
+      "todo": {"zh": "11 月 25 日前在官方页面把资产提回以太坊(官方帖子给的是 `claim.sophon.com`);农场里的资产到 `farm.sophon.xyz` 取;没领的质押和 Guardian 奖励领掉。节点奖励照常发到以太坊钱包。", "en": "Before Nov 25, withdraw your assets to Ethereum on the official page (Sophon's posts give `claim.sophon.com`). Take farm assets out at `farm.sophon.xyz`, and collect any staking and Guardian rewards. Node rewards keep going to your Ethereum wallet."},
+      "caution": {"zh": "官方帖子里出现过两个域名:`claim.sophon.com`(10 月 19 日、11 月 2 日)和 `claim.sophon.xyz`(10 月 22 日)。官方提醒小心假迁移站。", "en": "Sophon's posts have used two domains: `claim.sophon.com` (Oct 19 and Nov 2) and `claim.sophon.xyz` (Oct 22). Sophon warns about fake migration sites."},
+      "official": [
+        {"label": {"zh": "Sophon 官方 X：10 月 19 日最终时间表", "en": "Sophon on X: final timeline (Oct 19)"}, "url": "https://x.com/Sophon/status/2112253258030882831"},
+        {"label": {"zh": "Sophon 官方 X：11 月 2 日提醒", "en": "Sophon on X: reminder (Nov 2)"}, "url": "https://x.com/Sophon/status/2117352374679244928"},
+        {"label": {"zh": "Sophon 官方 X：6 月 25 日宣布停用", "en": "Sophon on X: first announcement (Jun 25)"}, "url": "https://x.com/Sophon/status/2070192538712211700"}
+      ],
+      "announced": "2026-10-19",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "balancer-winddown",
+      "name": {"zh": "Balancer 有序关停:池子转为只能取", "en": "Balancer winding down: pools moving to withdraw-only"},
+      "summary": {"zh": "Balancer 有序关停:池子已经只能取,剩下的 v3 池 11 月 30 日也转为只能取;官方说取款一直开着,流动性和质押要自己撤出来。", "en": "Balancer is winding down. Pools are withdraw-only, and the remaining v3 pools follow on Nov 30. Balancer says withdrawals stay open, but liquidity providers and stakers need to withdraw themselves."},
+      "protocol": "Balancer",
+      "chains": ["Ethereum", "Arbitrum", "Base", "Polygon", "Gnosis", "Avalanche", "Optimism"],
+      "chainKeys": ["ethereum", "arbitrum", "base", "polygon", "gnosis", "avalanche", "optimism"],
+      "protocolKeys": ["balancer"],
+      "matchBy": "protocol",
+      "type": "withdraw-only",
+      "deadline": null,
+      "milestones": [
+        {"date": "2026-11-30", "note": {"zh": "剩下的 v3 池也转为只能取(v3 Vault 暂停),取款照常", "en": "The remaining v3 pools move to withdrawals only (the v3 Vault is paused); withdrawals stay open"}}
+      ],
+      "deadlineNote": {"zh": "10 月 30 日起,能暂停的池子转为只能取,漏洞赏金结束;合作方申请保留的 v3 池开到 11 月 30 日,当天 v3 Vault 暂停、剩下的 v3 池也转为只能取。官方说取款一直开着,没有截止日。之后保留简化的取款界面,一直到 veBAL 锁仓到期、两轮国库分配结束(第一轮在 2027 年 5 月底)。不能暂停的池子照常运行,协议费设为 0。", "en": "Since Oct 30, pools that can be paused are withdraw-only and the bug bounty has ended. The v3 pools that partners asked to keep stay open until Nov 30, when the v3 Vault is paused and the remaining v3 pools move to withdrawals only. Balancer says withdrawals stay open, with no end date. After that a simplified withdrawal page stays up until veBAL locks expire and two rounds of treasury distribution are done (the first at the end of May 2027). Pools that can't be paused keep running, with protocol fees set to 0."},
+      "who": {"zh": "在 Balancer 池子里提供流动性的人、在 gauge 里质押的人,以及有 v3 buffer 份额或 v2 老挖矿奖励的人。官方 10 月 23 日的提醒帖说,已经找到外部用户 50 万美元以上的旧仓位。", "en": "Liquidity providers in Balancer pools, anyone staked in gauges, and anyone with v3 buffer shares or old v2 mining rewards. Balancer's Oct 23 reminder says it has found over $500,000 in old positions belonging to outside users."},
+      "todo": {"zh": "到 `legacy.balancer.fi` 撤出流动性、解除 gauge 质押;另外查一下 v3 buffer 份额和 v2 老挖矿奖励,这两样在 DeBank 这类资产查看工具里看不到。", "en": "Go to `legacy.balancer.fi` to remove liquidity and unstake from gauges. Also check for v3 buffer shares and old v2 mining rewards, which portfolio trackers such as DeBank don't show."},
+      "caution": {"zh": "官方说合约不托管,取款不靠团队。", "en": "Balancer says the contracts are non-custodial, so withdrawals don't depend on the team."},
+      "official": [
+        {"label": {"zh": "Balancer 论坛:BIP-928 关停提案", "en": "Balancer forum: BIP-928 wind-down proposal"}, "url": "https://forum.balancer.fi/t/7107"},
+        {"label": {"zh": "Balancer 论坛:给老用户的提醒", "en": "Balancer forum: reminder to past users"}, "url": "https://forum.balancer.fi/t/7148"},
+        {"label": {"zh": "Balancer 官方 X：10 月 30 日公告", "en": "Balancer on X: Oct 30 post"}, "url": "https://x.com/Balancer/status/2116258846469709878"}
+      ],
+      "announced": "2026-09-14",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "recall-staking-readonly",
+      "name": {"zh": "Recall:质押 app 11 月 30 日起只读", "en": "Recall: staking app goes read-only on Nov 30"},
+      "summary": {"zh": "Recall 基金会关停,质押 app 11 月 30 日起只读:在这之前自己发起解押并提取。", "en": "The Recall Foundation is winding down and its staking app goes read-only on Nov 30. Unstake and withdraw before then."},
+      "protocol": "Recall",
+      "chains": ["Base"],
+      "chainKeys": ["base"],
+      "protocolKeys": ["recall"],
+      "matchBy": "protocol",
+      "type": "frontend-down",
+      "deadline": "2026-11-30",
+      "deadlineNote": {"zh": "10 月 30 日起,新发起的解押没有冷却期(已经在冷却的照原日期,锁仓不缩短);11 月 30 日 `app.recall.network` 变为只读。之后锁仓到期的,仍可以在 BaseScan 上直接调合约取出。", "en": "Since Oct 30, new unstake requests have no cooldown (requests already cooling down keep their original dates, and locks aren't shortened). On Nov 30, `app.recall.network` becomes read-only. After that, positions whose lock has ended can still be withdrawn by calling the contract directly on BaseScan."},
+      "who": {"zh": "在 Base 上质押了 RECALL 的人。", "en": "Anyone who staked RECALL on Base."},
+      "todo": {"zh": "11 月 30 日前在 `app.recall.network` 自己发起解押并提取。之后:在 BaseScan 上对质押合约用 Write as Proxy 调 `unstake(tokenId)`、`withdraw(tokenId)`,要备一点 Base 上的 ETH 付手续费。", "en": "Before Nov 30, unstake and withdraw yourself at `app.recall.network`. After that, on BaseScan, use Write as Proxy on the staking contract to call `unstake(tokenId)` and `withdraw(tokenId)`. You'll need a little ETH on Base for fees."},
+      "caution": {"zh": "官方说持有人没有分配,也没有新币、空投或迁移,自称提供这些的都是假的。官方长文没写质押合约地址,直接调合约前只用官方渠道给的地址。同一篇长文一处写「30 天后停止访问」,一处写「11 月 30 日只读」。", "en": "Recall says holders get no distribution and there is no new token, airdrop or migration; anyone offering one is fake. Its announcement doesn't give the staking contract address, so before calling a contract directly, only use an address from official channels. The same post says access stops \"after 30 days\" in one place and \"read-only on Nov 30\" in another."},
+      "official": [
+        {"label": {"zh": "Recall 官方 X：《The Recall Foundation is winding down》", "en": "Recall on X: \"The Recall Foundation is winding down\""}, "url": "https://x.com/recallnet/status/2116234988601704457"},
+        {"label": {"zh": "Recall Labs 官方 X：公司关停", "en": "Recall Labs on X: company wind-down"}, "url": "https://x.com/RecallLabs_/status/2116235386582426069"}
+      ],
+      "announced": "2026-10-30",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "megapot-app-shutdown",
+      "name": {"zh": "Megapot：app 下线", "en": "Megapot: app shutting down"},
+      "summary": {"zh": "Megapot 的网站和 Telegram 小程序 12 月 1 日下线:用邮箱、X、Telegram 登录的账户要在这之前把余额提走。", "en": "Megapot's website and Telegram mini app go offline on Dec 1. If your account uses email, X or Telegram login, withdraw your balance before then."},
+      "protocol": "Megapot",
+      "chains": ["Base"],
+      "chainKeys": ["base"],
+      "protocolKeys": ["megapot"],
+      "matchBy": null,
+      "type": "frontend-down",
+      "deadline": "2026-12-01",
+      "deadlineNote": {"zh": "10 月 29 日起停止售票,提现不用再做身份验证;12 月 1 日 `megapot.io` 和 Telegram 小程序下线。协议本身继续运行。", "en": "Since Oct 29, ticket sales have stopped and withdrawals no longer need identity checks. On Dec 1, `megapot.io` and the Telegram mini app go offline. The protocol itself keeps running."},
+      "who": {"zh": "用邮箱、X 或 Telegram 登录建了账户的人,以及有链下保底奖没领的人。自己连钱包玩的,票和奖一直在自己手里。", "en": "Anyone whose account was created with email, X or Telegram login, and anyone with an off-chain consolation prize waiting. If you played with your own wallet, your tickets and prizes stay with you."},
+      "todo": {"zh": "12 月 1 日前把账户余额提走,链下的保底奖也在这之前领。链上的奖和推荐费 12 月 1 日后仍可以经 Basescan 或第三方 app 领。提供流动性的随时可以取。", "en": "Withdraw your account balance before Dec 1, and collect any off-chain consolation prize before then too. On-chain prizes and referral fees can still be collected after Dec 1 through Basescan or third-party apps. Liquidity providers can withdraw at any time."},
+      "official": [
+        {"label": {"zh": "Megapot 官方 X：《Winding down the Megapot app, going all in on Prizerail》", "en": "Megapot on X: \"Winding down the Megapot app, going all in on Prizerail\""}, "url": "https://x.com/megapot/status/2115854946872811587"}
+      ],
+      "announced": "2026-10-29",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "thundercore-migration",
+      "name": {"zh": "ThunderCore 停链:TT 迁到 BNB Chain", "en": "ThunderCore chain stopped: TT moving to BNB Chain"},
+      "summary": {"zh": "ThunderCore 已经停链,TT 迁到 BNB Chain:迁移站开到 12 月 1 日。", "en": "ThunderCore has stopped and TT is moving to BNB Chain. The migration site is open until Dec 1."},
+      "protocol": "ThunderCore",
+      "chains": ["ThunderCore"],
+      "chainKeys": ["thundercore"],
+      "protocolKeys": ["thundercore"],
+      "matchBy": "chain",
+      "type": "chain-shutdown",
+      "deadline": "2026-12-01",
+      "deadlineNote": {"zh": "8 月 28 日 ThunderBridge 停用;9 月 1 日出最后一个区块 236120709;迁移站从 9 月 1 日开到 12 月 1 日。", "en": "ThunderBridge stopped on Aug 28. The last block, 236120709, was produced on Sep 1. The migration site is open from Sep 1 to Dec 1."},
+      "who": {"zh": "持有主网 TT、veTT、以太坊上的 ERC20-TT,或在 ThunderBridge 里有资产的人。放在交易所里的,听交易所安排。", "en": "Anyone holding mainnet TT, veTT, ERC20-TT on Ethereum, or assets in ThunderBridge. If yours are on an exchange, follow the exchange's instructions."},
+      "todo": {"zh": "到 `migration.thundercore.com` 查状态,按步骤迁移。", "en": "Check your status at `migration.thundercore.com` and follow the migration steps."},
+      "caution": {"zh": "第三方代币和 NFT 不迁。9 月 1 日前还放在合约里的不会自动迁,要人工逐个审核,不保证。12 月 1 日以后怎么办,官方没说。", "en": "Third-party tokens and NFTs are not migrated. Anything still inside a contract before Sep 1 isn't migrated automatically; it's reviewed case by case, with no guarantee. ThunderCore hasn't said what happens after Dec 1."},
+      "official": [
+        {"label": {"zh": "ThunderCore 官方:迁移公告", "en": "ThunderCore: migration announcement"}, "url": "https://news.thundercore.com/thundercore-mainnet-migration-action-required-before-september-1-2026/"},
+        {"label": {"zh": "ThunderCore 官方:最后区块和迁移站上线", "en": "ThunderCore: final block and migration site"}, "url": "https://news.thundercore.com/thundercore-mainnet-final-block-migration-site-now-live/"},
+        {"label": {"zh": "ThunderCore 官方 X：9 月 1 日", "en": "ThunderCore on X: Sep 1"}, "url": "https://x.com/ThunderCoreLab/status/2094794490364170395"}
+      ],
+      "announced": "2026-08-26",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "quickswap-old-quick",
+      "name": {"zh": "QuickSwap:旧 QUICK 换新 QUICK,比例按月降", "en": "QuickSwap: old QUICK to new QUICK, rate drops monthly"},
+      "summary": {"zh": "QuickSwap 旧 QUICK 换新 QUICK 的比例按月降:1:750 到 12 月 5 日为止,之后降到 1:500,越早换得越多。", "en": "QuickSwap's old-to-new QUICK swap rate drops every month: 1:750 until Dec 5, then 1:500 after Dec 5. The sooner you swap, the more you get."},
+      "protocol": "QuickSwap",
+      "chains": ["Polygon"],
+      "chainKeys": ["polygon"],
+      "protocolKeys": ["quickswap"],
+      "matchBy": null,
+      "type": "token-migration",
+      "deadline": "2027-02-05",
+      "milestones": [
+        {"date": "2026-12-05", "note": {"zh": "1:750 到这一天为止,之后降到 1:500", "en": "Last day of the 1:750 rate; it drops to 1:500 after this"}},
+        {"date": "2027-01-05", "note": {"zh": "1:500 到这一天为止,之后降到 1:250", "en": "Last day of the 1:500 rate; it drops to 1:250 after this"}}
+      ],
+      "deadlineNote": {"zh": "官方说 1:750 的比例到 2026 年 12 月 5 日为止,12 月 5 日以后降到 1:500。再往后按第三方报道:2027 年 1 月 5 日以后 1:250;2027 年 2 月 5 日永久结束。", "en": "QuickSwap says the 1:750 rate remains available until Dec 5, 2026, and drops to 1:500 after Dec 5. Later steps, per third-party reports: 1:250 after Jan 5, 2027, and the swap ends for good on Feb 5, 2027."},
+      "who": {"zh": "还持有旧版 QUICK 的人。", "en": "Anyone still holding old QUICK."},
+      "todo": {"zh": "每一档到期前换掉,越早换得越多。", "en": "Swap before each rate tier ends. The earlier you swap, the more new QUICK you get."},
+      "caution": {"zh": "完整的分档表出自第三方报道,以 QuickSwap 官方帖为准。没换的旧 QUICK 怎么处理,官方发起了投票(11 月 7 日 12:00 UTC 结束)。", "en": "The full schedule comes from third-party reporting; QuickSwap's own posts have the final say. QuickSwap is holding a vote on what to do with old QUICK that isn't swapped (ends Nov 7, 12:00 UTC)."},
+      "official": [
+        {"label": {"zh": "QuickSwap 官方 X：11 月 4 日提醒", "en": "QuickSwap on X: Nov 4 reminder"}, "url": "https://x.com/QuickswapDEX/status/2117919533302219124"},
+        {"label": {"zh": "QuickSwap 官方 X：没换的旧 QUICK 怎么处理(投票)", "en": "QuickSwap on X: vote on old QUICK that isn't swapped"}, "url": "https://x.com/QuickswapDEX/status/2117949996876321103"}
+      ],
+      "announced": "2026-08-04",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "zetachain-shutdown",
+      "name": {"zh": "ZetaChain 停链:ZETA 迁到 Solana", "en": "ZetaChain shutting down: ZETA moving to Solana"},
+      "summary": {"zh": "ZetaChain 计划约 12 月 9 日停链,ZETA 迁到 Solana:快照前先把 wZETA 解包、退出池子和流动性质押。", "en": "ZetaChain plans to stop around Dec 9 and move ZETA to Solana. Before the snapshot, unwrap wZETA and exit pools and liquid staking."},
+      "protocol": "ZetaChain",
+      "chains": ["ZetaChain"],
+      "chainKeys": ["zetachain"],
+      "protocolKeys": ["zetachain"],
+      "matchBy": "chain",
+      "type": "chain-shutdown",
+      "deadline": "2026-12-09",
+      "deadlineNote": {"zh": "提案 70 的投票 11 月 7 日截止,通过才生效。按提案,约 12 月 9 日在区块 20,755,000 快照并停链,同一天开放 ZETA 迁移门户和跨链资产页。跨链功能早已关闭(6 月停入金,7 月 1 日停出金)。只读归档节点开到 2027 年 10 月 31 日。", "en": "Voting on proposal 70 ends on Nov 7, and it only takes effect if it passes. Under the proposal, a snapshot is taken and the chain stops at block 20,755,000 around Dec 9, and the ZETA migration portal and the page for bridged assets open the same day. Cross-chain transfers already stopped (deposits in June, withdrawals on Jul 1). Read-only archive nodes stay up until Oct 31, 2027."},
+      "who": {"zh": "在 ZetaChain 上持有 ZETA、wZETA,或放在池子、流动性质押里的人,以及跨链资产(ZRC-20)卡在 ZetaChain 上的人。以太坊上的 ERC-20 ZETA 不受影响。", "en": "Anyone holding ZETA or wZETA on ZetaChain, or with ZETA in pools or liquid staking, and anyone with bridged assets (ZRC-20) stuck on ZetaChain. ERC-20 ZETA on Ethereum is not affected."},
+      "todo": {"zh": "快照前:把 wZETA 解包,退出池子和流动性质押(放在合约里的 ZETA 不能按地址领)。12 月 9 日起:到 `hub.zetachain.com/migrate` 签名,领 Solana 上的 ZETA(至少 10 个,不用 SOL);ZRC-20 到 `hub.zetachain.com/bridged-assets` 签名,在原链领回。", "en": "Before the snapshot, unwrap wZETA and exit pools and liquid staking (ZETA held inside contracts can't be collected by address). From Dec 9, sign at `hub.zetachain.com/migrate` to receive ZETA on Solana (at least 10 ZETA, no SOL needed). For ZRC-20 tokens, sign at `hub.zetachain.com/bridged-assets` to get them back on their original chain."},
+      "caution": {"zh": "提案 70 要 11 月 7 日通过才生效。每种低于 5 美元的、放在池子、金库或合约钱包里的 ZRC-20 领不了。官方说门户只要签名,不要发交易,也不要助记词。", "en": "Proposal 70 only takes effect if it passes on Nov 7. ZRC-20 tokens worth under $5 each, or held in pools, vaults or contract wallets, can't be collected. ZetaChain says the portal only asks for a signature, never a transaction or your seed phrase."},
+      "official": [
+        {"label": {"zh": "ZetaChain 官方 X：11 月 4 日公告", "en": "ZetaChain on X: Nov 4 post"}, "url": "https://x.com/ZetaChain/status/2118018948813959485"},
+        {"label": {"zh": "ZetaChain 治理:提案 68", "en": "ZetaChain governance: proposal 68"}, "url": "https://hub.zetachain.com/governance/proposal/68"},
+        {"label": {"zh": "ZetaChain 官方博客:ZETA 迁到 Solana", "en": "ZetaChain blog: bringing ZETA to Solana"}, "url": "https://zetachain.com/blog/bringing-zeta-and-private-ai-to-solana"}
+      ],
+      "announced": "2026-11-04",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "astralabs-astra-migration",
+      "name": {"zh": "AstraLabs：ASTRA 换新合约", "en": "AstraLabs: ASTRA moving to a new contract"},
+      "summary": {"zh": "AstraLabs 的 ASTRA 换新合约:11 月 7 日快照,12 月 10 日前要换到新币,过期不受理。", "en": "AstraLabs is moving ASTRA to a new contract: snapshot on Nov 7, and new tokens must be collected by Dec 10. Late requests won't be accepted."},
+      "protocol": "AstraLabs",
+      "chains": ["Ethereum"],
+      "chainKeys": ["ethereum"],
+      "protocolKeys": ["astralabs"],
+      "matchBy": null,
+      "type": "token-migration",
+      "deadline": "2026-12-10",
+      "milestones": [
+        {"date": "2026-11-07", "note": {"zh": "快照:要在这之前持有旧币", "en": "Snapshot: hold the old tokens before this"}}
+      ],
+      "deadlineNote": {"zh": "11 月 7 日流动性搬到新合约,同时快照;11 月 7 日到 10 日新合约上线;11 月 10 日恢复交易;12 月 10 日截止,官方说过期不受理、不退。", "en": "On Nov 7, liquidity moves to the new contract and a snapshot is taken. The new contract goes live between Nov 7 and 10, and trading resumes on Nov 10. The deadline is Dec 10; AstraLabs says late requests won't be accepted or refunded."},
+      "who": {"zh": "快照时持有旧 ASTRA 的人。", "en": "Anyone holding old ASTRA at the snapshot."},
+      "todo": {"zh": "快照前持有旧币;12 月 10 日前照官方 X 上公布的办法领新币。", "en": "Hold your old tokens through the snapshot, then collect the new tokens by Dec 10 the way AstraLabs announces on its X account."},
+      "caution": {"zh": "兑换比例、新合约地址和领取办法当时还没公布。官方说链接只在它的 X 上发,小心假的领取页。", "en": "The swap ratio, the new contract address and how to collect hadn't been announced yet. AstraLabs says links will only be posted on its X account, so watch out for fake pages."},
+      "official": [
+        {"label": {"zh": "AstraLabs 官方 X：10 月 15 日公告", "en": "AstraLabs on X: Oct 15 announcement"}, "url": "https://x.com/AstraLabs_Inc/status/2110658230284112076"}
+      ],
+      "announced": "2026-10-15",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "abstract-chain-shutdown",
+      "name": {"zh": "Abstract 链关停", "en": "Abstract chain shutting down"},
+      "summary": {"zh": "Abstract 链 12 月 15 日关停,到时没跨走的钱将无法取用:先从链上应用里撤出,再跨走。", "en": "The Abstract chain shuts down on Dec 15, and funds not bridged out by then will be inaccessible. Exit the apps first, then bridge out."},
+      "protocol": "Abstract",
+      "chains": ["Abstract"],
+      "chainKeys": ["abstract"],
+      "protocolKeys": ["abstract"],
+      "matchBy": "chain",
+      "type": "chain-shutdown",
+      "deadline": "2026-12-15",
+      "deadlineNote": {"zh": "12 月 15 日关停。官方原话:到期没跨走的资金「will be inaccessible」(将无法取用)。", "en": "Abstract shuts down on Dec 15. In its own words, funds not bridged out by then \"will be inaccessible\"."},
+      "who": {"zh": "在 Abstract 链上还有资产的人,包括放在链上应用里的。", "en": "Anyone with assets on Abstract, including inside apps on the chain."},
+      "todo": {"zh": "先从链上应用里撤出,再用 Migration Hub(`migrate.abs.xyz`)或原生桥(`native-bridge.abs.xyz`,约 3 小时)跨走。迁移页上也列了 Stargate、Relay、Jumper。", "en": "First withdraw from apps on the chain, then bridge out with the Migration Hub (`migrate.abs.xyz`) or the native bridge (`native-bridge.abs.xyz`, about 3 hours). The migration page also lists Stargate, Relay and Jumper."},
+      "caution": {"zh": "官方提醒小心假迁移站和冒充官方的私信。", "en": "Abstract warns about fake migration sites and DMs from impersonators."},
+      "official": [
+        {"label": {"zh": "Abstract 官方迁移页", "en": "Abstract migration page"}, "url": "https://migrate.abs.xyz"},
+        {"label": {"zh": "Abstract 官方 X：《Abstract is Winding Down》", "en": "Abstract on X: \"Abstract is Winding Down\""}, "url": "https://x.com/AbstractChain/status/2107554632675340420"}
+      ],
+      "announced": "2026-10-06",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "stargate-v1-pools",
+      "name": {"zh": "Stargate V1 池子停用", "en": "Stargate V1 pools retiring"},
+      "summary": {"zh": "Stargate V1 池子 12 月 15 日起不能用:V1 的流动性提供者要在这之前撤出来,现在取款免手续费。", "en": "Stargate V1 pools stop working on Dec 15. V1 liquidity providers need to withdraw before then; withdrawals are fee-free now."},
+      "protocol": "Stargate",
+      "chains": ["EVM"],
+      "chainKeys": [],
+      "protocolKeys": ["stargate"],
+      "matchBy": null,
+      "type": "bridge-route-end",
+      "deadline": "2026-12-15",
+      "deadlineNote": {"zh": "9 月 4 日宣布:V1 消息暂停约两周后,开放零手续费取款;12 月 15 日 LayerZero V1 Relayer 下线,V1 池子从此不能用。Stargate V2 和 Hydra 不受影响。Metis 上的池子更早:10 月 23 日就截止了,见本页 Metis 那一条。", "en": "Announced Sep 4: after V1 messaging paused for about two weeks, fee-free withdrawals opened. On Dec 15 the LayerZero V1 Relayer goes offline and V1 pools stop working for good. Stargate V2 and Hydra are not affected. On Metis the pools ended earlier, on Oct 23; see the Metis entry on this page."},
+      "who": {"zh": "在 Stargate V1 池子里提供流动性的人,Metis 上的除外(那边 10 月 23 日已经截止)。", "en": "Liquidity providers in Stargate V1 pools, except on Metis, where the deadline was Oct 23."},
+      "todo": {"zh": "12 月 15 日前把 V1 池子里的流动性撤出来。", "en": "Withdraw your liquidity from V1 pools before Dec 15."},
+      "official": [
+        {"label": {"zh": "Stargate 官方 X：9 月 4 日公告", "en": "Stargate on X: Sep 4 announcement"}, "url": "https://x.com/StargateFinance/status/2096011690920009883"},
+        {"label": {"zh": "Metis 官方博客:V1 池子 12 月 15 日在各条链上关闭,Metis 上更早", "en": "Metis blog: V1 pools close on every chain on Dec 15, earlier on Metis"}, "url": "https://www.metis.io/blog/stargate-sunset-and-layerzero-changes-on-metis-andromeda-what-you-need-to-know"}
+      ],
+      "announced": "2026-09-04",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "stargate-stg-zro",
+      "name": {"zh": "Stargate：STG 换 ZRO 截止", "en": "Stargate: last day to swap STG for ZRO"},
+      "summary": {"zh": "STG 换 LayerZero 的 ZRO,12 月 15 日截止,过了这天不再支持。", "en": "Swapping STG for LayerZero's ZRO ends on Dec 15, with no support after that."},
+      "protocol": "Stargate",
+      "chains": ["Ethereum", "BNB Chain", "Arbitrum", "Avalanche", "Polygon", "OP Mainnet", "Fantom", "Base", "Linea", "Mantle"],
+      "chainKeys": ["ethereum", "bsc", "arbitrum", "avalanche", "polygon", "optimism", "fantom", "base", "linea", "mantle"],
+      "protocolKeys": ["stargate", "layerzero"],
+      "tokenKeys": ["stg"],
+      "tokenContracts": [
+        {"chain": "ethereum", "token": "stg", "symbol": "STG", "address": "0xaf5191b0de278c7286d6c7cc6ab6bb8a73ba2cd6", "source": "https://stargateprotocol.gitbook.io/stargate/developers/contract-addresses/mainnet.md"},
+        {"chain": "bsc", "token": "stg", "symbol": "STG", "address": "0xb0d502e938ed5f4df2e681fe6e419ff29631d62b", "source": "https://stargateprotocol.gitbook.io/stargate/developers/contract-addresses/mainnet.md"},
+        {"chain": "arbitrum", "token": "stg", "symbol": "STG", "address": "0x6694340fc020c5e6b96567843da2df01b2ce1eb6", "source": "https://stargateprotocol.gitbook.io/stargate/developers/contract-addresses/mainnet.md"},
+        {"chain": "avalanche", "token": "stg", "symbol": "STG", "address": "0x2f6f07cdcf3588944bf4c42ac74ff24bf56e7590", "source": "https://stargateprotocol.gitbook.io/stargate/developers/contract-addresses/mainnet.md"},
+        {"chain": "polygon", "token": "stg", "symbol": "STG", "address": "0x2f6f07cdcf3588944bf4c42ac74ff24bf56e7590", "source": "https://stargateprotocol.gitbook.io/stargate/developers/contract-addresses/mainnet.md"},
+        {"chain": "optimism", "token": "stg", "symbol": "STG", "address": "0x296f55f8fb28e498b858d0bcda06d955b2cb3f97", "source": "https://stargateprotocol.gitbook.io/stargate/developers/contract-addresses/mainnet.md"},
+        {"chain": "fantom", "token": "stg", "symbol": "STG", "address": "0x2f6f07cdcf3588944bf4c42ac74ff24bf56e7590", "source": "https://stargateprotocol.gitbook.io/stargate/developers/contract-addresses/mainnet.md"},
+        {"chain": "base", "token": "stg", "symbol": "STG", "address": "0xe3b53af74a4bf62ae5511055290838050bf764df", "source": "https://stargateprotocol.gitbook.io/stargate/developers/contract-addresses/mainnet.md"},
+        {"chain": "linea", "token": "stg", "symbol": "STG", "address": "0x808d7c71ad2ba3fa531b068a2417c63106bc0949", "source": "https://stargateprotocol.gitbook.io/stargate/developers/contract-addresses/mainnet.md"},
+        {"chain": "mantle", "token": "stg", "symbol": "STG", "address": "0x8731d54e9d02c286767d56ac03e8037c07e01e98", "source": "https://stargateprotocol.gitbook.io/stargate/developers/contract-addresses/mainnet.md"}
+      ],
+      "matchBy": "token",
+      "type": "token-migration",
+      "deadline": "2026-12-15",
+      "deadlineNote": {"zh": "兑换 2025 年 8 月 26 日开放;12 月 15 日截止,官方说过了这天不再支持兑换。", "en": "The swap opened on Aug 26, 2025 and closes on Dec 15; LayerZero says swaps won't be supported after that."},
+      "who": {"zh": "还持有 STG 的人。放在交易所里的由各交易所处理,通常截止得更早。", "en": "Anyone still holding STG. Exchanges handle balances held with them, usually with an earlier cutoff."},
+      "todo": {"zh": "12 月 15 日前把 STG 换成 ZRO。官方兑换说明写的固定比例是 1 STG = 0.08634 ZRO。", "en": "Swap your STG for ZRO before Dec 15. Stargate's official conversion guide gives the fixed rate: 1 STG = 0.08634 ZRO."},
+      "caution": {"zh": "官方兑换页写明:STG 要在以太坊上才能换;在别的链上的,先跨回以太坊再换。只从官方页面给的入口进。", "en": "Stargate's official convert page says your STG must be on Ethereum to convert; if it's on another network, bridge it to Ethereum first. Only use the entry point linked from official pages."},
+      "official": [
+        {"label": {"zh": "LayerZero 官方博客:9 月生态更新", "en": "LayerZero blog: September ecosystem update"}, "url": "https://layerzero.network/blog/ecosystem-update-september-2026"},
+        {"label": {"zh": "Stargate 官方 X：2025 年 8 月开放兑换", "en": "Stargate on X: swap opened (Aug 2025)"}, "url": "https://x.com/StargateFinance/status/1960220697407709308"},
+        {"label": {"zh": "Stargate 官方兑换页", "en": "Stargate official convert page"}, "url": "https://stargate.finance/stake"}
+      ],
+      "announced": "2026-09-15",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "fluxtra-frontend",
+      "name": {"zh": "Fluxtra 网站下线,金库搬到 OMies", "en": "Fluxtra website closing, vaults moving to OMies"},
+      "summary": {"zh": "Fluxtra 网站 12 月 31 日关闭:QuickSwap LP 金库的钱现在就取,另外两个金库已经能在 OMies 看到。", "en": "The Fluxtra website closes on Dec 31. Withdraw from the QuickSwap LP vault now; the other two vaults already show up on OMies."},
+      "protocol": "Fluxtra",
+      "chains": ["MANTRA"],
+      "chainKeys": ["mantra"],
+      "protocolKeys": ["fluxtra"],
+      "matchBy": null,
+      "type": "frontend-down",
+      "deadline": "2026-12-31",
+      "deadlineNote": {"zh": "12 月 31 日是经 Fluxtra 界面取款的最后一天,之后网站完全关闭。QuickSwap LP 金库已经停用,官方说现在就取。", "en": "Dec 31 is the last day to withdraw through the Fluxtra interface; after that the website closes completely. The QuickSwap LP vault has been retired, and Fluxtra says to withdraw from it now."},
+      "who": {"zh": "在 MANTRA 链上用过 Fluxtra 金库的人。", "en": "Anyone who used Fluxtra vaults on the MANTRA chain."},
+      "todo": {"zh": "wmantraUSD、stMANTRA 两个金库的存款已经显示在 `onchainomies.com`,可以不动;QuickSwap LP 金库的钱现在就取。", "en": "Deposits in the wmantraUSD and stMANTRA vaults already show up on `onchainomies.com`, so you can leave them. Withdraw from the QuickSwap LP vault now."},
+      "official": [
+        {"label": {"zh": "Fluxtra 官方 X：10 月 30 日公告", "en": "Fluxtra on X: Oct 30 announcement"}, "url": "https://x.com/FluxtraMANTRA/status/2116069165920612718"}
+      ],
+      "announced": "2026-10-30",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "neon-evm-shutdown",
+      "name": {"zh": "Neon EVM 停止运营", "en": "Neon EVM shutting down"},
+      "summary": {"zh": "Neon EVM(跑在 Solana 上的 EVM)停止运营:12 月 31 日前用 NeonPass 把资产提到 Solana。", "en": "Neon EVM (an EVM running on Solana) is shutting down. Use NeonPass to move your assets to Solana before Dec 31."},
+      "protocol": "Neon EVM",
+      "chains": ["Neon EVM"],
+      "chainKeys": ["neon"],
+      "protocolKeys": ["neon-evm"],
+      "matchBy": "chain",
+      "type": "chain-shutdown",
+      "deadline": "2026-12-31",
+      "deadlineNote": {"zh": "10 月 1 日起停止开发和支持;12 月 31 日是迁移和提款的截止日。", "en": "Development and support stopped on Oct 1. Dec 31 is the deadline to migrate and withdraw."},
+      "who": {"zh": "在 Neon EVM 上还有资产的人。", "en": "Anyone with assets on Neon EVM."},
+      "todo": {"zh": "12 月 31 日前用 NeonPass 把资产从 Neon EVM 提到 Solana,步骤见官方文档。", "en": "Before Dec 31, use NeonPass to move your assets from Neon EVM to Solana. The official docs have the steps."},
+      "caution": {"zh": "官方说不会删除 Solana 上的 NEON 代币。12 月 31 日以后还能不能提,官方没说。", "en": "Neon says the NEON token on Solana won't be removed. It hasn't said whether withdrawals will still work after Dec 31."},
+      "official": [
+        {"label": {"zh": "Neon EVM 官网公告", "en": "Neon EVM website notice"}, "url": "https://neonevm.org/"},
+        {"label": {"zh": "Neon EVM 文档:用 NeonPass 提款", "en": "Neon EVM docs: withdrawing with NeonPass"}, "url": "https://docs.neonevm.org/docs/token_transferring/neonpass_withdrawal"}
+      ],
+      "announced": null,
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "quickswap-soneium-frontend",
+      "name": {"zh": "QuickSwap：Soneium 上的界面下线", "en": "QuickSwap: Soneium interface going offline"},
+      "summary": {"zh": "QuickSwap 在 Soneium 上的界面 12 月 31 日下线:在这之前撤出流动性,之后只能经区块浏览器直接调合约。", "en": "QuickSwap's interface on Soneium goes offline on Dec 31. Remove your liquidity before then; afterwards you'd have to call the contracts through the block explorer."},
+      "protocol": "QuickSwap",
+      "chains": ["Soneium"],
+      "chainKeys": ["soneium"],
+      "protocolKeys": ["quickswap"],
+      "matchBy": "protocol",
+      "type": "frontend-down",
+      "deadline": "2026-12-31",
+      "deadlineNote": {"zh": "治理投票 10 月 21 日通过(99.22% 赞成);12 月 31 日 Soneium 部署的界面下线。之后官方说可以经 Soneium 官方区块浏览器直接调合约取回。", "en": "The governance vote passed on Oct 21 (99.22% in favor). The interface for the Soneium deployment goes offline on Dec 31. After that, QuickSwap says funds can be withdrawn by calling the contracts directly through Soneium's official block explorer."},
+      "who": {"zh": "在 Soneium 上的 QuickSwap 里有流动性或资产的人。", "en": "Anyone with liquidity or assets in QuickSwap on Soneium."},
+      "todo": {"zh": "12 月 31 日前在 QuickSwap 界面撤出 Soneium 上的流动性和资产;之后到 `soneium.blockscout.com` 直接调合约。", "en": "Before Dec 31, remove your liquidity and assets on Soneium through the QuickSwap interface. After that, use `soneium.blockscout.com` to call the contracts directly."},
+      "official": [
+        {"label": {"zh": "QuickSwap 官方 X：10 月 22 日公告", "en": "QuickSwap on X: Oct 22 announcement"}, "url": "https://x.com/QuickswapDEX/status/2113286960995352648"},
+        {"label": {"zh": "QuickSwap 治理投票(Snapshot)", "en": "QuickSwap governance vote (Snapshot)"}, "url": "https://snapshot.box/#/s:quickvote.eth/proposal/0x42e766a949de942b7b3eebde247bc295fb26816e68b3fc0eec716bffc35a6e4a"}
+      ],
+      "announced": "2026-10-22",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "relay-vaults",
+      "name": {"zh": "Relay Vaults 关停", "en": "Relay Vaults shutting down"},
+      "summary": {"zh": "Relay 的流动性金库关停:12 月 31 日提款页关闭,在这之前到官方页面提走。", "en": "Relay's liquidity vaults are shutting down. The withdrawal page closes on Dec 31, so withdraw on the official page before then."},
+      "protocol": "Relay",
+      "chains": ["Ethereum", "Arbitrum"],
+      "chainKeys": ["ethereum", "arbitrum"],
+      "protocolKeys": ["relay"],
+      "matchBy": "protocol",
+      "type": "frontend-down",
+      "deadline": "2026-12-31",
+      "deadlineNote": {"zh": "已经停止新存款;12 月 31 日提款页关闭,之后只能直接调合约。", "en": "New deposits have stopped. The withdrawal page closes on Dec 31; after that, only direct contract calls remain."},
+      "who": {"zh": "在 Relay Vaults(以太坊、Arbitrum 上的 WETH 金库)里存过钱的人。", "en": "Anyone with deposits in Relay Vaults (WETH vaults on Ethereum and Arbitrum)."},
+      "todo": {"zh": "到 `relay.link/vaults` 提走。12 月 31 日以后,照官方文档直接调 ERC4626 合约的 `redeem(shares, receiver, owner)`,或经 native gateway 取原生 ETH。", "en": "Withdraw at `relay.link/vaults`. After Dec 31, follow the official docs to call `redeem(shares, receiver, owner)` on the ERC4626 contract directly, or use the native gateway to get native ETH."},
+      "caution": {"zh": "单笔能取多少受金库可用流动性限制。合约现在还收存款,误存进去的也只能照同样的办法取。", "en": "How much you can withdraw at once depends on the vault's available liquidity. The contracts still accept deposits; anything deposited by mistake comes out the same way."},
+      "official": [
+        {"label": {"zh": "Relay 官方文档:怎么从金库取款", "en": "Relay docs: withdrawing from the vaults"}, "url": "https://docs.relay.link/references/protocol/vaults/guides/withdrawing"},
+        {"label": {"zh": "Relay 官方 X：10 月 9 日公告", "en": "Relay on X: Oct 9 announcement"}, "url": "https://x.com/RelayProtocol/status/2108586089208590817"}
+      ],
+      "announced": "2026-10-09",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "silicon-network-shutdown",
+      "name": {"zh": "Silicon Network 停服(Korbit Web3 钱包一起停)", "en": "Silicon Network shutting down (with Korbit's Web3 wallet)"},
+      "summary": {"zh": "Silicon 链 12 月 31 日停服,没提走的资金之后无法再取回:从以太坊跨来的要经官方桥提回去。", "en": "The Silicon chain shuts down on Dec 31, and funds left behind can't be retrieved afterwards. Assets bridged from Ethereum need to go back through the official bridge."},
+      "protocol": "Silicon",
+      "chains": ["Silicon"],
+      "chainKeys": ["silicon"],
+      "protocolKeys": ["silicon", "korbit"],
+      "matchBy": "chain",
+      "type": "chain-shutdown",
+      "deadline": "2026-12-31",
+      "deadlineAt": "2026-12-31T12:00:00+09:00",
+      "deadlineNote": {"zh": "12 月 31 日 12:00(UTC+9),也就是 03:00 UTC 停服,之后区块浏览器关闭、网络终止。官方原话:没提走的资金「cannot be recovered」(无法再取回)。", "en": "Silicon shuts down on Dec 31 at 12:00 UTC+9 (03:00 UTC). The block explorer then closes and the network ends. In its own words, funds not withdrawn by then \"cannot be recovered\"."},
+      "who": {"zh": "在 Silicon 链上有资产的人,包括用 Korbit Web3 钱包的人。", "en": "Anyone with assets on Silicon, including Korbit Web3 wallet users."},
+      "todo": {"zh": "从以太坊跨来的资产,在期限内经官方桥提回以太坊(备一点 ETH 付手续费);用 Korbit Web3 钱包的走 Korbit 的流程;Silicon 原生代币不能直接跨,只能先在链上换掉。", "en": "Assets bridged from Ethereum: withdraw them to Ethereum through the official bridge before the deadline, and keep a little ETH for fees. Korbit Web3 wallet users: follow Korbit's process. Silicon's native token can't be bridged directly, so swap it on the chain first."},
+      "official": [
+        {"label": {"zh": "Silicon 官方文档:停服公告", "en": "Silicon docs: service termination notice"}, "url": "https://docs.silicon.network/important-service-termination"},
+        {"label": {"zh": "Silicon 官方文档:提款指南", "en": "Silicon docs: withdrawal guide"}, "url": "https://docs.silicon.network/user-guide/bridge/withdrawal"},
+        {"label": {"zh": "Silicon 官方 X：Korbit Web3 钱包 12 月 31 日停服", "en": "Silicon on X: Korbit Web3 wallet ends Dec 31"}, "url": "https://x.com/0xSilicon/status/2094279324866367634"}
+      ],
+      "announced": "2026-09-02",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "standx-winddown",
+      "name": {"zh": "StandX 有序关停:DUSD 空投、平仓、赎回截止", "en": "StandX winding down: DUSD airdrop, position and redemption deadlines"},
+      "summary": {"zh": "StandX 有序关停:DUSD 空投 12 月 31 日截止,2027 年 1 月 15 日强平,1 月 31 日提款和赎回截止。", "en": "StandX is winding down. The DUSD airdrop ends Dec 31, positions are force-closed on Jan 15, 2027, and withdrawals and redemptions close on Jan 31, 2027."},
+      "protocol": "StandX",
+      "chains": ["BNB Chain", "Solana"],
+      "chainKeys": ["bsc", "solana"],
+      "protocolKeys": ["standx"],
+      "tokenKeys": ["dusd"],
+      "tokenContracts": [
+        {"chain": "bsc", "token": "dusd", "symbol": "DUSD", "address": "0xaf44a1e76f56ee12adbb7ba8acd3cbd474888122", "source": "https://docs.standx.com/docs/dusd-solutions/key-addresses"}
+      ],
+      "matchBy": "token",
+      "type": "withdraw-only",
+      "deadline": "2027-01-31",
+      "dueKind": "redeem",
+      "milestones": [
+        {"date": "2026-12-31", "deadlineAt": "2026-12-31T08:00:00Z", "note": {"zh": "DUSD 空投到期作废", "en": "The DUSD airdrop expires"}},
+        {"date": "2027-01-15", "note": {"zh": "强平全部仓位、金库结算", "en": "All positions are force-closed and vaults settled"}}
+      ],
+      "deadlineNote": {"zh": "10 月 15 日起收益停发、金库停止存入;10 月 20 日起只能减仓。DUSD 空投从 11 月 2 日 00:00 开到 12 月 31 日 08:00(UTC),过期作废;2027 年 1 月 15 日强平全部仓位、金库结算;2027 年 1 月 31 日提款和 DUSD 赎回截止(赎回流程 7 天,2 月 7 日前办完)。", "en": "Since Oct 15, yield has stopped and vaults no longer take deposits; since Oct 20, positions can only be reduced. The DUSD airdrop is open from Nov 2, 00:00 to Dec 31, 08:00 UTC, and expires after that. All positions are force-closed and vaults settled on Jan 15, 2027. Withdrawals and DUSD redemptions close on Jan 31, 2027 (redemption takes 7 days and finishes by Feb 7)."},
+      "who": {"zh": "在 StandX(BNB Chain 或 Solana)上有仓位、余额或 DUSD 的人,以及在 PancakeSwap、Raydium 上提供 DUSD 流动性的人。", "en": "Anyone with positions, balances or DUSD on StandX (BNB Chain or Solana), and anyone providing DUSD liquidity on PancakeSwap or Raydium."},
+      "todo": {"zh": "领空投 → 平仓 → 从 Perps 钱包转到 Cash 钱包 → 提到自己的链上钱包。要换 USDT 的,在 2027 年 1 月 31 日前提交赎回;PancakeSwap、Raydium 上的 DUSD 流动性也在 1 月 31 日前撤出。", "en": "Collect the airdrop → close positions → move funds from the Perps wallet to the Cash wallet → withdraw to your own wallet. To get USDT, request a redemption before Jan 31, 2027, and remove DUSD liquidity on PancakeSwap and Raydium before Jan 31 too."},
+      "caution": {"zh": "DUSD 赎回换的是 USDT。2027 年 1 月 31 日以后余额仍归用户,要发邮件到 support@standx.com 办理。", "en": "DUSD redeems for USDT. After Jan 31, 2027, balances still belong to their owners, but you'll need to email support@standx.com."},
+      "official": [
+        {"label": {"zh": "StandX 官方 X：关停安排长文", "en": "StandX on X: wind-down arrangements"}, "url": "https://x.com/StandX_Official/status/2110613283967230232"},
+        {"label": {"zh": "StandX 官方 X：只能减仓", "en": "StandX on X: reduce-only mode"}, "url": "https://x.com/StandX_Official/status/2113172366545023288"},
+        {"label": {"zh": "StandX 官方 X：空投开放", "en": "StandX on X: airdrop open"}, "url": "https://x.com/StandX_Official/status/2117039675559026937"}
+      ],
+      "announced": "2026-10-15",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "parasail-pfil",
+      "name": {"zh": "Parasail：pFIL 池转为只能取,网站留到 2027 年 1 月底", "en": "Parasail: pFIL pool withdraw-only, website up until end of January 2027"},
+      "summary": {"zh": "Parasail 的 pFIL 池被盗后转为只能取:等官方重开取款,1:1 换回 FIL;网站留到 2027 年 1 月 31 日。", "en": "After an exploit, Parasail's pFIL pool is withdraw-only. Once withdrawals reopen, swap pFIL back to FIL 1:1. The website stays up until Jan 31, 2027."},
+      "protocol": "Parasail",
+      "chains": ["Filecoin FEVM"],
+      "chainKeys": ["filecoin"],
+      "protocolKeys": ["parasail"],
+      "tokenKeys": ["pfil"],
+      "tokenContracts": [
+        {"chain": "filecoin", "token": "pfil", "symbol": "pFIL", "address": "0xaaa93ac72becfbbc9149f293466bbdaa4b5ef68c", "source": "https://docs.parasail.network/delegation-guides/guide-for-filecoin-users/contract-addresses"}
+      ],
+      "matchBy": "token",
+      "type": "withdraw-only",
+      "deadline": "2027-01-31",
+      "dueKind": "other",
+      "deadlineNote": {"zh": "池子暂停中,官方 11 月 4 日说「本周晚些时候」重开取款;网站留到 2027 年 1 月 31 日,之后只能直接调合约,官方说下线前会出直接调合约的说明。", "en": "The pool is paused. On Nov 4, Parasail said withdrawals would reopen \"later this week\". The website stays up until Jan 31, 2027; after that only direct contract calls will work, and Parasail says it will publish instructions before the site goes offline."},
+      "who": {"zh": "持有 pFIL 的人。", "en": "Anyone holding pFIL."},
+      "todo": {"zh": "等官方宣布重开取款,再照官方给的链接把 pFIL 1:1 换回 FIL。", "en": "Once Parasail announces that withdrawals have reopened, follow its official link to swap pFIL back to FIL at 1:1."},
+      "caution": {"zh": "这个池子被盗过:官方说被盗 344,056 FIL,缺口由 Parasail 和几个大户补足。只信官方渠道发的链接。", "en": "This pool was exploited: Parasail says 344,056 FIL was stolen and the shortfall has been covered by Parasail and several large holders. Only trust links from official channels."},
+      "official": [
+        {"label": {"zh": "Parasail 官方 X：11 月 4 日 pFIL 公告", "en": "Parasail on X: Nov 4 pFIL update"}, "url": "https://x.com/parasailnetwork/status/2118002516944441594"}
+      ],
+      "announced": "2026-11-04",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "derive-chain-rewards",
+      "name": {"zh": "Derive Chain 下线:迁到 Derive V3,奖励 2027 年 2 月 1 日截止", "en": "Derive Chain retired: moved to Derive V3, rewards deadline Feb 1, 2027"},
+      "summary": {"zh": "Derive Chain 已迁到 Derive V3(资金托管在以太坊);没领的交易和质押奖励要在 2027 年 2 月 1 日前到 Optimism 上领。", "en": "Derive Chain has moved to Derive V3, with funds held on Ethereum. Trading and staking rewards still waiting must be collected on Optimism before Feb 1, 2027."},
+      "protocol": "Derive",
+      "chains": ["Derive Chain"],
+      "chainKeys": ["derive"],
+      "protocolKeys": ["derive", "lyra"],
+      "matchBy": null,
+      "type": "rewards-deadline",
+      "deadline": "2027-02-01",
+      "deadlineNote": {"zh": "10 月 6 日 18:00(UTC)快照;10 月 8 日 V3 上线。没领的交易和质押奖励在 Optimism 上的合约里领,到 2027 年 2 月 1 日为止,过期由基金会收回。", "en": "Snapshot on Oct 6 at 18:00 UTC; V3 went live on Oct 8. Trading and staking rewards still waiting are collected from a contract on Optimism until Feb 1, 2027, after which the foundation takes them back."},
+      "who": {"zh": "原来在 Derive Chain(原 Lyra)上交易或质押的人。", "en": "Anyone who traded or staked on Derive Chain (formerly Lyra)."},
+      "todo": {"zh": "余额已自动迁进 V3,到 `app.derive.xyz` 核对;条件单、TWAP 单要重新挂;2027 年 2 月 1 日前到 Optimism 上领没领的奖励。", "en": "Your balance moved to V3 automatically; check it at `app.derive.xyz`. Re-create any conditional or TWAP orders, and collect your waiting rewards on Optimism before Feb 1, 2027."},
+      "caution": {"zh": "Derive Chain 上的 DRV 旧供应作废(原文「orphaned」),按快照在以太坊上重新发给持有人。", "en": "The old DRV supply on Derive Chain is void (\"orphaned\" in the proposal) and is reissued to holders on Ethereum based on the snapshot."},
+      "official": [
+        {"label": {"zh": "Derive 论坛:Derive V3 提案(DIP)", "en": "Derive forum: Derive V3 proposal (DIP)"}, "url": "https://forums.derive.xyz/t/dip-launch-derive-v3/322"},
+        {"label": {"zh": "Derive 官方 X：Derive V3 上线", "en": "Derive on X: Derive V3 is live"}, "url": "https://x.com/DeriveXYZ/status/2108069298673758548"}
+      ],
+      "announced": "2026-09-14",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "kelp-rseth-sunset",
+      "name": {"zh": "Kelp:关停网络上的旧版 rsETH,人工处理到 2027 年 6 月", "en": "Kelp: old rsETH on retired networks, manual process until June 2027"},
+      "summary": {"zh": "Kelp 关停网络上的旧版 rsETH 不能直接用了,可以照官方指南申请在以太坊上换回,截止 2027 年 6 月 15 日。", "en": "Old rsETH on networks Kelp has retired no longer works directly, but you can apply through Kelp's official guide to get it back on Ethereum until Jun 15, 2027."},
+      "protocol": "Kelp",
+      "chains": ["Base", "Mantle", "Ink"],
+      "chainKeys": ["base", "mantle", "ink"],
+      "protocolKeys": ["kelp"],
+      "matchBy": null,
+      "type": "token-migration",
+      "deadline": "2027-06-15",
+      "deadlineAt": "2027-06-15T23:59:00Z",
+      "deadlineNote": {"zh": "6 月 15 日先下线了 22 条网络上的旧 rsETH;10 月 5 日起 Base、Mantle、Ink 上的旧 rsETH 也退役(换成 Chainlink CCIP 版)。人工处理截止到 2027 年 6 月 15 日 23:59(UTC)。", "en": "Old rsETH was retired on 22 networks on Jun 15. From Oct 5, old rsETH on Base, Mantle and Ink was retired too (replaced by a Chainlink CCIP version). The manual process closes on Jun 15, 2027, 23:59 UTC."},
+      "who": {"zh": "在 Kelp 已关停的网络上还持有旧版 rsETH 的人。Arbitrum 不受影响。", "en": "Anyone still holding old rsETH on networks Kelp has retired. Arbitrum is not affected."},
+      "todo": {"zh": "只照 Kelp 官方博客的指南做:先核对手里的是旧版 rsETH 合约,再按指南的步骤提交(指南要求在原链把币发到黑洞地址、付 100 USDC 手续费、发邮件附上交易)。Kelp 按季度在以太坊上发回。", "en": "Follow only the guide on Kelp's official blog. First confirm you hold the old rsETH contract, then submit as the guide describes (it asks you to send the tokens to a burn address on the original chain, pay a 100 USDC fee and email the transactions). Kelp sends rsETH back on Ethereum each quarter."},
+      "caution": {"zh": "这套流程(往黑洞地址发币、付手续费、发邮件)和常见骗局很像:只照 Kelp 官方博客的原文做,别信私信,别信别的网站。在 Base、Mantle、Ink、Linea、Optimism、Zircuit 上拆 wrsETH 得到的是新版,不用走这个流程。", "en": "This process (sending tokens to a burn address, paying a fee, sending an email) looks a lot like common scams. Follow only the original text on Kelp's official blog, and ignore DMs and other websites. Unwrapping wrsETH on Base, Mantle, Ink, Linea, Optimism or Zircuit gives you the new version, which doesn't need this process."},
+      "official": [
+        {"label": {"zh": "Kelp 官方博客:关停网络上的 rsETH 怎么办", "en": "Kelp blog: guide for rsETH on sunset networks"}, "url": "https://blogs.kerneldao.com/blog/recovering-rseth-from-sunset-networks"},
+        {"label": {"zh": "Kelp 官方 X：10 月 8 日迁到 CCIP 完成", "en": "Kelp on X: CCIP migration done (Oct 8)"}, "url": "https://x.com/KelpDAO/status/2108213255403651098"}
+      ],
+      "announced": "2026-10-12",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "blast-l2-shutdown",
+      "name": {"zh": "Blast L2 已关停,官方取款站开到 2027 年 11 月", "en": "Blast L2 has shut down; official withdrawal site open until November 2027"},
+      "summary": {"zh": "Blast L2 已关停:到 blast.io 连钱包查地址,在以太坊上取回 ETH、WETH、USDB,开到 2027 年 11 月 4 日。", "en": "Blast L2 has shut down. Connect your wallet at blast.io to look up your address and withdraw ETH, WETH and USDB on Ethereum, until Nov 4, 2027."},
+      "protocol": "Blast",
+      "chains": ["Blast"],
+      "chainKeys": ["blast"],
+      "protocolKeys": ["blast"],
+      "matchBy": "chain",
+      "type": "chain-shutdown",
+      "deadline": "2027-11-04",
+      "deadlineNote": {"zh": "10 月 26 日普通界面提款截止(已过);11 月 4 日官方宣布 L2 已关停。取款站 `blast.io` 开 12 个月,最后支持日是 2027 年 11 月 4 日。", "en": "The regular withdrawal interface closed on Oct 26 (passed). On Nov 4, Blast announced the L2 has shut down. The withdrawal site at `blast.io` stays open for 12 months, with Nov 4, 2027 as the last supported day."},
+      "who": {"zh": "在 Blast 上还有 ETH、WETH、USDB,或有没走完的提款的人,包括用 Blast Mobile 和 Safe 等合约钱包的人。", "en": "Anyone with ETH, WETH or USDB on Blast, or a withdrawal that never finished, including Blast Mobile users and Safe or other contract-wallet users."},
+      "todo": {"zh": "到 `blast.io` 连接钱包查地址,在以太坊上取回 ETH、WETH、USDB;没走完的提款会自动算进去。Blast Mobile 用户:把助记词导进 MetaMask 或 Rabby 再连接。Safe 等合约钱包另有入口。", "en": "Connect your wallet at `blast.io` to look up your address and withdraw ETH, WETH and USDB on Ethereum; unfinished withdrawals are included automatically. Blast Mobile users: import your seed phrase into MetaMask or Rabby, then connect. Safe and other contract wallets have a separate entry point."},
+      "caution": {"zh": "官方只认 @blast(@Blast_L2 现在是占位号)。取款站只写了 ETH 和美元类资产;L2 上的 BLAST 代币、其他代币和 DeFi 仓位能不能取,官方没写。助记词只在钱包 App 里自己导入,绝不填进任何网页。", "en": "Blast only uses @blast (@Blast_L2 is now a placeholder account). The withdrawal site only mentions ETH and USD assets; Blast hasn't said whether the BLAST token, other tokens or DeFi positions on the L2 can be withdrawn. Only ever enter a seed phrase inside a wallet app yourself, never on a website."},
+      "official": [
+        {"label": {"zh": "Blast 官方取款页", "en": "Blast withdrawal page"}, "url": "https://blast.io"},
+        {"label": {"zh": "Blast 文档:提回以太坊", "en": "Blast docs: withdraw to Ethereum"}, "url": "https://docs.blast.io/withdrawals/withdraw-to-ethereum"},
+        {"label": {"zh": "Blast 官方 X：10 月 2 日宣布关停", "en": "Blast on X: shutdown announced (Oct 2)"}, "url": "https://x.com/blast/status/2106032805280891073"},
+        {"label": {"zh": "Blast 官方 X：11 月 4 日 L2 已关停", "en": "Blast on X: L2 shut down (Nov 4)"}, "url": "https://x.com/blast/status/2117993462356197406"}
+      ],
+      "announced": "2026-10-02",
+      "checked": "2026-11-05"
+    },
+
+    {
+      "id": "compound-scroll-usdc",
+      "name": {"zh": "Compound III：Scroll 上的 USDC 市场清场", "en": "Compound III: closing out the USDC market on Scroll"},
+      "summary": {"zh": "Compound 要清掉 Scroll 上已停用的 USDC 市场:通过后剩下的借款会被清算,借款人尽快还款、取回抵押。", "en": "Compound plans to close out the retired USDC market on Scroll. Once that passes, remaining loans can be liquidated, so borrowers should repay and take back their collateral soon."},
+      "protocol": "Compound",
+      "chains": ["Scroll"],
+      "chainKeys": ["scroll"],
+      "protocolKeys": ["compound"],
+      "matchBy": "protocol",
+      "type": "withdraw-only",
+      "deadline": null,
+      "deadlineNote": {"zh": "这个市场今年早些时候已经停用。11 月 4 日的论坛提案说:链上提案还没提交,没定日期;通过后,剩下的借款都会变成可以被清算。", "en": "This market was retired earlier this year. A forum proposal on Nov 4 says the on-chain proposal hasn't been submitted and there's no date yet. Once it passes, all remaining loans can be liquidated."},
+      "who": {"zh": "在 Compound III Scroll USDC 市场里借了款或存了 USDC 的人。提案里统计有 1,959 个借款账户,都是小额。", "en": "Anyone who borrowed from or supplied USDC to the Compound III USDC market on Scroll. The proposal counts 1,959 borrower accounts, all small."},
+      "todo": {"zh": "借款人尽快还清 USDC,取回 WETH、wstETH 抵押;存了 USDC 的取出来。", "en": "Borrowers: repay your USDC soon and take back your WETH or wstETH collateral. Suppliers: withdraw your USDC."},
+      "caution": {"zh": "提案里写,Scroll 已经宣布离开公共 L2,并建议用户关闭所有 DeFi 仓位(见本页 Scroll 那一条)。", "en": "The proposal notes that Scroll has announced it is leaving the public L2 model and advises users to close all DeFi positions (see the Scroll entry on this page)."},
+      "official": [
+        {"label": {"zh": "Compound 论坛:Scroll USDC 市场清场提案", "en": "Compound forum: closing the Scroll USDC market"}, "url": "https://www.comp.xyz/t/gauntlet-scroll-usdc-comet-closing-remaining-positions/8243"}
+      ],
+      "announced": "2026-11-04",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "parasail-stpeaq",
+      "name": {"zh": "Parasail：stPEAQ 质押池停用,转为只能取", "en": "Parasail: stPEAQ staking pool retired, moving to withdraw-only"},
+      "summary": {"zh": "Parasail 的 stPEAQ 质押池被盗后停用;官方说 peaq 基金会补足缺口、每个用户都能取回全额,等官方公布取款时间。", "en": "Parasail's stPEAQ staking pool was retired after an exploit. Parasail says the peaq foundation is covering the loss so every user can withdraw in full. Wait for the official withdrawal date."},
+      "protocol": "Parasail",
+      "chains": ["peaq"],
+      "chainKeys": ["peaq"],
+      "protocolKeys": ["parasail"],
+      "tokenKeys": ["stpeaq"],
+      "tokenContracts": [
+        {"chain": "peaq", "token": "stpeaq", "symbol": "stPEAQ", "address": "0xe36e7ac6e7a93d3c40f287f3857b01d6e46c565a", "source": "https://docs.parasail.network/delegation-guides/guide-for-peaq-users/contract-addresses"}
+      ],
+      "matchBy": "token",
+      "type": "withdraw-only",
+      "deadline": null,
+      "deadlineNote": {"zh": "只能取模式哪天开,官方还没定。", "en": "Parasail hasn't set a date yet for withdraw-only mode to open."},
+      "who": {"zh": "持有 stPEAQ 的人。", "en": "Anyone holding stPEAQ."},
+      "todo": {"zh": "等官方公布只能取模式的时间和取款链接,再取回 PEAQ。", "en": "Wait for Parasail to announce when withdraw-only mode opens and the withdrawal link, then withdraw your PEAQ."},
+      "caution": {"zh": "这个池子被盗过:官方说被盗 1,096,424.06 PEAQ。只信官方渠道发的链接。", "en": "This pool was exploited: Parasail says 1,096,424.06 PEAQ was stolen. Only trust links from official channels."},
+      "official": [
+        {"label": {"zh": "Parasail 官方 X：11 月 4 日 stPEAQ 公告", "en": "Parasail on X: Nov 4 stPEAQ update"}, "url": "https://x.com/parasailnetwork/status/2118002038185623626"}
+      ],
+      "announced": "2026-11-04",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "scroll-transition",
+      "name": {"zh": "Scroll 转为许可制网络,SCR 迁到以太坊主网(提案)", "en": "Scroll moving to a permissioned network, SCR to Ethereum mainnet (proposal)"},
+      "summary": {"zh": "Scroll 提议转为许可制网络:DeFi 仓位要在转型前自己平掉或处理,先到官方页面查持仓。", "en": "Scroll has proposed becoming a permissioned network. DeFi positions need to be closed or handled before the switch, so check your holdings on the official page first."},
+      "protocol": "Scroll",
+      "chains": ["Scroll"],
+      "chainKeys": ["scroll"],
+      "protocolKeys": ["scroll"],
+      "matchBy": null,
+      "type": "other",
+      "deadline": null,
+      "deadlineNote": {"zh": "11 月 3 日论坛提案上线,还要 DAO 投票。官方说网络升级在「年底」,具体日期没定。", "en": "The forum proposal went up on Nov 3 and still needs a DAO vote. Scroll says the network upgrade is planned for \"the end of the year\", with no exact date yet."},
+      "who": {"zh": "在 Scroll 上有资产,特别是有借贷、流动性等 DeFi 仓位的人,以及持有 SCR 的人。", "en": "Anyone with assets on Scroll, especially DeFi positions such as lending or liquidity, and SCR holders."},
+      "todo": {"zh": "到 `positions.scroll.io` 查持仓;DeFi 仓位在转型前自己平掉或处理。官方桥照常开,官方说升级后也支持。", "en": "Check your holdings at `positions.scroll.io`, and close or handle DeFi positions before the switch. The official bridge stays open, and Scroll says it will still work after the upgrade."},
+      "caution": {"zh": "提案还没投票。官方说 SCR 总量和代币经济不变。Aave、Compound 已经在撤 Scroll 上的市场。", "en": "The proposal hasn't been voted on yet. Scroll says SCR's total supply and tokenomics won't change. Aave and Compound are already winding down their Scroll markets."},
+      "official": [
+        {"label": {"zh": "Scroll 论坛:转型提案", "en": "Scroll forum: transition proposal"}, "url": "https://forum.scroll.io/t/1513"},
+        {"label": {"zh": "Scroll 官方 X：11 月 2 日查持仓页", "en": "Scroll on X: holdings page (Nov 2)"}, "url": "https://x.com/Scroll_ZKP/status/2117107970245066878"},
+        {"label": {"zh": "Scroll 官方 X：11 月 3 日提案上线", "en": "Scroll on X: proposal posted (Nov 3)"}, "url": "https://x.com/Scroll_ZKP/status/2117620208819167673"}
+      ],
+      "announced": "2026-11-03",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "compound-deprecated-markets",
+      "name": {"zh": "Compound III:以太坊、Linea、Ronin、Mantle、Unichain、Polygon 上一批市场停用", "en": "Compound III: markets retired on Ethereum, Linea, Ronin, Mantle, Unichain and Polygon"},
+      "summary": {"zh": "Compound III 停用了一批市场:不能新借,存款收益归零;还有存款的取出来,借款人还款取回抵押。", "en": "Compound III has retired a batch of markets: no new borrowing and no more yield on deposits. Withdraw any deposits, and borrowers should repay to take back their collateral."},
+      "protocol": "Compound",
+      "chains": ["Ethereum", "Linea", "Ronin", "Mantle", "Unichain", "Polygon"],
+      "chainKeys": ["ethereum", "linea", "ronin", "mantle", "unichain", "polygon"],
+      "protocolKeys": ["compound"],
+      "matchBy": null,
+      "type": "withdraw-only",
+      "deadline": null,
+      "deadlineNote": {"zh": "没有硬截止。9 月 2 日提议停用以太坊 wstETH 市场;9 月 25 日五条链上停用市场的借款抵押因子归零;10 月 30 日提议停用以太坊 WBTC 市场。Linea USDC 市场 9 月 18 日起暂停取款,Mantle USDe 市场 10 月 16 日起暂停取款。", "en": "There's no hard deadline. On Sep 2, retiring the Ethereum wstETH market was proposed; on Sep 25, borrowing collateral factors on retired markets on five chains were set to zero; on Oct 30, retiring the Ethereum WBTC market was proposed. Withdrawals from the Linea USDC market have been paused since Sep 18, and from the Mantle USDe market since Oct 16."},
+      "who": {"zh": "在这些停用市场里还有存款或借款的人。提案里统计,以太坊 wstETH 市场还有 93 个存款人,WBTC 市场还有 37 个。", "en": "Anyone with deposits or loans in these retired markets. The proposals count 93 suppliers left in the Ethereum wstETH market and 37 in the WBTC market."},
+      "todo": {"zh": "停用市场里还有存款的取出来;借款人还款取回抵押。Linea USDC、Mantle USDe 两个市场取款暂停中,恢复后再取。", "en": "Withdraw any deposits left in retired markets; borrowers should repay and take back their collateral. Withdrawals from the Linea USDC and Mantle USDe markets are paused for now, so withdraw once they resume."},
+      "caution": {"zh": "Linea 那次暂停是「发现潜在问题」,修好后恢复;Mantle 那次是为了执行提走储备金的提案。", "en": "The Linea pause is due to a \"potential issue\" and lifts once it's fixed; the Mantle pause is for carrying out a proposal to withdraw reserves."},
+      "official": [
+        {"label": {"zh": "Compound 论坛:停用以太坊 wstETH 市场", "en": "Compound forum: retiring the Ethereum wstETH market"}, "url": "https://www.comp.xyz/t/deprecate-the-ethereum-wsteth-comet-set-supply-rates-to-0-reserve-factor-to-100-and-zero-all-collateral-supply-caps/8048"},
+        {"label": {"zh": "Compound 论坛:停用市场的抵押因子归零", "en": "Compound forum: zero collateral factors on retired markets"}, "url": "https://www.comp.xyz/t/set-borrow-collateral-factors-to-0-on-deprecated-comets-linea-ronin-mantle-scroll-unichain/8097"},
+        {"label": {"zh": "Compound 论坛:Linea USDC 市场暂停", "en": "Compound forum: Linea USDC market pause"}, "url": "https://www.comp.xyz/t/temporary-pause-of-the-deprecated-compound-iii-usdc-market-on-linea/8078"},
+        {"label": {"zh": "Compound 论坛:Mantle USDe 市场暂停", "en": "Compound forum: Mantle USDe market pause"}, "url": "https://www.comp.xyz/t/temporary-pause-of-the-deprecated-compound-iii-usde-market-on-mantle/8183"},
+        {"label": {"zh": "Compound 论坛:停用以太坊 WBTC 市场", "en": "Compound forum: retiring the Ethereum WBTC market"}, "url": "https://www.comp.xyz/t/gauntlet-deprecation-of-the-ethereum-wbtc-comet/8209"}
+      ],
+      "announced": "2026-10-30",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "diva-staking-shutdown",
+      "name": {"zh": "Diva Staking 关停(不上主网)", "en": "Diva Staking shutting down (no mainnet launch)"},
+      "summary": {"zh": "Diva Staking 关停、不上主网:预存在 Enzyme 金库里的钱现在就能取,官方说「没有什么可等的了」。", "en": "Diva Staking is shutting down without launching mainnet. Pre-deposits in its Enzyme vaults can be withdrawn now; Diva says there's \"nothing left to wait for\"."},
+      "protocol": "Diva Staking",
+      "chains": ["Ethereum"],
+      "chainKeys": ["ethereum"],
+      "protocolKeys": ["diva"],
+      "matchBy": "protocol",
+      "type": "other",
+      "deadline": null,
+      "deadlineNote": {"zh": "10 月 28 日宣布关停,官方没写截止日。", "en": "Announced on Oct 28, with no deadline given."},
+      "who": {"zh": "往 Diva 的 Early Staker Vaults(在 Enzyme 上)预存过的人。", "en": "Anyone who pre-deposited into Diva's Early Staker Vaults on Enzyme."},
+      "todo": {"zh": "到 Enzyme 把 Early Staker Vaults 里的预存取出来。", "en": "Withdraw your pre-deposit from the Early Staker Vaults on Enzyme."},
+      "official": [
+        {"label": {"zh": "Diva 官方 X：10 月 28 日公告", "en": "Diva on X: Oct 28 announcement"}, "url": "https://x.com/divastaking/status/2115475924753711538"}
+      ],
+      "announced": "2026-10-28",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "aero-merger",
+      "name": {"zh": "Aerodrome、Velodrome 合并为 Aero", "en": "Aerodrome and Velodrome merging into Aero"},
+      "summary": {"zh": "Aerodrome 和 Velodrome 合并为 Aero:老池子已停发奖励,流动性要自己撤到新池子;代币和锁仓在官方升级入口自己升级。", "en": "Aerodrome and Velodrome have merged into Aero. Old pools no longer pay rewards, so move your liquidity to new pools, and upgrade tokens and locks yourself on the official upgrade page."},
+      "protocol": "Aero (Aerodrome, Velodrome)",
+      "chains": ["Base", "OP Mainnet"],
+      "chainKeys": ["base", "optimism"],
+      "protocolKeys": ["aerodrome", "velodrome", "aero"],
+      "tokenKeys": ["velo"],
+      "tokenContracts": [
+        {"chain": "optimism", "token": "velo", "symbol": "VELO", "address": "0x9560e827af36c94d2ac33a39bce1fe78631088db", "source": "https://raw.githubusercontent.com/velodrome-finance/contracts/main/README.md"}
+      ],
+      "matchBy": "token",
+      "type": "token-migration",
+      "deadline": null,
+      "deadlineNote": {"zh": "10 月 15 日前要把 OP Mainnet 和 Ink 以外的 xVELO 跨回 OP;10 月 20 日前要把 veNFT 从 Relay 等金库撤出;10 月 22 日 00:00(UTC)老池子奖励停发、升级入口开放。官方说升级没有截止日。", "en": "xVELO outside OP Mainnet and Ink had to be bridged back to OP by Oct 15, and veNFTs had to be removed from Relay and other vaults by Oct 20. On Oct 22, 00:00 UTC, rewards on old pools stopped and the upgrade page opened. Aero says there's no deadline to upgrade."},
+      "who": {"zh": "持有 AERO、VELO、veAERO、veVELO 的人,以及在老池子里提供流动性的人。", "en": "Holders of AERO, VELO, veAERO or veVELO, and liquidity providers in old pools."},
+      "todo": {"zh": "在 `aerodrome.finance` 或 `velodrome.finance` 的升级入口自己升级:AERO 按 1:1、VELO 按 1:0.044 换新 AERO,veAERO、veVELO 转成 sAERO。升级前先领完奖励和 rebase、清掉投票。老池子没有奖励了,流动性要自己撤到新池子。", "en": "Upgrade on the upgrade page at `aerodrome.finance` or `velodrome.finance`: AERO converts 1:1 and VELO at 1:0.044 into new AERO, and veAERO or veVELO become sAERO. Before upgrading, collect your rewards and rebases and clear your votes. Old pools pay no rewards, so move your liquidity to new pools."},
+      "caution": {"zh": "升级不可逆;升级前没领的奖励,之后领不回来。官方说老前端「以后可能关」。", "en": "Upgrading can't be undone, and rewards you haven't collected before upgrading are lost. Aero says the old front-ends \"may close later\"."},
+      "official": [
+        {"label": {"zh": "Aero 官方升级中心", "en": "Aero upgrade center"}, "url": "https://aero.xyz/aero-upgrade/"},
+        {"label": {"zh": "Aero 官方文章:今天上线", "en": "Aero article: launch day"}, "url": "https://aero.xyz/articles/aero-launches-today/"}
+      ],
+      "announced": "2026-10-09",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "venus-vai-lisusd",
+      "name": {"zh": "Venus：VAI 逐步停用,lisUSD、TRX 市场下架", "en": "Venus: VAI being phased out, lisUSD and TRX markets delisted"},
+      "summary": {"zh": "Venus 在逐步停用 VAI、下架 lisUSD 和 TRX 市场:VAI 金库里的钱随时可取,借款人准备还款。", "en": "Venus is phasing out VAI and delisting the lisUSD and TRX markets. VAI in the vault can be withdrawn at any time; borrowers should get ready to repay."},
+      "protocol": "Venus",
+      "chains": ["BNB Chain"],
+      "chainKeys": ["bsc"],
+      "protocolKeys": ["venus"],
+      "tokenKeys": ["vai"],
+      "tokenContracts": [
+        {"chain": "bsc", "token": "vai", "symbol": "VAI", "address": "0x4bd17003473389a42daf6a0a729f6fdb328bbbd7", "source": "https://docs-v4.venus.io/deployed-contracts/markets"}
+      ],
+      "matchBy": "token",
+      "type": "withdraw-only",
+      "deadline": null,
+      "matchLoans": true,
+      "deadlineNote": {"zh": "起因是 Chainlink 要停掉 VAI 的价格源。没有硬截止:VIP-662 于 9 月 21 日执行(VAI 金库停发 XVS 奖励);VIP-663 于 9 月 28 日执行(TRX、lisUSD 进入下一阶段)。后续步骤官方说另行公布。", "en": "This started because Chainlink is retiring the VAI price feed. There's no hard deadline: VIP-662 took effect on Sep 21 (the VAI vault stopped paying XVS rewards), and VIP-663 on Sep 28 (TRX and lisUSD moved to the next phase). Venus says later steps will be announced separately."},
+      "who": {"zh": "在 VAI 金库里存了 VAI、铸了 VAI,或在 lisUSD、TRX 市场有存款或借款的人。", "en": "Anyone with VAI in the VAI vault, anyone who minted VAI, and anyone with deposits or loans in the lisUSD or TRX markets."},
+      "todo": {"zh": "VAI 金库里的 VAI 随时可取,已经累计的 XVS 还能领;铸了 VAI 的准备还款;lisUSD 存款取出来,借款在第三阶段加息前还掉。", "en": "VAI in the vault can be withdrawn at any time, and XVS already earned can still be collected. If you minted VAI, get ready to repay. Withdraw lisUSD deposits, and repay lisUSD loans before interest rises in phase three."},
+      "official": [
+        {"label": {"zh": "Venus 社区:VAI 相关提案", "en": "Venus community: VAI proposal"}, "url": "https://community.venus.io/t/bnb-chain-oracle-adjustments-vai-vault-rewards-stop-and-treasury-and-risk-fund-cleanup/5955"},
+        {"label": {"zh": "Venus 社区:下架 lisUSD 市场", "en": "Venus community: delisting the lisUSD market"}, "url": "https://community.venus.io/t/bnb-chain-deprecate-the-lisusd-market-on-the-core-pool/5917"},
+        {"label": {"zh": "Venus 社区:9 月月报", "en": "Venus community: September report"}, "url": "https://community.venus.io/t/venus-monthly-report-september-2026/5981"}
+      ],
+      "announced": "2026-09-18",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "aave-v3-deprecation",
+      "name": {"zh": "Aave V3:六个部署整体停用,一批低使用资产下架", "en": "Aave V3: six deployments retired, low-use assets delisted"},
+      "summary": {"zh": "Aave V3 停用 Sonic、Scroll、zkSync Era、Metis、Soneium、Aptos 六个部署:存款尽快取出,借款人还款取回抵押,免得降清算阈值时被清算。", "en": "Aave V3 is retiring six deployments: Sonic, Scroll, zkSync Era, Metis, Soneium and Aptos. Withdraw deposits soon, and borrowers should repay before liquidation thresholds drop."},
+      "protocol": "Aave",
+      "chains": ["Sonic", "Scroll", "zkSync Era", "Metis", "Soneium", "Aptos"],
+      "chainKeys": ["sonic", "scroll", "zksync", "metis", "soneium", "aptos"],
+      "protocolKeys": ["aave"],
+      "matchBy": "protocol",
+      "type": "withdraw-only",
+      "deadline": null,
+      "deadlineNote": {"zh": "没有硬截止:市场已冻结,储备因子 99%(利息几乎都归金库)。官方说之后可能再加息、逐步降低清算阈值。", "en": "There's no hard deadline. The markets are frozen with a 99% reserve factor, so almost all interest goes to the treasury. Aave says it may raise rates further and gradually lower liquidation thresholds."},
+      "who": {"zh": "在这六个部署上有存款或借款的人,以及在其他部署上持有被下架资产的人。", "en": "Anyone with deposits or loans on these six deployments, and anyone holding the delisted assets on other deployments."},
+      "todo": {"zh": "这六个部署上的存款尽快取出;借款人还款取回抵押,免得降清算阈值时被清算。", "en": "Withdraw deposits from these six deployments soon. Borrowers: repay and take back your collateral so you aren't liquidated when thresholds drop."},
+      "official": [
+        {"label": {"zh": "Aave 治理论坛:低使用资产下架(ARFC)", "en": "Aave governance forum: low-adoption asset deprecation (ARFC)"}, "url": "https://governance.aave.com/t/arfc-low-adoption-asset-deprecation-on-aave-v3/25401"}
+      ],
+      "announced": "2026-09-16",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "marinus-harmony",
+      "name": {"zh": "Marinus：Harmony 市场退役,只能取", "en": "Marinus: Harmony markets retired, withdraw-only"},
+      "summary": {"zh": "Marinus 在 Harmony 上的市场已经退役:存进去的钱只能取、只能解押,Harmony 链本身也在关。", "en": "Marinus has retired its markets on Harmony: deposits can only be withdrawn or unstaked, and the Harmony chain itself is shutting down."},
+      "protocol": "Marinus",
+      "chains": ["Harmony"],
+      "chainKeys": ["harmony"],
+      "protocolKeys": ["marinus"],
+      "matchBy": "protocol",
+      "type": "withdraw-only",
+      "deadline": null,
+      "deadlineNote": {"zh": "9 月 14 日起只能取、只能解押,没有截止日。", "en": "Since Sep 14 you can only withdraw and unstake. There's no deadline."},
+      "who": {"zh": "在 Harmony 上往 Marinus 存过钱或质押的人。", "en": "Anyone who deposited into or staked with Marinus on Harmony."},
+      "todo": {"zh": "把在 Harmony 上存进 Marinus 的钱取出来、解除质押。", "en": "Withdraw and unstake what you put into Marinus on Harmony."},
+      "caution": {"zh": "Harmony 链本身在关停,见本页 Harmony 那一条。", "en": "The Harmony chain itself is shutting down; see the Harmony entry on this page."},
+      "official": [
+        {"label": {"zh": "Marinus 官方 X：9 月 14 日公告", "en": "Marinus on X: Sep 14 announcement"}, "url": "https://x.com/MarinusProtocol/status/2099560154245046621"}
+      ],
+      "announced": "2026-09-14",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "harmony-shutdown",
+      "name": {"zh": "Harmony 主网关停,ONE 迁到以太坊", "en": "Harmony mainnet shutting down, ONE moving to Ethereum"},
+      "summary": {"zh": "Harmony 主网关停,ONE 按 9 月 10 日快照空投到以太坊上的同一地址;老钱包要签名确认,区块浏览器 11 月 18 日关。", "en": "Harmony mainnet is shutting down and ONE was airdropped to the same address on Ethereum based on the Sep 10 snapshot. Older wallets need to sign to confirm, and the block explorer closes on Nov 18."},
+      "protocol": "Harmony",
+      "chains": ["Harmony"],
+      "chainKeys": ["harmony"],
+      "protocolKeys": ["harmony"],
+      "matchBy": "chain",
+      "type": "chain-shutdown",
+      "deadline": null,
+      "milestones": [
+        {"date": "2026-11-18", "note": {"zh": "区块浏览器 explorer.harmony.one 关闭", "en": "The block explorer at explorer.harmony.one closes"}}
+      ],
+      "deadlineNote": {"zh": "9 月 10 日 14:00(UTC)快照(已过);10 月 2 日起往以太坊上的同一地址空投 ERC-20 ONE;11 月 18 日关闭 `explorer.harmony.one`(这是区块浏览器的数据,不是换币截止)。", "en": "The snapshot was taken on Sep 10 at 14:00 UTC (passed). Since Oct 2, ERC-20 ONE has been airdropped to the same address on Ethereum. `explorer.harmony.one` closes on Nov 18 (that's block explorer data, not a token deadline)."},
+      "who": {"zh": "快照时在 Harmony 上持有 ONE 的人、用老钱包的人,以及要导出 2025 年以前区块浏览器数据的人。", "en": "Anyone who held ONE on Harmony at the snapshot, users of older wallets, and anyone who needs block explorer data from before 2025."},
+      "todo": {"zh": "普通钱包里的余额会自动空投到以太坊的同一地址;老钱包到 `migrate.country/confirm` 签名(官方 10 月 2 日的帖子给的);要 2025 年以前区块浏览器数据的,11 月 18 日前自己导出。", "en": "Balances in regular wallets are airdropped automatically to the same address on Ethereum. Older wallets: sign at `migrate.country/confirm` (from Harmony's Oct 2 post). If you need block explorer data from before 2025, export it yourself before Nov 18."},
+      "caution": {"zh": "起因是 2026 年 8 月的增发漏洞(被黑过),`bridge.harmony.one` 8 月 12 日起停用。`migrate.country` 只用官方帖子里的链接打开。多签、流动性池、链上应用里的钱,官方说要在 9 月 10 日前撤出(已过)。", "en": "This follows a minting exploit in August 2026, and `bridge.harmony.one` has been down since Aug 12. Only open `migrate.country` from the link in Harmony's own posts. Harmony said funds in multisigs, liquidity pools and on-chain apps had to be withdrawn before Sep 10 (passed)."},
+      "official": [
+        {"label": {"zh": "Harmony 官方 X：《Harmony to Migrate Its ONE Token》", "en": "Harmony on X: \"Harmony to Migrate Its ONE Token\""}, "url": "https://x.com/harmonyprotocol/status/2096604684450775296"},
+        {"label": {"zh": "Harmony 官方 X：10 月 2 日空投", "en": "Harmony on X: airdrop (Oct 2)"}, "url": "https://x.com/harmonyprotocol/status/2106055662920970296"},
+        {"label": {"zh": "Harmony 官方 X：区块浏览器 11 月 18 日关闭", "en": "Harmony on X: block explorer closes Nov 18"}, "url": "https://x.com/harmonyprotocol/status/2112865144338620431"}
+      ],
+      "announced": "2026-09-06",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "bouncebit-chain-retired",
+      "name": {"zh": "BounceBit 链退役,BB 改发到 BNB Chain", "en": "BounceBit chain retired, BB reissued on BNB Chain"},
+      "summary": {"zh": "BounceBit 链被盗后退役,BB 按快照 1:1 改发到 BNB Chain;10 个以上的已自动到账,不到 10 个的要自己到官方门户领。", "en": "After an exploit, the BounceBit chain was retired and BB was reissued 1:1 on BNB Chain. Balances of 10 BB or more arrived automatically; smaller ones need to be collected on the official portal."},
+      "protocol": "BounceBit",
+      "chains": ["BounceBit"],
+      "chainKeys": ["bouncebit"],
+      "protocolKeys": ["bouncebit"],
+      "matchBy": "chain",
+      "type": "chain-shutdown",
+      "deadline": null,
+      "deadlineNote": {"zh": "9 月 1 日 06:00(UTC)起,按被盗前的快照 1:1 发到 BNB Chain 上的同一地址;9 月 3 日官方说已发完。不到 10 个 BB 的小额,官方没写截止日。", "en": "From Sep 1, 06:00 UTC, BB was sent 1:1 to the same address on BNB Chain, based on a snapshot from before the exploit. On Sep 3, BounceBit said distribution was complete. No deadline was given for balances under 10 BB."},
+      "who": {"zh": "快照时在 BounceBit 链上持有 BB 的人,特别是不到 10 个 BB 的。", "en": "Anyone who held BB on the BounceBit chain at the snapshot, especially balances under 10 BB."},
+      "todo": {"zh": "10 个以上的已经自动到账,在 BNB Chain 上核对同一个地址;不到 10 个的,用原地址到 `portal.bouncebit.io` 自己领。", "en": "Balances of 10 BB or more have arrived automatically; check the same address on BNB Chain. For less than 10 BB, use your original address at `portal.bouncebit.io`."},
+      "caution": {"zh": "停链的起因是被盗,只走官方入口。官方说不会先私信你。链上其他资产(比如 BBTC)怎么办,官方帖子没说。", "en": "The chain stopped because of an exploit, so only use official entry points. BounceBit says it will never DM you first. Its posts don't say what happens to other assets on the chain, such as BBTC."},
+      "official": [
+        {"label": {"zh": "BounceBit 官方 X：9 月 3 日已发完", "en": "BounceBit on X: distribution complete (Sep 3)"}, "url": "https://x.com/bouncebit/status/2095392503654391984"},
+        {"label": {"zh": "BounceBit 官方 X：9 月 3 日小额怎么办", "en": "BounceBit on X: small balances (Sep 3)"}, "url": "https://x.com/bouncebit/status/2095392507009896891"},
+        {"label": {"zh": "BounceBit 官方 X：8 月 31 日时间表", "en": "BounceBit on X: timeline (Aug 31)"}, "url": "https://x.com/bouncebit/status/2094364332725538865"}
+      ],
+      "announced": "2026-08-21",
+      "checked": "2026-11-05"
+    },
+
+    {
+      "id": "lisk-chain-closed",
+      "name": {"zh": "Lisk 链已关停", "en": "Lisk chain has closed"},
+      "summary": {"zh": "Lisk 链 11 月 2 日已关停:关链时在途的提款会直接记到以太坊;留在链上的钱,官方说 2027 年 1 月出处理流程。", "en": "The Lisk chain closed on Nov 2. Withdrawals in progress at closing are credited on Ethereum; for funds left on the chain, Lisk says a process opens in January 2027."},
+      "protocol": "Lisk",
+      "chains": ["Lisk"],
+      "chainKeys": ["lisk"],
+      "protocolKeys": ["lisk"],
+      "matchBy": "chain",
+      "type": "chain-shutdown",
+      "deadline": "2026-11-02",
+      "deadlineNote": {"zh": "原定 10 月 31 日关链,实际最后一天是 11 月 2 日;10 月 24 日是开始桥接的最后一天(桥约 8 天)。官方说 2027 年 1 月会出专门的合约,处理留在链上的钱。", "en": "The chain was first set to close on Oct 31; the actual last day was Nov 2. Oct 24 was the last day to start bridging (the bridge takes about 8 days). Lisk says a dedicated contract for funds left on the chain will come in January 2027."},
+      "who": {"zh": "关链时在 Lisk 链上还有资产,或有提款在途的人。", "en": "Anyone who still had assets on Lisk at closing, or a withdrawal in progress."},
+      "todo": {"zh": "关链时在途的提款,官方说会直接记到以太坊上的目标地址;留在链上的,等 2027 年 1 月的官方流程,现在不用做什么。", "en": "Lisk says withdrawals in progress at closing will be credited directly to the destination address on Ethereum. For funds left on the chain, wait for the official process in January 2027; there's nothing to do for now."},
+      "caution": {"zh": "官方说不会主动联系你「帮你取回」,也不会要助记词。质押奖励合约里约 520 万 LSK(含已赚未领的奖励)会销毁,用户自己质押的 LSK 不销毁。", "en": "Lisk says it will never contact you offering to help get funds back, and will never ask for your seed phrase. About 5.2 million LSK in the staking rewards contract (including rewards earned but not yet collected) will be burned; LSK that users staked themselves won't be."},
+      "official": [
+        {"label": {"zh": "Lisk 官方博客:Lisk 链已关停", "en": "Lisk blog: Lisk chain has closed"}, "url": "https://lisk.com/blog/posts/lisk-chain-has-closed/"},
+        {"label": {"zh": "Lisk 官方 X：11 月 3 日一月的安排", "en": "Lisk on X: the January process (Nov 3)"}, "url": "https://x.com/Lisk/status/2117570140808106069"},
+        {"label": {"zh": "Lisk 官方 X：11 月 1 日最后一天提醒", "en": "Lisk on X: last-day reminder (Nov 1)"}, "url": "https://x.com/Lisk/status/2116893926560833904"},
+        {"label": {"zh": "Lisk 官方博客:新方向", "en": "Lisk blog: introducing the new Lisk"}, "url": "https://lisk.com/blog/posts/introducing-the-new-lisk"}
+      ],
+      "announced": "2026-08-25",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "stratex-vaults",
+      "name": {"zh": "StratEx 金库(QuickSwap 上)停运", "en": "StratEx vaults (on QuickSwap) closed"},
+      "summary": {"zh": "StratEx 金库已停运,官方说 11 月 3 日已把钱打回没取的人:去钱包核对有没有收到。", "en": "StratEx's vaults have closed, and StratEx says it sent funds back to everyone who hadn't withdrawn on Nov 3. Check your wallet to see if they arrived."},
+      "protocol": "StratEx",
+      "chains": ["Base"],
+      "chainKeys": ["base"],
+      "protocolKeys": ["stratex"],
+      "matchBy": null,
+      "type": "other",
+      "deadline": "2026-11-01",
+      "deadlineNote": {"zh": "11 月 1 日停止手动取款;11 月 3 日官方说已把钱打回没取的人。", "en": "Manual withdrawals stopped on Nov 1. On Nov 3, StratEx said it had sent the funds back to everyone who hadn't withdrawn."},
+      "who": {"zh": "在 StratEx 金库里存过钱、11 月 1 日前没取的人。", "en": "Anyone who had money in StratEx vaults and didn't withdraw before Nov 1."},
+      "todo": {"zh": "去钱包核对有没有收到打回来的钱。", "en": "Check your wallet for the returned funds."},
+      "official": [
+        {"label": {"zh": "StratEx 官方 X：11 月 3 日已打回", "en": "StratEx on X: funds returned (Nov 3)"}, "url": "https://x.com/StratEx_finance/status/2117618383315206609"},
+        {"label": {"zh": "StratEx 官方 X：10 月 21 日公布停取日", "en": "StratEx on X: withdrawal cutoff (Oct 21)"}, "url": "https://x.com/StratEx_finance/status/2112891898289414245"},
+        {"label": {"zh": "StratEx 官方 X：9 月 17 日最后通知", "en": "StratEx on X: final notice (Sep 17)"}, "url": "https://x.com/StratEx_finance/status/2100578555864220069"}
+      ],
+      "announced": "2026-07-30",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "lista-cdp-winddown",
+      "name": {"zh": "Lista DAO：Lista CDP 关停,迁到 Lista Lending", "en": "Lista DAO: Lista CDP closed, moved to Lista Lending"},
+      "summary": {"zh": "Lista CDP 已关停:官方说支持的市场已自动迁到 Lista Lending、不用操作;要核对自己的仓位在不在支持的市场里。", "en": "Lista CDP has closed. Lista says positions in supported markets moved to Lista Lending automatically, with nothing to do. Check whether your position was in a supported market."},
+      "protocol": "Lista DAO",
+      "chains": ["BNB Chain"],
+      "chainKeys": ["bsc"],
+      "protocolKeys": ["lista"],
+      "matchBy": null,
+      "type": "other",
+      "deadline": "2026-10-31",
+      "deadlineNote": {"zh": "9 月 30 日到 10 月 31 日可以迁移或还款;11 月 1 日、2 日官方说支持的市场已自动迁移。", "en": "Positions could be migrated or repaid from Sep 30 to Oct 31. On Nov 1 and 2, Lista said positions in supported markets had been migrated automatically."},
+      "who": {"zh": "在 Lista CDP 里有仓位的人。", "en": "Anyone who had a position in Lista CDP."},
+      "todo": {"zh": "官方 11 月 2 日说支持的市场已全部自动迁到 Lista Lending,不用操作;核对自己的仓位在不在支持的市场里。", "en": "On Nov 2, Lista said all supported markets had moved to Lista Lending automatically, with nothing to do. Check that your position was in a supported market."},
+      "caution": {"zh": "「不支持的市场」里的仓位怎么处理,官方没说。", "en": "Lista hasn't said what happens to positions in unsupported markets."},
+      "official": [
+        {"label": {"zh": "Lista 官方博客:CDP 关停前要做什么", "en": "Lista blog: what to do before the CDP closes"}, "url": "https://blog.lista.org/lista-dao-s-cdp-is-winding-down-what-to-do-before-31st-october"},
+        {"label": {"zh": "Lista 官方 X：11 月 2 日不用操作", "en": "Lista on X: no action needed (Nov 2)"}, "url": "https://x.com/lista_dao/status/2117218195719565733"},
+        {"label": {"zh": "Lista 官方 X：11 月 1 日迁移完成", "en": "Lista on X: migration done (Nov 1)"}, "url": "https://x.com/lista_dao/status/2116704275841831043"},
+        {"label": {"zh": "Lista 官方 X：10 月 1 日公告", "en": "Lista on X: Oct 1 announcement"}, "url": "https://x.com/lista_dao/status/2105470251790196876"}
+      ],
+      "announced": "2026-10-01",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "kyan-exchange",
+      "name": {"zh": "Kyan 交易所(原 Premia)关停", "en": "Kyan exchange (formerly Premia) closed"},
+      "summary": {"zh": "Kyan 交易所(原 Premia)有序关停,10 月 31 日前要提走余额;提不出来的,官方让到 Discord 求助。", "en": "Kyan (formerly Premia) has wound down, and balances were due out by Oct 31. If you can't withdraw, Kyan says to ask in its Discord."},
+      "protocol": "Kyan",
+      "chains": ["Arbitrum"],
+      "chainKeys": ["arbitrum"],
+      "protocolKeys": ["kyan", "premia"],
+      "matchBy": "protocol",
+      "type": "other",
+      "deadline": "2026-10-31",
+      "deadlineNote": {"zh": "10 月 19 日宣布:「本月底前」也就是 10 月 31 日前提走余额。", "en": "Announced on Oct 19: withdraw balances \"by the end of the month\", that is by Oct 31."},
+      "who": {"zh": "在 Kyan 交易所上还有余额的人。", "en": "Anyone with a balance left on Kyan."},
+      "todo": {"zh": "提不出来的,到官方 Discord 的 #support 频道,团队人工处理。", "en": "If you can't withdraw, go to #support in Kyan's official Discord, where the team handles it manually."},
+      "official": [
+        {"label": {"zh": "Kyan 官方 X：10 月 19 日关停长文", "en": "Kyan on X: Oct 19 wind-down post"}, "url": "https://x.com/KyanExchange/status/2112317921225523520"}
+      ],
+      "announced": "2026-10-19",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "stargate-hydra-chains",
+      "name": {"zh": "Stargate v2、Hydra 停止支持一批低活跃链", "en": "Stargate v2 and Hydra dropping a batch of low-activity chains"},
+      "summary": {"zh": "Stargate v2 和 Hydra 已经停止支持一批低活跃的链,最后一批 10 月 23 日停。", "en": "Stargate v2 and Hydra have dropped a batch of low-activity chains; the last group stopped on Oct 23."},
+      "protocol": "Stargate",
+      "chains": ["Aurora", "Taiko", "LightLink", "Gnosis", "Gravity", "Camp", "GOAT", "Metis", "Sophon", "Silicon", "Arbitrum Nova", "Degen", "Superposition"],
+      "chainKeys": ["aurora", "taiko", "lightlink", "gnosis", "gravity", "camp", "goat", "metis", "sophon", "silicon", "arbitrum-nova", "degen", "superposition"],
+      "protocolKeys": ["stargate"],
+      "matchBy": null,
+      "type": "bridge-route-end",
+      "deadline": "2026-10-23",
+      "deadlineNote": {"zh": "约 9 月 20 日,一批链(包括 Sophon、Silicon、Arbitrum Nova、Degen、Superposition 等)上的 Hydra 资产停用;9 月 23 日停 Aurora、Taiko、LightLink、Gnosis;10 月 23 日停 Gravity、Camp、GOAT、Metis。", "en": "Around Sep 20, Hydra assets stopped on a batch of chains (including Sophon, Silicon, Arbitrum Nova, Degen and Superposition). Aurora, Taiko, LightLink and Gnosis stopped on Sep 23, and Gravity, Camp, GOAT and Metis on Oct 23."},
+      "who": {"zh": "在这些链上的 Stargate 池子里提供流动性的人,以及持有 Hydra 的 USDC.e、USDT 的人。", "en": "Liquidity providers in Stargate pools on these chains, and holders of Hydra USDC.e or USDT."},
+      "todo": {"zh": "截止前要做的:池子的流动性和 ETH 流动性撤出来;Hydra 的 USDC.e、USDT 跨到 Stargate 池子赎回。", "en": "Before each cutoff, liquidity providers (including ETH pools) needed to withdraw, and Hydra USDC.e and USDT holders needed to bridge to a Stargate pool to redeem."},
+      "caution": {"zh": "过期以后 Hydra 资产还能不能换回,官方帖子没说。", "en": "Stargate's posts don't say whether Hydra assets can still be redeemed after the cutoff."},
+      "official": [
+        {"label": {"zh": "Stargate 官方 X：9 月 25 日提醒", "en": "Stargate on X: Sep 25 reminder"}, "url": "https://x.com/StargateFinance/status/2103597917290561684"},
+        {"label": {"zh": "Stargate 官方 X：9 月 10 日提醒", "en": "Stargate on X: Sep 10 reminder"}, "url": "https://x.com/StargateFinance/status/2098136472021057716"},
+        {"label": {"zh": "Stargate 官方 X：8 月 21 日公告", "en": "Stargate on X: Aug 21 announcement"}, "url": "https://x.com/StargateFinance/status/2090915925025558795"}
+      ],
+      "announced": "2026-08-21",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "stargate-metis-pools",
+      "name": {"zh": "Stargate 停止支持 Metis：V1、V2 池子 10 月 23 日前要撤出", "en": "Stargate on Metis: V1 and V2 pool liquidity had to leave by Oct 23"},
+      "summary": {"zh": "Stargate 10 月 23 日已停止支持 Metis,V1、V2 池子里的流动性要在这之前撤出;官方说没撤的用普通界面可能很难或取不出来。", "en": "Stargate support for Metis ended on Oct 23, and liquidity in its V1 and V2 pools there had to be withdrawn first. Metis warns that what's left may be hard or impossible to withdraw through the normal interface."},
+      "protocol": "Stargate",
+      "chains": ["Metis"],
+      "chainKeys": ["metis"],
+      "protocolKeys": ["stargate"],
+      "matchBy": null,
+      "type": "bridge-route-end",
+      "deadline": "2026-10-23",
+      "deadlineNote": {"zh": "10 月 23 日 Stargate 停止支持 Metis Andromeda;10 月 30 日 LayerZero Labs 的 DVN 和 Executor 停止服务 Metis。受影响的池子:Stargate V2 的 USDT、ETH、METIS 池,Stargate V1 的 USDT、METIS、MAI 池。", "en": "Stargate support for Metis Andromeda ended on Oct 23, and LayerZero Labs' DVN and Executor stopped serving Metis on Oct 30. Affected pools: the USDT, ETH and METIS pools on Stargate V2, and the USDT, METIS and MAI pools on Stargate V1."},
+      "who": {"zh": "在 Metis 上的 Stargate V1、V2 池子里提供流动性的人;以及经 LayerZero V1 把 METIS、HERA、QI、MTVT 跨到别的链上的人。", "en": "Liquidity providers in Stargate V1 and V2 pools on Metis, and anyone who bridged METIS, HERA, QI or MTVT to another chain through LayerZero V1."},
+      "todo": {"zh": "截止前要做的:质押了 LP 的先解押,再在 Stargate app 里撤出流动性;经 LayerZero V1 跨出去的 METIS、HERA、QI、MTVT,按原路跨回 Metis。没赶上的,官方让联系 Metis 团队。", "en": "Before the deadline: unstake LP tokens if staked, then withdraw liquidity in the Stargate app, and bridge METIS, HERA, QI or MTVT that left through LayerZero V1 back to Metis by the same route. If you missed it, Metis says to contact the Metis team."},
+      "caution": {"zh": "官方说截止后留在 Metis 上 Stargate 池子里的流动性,用普通的 Stargate 界面可能很难或取不出来。Metis 官方跨链桥发的 m.USDC、m.USDT、WETH、METIS 不受影响。", "en": "Metis says liquidity left in Stargate pools on Metis after the deadline may be hard or impossible to withdraw through the normal Stargate interface. m.USDC, m.USDT, WETH and METIS issued by the Metis canonical bridge are not affected."},
+      "official": [
+        {"label": {"zh": "Metis 官方博客:Stargate 停止支持和 LayerZero 的变化", "en": "Metis blog: Stargate sunset and LayerZero changes on Metis Andromeda"}, "url": "https://www.metis.io/blog/stargate-sunset-and-layerzero-changes-on-metis-andromeda-what-you-need-to-know"}
+      ],
+      "announced": "2026-09-25",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "mint-blockchain-shutdown",
+      "name": {"zh": "Mint Blockchain 关停", "en": "Mint Blockchain shut down"},
+      "summary": {"zh": "Mint Blockchain 已关停,10 月 20 日截止:官方提款页只能把 ETH、WBTC、USDC、USDT 提回以太坊。", "en": "Mint Blockchain has shut down; the deadline was Oct 20. The official withdrawal page only takes ETH, WBTC, USDC and USDT back to Ethereum."},
+      "protocol": "Mint Blockchain",
+      "chains": ["Mint"],
+      "chainKeys": ["mint"],
+      "protocolKeys": ["mint"],
+      "matchBy": "chain",
+      "type": "chain-shutdown",
+      "deadline": "2026-10-20",
+      "deadlineNote": {"zh": "10 月 20 日截止。", "en": "The deadline was Oct 20."},
+      "who": {"zh": "在 Mint 链上还有资产的人。", "en": "Anyone with assets on the Mint chain."},
+      "todo": {"zh": "官方提款页 `mintchain.io/withdraw` 只能把 ETH、WBTC、USDC、USDT 四种提回以太坊(imToken 的说明里写:每周批量处理,约 10 天到账)。", "en": "The official page `mintchain.io/withdraw` only supports withdrawing ETH, WBTC, USDC and USDT to Ethereum (imToken's notice says withdrawals are processed weekly and arrive in about 10 days)."},
+      "caution": {"zh": "截止以后还有没有别的路,官方没说。", "en": "Mint hasn't said whether anything else is possible after the deadline."},
+      "official": [
+        {"label": {"zh": "Mint 官方提款页", "en": "Mint withdrawal page"}, "url": "https://www.mintchain.io/withdraw"}
+      ],
+      "announced": "2026-04-17",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "coinex-csc-shutdown",
+      "name": {"zh": "CoinEx Smart Chain(CSC)和 OneSwap 停运", "en": "CoinEx Smart Chain (CSC) and OneSwap shut down"},
+      "summary": {"zh": "CoinEx 清盘:CSC 链和 OneSwap 9 月 29 日已停运;交易所账户里的钱要在 12 月 22 日前提走。", "en": "CoinEx is winding down. The CSC chain and OneSwap stopped on Sep 29, and money in exchange accounts must be withdrawn by Dec 22."},
+      "protocol": "CoinEx",
+      "chains": ["CoinEx Smart Chain"],
+      "chainKeys": ["csc"],
+      "protocolKeys": ["coinex", "oneswap"],
+      "matchBy": "chain",
+      "type": "chain-shutdown",
+      "deadline": "2026-09-29",
+      "deadlineNote": {"zh": "9 月 29 日 CSC、OneSwap 停运,跨链桥赎回同时截止;CoinEx 交易所提现开到 12 月 22 日 10:00(UTC+8)。", "en": "CSC and OneSwap stopped on Sep 29, and bridge redemptions closed at the same time. Withdrawals from the CoinEx exchange stay open until Dec 22, 10:00 UTC+8."},
+      "who": {"zh": "在 CSC 链、OneSwap 上有资产的人,以及 CoinEx 交易所账户里还有钱的人。", "en": "Anyone with assets on CSC or OneSwap, and anyone with money left in a CoinEx exchange account."},
+      "todo": {"zh": "链上部分已经过了截止日。交易所账户里的钱 12 月 22 日前提走;过期后 USDT 转为独立托管、每月收 5% 托管费,要发邮件到 support@coinex.com 申请,申请截止 2028 年 8 月 22 日。", "en": "The on-chain deadline has passed. Withdraw money from your exchange account before Dec 22. After that, USDT moves to separate custody with a 5% monthly custody fee; to get it, email support@coinex.com by Aug 22, 2028."},
+      "caution": {"zh": "官方说这是最后一份公告,之后以 CoinEx 名义发的「新公告」都是假的。", "en": "CoinEx says this is its final announcement, and any \"new announcement\" in its name after this is fake."},
+      "official": [
+        {"label": {"zh": "CoinEx 官方公告", "en": "CoinEx announcement"}, "url": "https://www.coinex.com/zh-hans/announcements/detail/53539656293908"}
+      ],
+      "announced": "2026-09-14",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "awe-stpt-migration",
+      "name": {"zh": "AWE Network：STPT 换 AWE(搬到 Base)", "en": "AWE Network: STPT to AWE (moving to Base)"},
+      "summary": {"zh": "以太坊上的 STPT 换 Base 上的 AWE,9 月 21 日已截止,官方说过期不能再换。", "en": "Swapping STPT on Ethereum for AWE on Base closed on Sep 21, and AWE says late swaps aren't possible."},
+      "protocol": "AWE Network",
+      "chains": ["Ethereum", "Base"],
+      "chainKeys": ["ethereum", "base"],
+      "protocolKeys": ["awe-network"],
+      "tokenKeys": ["stpt"],
+      "tokenContracts": [
+        {"chain": "ethereum", "token": "stpt", "symbol": "STPT", "address": "0xde7d85157d9714eadf595045cc12ca4a5f3e2adb", "source": "https://docs.awenetwork.ai/technical/contracts"},
+        {"chain": "base", "token": "stpt", "symbol": "STPT", "address": "0x4489d0a0345ecb216a3994de780d453c7fa6312c", "source": "https://docs.awenetwork.ai/technical/contracts"}
+      ],
+      "matchBy": "token",
+      "type": "token-migration",
+      "deadline": "2026-09-21",
+      "deadlineNote": {"zh": "9 月 21 日截止。官方说约 99% 已经迁移。", "en": "The deadline was Sep 21. AWE says about 99% has been migrated."},
+      "who": {"zh": "还持有 STPT 的人。", "en": "Anyone still holding STPT."},
+      "todo": {"zh": "官方说过期不能再换;没换走的份额怎么处理,交给社区治理提案决定。", "en": "AWE says late swaps aren't possible. What happens to tokens that weren't swapped will be decided by a community governance proposal."},
+      "official": [
+        {"label": {"zh": "AWE 官方博客:迁移窗口关闭", "en": "AWE blog: migration window closing"}, "url": "https://www.awenetwork.ai/blog/migration-window-close"}
+      ],
+      "announced": "2026-08-20",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "tether-alloy",
+      "name": {"zh": "Tether：Alloy by Tether 和 aUSD₮ 关停", "en": "Tether: Alloy by Tether and aUSD₮ shut down"},
+      "summary": {"zh": "Alloy by Tether 和 aUSD₮ 9 月 17 日已关停:截止前要归还 aUSD₮、取回抵押的 XAU₮。", "en": "Alloy by Tether and aUSD₮ shut down on Sep 17. Before then, users had to return aUSD₮ and take back their XAU₮ collateral."},
+      "protocol": "Tether (Alloy)",
+      "chains": ["Ethereum"],
+      "chainKeys": ["ethereum"],
+      "protocolKeys": ["tether", "alloy"],
+      "matchBy": null,
+      "type": "stablecoin-redemption",
+      "deadline": "2026-09-17",
+      "deadlineNote": {"zh": "9 月 17 日截止。", "en": "The deadline was Sep 17."},
+      "who": {"zh": "在 Alloy 上用 XAU₮ 做抵押、借出 aUSD₮ 的人。", "en": "Anyone who used XAU₮ as collateral on Alloy to mint aUSD₮."},
+      "todo": {"zh": "截止前要归还 aUSD₮、取回抵押的 XAU₮;官方说过期后不能再通过平台取回。", "en": "Before the deadline, users had to return aUSD₮ and take back their XAU₮ collateral. Tether says this can no longer be done through the platform."},
+      "caution": {"zh": "过期后抵押物怎么处理,官方没写。", "en": "Tether hasn't said what happens to collateral after the deadline."},
+      "official": [
+        {"label": {"zh": "Tether 官方公告", "en": "Tether announcement"}, "url": "https://tether.io/news/tether-updates-users-on-strategic-changes-to-its-product-support-offering/"}
+      ],
+      "announced": "2026-06-17",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "trust-wallet-networks",
+      "name": {"zh": "Trust Wallet 停止支持 24 条网络", "en": "Trust Wallet dropping 24 networks"},
+      "summary": {"zh": "Trust Wallet 9 月 15 日起不再显示 24 条网络,但资产还在链上:EVM 链可以自己加成自定义网络。", "en": "Since Sep 15, Trust Wallet no longer shows 24 networks, but the assets are still on-chain. For EVM chains, you can add the network yourself as a custom network."},
+      "protocol": "Trust Wallet",
+      "chains": ["Aurora", "Boba", "Conflux", "GoChain", "IoTeX", "KCC", "Manta", "Merlin", "Meter", "Moonbeam", "Moonriver", "Neon", "Polygon zkEVM", "Viction", "Wanchain"],
+      "chainKeys": ["aurora", "boba", "conflux", "gochain", "iotex", "kcc", "manta", "merlin", "meter", "moonbeam", "moonriver", "neon", "polygonzkevm", "viction", "wanchain"],
+      "protocolKeys": ["trust-wallet"],
+      "matchBy": null,
+      "type": "other",
+      "deadline": "2026-09-15",
+      "deadlineNote": {"zh": "9 月 15 日这些网络从钱包列表里消失;Trust Handle 9 月 7 日先停。", "en": "On Sep 15 these networks disappeared from the wallet's list; Trust Handle stopped first, on Sep 7."},
+      "who": {"zh": "在这些网络上有资产、用 Trust Wallet 的人:15 条 EVM 链(上面列的)和 9 条非 EVM 链。", "en": "Trust Wallet users with assets on these networks: the 15 EVM chains listed above and 9 non-EVM chains."},
+      "todo": {"zh": "资产还在链上:EVM 链用核实过的 RPC 自己加成自定义网络;非 EVM 链把钱包导进支持这条链的别的钱包。", "en": "Your assets are still on-chain. For EVM chains, add the network yourself as a custom network using a verified RPC. For non-EVM chains, import your wallet into another wallet that supports that chain."},
+      "caution": {"zh": "RPC 只用那条链官方文档里给的。助记词只在正规钱包 App 里自己导入,绝不填进任何网页。", "en": "Only use an RPC from the chain's official docs. Only ever enter a seed phrase inside a reputable wallet app yourself, never on a website."},
+      "official": [
+        {"label": {"zh": "Trust Wallet 官方博客", "en": "Trust Wallet blog"}, "url": "https://trustwallet.com/blog/product/trust-wallet-to-sunset-support-for-multiple-networks-on-september-15-2026"}
+      ],
+      "announced": "2026-08-18",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "vanar-vanry-migration",
+      "name": {"zh": "Vanar：VANRY 迁到 Base", "en": "Vanar: VANRY moving to Base"},
+      "summary": {"zh": "VANRY 迁到 Base 的兑换窗口 9 月 10 日已关,官方页面说过期不再迁移。", "en": "The window to move VANRY to Base closed on Sep 10, and Vanar's page says no more migrations will be processed."},
+      "protocol": "Vanar",
+      "chains": ["Ethereum", "Polygon", "Vanar Chain"],
+      "chainKeys": ["ethereum", "polygon", "vanar"],
+      "protocolKeys": ["vanar"],
+      "tokenKeys": ["vanry"],
+      "tokenContracts": [
+        {"chain": "ethereum", "token": "vanry", "symbol": "VANRY", "address": "0x8de5b80a0c1b02fe4976851d030b36122dbb8624", "source": "https://docs.vanarchain.com/getting-started/vanar/usdvanry-token"},
+        {"chain": "polygon", "token": "vanry", "symbol": "VANRY", "address": "0x8de5b80a0c1b02fe4976851d030b36122dbb8624", "source": "https://docs.vanarchain.com/getting-started/vanar/usdvanry-token"}
+      ],
+      "matchBy": "token",
+      "type": "token-migration",
+      "deadline": "2026-09-10",
+      "deadlineAt": "2026-09-10T13:00:00Z",
+      "deadlineNote": {"zh": "兑换窗口从 8 月 11 日 13:00(UTC)到 9 月 10 日 13:00(UTC);正在解押的,9 月 11 日在 Base 上空投。", "en": "The swap window ran from Aug 11, 13:00 UTC to Sep 10, 13:00 UTC. Tokens that were still unstaking were airdropped on Base on Sep 11."},
+      "who": {"zh": "在以太坊、Polygon 或 Vanar Chain 上持有 VANRY 的人。", "en": "Anyone holding VANRY on Ethereum, Polygon or Vanar Chain."},
+      "todo": {"zh": "官方页面说入口过期后不再迁移。9 月 10 日前就开始解押、还没收到币的,发邮件给官方。", "en": "Vanar's page says there are no migrations after the window closed. If you started unstaking before Sep 10 and haven't received tokens, email Vanar."},
+      "official": [
+        {"label": {"zh": "Vanar 官方兑换页", "en": "Vanar swap page"}, "url": "https://swap.vanarchain.com/"}
+      ],
+      "announced": null,
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "superposition-shutdown",
+      "name": {"zh": "Superposition 链关停,回到 Arbitrum One", "en": "Superposition chain shut down, back to Arbitrum One"},
+      "summary": {"zh": "Superposition 链 9 月 8 日已关停;官方说过期后留在链上的资产「may no longer be accessible」(可能无法再取用)。", "en": "The Superposition chain shut down on Sep 8. Superposition said assets left on the chain afterwards \"may no longer be accessible\"."},
+      "protocol": "Superposition",
+      "chains": ["Superposition"],
+      "chainKeys": ["superposition"],
+      "protocolKeys": ["superposition"],
+      "matchBy": "chain",
+      "type": "chain-shutdown",
+      "deadline": "2026-09-08",
+      "deadlineNote": {"zh": "9 月 8 日关链。", "en": "The chain shut down on Sep 8."},
+      "who": {"zh": "关链时在 Superposition 上还有资产的人。", "en": "Anyone who still had assets on Superposition when it shut down."},
+      "todo": {"zh": "截止前要做的:先撤掉 Camelot 等仓位,再经 Arbitrum 原生桥或 Relay 跨回 Arbitrum One。", "en": "Before the deadline, users had to exit Camelot and other positions, then bridge back to Arbitrum One with the Arbitrum native bridge or Relay."},
+      "caution": {"zh": "截至 11 月 5 日,没看到官方公布补救办法。", "en": "As of Nov 5, no official fallback has been announced."},
+      "official": [
+        {"label": {"zh": "Superposition 官方 X：8 月 4 日公告", "en": "Superposition on X: Aug 4 announcement"}, "url": "https://x.com/Superpositionso/status/2084613346729353332"}
+      ],
+      "announced": "2026-08-04",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "arbitrum-nova-maintenance",
+      "name": {"zh": "Arbitrum Nova 降为维护模式(不是关停)", "en": "Arbitrum Nova in maintenance mode (not shut down)"},
+      "summary": {"zh": "Arbitrum Nova 9 月 2 日起降为维护模式(不是关停):建议经官方桥迁到 Arbitrum One。", "en": "Since Sep 2, Arbitrum Nova is in maintenance mode, not shut down. The recommendation is to move to Arbitrum One through the official bridge."},
+      "protocol": "Arbitrum",
+      "chains": ["Arbitrum Nova"],
+      "chainKeys": ["arbitrum-nova"],
+      "protocolKeys": ["arbitrum"],
+      "matchBy": null,
+      "type": "other",
+      "deadline": "2026-09-02",
+      "deadlineNote": {"zh": "迁移窗口 6 月 4 日到 9 月 2 日;9 月 2 日起只做维护,RPC 更紧。", "en": "The migration window ran from Jun 4 to Sep 2. Since Sep 2 the chain is maintenance-only, and RPC access is tighter."},
+      "who": {"zh": "在 Arbitrum Nova 上还有资产的人,包括持有 MOON 的人。", "en": "Anyone with assets on Arbitrum Nova, including MOON holders."},
+      "todo": {"zh": "建议经 Arbitrum Portal 官方桥迁到 Arbitrum One;大额先提到以太坊(有 7 天挑战期);MOON 没有直通的路,要先提到以太坊。", "en": "Move to Arbitrum One through the official Arbitrum Portal bridge. For large amounts, withdraw to Ethereum first (there's a 7-day challenge period). MOON has no direct route and has to go to Ethereum first."},
+      "caution": {"zh": "官方说第 3 阶段官方桥照样能用。Alchemy 已经停了 Nova 的 RPC。", "en": "The official bridge keeps working in phase 3. Alchemy has stopped its Nova RPC."},
+      "official": [
+        {"label": {"zh": "Arbitrum 论坛:Nova 常见问题", "en": "Arbitrum forum: Nova FAQ"}, "url": "https://forum.arbitrum.foundation/t/minimizing-arbitrum-nova-faqs/30955"}
+      ],
+      "announced": null,
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "ton-old-bridge",
+      "name": {"zh": "TON 旧桥(bridge-v3.ton.org)永久关闭", "en": "Old TON bridge (bridge-v3.ton.org) closed for good"},
+      "summary": {"zh": "TON 旧桥 9 月 1 日已永久关闭:以太坊、BSC 上的 Wrapped TON 和 TON 上的 jUSDT、jUSDC 要在这之前跨回去。", "en": "The old TON bridge closed for good on Sep 1. Wrapped TON on Ethereum and BSC, and jUSDT and jUSDC on TON, needed to be bridged back before then."},
+      "protocol": "TON Bridge",
+      "chains": ["Ethereum", "BNB Chain", "TON"],
+      "chainKeys": ["ethereum", "bsc", "ton"],
+      "protocolKeys": ["ton-bridge"],
+      "matchBy": null,
+      "type": "bridge-route-end",
+      "deadline": "2026-09-01",
+      "deadlineNote": {"zh": "9 月 1 日起旧桥不再处理任何转账。", "en": "Since Sep 1 the old bridge no longer processes any transfers."},
+      "who": {"zh": "在以太坊、BNB Chain 上持有 Wrapped TON,或在 TON 上持有 jUSDT、jUSDC 等的人。", "en": "Anyone holding Wrapped TON on Ethereum or BNB Chain, or jUSDT, jUSDC and similar tokens on TON."},
+      "todo": {"zh": "截止前要做的:以太坊、BSC 上的 Wrapped TON 跨回 TON,TON 上的 jUSDT、jUSDC 等跨回以太坊。", "en": "Before the deadline, Wrapped TON on Ethereum and BSC had to be bridged back to TON, and jUSDT, jUSDC and similar tokens on TON back to Ethereum."},
+      "caution": {"zh": "截至 11 月 5 日,官方频道里没有补救的公告。", "en": "As of Nov 5, the official channel hasn't posted any fallback."},
+      "official": [
+        {"label": {"zh": "TON Status 官方 Telegram 频道", "en": "TON Status official Telegram channel"}, "url": "https://t.me/tonstatus/215"}
+      ],
+      "announced": "2026-05-23",
+      "checked": "2026-11-05"
+    },
+    {
+      "id": "stader-bnbx-redemption",
+      "name": {"zh": "Stader：BNBx 不能再用合约赎回,改成发邮件申请", "en": "Stader: BNBx redemptions move from the contract to email requests"},
+      "summary": {"zh": "Stader 的 BNBx 10 月 29 日起不能再用合约赎回,改成照官方博客的步骤发邮件申请:1 BNBx 按 1.1099 BNB 算,每次扣 0.2 BNBx,按季度结算。", "en": "Since Oct 29, Stader's BNBx can no longer be redeemed through the contract. Instead you apply by email, following Stader's official blog: 1 BNBx pays 1.1099 BNB, minus a 0.2 BNBx fee per request, settled quarterly."},
+      "protocol": "Stader",
+      "chains": ["BNB Chain"],
+      "chainKeys": ["bsc"],
+      "protocolKeys": ["stader"],
+      "matchBy": null,
+      "type": "withdraw-only",
+      "deadline": null,
+      "deadlineNote": {"zh": "1 月 29 日起 BNBx 停用、只能赎回,3 月起比例固定在 1 BNBx 兑 1.1099 BNB。10 月 29 日以前可以在合约里即时、免费赎回(已过);10 月 29 日起只能发邮件申请,按季度结算。申请开到哪天,公告没写。", "en": "BNBx was sunset on Jan 29 and has been redeem-only since; its rate has been fixed at 1.1099 BNB per BNBx since March. Instant, free redemption through the contract was possible before Oct 29 (passed). From Oct 29, redemption is by email request only, settled quarterly. The announcement doesn't say how long requests stay open."},
+      "who": {"zh": "还持有 BNBx 的人(BNB Chain)。放在 DEX 池子或借贷协议里的,官方说要先取回自己的钱包。", "en": "Anyone still holding BNBx on BNB Chain. If yours is in a DEX pool or a lending protocol, Stader says to withdraw it to your own wallet first."},
+      "todo": {"zh": "只照 Stader 官方博客(`staderlabs.com/blog`)那篇公告的步骤做:从持有 BNBx 的那个钱包发出,只用 BNB Chain,再按公告写的格式发邮件附上交易。官方只付给发币的那个钱包,别从交易所账户发。手续费固定 0.2 BNBx,持有得少,扣掉的比例就大。", "en": "Follow only the steps in the announcement on Stader's official blog (`staderlabs.com/blog`): send from the wallet that holds the BNBx, on BNB Chain only, then email the transaction in the format the post describes. Stader only pays the wallet that sent the tokens, so don't send from an exchange account. The fee is a fixed 0.2 BNBx, so it takes a bigger share of a small balance."},
+      "caution": {"zh": "这套流程(把币发到一个地址、再发邮件)和常见骗局很像:地址和邮箱只认 Stader 官方博客原文里写的,本页不转抄。Stader 说它不会私信你,不会要助记词、私钥,也不会让你付钱。不要使用私信、群聊或其他网站提供的申领地址;请回到下方 Stader 官方博客原文核对。", "en": "This process (sending tokens to an address, then emailing) looks a lot like common scams. Only trust the address and email in the original post on Stader's official blog; this page deliberately doesn't copy them. Stader says it will never DM you, ask for your seed phrase or private keys, or ask you to send a payment. Do not use claim addresses supplied in DMs, group chats or other websites; verify them in the Stader blog linked below."},
+      "official": [
+        {"label": {"zh": "Stader 官方博客:NearX、BNBx、MaticX 赎回方式改变", "en": "Stader blog: Redemptions change for NearX, BNBx and MaticX"}, "url": "https://www.staderlabs.com/blog/redemptions-change-nearx-bnbx-maticx-28-october-2026/"},
+        {"label": {"zh": "Stader 官方 X：10 月 28 日公告", "en": "Stader on X: Oct 28 post"}, "url": "https://x.com/staderlabs/status/2115355745923551243"}
+      ],
+      "announced": "2026-10-26",
+      "checked": "2026-11-06"
+    },
+    {
+      "id": "stader-maticx-fixed-rate",
+      "name": {"zh": "Stader：MaticX 比例固定,链上赎回开到 2029 年 8 月", "en": "Stader: MaticX rate fixed, on-chain redemption open until August 2029"},
+      "summary": {"zh": "Stader 的 MaticX 10 月 29 日起按 1 MaticX 兑 1.2002 POL 的固定比例赎回,照样在以太坊上的合约里赎回,最后一天是 2029 年 8 月 3 日。", "en": "Since Oct 29, Stader's MaticX redeems at a fixed 1.2002 POL per MaticX. Redemption still goes through the contract on Ethereum, and Aug 3, 2029 is the last day."},
+      "protocol": "Stader",
+      "chains": ["Ethereum", "Polygon"],
+      "chainKeys": ["ethereum", "polygon"],
+      "protocolKeys": ["stader"],
+      "matchBy": null,
+      "type": "withdraw-only",
+      "deadline": "2029-08-03",
+      "deadlineNote": {"zh": "6 月停止存入、只能赎回;8 月 3 日 MaticX 网页版关闭,之后在 Etherscan 上直接调合约赎回;10 月 29 日起比例固定为 1 MaticX 兑 1.2002 POL;2029 年 8 月 3 日是用合约赎回的最后一天。", "en": "Deposits closed in June and MaticX has been redeem-only since. The MaticX app closed on Aug 3, and redemptions continue through Etherscan. From Oct 29, the rate is fixed at 1.2002 POL per MaticX. Aug 3, 2029 is the last day to redeem through the contract."},
+      "who": {"zh": "还持有 MaticX 的人(以太坊、Polygon PoS)。", "en": "Anyone still holding MaticX, on Ethereum or Polygon PoS."},
+      "todo": {"zh": "照 Stader 官方博客的步骤,在 Etherscan 上打开以太坊上的 MaticX 合约:先发起取款(MaticX 会被销毁),等 POL 解绑完成,再把 POL 提到钱包。公告称解绑需 80 个检查点,发布时估计约 22 小时。在 Polygon PoS 上的,先经 Polygon 官方桥转到以太坊。已经发起过取款的不受影响,直接提 POL。", "en": "Follow the steps on Stader's official blog: open the MaticX contract on Ethereum in Etherscan, request a withdrawal (your MaticX is burned), wait for the POL to finish unbonding, then withdraw the POL to your wallet. The announcement gives an unbonding period of 80 checkpoints, estimated at about 22 hours at publication. MaticX on Polygon PoS has to be moved to Ethereum through the Polygon bridge first. Withdrawals you already requested are not affected; just finish them."},
+      "caution": {"zh": "放在借贷市场、流动性池、金库里的 MaticX 会原样留在那里,官方让你去问那个协议:比例固定以后,对你的仓位有什么影响。合约地址只认 Stader 官方博客里写的。", "en": "MaticX in a lending market, liquidity pool or vault stays where it is; Stader says to ask that protocol how the fixed rate affects your position. Only use the contract address given in Stader's official blog post."},
+      "official": [
+        {"label": {"zh": "Stader 官方博客:NearX、BNBx、MaticX 赎回方式改变", "en": "Stader blog: Redemptions change for NearX, BNBx and MaticX"}, "url": "https://www.staderlabs.com/blog/redemptions-change-nearx-bnbx-maticx-28-october-2026/"},
+        {"label": {"zh": "Stader 官方 X：10 月 28 日公告", "en": "Stader on X: Oct 28 post"}, "url": "https://x.com/staderlabs/status/2115355745923551243"}
+      ],
+      "announced": "2026-10-26",
+      "checked": "2026-11-06"
+    },
+    {
+      "id": "moonbeam-glmr-base",
+      "name": {"zh": "Moonbeam：GLMR 迁到 Base", "en": "Moonbeam: GLMR moving to Base"},
+      "summary": {"zh": "GLMR 迁到 Base 的截止日 7 月 31 日已过:官方要求先撤出链上协议里的钱,再 1:1 跨到 Base;没跨的 GLMR 怎么办,公告没写。", "en": "The deadline to move GLMR to Base passed on Jul 31. Moonbeam asked holders to withdraw funds from protocols on the chain first, then bridge GLMR 1:1 to Base. The announcement doesn't say what happens to GLMR that wasn't bridged."},
+      "protocol": "Moonbeam",
+      "chains": ["Moonbeam"],
+      "chainKeys": ["moonbeam"],
+      "protocolKeys": ["moonbeam"],
+      "matchBy": "chain",
+      "type": "token-migration",
+      "deadline": "2026-07-31",
+      "deadlineNote": {"zh": "7 月 31 日截止(官方没写几点、按哪个时区)。官方说过渡期内链照常运行到 7 月 31 日;链收尾以后,留在链上协议里的钱「may become inaccessible」(可能取不出来)。链哪天停,公告没写。", "en": "The deadline was Jul 31 (no time or time zone given). Moonbeam said the chain would keep running through the transition period until Jul 31, and that once the chain winds down, funds left in on-chain protocols \"may become inaccessible\". The announcement doesn't say when the chain stops."},
+      "who": {"zh": "Moonbeam 上的 GLMR 持有人,以及在该链协议中有资金的人(流动性、借贷、质押合约等)。放在交易所的,官方说交易所会自动处理。", "en": "GLMR holders on Moonbeam and anyone with funds in protocols on that chain (liquidity, lending, staking contracts and so on). For GLMR on an exchange, Moonbeam says the exchange handles the migration automatically."},
+      "todo": {"zh": "当时的步骤:先撤出链上协议里的钱,再在官方迁移页把 GLMR 1:1 跨到 Base。这份 7 月 3 日公告未说明截止后是否还能迁移,以及未迁移代币如何处理。", "en": "The steps were: withdraw funds from protocols on the chain first, then bridge GLMR 1:1 to Base on the official migration page. The Jul 3 announcement does not specify whether migration remains available after the deadline or how unbridged tokens will be handled."},
+      "caution": {"zh": "官方迁移页是 `migrate.portal.moonbeam.network`;这份 7 月 3 日公告未说明它在截止后是否仍可使用。私信你、说能「补迁移」的都别信。", "en": "The official migration page is `migrate.portal.moonbeam.network`; the Jul 3 announcement does not say whether it remains usable after the deadline. Ignore anyone who DMs you offering a \"late migration\"."},
+      "official": [
+        {"label": {"zh": "Moonbeam 官网:GLMR 迁到 Base 的公告", "en": "Moonbeam news: \"Moonbeam Network Relaunches on Base\""}, "url": "https://moonbeam.network/news/moonbeam-strategic-update-moonbeam-network-relaunches-on-base"},
+        {"label": {"zh": "Moonbeam 官方 X：7 月 3 日公告", "en": "Moonbeam on X: Jul 3 announcement"}, "url": "https://x.com/MoonbeamNetwork/status/2073046469741781197"}
+      ],
+      "announced": "2026-07-03",
+      "checked": "2026-11-06"
+    },
+    {
+      "id": "moonriver-movr-base",
+      "name": {"zh": "Moonriver：MOVR 迁到 Base", "en": "Moonriver: MOVR moving to Base"},
+      "summary": {"zh": "MOVR 迁到 Base 的截止日 7 月 31 日已过:官方要求先撤出链上协议里的钱,再分两步 1:1 跨到 Base;没跨的 MOVR 怎么办,公告没写。", "en": "The deadline to move MOVR to Base passed on Jul 31. Moonriver asked holders to withdraw funds from protocols on the chain first, then bridge MOVR 1:1 to Base in two steps. The announcement doesn't say what happens to MOVR that wasn't bridged."},
+      "protocol": "Moonriver",
+      "chains": ["Moonriver"],
+      "chainKeys": ["moonriver"],
+      "protocolKeys": ["moonriver"],
+      "matchBy": "chain",
+      "type": "token-migration",
+      "deadline": "2026-07-31",
+      "deadlineNote": {"zh": "7 月 31 日截止(官方没写几点、按哪个时区)。官方说链收尾以后,留在链上协议里的钱「may become permanently inaccessible」(可能永远取不出来)。链哪天停,公告没写。", "en": "The deadline was Jul 31 (no time or time zone given). Moonriver said that once the chain winds down, funds left in on-chain protocols \"may become permanently inaccessible\". The announcement doesn't say when the chain stops."},
+      "who": {"zh": "Moonriver 上的 MOVR 持有人,以及在该链协议中有资金的人(流动性、借贷、质押合约等)。放在交易所的,官方说不用操作,交易所会自动处理。", "en": "MOVR holders on Moonriver and anyone with funds in protocols on that chain (liquidity, lending, staking contracts and so on). For MOVR on an exchange, Moonriver says there's nothing to do; the exchange handles it automatically."},
+      "todo": {"zh": "当时的步骤:先撤出链上协议里的钱;再在官方迁移页分两步跨:先把 MOVR 从 Moonriver 转到 Moonbeam(变成 xcMOVR),再经迁移桥换成 Base 上的 MOVR,1:1,不收手续费。截止以后还能不能迁,这份 7 月 7 日公告没写。", "en": "The steps were: withdraw funds from protocols on the chain first, then bridge in two hops on the official migration page. MOVR moves from Moonriver to Moonbeam (as xcMOVR), then the migration bridge turns it into MOVR on Base, 1:1 with no fee. The Jul 7 announcement doesn't say whether migration is still possible after the deadline."},
+      "caution": {"zh": "官方迁移页是 `migrate.portal.moonbeam.network`,相关合约也在这个页面上核对;这份 7 月 7 日公告未说明迁移入口在截止后是否仍可使用。私信你、说能「补迁移」的都别信。", "en": "The official migration page is `migrate.portal.moonbeam.network`, where the related contracts can also be verified. The Jul 7 announcement does not say whether the migration portal remains usable after the deadline. Ignore anyone who DMs you offering a \"late migration\"."},
+      "official": [
+        {"label": {"zh": "Moonbeam 官网:MOVR 迁到 Base 的公告", "en": "Moonbeam news: \"MOVR is Migrating to Base\""}, "url": "https://moonbeam.network/news/moonriver-strategic-update-movr-is-migrating-to-base"},
+        {"label": {"zh": "Moonriver 官方 X：7 月 7 日公告", "en": "Moonriver on X: Jul 7 announcement"}, "url": "https://x.com/MoonriverNW/status/2074555341568979116"}
+      ],
+      "announced": "2026-07-07",
+      "checked": "2026-11-06"
+    },
+    {
+      "id": "dfk-chain-sunset",
+      "name": {"zh": "DeFi Kingdoms：DFK Chain 停用", "en": "DeFi Kingdoms: DFK Chain sunset"},
+      "summary": {"zh": "DFK Chain 定在 8 月 28 日停用(已过):官方说 JEWEL 和不是 DFK 自己的币(BTC、ETH、USDC、AVAX 等)它迁不了,要自己在这之前跨走。", "en": "DFK Chain was set to be sunset on Aug 28 (passed). DeFi Kingdoms said it can't migrate JEWEL or non-DFK tokens such as BTC, ETH, USDC and AVAX, so holders had to bridge them out themselves before then."},
+      "protocol": "DeFi Kingdoms",
+      "chains": ["DFK Chain"],
+      "chainKeys": ["dfk"],
+      "protocolKeys": ["defi-kingdoms"],
+      "matchBy": "chain",
+      "type": "chain-shutdown",
+      "deadline": "2026-08-28",
+      "deadlineNote": {"zh": "7 月 31 日宣布,定在 8 月 28 日停用。", "en": "Announced on Jul 31, with the sunset set for Aug 28."},
+      "who": {"zh": "在 DFK Chain 上持有 JEWEL,或 BTC、ETH、USDC、AVAX 这类不是 DFK 自己的币的人;在池子里提供流动性的人;用智能钱包的人。", "en": "Anyone holding JEWEL, or non-DFK tokens such as BTC, ETH, USDC and AVAX, on DFK Chain; liquidity providers there; and smart wallet users."},
+      "todo": {"zh": "官方当时的要求:用智能钱包的,先把资产转到普通钱包再跨;撤出所有流动性池,两种都是 DFK 自己资产的池子也要撤。团队当时表示,JEWEL 已可跨至 Avalanche C-Chain,并正筹备 DFK 原生资产迁移,细节另行公布。", "en": "What DeFi Kingdoms asked: smart wallet users move assets to a standard wallet before bridging, and break all LPs, including pools of two DFK-native assets. At the time, the team said JEWEL could be bridged to Avalanche C-Chain and that migration of DFK-native assets was being prepared, with details to follow."},
+      "caution": {"zh": "官方说 JEWEL 和不是 DFK 自己的币,它不能迁移、重铸,也控制不了;8 月 28 日以后还留在链上的怎么办,7 月 31 日的公告没写。", "en": "DeFi Kingdoms said it cannot migrate, remint or control JEWEL or non-DFK tokens. Its Jul 31 announcement doesn't say what happens to those still on the chain after Aug 28."},
+      "official": [
+        {"label": {"zh": "DeFi Kingdoms 官方 X：7 月 31 日公告", "en": "DeFi Kingdoms on X: Jul 31 announcement"}, "url": "https://x.com/DeFiKingdoms/status/2083238250311725278"},
+        {"label": {"zh": "DeFi Kingdoms 官方 X：要做什么", "en": "DeFi Kingdoms on X: what you need to do"}, "url": "https://x.com/DeFiKingdoms/status/2083238266321404207"}
+      ],
+      "announced": "2026-07-31",
+      "checked": "2026-11-06"
+    },
+    {
+      "id": "robin-markets-v1",
+      "name": {"zh": "Robin Markets：V1 关停", "en": "Robin Markets: V1 shutting down"},
+      "summary": {"zh": "Robin Markets 正在关停 V1;积分、收益保底和撮合奖励已于 11 月 3 日 20:00(UTC)停止新增。公告说取款会继续开放,未给出取款截止日。", "en": "Robin Markets is winding down V1. Points, the yield guarantee and matching bonus stopped accruing on Nov 3 at 20:00 UTC. The announcement says withdrawals remain available, with no withdrawal deadline stated."},
+      "protocol": "Robin Markets",
+      "chains": ["Polygon"],
+      "chainKeys": ["polygon"],
+      "protocolKeys": ["robin-markets"],
+      "matchBy": null,
+      "type": "other",
+      "deadline": null,
+      "deadlineNote": {"zh": "11 月 3 日宣布;积分、收益保底和撮合奖励 11 月 3 日 20:00(UTC)停止新增。没定取款截止日:官方说新版「年底前」上线,在那之前 V1 照常在线,之后也能取。", "en": "Announced on Nov 3. Points, the yield guarantee and the matching bonus stopped accruing on Nov 3 at 20:00 UTC. There's no withdrawal deadline: Robin says the next version launches \"before the end of the year\", V1 stays online until then, and withdrawals will still work after that."},
+      "who": {"zh": "把 Polymarket 仓位存进 Robin Markets V1 赚收益的人。", "en": "Anyone who deposited Polymarket positions into Robin Markets V1 to earn yield."},
+      "todo": {"zh": "积分、收益保底和撮合奖励已于 11 月 3 日 20:00(UTC)停止新增;文档说之前累计的,会在下次取款时自动发放。官方说有仓位的现在就可以取出来。", "en": "Points, the yield guarantee and the matching bonus stopped accruing on Nov 3 at 20:00 UTC; the docs say anything accrued before then is paid out automatically with your next withdrawal. Robin says anyone with an open position can withdraw it now."},
+      "official": [
+        {"label": {"zh": "Robin Markets 官方 X：11 月 3 日公告", "en": "Robin Markets on X: Nov 3 announcement"}, "url": "https://x.com/robinmarketsxyz/status/2117727114040389862"},
+        {"label": {"zh": "Robin Markets 文档:收益保底和撮合奖励已结束", "en": "Robin Markets docs: yield guarantee and matching bonus (ended)"}, "url": "https://docs.robin.markets/yield-guarantee"},
+        {"label": {"zh": "Robin Markets 文档:合约都部署在 Polygon 上", "en": "Robin Markets docs: contracts deployed on Polygon"}, "url": "https://docs.robin.markets/contracts/overview"}
+      ],
+      "announced": "2026-11-03",
+      "checked": "2026-11-06"
+    },
+    {
+      "id": "summerfi-winddown",
+      "name": {"zh": "Summer.fi：Lazy Summer 金库只能取,有序关停(讨论中)", "en": "Summer.fi: Lazy Summer vaults withdraw-only, orderly wind-down under discussion"},
+      "summary": {"zh": "Summer.fi 正在关停,Lazy Summer 金库只能取,现在还可以在官网自己取。11 月 5 日有一份有序关停的社区讨论稿,统一取出后经 Merkl 发回只是选项之一。", "en": "Summer.fi is winding down and Lazy Summer vaults are withdraw-only; you can still withdraw yourself on the official site. A Nov 5 community RFC discusses an orderly wind-down, and sweeping what's left to Merkl is only one option."},
+      "protocol": "Summer.fi (Lazy Summer)",
+      "chains": ["Ethereum", "Base", "Arbitrum", "Sonic", "HyperEVM"],
+      "chainKeys": ["ethereum", "base", "arbitrum", "sonic", "hyperevm"],
+      "protocolKeys": ["summer-fi", "lazy-summer"],
+      "matchBy": null,
+      "type": "withdraw-only",
+      "deadline": null,
+      "deadlineNote": {"zh": "7 月 6 日被盗后,Summer.fi 旧应用界面原定 8 月 31 日停用(现在的官网只留退出页),金库不再收存款、只能取。11 月 5 日的社区讨论稿(RFC)列了有序关停的几种做法:拍快照后统一取出、经 Merkl 按原币在原链发回;先公布截止日让用户自己取,过期剩下的再归集;或者不归集。还没定日期。", "en": "After the Jul 6 exploit, the original Summer.fi app interface was scheduled to close on Aug 31 (the site now only offers an exit page), and the vaults stopped taking deposits and became withdraw-only. A Nov 5 community RFC lists options for an orderly wind-down: take a snapshot, withdraw everything and return it through Merkl in the same token on the same chain; announce a deadline for users to withdraw themselves, then sweep the rest; or don't sweep at all. No date has been set."},
+      "who": {"zh": "在 Lazy Summer 金库里还有存款的人(以太坊、Base、Arbitrum、Sonic、HyperEVM)。讨论稿说,11 月 5 日时 16 个金库里还剩约 36.9 万美元。", "en": "Anyone with deposits left in Lazy Summer vaults (Ethereum, Base, Arbitrum, Sonic, HyperEVM). The RFC says about $369,000 was left in 16 vaults as of Nov 5."},
+      "todo": {"zh": "到 `summer.fi` 连上钱包,查看并取出仓位,没领的奖励也一并领了。统一取出后经 Merkl 申领只是备选方案之一;处理方式及取款期限须等后续正式治理决定。", "en": "Go to `summer.fi`, connect your wallet, then view and exit your positions and collect any outstanding rewards. Sweeping assets for Merkl claims is one option; the method and any withdrawal deadline depend on later formal governance decisions."},
+      "caution": {"zh": "这是 11 月 5 日的社区讨论稿,附非约束性意见投票,本身不转移资金。讨论稿说 7 月 6 日被盗(以太坊上的 USDC 金库)和坏账的损失补不全。请从 `summer.fi` 核对取款入口,不要仅凭论坛帖或链上提案中的链接连接钱包或签名。", "en": "This Nov 5 community RFC includes non-binding polls and does not itself move funds. It says losses from the Jul 6 exploit (Ethereum USDC vaults) and from bad debt won't be covered in full. Verify the exit page at `summer.fi`; do not connect or sign merely because a link appears in a forum post or on-chain proposal."},
+      "official": [
+        {"label": {"zh": "Summer.fi 官网:现在只能取出", "en": "Summer.fi website: withdrawals only"}, "url": "https://summer.fi/"},
+        {"label": {"zh": "Lazy Summer 论坛:有序关停讨论稿(11 月 5 日)", "en": "Lazy Summer forum: orderly wind-down RFC (Nov 5)"}, "url": "https://forum.summer.fi/t/932"},
+        {"label": {"zh": "Lazy Summer 论坛:金库只留取款(7 月 29 日)", "en": "Lazy Summer forum: vaults to withdrawal-only (Jul 29)"}, "url": "https://forum.summer.fi/t/897"}
+      ],
+      "announced": "2026-11-05",
+      "checked": "2026-11-06"
+    }
+  ]
+}

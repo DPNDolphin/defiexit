@@ -1,0 +1,344 @@
+{
+  "slug": "chain-shutdown",
+  "checked": "2026-11-05",
+  "title": {
+    "zh": "链要关停了，钱怎么取？",
+    "en": "A chain is shutting down: how do I get my money out?"
+  },
+  "summary": {
+    "zh": "先在官方公告里找「最后提款日」，它常常比关链日早。然后按顺序做：先把这条链上应用里的仓位撤出来、领完奖励，再按官方指南写的路线跨出去，两头都留一点 gas。过了期限，有的项目开了官方取回通道，有的明说钱会取不出来，所以别赌后路。",
+    "en": "First find the official 'last day to withdraw' — it is often earlier than the shutdown date. Then go in order: exit your positions in apps on that chain and collect rewards, bridge out by the route the official guide names, and keep a little gas on both sides. After a deadline, some projects open an official recovery path and others say funds become inaccessible, so don't count on a second chance."
+  },
+  "sections": [
+    {
+      "h": {
+        "zh": "第一步：找对日期",
+        "en": "Step 1: get the dates right"
+      },
+      "p": [
+        {
+          "zh": "关停公告里常有两个日期：最后能提款的日子，和链真正停下的日子。按前一个做，并且别拖到最后一天。日期只认官方账号和官网发的，别信转述。",
+          "en": "Shutdown notices often carry two dates: the last day you can withdraw, and the day the chain actually stops. Act on the first one, and don't wait for the last day. Trust dates only from the official account and website, not from retellings."
+        }
+      ],
+      "list": [
+        {
+          "zh": "Sophon：官方说 11 月 25 日是提款截止日，之后关键基础设施和相关网站会开始关闭，11 月 30 日主网最终关停。官方原话：要行动的是 11 月 25 日，不是 11 月 30 日。",
+          "en": "Sophon: November 25 is the withdrawal deadline; key infrastructure and related websites begin shutting down after that, ahead of the final mainnet shutdown on November 30. In Sophon's words: 'Nov 25 is the date to act, not Nov 30.'"
+        },
+        {
+          "zh": "Abstract：官方说链在 2026 年 12 月 15 日关停，到那天还没跨出去的钱将无法访问。",
+          "en": "Abstract: the chain shuts down on December 15, 2026, and funds not bridged out by then will be inaccessible."
+        },
+        {
+          "zh": "Horizen L3：官方把桥的截止时间（11 月 4 日 13:00 UTC）定在硬关停前一天，让快照干净、关链时没有在途的转账。",
+          "en": "Horizen L3: the bridge cutoff (November 4, 13:00 UTC) was set one day before the hard shutdown, so the snapshot would be clean and nothing would be in flight when the chain stopped."
+        }
+      ]
+    },
+    {
+      "h": {
+        "zh": "第二步：先撤仓位、领奖励，再跨链",
+        "en": "Step 2: exit positions and collect rewards before you bridge"
+      },
+      "p": [
+        {
+          "zh": "放在质押、农场、流动性池或借贷里的钱，不算你的钱包余额。要先在原来的应用里把它取回钱包，才能跨链。",
+          "en": "Money sitting in staking, farms, liquidity pools or lending is not part of your wallet balance. Take it back to your wallet in the original app first; only then can you bridge it."
+        }
+      ],
+      "list": [
+        {
+          "zh": "Horizen 官方：先在质押页面取出质押，再领奖励，然后跨到 Base。",
+          "en": "Horizen: withdraw your stake on the staking page first, then claim rewards, then bridge to Base."
+        },
+        {
+          "zh": "Sophon 官方：除了跨出 SOPH、ETH、USDC 等资产，还要领完没领的质押和 Guardian 奖励；Farm 里没取的资产也要取出来。",
+          "en": "Sophon: besides withdrawing SOPH, ETH, USDC and other assets, claim any outstanding staking or Guardian rewards, and withdraw anything still in the Sophon Farm."
+        },
+        {
+          "zh": "有的仓位官方会替你处理，不要自己乱动：Sophon 官方说 Guardian NFT、vSOPH 和已质押的 SOPH 会自动转到以太坊。所以动手前先读完官方指南。",
+          "en": "Some positions are handled for you, so don't touch them on your own: Sophon says Guardian NFTs, vSOPH and staked SOPH move to Ethereum automatically. Read the official guide fully before you act."
+        }
+      ]
+    },
+    {
+      "h": {
+        "zh": "第三步：走官方指南写的路线，两头留好 gas",
+        "en": "Step 3: use the route the official guide names, and keep gas on both sides"
+      },
+      "p": [
+        {
+          "zh": "跨链的路线、要留多少 gas、哪些币不在官方安排里，官方指南一般都会写。",
+          "en": "The official guide usually spells out the route, how much gas to keep, and which tokens fall outside the official plan."
+        }
+      ],
+      "list": [
+        {
+          "zh": "只用官方指南里列出的桥或迁移页。比如 Abstract 官方给了迁移页 migrate.abs.xyz 和原生桥 native-bridge.abs.xyz（官方说原生桥约有 3 小时延迟）；Sophon 官方给的是 claim.sophon.com。",
+          "en": "Use only the bridges or migration pages the official guide lists. For example, Abstract named its Migration Hub (migrate.abs.xyz) and native bridge (native-bridge.abs.xyz, which it says has about a 3-hour delay); Sophon points to claim.sophon.com."
+        },
+        {
+          "zh": "走官方原生桥回以太坊，通常要等，而且多数还要在以太坊上再点一次 Claim。详见「从 L2 提回以太坊为什么要等」。",
+          "en": "Going back to Ethereum through an official native bridge usually involves a wait, and most chains need one more Claim on Ethereum. See 'Withdrawing from an L2 to Ethereum' for details."
+        },
+        {
+          "zh": "留 gas：要关的链上留一点原生币付手续费，以太坊上也留一点 ETH 付最后一步。Horizen 官方说，缺 gas 的可以从 Base 用原生桥存一点点 ETH 进去，只存桥允许的最小量。",
+          "en": "Keep gas: leave a little of the native coin on the closing chain for fees, and a little ETH on Ethereum for the final step. Horizen told users short on gas to deposit a tiny amount of ETH from Base through the native bridge, only the minimum the bridge allows."
+        },
+        {
+          "zh": "别人发行的代币可能不在官方安排里：Horizen 官方说，USDC.e 由 Stargate 运营，不在 DAO 退还范围内，必须自己跨走。",
+          "en": "Tokens issued by someone else may fall outside the official plan: Horizen said USDC.e is operated by Stargate, not Horizen, so it was not covered by the DAO return and users had to bridge it out themselves."
+        },
+        {
+          "zh": "合约钱包和多签：看官方有没有单独的入口或联系方式。Blast 取回站支持 Safe 等智能钱包的所有者替钱包领回；Horizen 请合约钱包用户在截止前写信给官方安全邮箱。",
+          "en": "Smart contract wallets and multisigs: check whether the project has a separate path or contact. Blast's recovery site lets the owner of a Safe or other smart wallet claim for it; Horizen asked smart-contract-wallet users to email its official security address before the deadline."
+        }
+      ]
+    },
+    {
+      "h": {
+        "zh": "过了期限，还有路吗？",
+        "en": "After the deadline: is there still a way?"
+      },
+      "p": [
+        {
+          "zh": "看项目。下面是项目自己公布的安排（查于 2026-11-05），不能套到别的链上。",
+          "en": "It depends on the project. These are arrangements the projects themselves announced (checked 2026-11-05); they don't carry over to other chains."
+        }
+      ],
+      "list": [
+        {
+          "zh": "Blast：L2 已在 2026 年 11 月 4 日关停。官方取回站 blast.io 开 12 个月，最后支持日是 2027 年 11 月 4 日。在 Blast 上持有的 ETH、WETH、USDB，和没走完的提款，都在以太坊主网上领回。用 Blast Mobile 的，官方让你把它的助记词导入 MetaMask 或 Rabby 这类钱包 App 再连接；助记词只在钱包 App 里输入，绝不在网页里输入。",
+          "en": "Blast: the L2 shut down on November 4, 2026. The official recovery site, blast.io, stays open for 12 months, with a final support date of November 4, 2027. ETH, WETH and USDB held on Blast, plus withdrawals that never finished, are claimed on Ethereum mainnet. Blast Mobile users are told to import that wallet's seed phrase into a wallet app such as MetaMask or Rabby and connect it; type a seed phrase only into a wallet app, never into a website."
+        },
+        {
+          "zh": "Lisk：Lisk Chain 已在 2026 年 11 月 2 日关停，门户和桥都关了。官方说正在做一个专门的智能合约，计划 2027 年 1 月推出人工申领流程，细节到时公布；关链时还在途中的提款，会直接记到以太坊上的目标地址。放在以太坊或交易所的 LSK 不受影响。",
+          "en": "Lisk: the Lisk Chain shut down on November 2, 2026, and its portal and bridge are closed. Lisk says it is building a dedicated smart contract and plans a manual claims process in January 2027, with details to follow; withdrawals in progress at shutdown will be credited to their destination address on Ethereum. LSK on Ethereum or on exchanges is not affected."
+        },
+        {
+          "zh": "Horizen L3：11 月 4 日 13:00 UTC 拍了快照。官方说，快照公开审查一周后，Horizen DAO 会把剩下的 ZEN（含没领的质押奖励）和超过 0.001 ETH 的 ETH，发回同一个地址在 Base 上，预计在 11 月下半月。0.001 ETH 以下的不退，USDC.e 不在范围内。",
+          "en": "Horizen L3: a snapshot was taken on November 4 at 13:00 UTC. After a one-week public review of the snapshot, the Horizen DAO will send remaining ZEN (including unclaimed staking rewards) and ETH balances above 0.001 ETH to the same address on Base, expected in the second half of November. ETH below 0.001 is not returned, and USDC.e is not covered."
+        },
+        {
+          "zh": "也有项目明说过期就取不出：Abstract 说到期没跨走的钱将无法访问；Sophon 说截止后留在链上的资产有永久无法访问的风险。",
+          "en": "Other projects say plainly that missing the deadline means losing access: Abstract says funds not bridged by the date will be inaccessible, and Sophon says assets left after the deadline risk becoming permanently inaccessible."
+        },
+        {
+          "zh": "官方的补救安排，一定发在官方账号和官网上。有人私信你说「还有补救通道」，先当成骗局。",
+          "en": "Any official fix is announced on the official account and website. If someone DMs you about a 'recovery channel', treat it as a scam."
+        }
+      ]
+    },
+    {
+      "h": {
+        "zh": "关停期间最常见的骗局",
+        "en": "The scams that show up around shutdowns"
+      },
+      "p": [
+        {
+          "zh": "截止日越近，骗子越多。下面几种，项目方自己都公开提醒过。",
+          "en": "The closer the deadline, the more scammers. Projects themselves have publicly warned about each of these."
+        }
+      ],
+      "list": [
+        {
+          "zh": "假迁移网站：Sophon 官方提醒「只用 Sophon 官方链接，小心假迁移网站」；Abstract 官方提醒小心冒充、假迁移网站和自称代表 Abstract 的私信。",
+          "en": "Fake migration sites: Sophon warned users to 'use only official Sophon links and be careful of fake migration sites'; Abstract warned about impersonation, fake migration sites and DMs claiming to represent Abstract."
+        },
+        {
+          "zh": "「客服」私信：Horizen 官方说团队绝不会先私信你，也绝不会要你的私钥、助记词，或让你把钱转给他们。",
+          "en": "'Support' DMs: Horizen says its team will never DM you first, will never ask for private keys or seed phrases, and will never ask you to send funds to them."
+        },
+        {
+          "zh": "「批准一下就能解锁」：批准（Approve）是允许别人从你钱包里拿走某种代币。MetaMask 官方说，用截止日制造时间压力，是恶意批准请求的典型手法。",
+          "en": "'Approve to unlock': an approval lets someone else move a token out of your wallet. MetaMask lists time pressure built around deadlines as a typical sign of a malicious approval request."
+        },
+        {
+          "zh": "DeFiExit 网站只会请钱包共享地址，从不让你签名、批准或发交易；我们不会主动找你。",
+          "en": "DeFiExit only asks your wallet to share its address — it never asks you to sign, approve or send anything, and we never message first."
+        }
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": {
+        "zh": "冷钱包里的币也要动吗？",
+        "en": "Do I have to move the tokens in my cold wallet?"
+      },
+      "a": {
+        "zh": "要看币在哪条链上，不看放在什么钱包里。冷钱包只是替你保管钥匙；只有在要关停的那条链上的资产才要提出来。比如 Lisk 说，放在以太坊或交易所的 LSK 不受关链影响；Sophon 说 SOPH 本来就是以太坊上的代币，只有 Sophon 链上的那部分要提回。先在钱包或区块浏览器里看清余额在哪条链上。",
+        "en": "It depends on which chain the tokens are on, not on the kind of wallet. A cold wallet just holds your keys; only assets on the chain that is closing need to come out. For example, Lisk said LSK on Ethereum or on exchanges was not affected by its chain shutdown, and Sophon says SOPH is native to Ethereum, so only the part on the Sophon Chain needs withdrawing. Check in your wallet or a block explorer which chain the balance is on."
+      }
+    },
+    {
+      "q": {
+        "zh": "截止日已经过了，我的钱是不是没了？",
+        "en": "The deadline has passed. Is my money gone?"
+      },
+      "a": {
+        "zh": "不一定，但也别抱侥幸。先去这条链的官网和官方 X 看有没有关停后的安排：Blast 开了 12 个月的官方取回站，Lisk 计划 2027 年 1 月推出申领流程，Horizen 由 DAO 把余额发回 Base。也有项目明说过期就取不出。官方没公布过的「补救通道」，一律不要信。",
+        "en": "Not necessarily, but don't count on it. Check the chain's official website and X account for post-shutdown arrangements: Blast opened a 12-month official recovery site, Lisk plans a claims process in January 2027, and the Horizen DAO is sending balances back on Base. Other projects say missing the deadline means losing access. Never trust a 'recovery channel' the project itself hasn't announced."
+      }
+    },
+    {
+      "q": {
+        "zh": "迁移要先「验证钱包」，或者先交一笔手续费吗？",
+        "en": "Do I need to 'verify my wallet' or pay a fee before I can migrate?"
+      },
+      "a": {
+        "zh": "先交钱给别人：不用。Horizen 官方说团队绝不会让你把钱转给他们，你要付的只是自己钱包发交易的 gas。「验证钱包」：MetaMask 官方说，让你点链接去「验证」账户、制造紧迫感的消息是常见骗局。如果官方指南里确实要你签名确认，只在官方帖子给的页面上做，并看清钱包弹窗的内容。",
+        "en": "Paying someone first: no. Horizen says its team will never ask you to send funds to them; the only cost is the gas your own wallet pays to send a transaction. 'Verify your wallet': MetaMask says urgent messages asking you to follow a link to 'verify' your account are a common scam. If the official guide really does ask you to sign a confirmation, do it only on the page given in the official post, and read the wallet pop-up carefully."
+      }
+    },
+    {
+      "q": {
+        "zh": "要关的链上没有 gas，跨不出去怎么办？",
+        "en": "I have no gas on the chain that is closing, so I can't bridge out."
+      },
+      "a": {
+        "zh": "先看官方指南。有的链在关停期会停掉存入：Sophon 从 2026 年 6 月 25 日起停了新的存入；Horizen 关停时只为付 gas 保留了从 Base 存 ETH 的入口，并建议只存最小量。指南里没写的，到官方 Discord 问，不要找私下「帮你垫 gas」的人。",
+        "en": "Check the official guide first. Some chains stop deposits during a shutdown: Sophon disabled new deposits on June 25, 2026, while Horizen kept ETH deposits from Base open only so users could pay gas, and advised depositing the minimum. If the guide doesn't cover it, ask in the official Discord, not someone who privately offers to 'cover your gas'."
+      }
+    },
+    {
+      "q": {
+        "zh": "已经在官方桥上发起了，为什么还没到？",
+        "en": "I already started on the official bridge. Why hasn't it arrived?"
+      },
+      "a": {
+        "zh": "官方原生桥回以太坊本来就要等，而且多数还要你在以太坊上再点一次 Claim。比如 Abstract 说原生桥约有 3 小时延迟，OP Mainnet 一般要 7 天。具体见「从 L2 提回以太坊为什么要等」。",
+        "en": "Official native bridges back to Ethereum involve a wait, and most also need one more Claim from you on Ethereum. Abstract, for example, says its native bridge has about a 3-hour delay, while OP Mainnet usually takes 7 days. See 'Withdrawing from an L2 to Ethereum' for details."
+      }
+    }
+  ],
+  "related": [
+    "sophon-chain-shutdown",
+    "abstract-chain-shutdown",
+    "blast-l2-shutdown",
+    "l2-withdrawal-wait",
+    "scams-during-exits"
+  ],
+  "sources": [
+    {
+      "label": {
+        "zh": "Sophon 官方 X：关停时间线 1/4，主网 11 月 30 日关停（2026-10-19）",
+        "en": "Sophon on X: shutdown timeline 1/4, mainnet shutdown Nov 30 (Oct 19, 2026)"
+      },
+      "url": "https://x.com/Sophon/status/2112253258030882831"
+    },
+    {
+      "label": {
+        "zh": "Sophon 官方 X：2/4，11 月 25 日提款截止（2026-10-19）",
+        "en": "Sophon on X: 2/4, Nov 25 withdrawal deadline (Oct 19, 2026)"
+      },
+      "url": "https://x.com/Sophon/status/2112253259561730145"
+    },
+    {
+      "label": {
+        "zh": "Sophon 官方 X：3/4，提款、奖励和 Farm（2026-10-19）",
+        "en": "Sophon on X: 3/4, withdrawals, rewards and Farm assets (Oct 19, 2026)"
+      },
+      "url": "https://x.com/Sophon/status/2112253261940203629"
+    },
+    {
+      "label": {
+        "zh": "Sophon 官方 X：4/4，只用官方链接、小心假迁移网站（2026-10-19）",
+        "en": "Sophon on X: 4/4, use only official links, beware fake migration sites (Oct 19, 2026)"
+      },
+      "url": "https://x.com/Sophon/status/2112253264179998909"
+    },
+    {
+      "label": {
+        "zh": "Sophon 官方 X：11 月 2 日提醒（SOPH 本身继续存在）",
+        "en": "Sophon on X: Nov 2 reminder (SOPH itself remains)"
+      },
+      "url": "https://x.com/Sophon/status/2117352374679244928"
+    },
+    {
+      "label": {
+        "zh": "Sophon 官方文档：链迁移指南（自动转移的仓位、6 月 25 日停止存入）",
+        "en": "Sophon docs: Chain migration guide (positions moved automatically, deposits off since June 25)"
+      },
+      "url": "https://docs.sophon.xyz/migration"
+    },
+    {
+      "label": {
+        "zh": "Abstract 官方 X 文章：Abstract is Winding Down（2026-10-06）",
+        "en": "Abstract on X: 'Abstract is Winding Down' (Oct 6, 2026)"
+      },
+      "url": "https://x.com/AbstractChain/status/2107554632675340420"
+    },
+    {
+      "label": {
+        "zh": "Horizen 官方博客：Horizen 的变化（L3 关停、DAO 退还、安全提醒，2026-10-23）",
+        "en": "Horizen blog: Changes for Horizen (L3 wind-down, DAO return, security reminder; Oct 23, 2026)"
+      },
+      "url": "https://blog.horizen.io/changes-for-horizen"
+    },
+    {
+      "label": {
+        "zh": "Horizen 官方 X：11 月 4 日 13:00 UTC 桥关闭（2026-11-04）",
+        "en": "Horizen on X: bridge closes Nov 4 at 13:00 UTC (Nov 4, 2026)"
+      },
+      "url": "https://x.com/horizenglobal/status/2117915509706653895"
+    },
+    {
+      "label": {
+        "zh": "Blast 官方 X：L2 已关停，取回站开 12 个月（2026-11-04）",
+        "en": "Blast on X: the L2 has shut down; recovery site open 12 months (Nov 4, 2026)"
+      },
+      "url": "https://x.com/blast/status/2117993462356197406"
+    },
+    {
+      "label": {
+        "zh": "Blast 官方取回站（ETH、WETH、USDB，Blast Mobile，Safe）",
+        "en": "Blast official recovery site (ETH, WETH, USDB; Blast Mobile; Safe)"
+      },
+      "url": "https://blast.io/"
+    },
+    {
+      "label": {
+        "zh": "Lisk 官方博客：Lisk Chain 已关停",
+        "en": "Lisk blog: The Lisk Chain has closed"
+      },
+      "url": "https://lisk.com/blog/posts/lisk-chain-has-closed/"
+    },
+    {
+      "label": {
+        "zh": "Lisk 帮助中心：Lisk Chain 申领（2027 年 1 月人工申领流程）",
+        "en": "Lisk support: Lisk Chain claims (manual claims process in January 2027)"
+      },
+      "url": "https://support.lisk.com/faq/lisk-chain-claims"
+    },
+    {
+      "label": {
+        "zh": "Lisk 官方 X：专门合约、在途提款记到以太坊（2026-11-03）",
+        "en": "Lisk on X: dedicated contract; in-progress withdrawals credited on Ethereum (Nov 3, 2026)"
+      },
+      "url": "https://x.com/Lisk/status/2117570140808106069"
+    },
+    {
+      "label": {
+        "zh": "OP 官方文档：OP Mainnet 标准桥提款 7 天",
+        "en": "OP docs: 7-day Standard Bridge withdrawals on OP Mainnet"
+      },
+      "url": "https://docs.optimism.io/op-mainnet/network-information/transaction-finality"
+    },
+    {
+      "label": {
+        "zh": "MetaMask 帮助中心：什么是代币批准（恶意批准的特征）",
+        "en": "MetaMask Support: What is a token approval? (signs of a malicious approval)"
+      },
+      "url": "https://support.metamask.io/stay-safe/safety-in-web3/what-is-a-token-approval/"
+    },
+    {
+      "label": {
+        "zh": "MetaMask 帮助中心：官方支持渠道（「验证账户」类诈骗消息）",
+        "en": "MetaMask Support: Official support channels ('verify your account' scam messages)"
+      },
+      "url": "https://support.metamask.io/stay-safe/safety-in-web3/what-are-metamasks-official-support-channels/"
+    }
+  ]
+}

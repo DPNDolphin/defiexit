@@ -202,3 +202,89 @@ test("目标里「陌生人来体检」那一行下面加一行网站自己数�
   assert.ok(!d2.$("data-body").textContent.includes("网站自己数的"));
   assert.ok(d2.$("data-body").textContent.includes("陌生人来体检还没开始数"));
 });
+
+// 服务器给的问题记录的数(db.js 的 problemCounts):一段时间一份
+const PZ = (over = {}) => ({ since: "2026-10-30", total: 0, replied: 0, repliedShare: null, byType: {}, byProtocol: [], byWeek: {}, ...over });
+const rowsOf = (body) => { const tb = find(body, (e) => e.tagName === "TBODY"); return tb ? tb.children.map((tr) => tr.children.map((td) => td.textContent)) : null; };
+
+test("数据里的「大家最常问」:7 天、30 天每种几条(两边都没有的不列,「其他」放最后,不认识的种类照写)、我们回了几条、问得多的协议", async () => {
+  const d = await desk({ ...base([]), problems: {
+    d7: PZ({ total: 6, replied: 4, byType: { "bridge-wait": 3, migration: 1, other: 2, scam: 0 }, byProtocol: [{ protocol: "Hyperliquid", n: 3 }, { protocol: "Scroll", n: 2 }] }),
+    d30: PZ({ total: 30, replied: 20, byType: { "bridge-wait": 12, migration: 3, "chain-shutdown": 5, other: 9, scam: 0, "new-kind": 1 }, byProtocol: [{ protocol: "Hyperliquid", n: 8 }, { protocol: "ZKsync Lite", n: 5 }] }),
+  } });
+  const body = d.$("data-body"), text = body.textContent.replace(/\u00a0/g, "_"); // 协议名和条数之间是不换行的空格,这里写成 _
+  assert.ok(text.includes("大家最常问7 天我们回了 4 条 / 共 6 条问得多的协议:Hyperliquid_3 · Scroll_2"), text);
+  assert.ok(text.includes("30 天我们回了 20 条 / 共 30 条问得多的协议:Hyperliquid_8 · ZKsync Lite_5"), text);
+  assert.deepEqual(rowsOf(body), [["跨链 / L2 提款要等", "3", "12"], ["链关停", "0", "5"], ["换币迁移", "1", "3"], ["new-kind", "0", "1"], ["其他", "2", "9"]]);
+  assert.ok(text.indexOf("大家最常问") < text.indexOf("大家卡在哪些协议"), "放在「大家卡在哪些协议」上面");
+  // 最近 7 天一条都没有、30 天有:7 天那行写「还没有」,不列协议
+  const d2 = await desk({ ...base([]), problems: { d7: PZ(), d30: PZ({ total: 2, replied: 0, byType: { scam: 2 }, byProtocol: [{ protocol: "FakeBridge", n: 2 }] }) } });
+  assert.ok(d2.$("data-body").textContent.includes("7 天还没有30 天我们回了 0 条 / 共 2 条问得多的协议:FakeBridge\u00a02"), d2.$("data-body").textContent);
+  assert.deepEqual(rowsOf(d2.$("data-body")), [["遇到骗子", "0", "2"]]);
+});
+
+test("「大家最常问」:都还没有时说一句还没有记录(不出表格);服务器没给就整块不显示", async () => {
+  const d = await desk({ ...base([]), problems: { d7: PZ(), d30: PZ() } });
+  const text = d.$("data-body").textContent;
+  assert.ok(text.includes("大家最常问还没有记录。"), text);
+  assert.equal(rowsOf(d.$("data-body")), null);
+  const d2 = await desk(base([]));
+  assert.ok(!d2.$("data-body").textContent.includes("大家最常问"));
+  const d3 = await desk({ ...base([]), problems: { d7: PZ() } }); // 少了一段:不显示,别的照常
+  assert.ok(!d3.$("data-body").textContent.includes("大家最常问"));
+  assert.ok(d3.$("data-body").textContent.includes("大家卡在哪些协议"));
+});
+
+test("删除:先点一下写清楚会删什么(这条帖子在待发、收件、问题记录里的记录,同一条帖子的别的卡片也删;项目帖只删这一张);删完重新读一遍,同一条帖子的别的卡片、收件、数字都照服务器的", async () => {
+  // 「再点一次」等 5 秒、提示 2.5 秒后收起:这里不真等(长的计时不跑,短的照常),免得测试干等
+  const realTimeout = globalThis.setTimeout;
+  globalThis.setTimeout = (fn, ms, ...a) => (ms >= 1000 ? {} : realTimeout(fn, ms, ...a));
+  try {
+    const same = tg(10);
+    const one = PZ({ total: 1, byType: { other: 1 }, byProtocol: [{ protocol: "P10", n: 1 }] });
+    const post = { id: "p1", mine: { kind: "post", topic: "提醒", draft: "项目帖" }, status: "待发", decided_at: null, created_at: ago(100), draft_admin: null, purged: false };
+    const state = { ...base([reply("r1", 10), reply("r2", 10), reply("r3", 11), post]), problems: { d7: one, d30: one },
+      inbox: [{ id: same.id, mine: { source: "X 长文", author: "u10", url: same.url, type: "求助" }, text: "钱卡住了", decision: null, replied: false, created_at: ago(50), purged: false }] };
+    const d = await desk(state);
+    const parts = (id) => { const c = find(d.$("out-cards"), (e) => e.getAttribute("data-id") === id); return { del: find(c, (e) => e.tagName === "BUTTON" && /删除/.test(e.textContent)), saved: find(c, (e) => e.className === "saved") }; };
+    const p = parts("p1");
+    await p.del.fire("click");
+    assert.deepEqual([p.del.textContent, p.saved.textContent], ["确定删除?再点一次", "只删这一张自己发的帖子,以后不再收"]);
+    const r1 = parts("r1");
+    await r1.del.fire("click");
+    assert.equal(r1.saved.textContent, "会删掉这条帖子在待发、收件、问题记录里的全部记录(同一条帖子的别的卡片也删),以后也不再收");
+    // 服务器那边:同一条帖子的 r2、收件一起删了,问题记录也少了一条
+    state.outbox = state.outbox.filter((x) => x.id !== "r1" && x.id !== "r2");
+    state.inbox = [];
+    state.problems = { d7: PZ(), d30: PZ() };
+    await r1.del.fire("click");
+    await tick();
+    assert.deepEqual(d.calls.filter(([path]) => path === "delete"), [["delete", { kind: "outbox", id: "r1" }]]);
+    assert.equal(d.calls.filter(([path]) => path === "state").length, 2, "删完又读了一遍");
+    const ids = (box) => d.$(box).children.map((e) => e.getAttribute("data-id"));
+    assert.deepEqual([ids("out-cards").sort(), ids("in-cards")], [["p1", "r3"], []]);
+    assert.ok(d.$("data-body").textContent.includes("大家最常问还没有记录。"));
+  } finally {
+    globalThis.setTimeout = realTimeout;
+  }
+});
+
+test("删除还没查完(服务器回 more):提示还有记录没查完、再点删除并确认接着查;卡片留着,页面重新读一遍", async () => {
+  const realTimeout = globalThis.setTimeout;
+  globalThis.setTimeout = (fn, ms, ...a) => (ms >= 1000 ? {} : realTimeout(fn, ms, ...a));
+  try {
+    const d = await desk(base([reply("r1", 10)]));
+    const inner = globalThis.fetch;
+    globalThis.fetch = async (url, opt) => (String(url).endsWith("/delete") ? { status: 409, json: async () => ({ error: "more" }) } : inner(url, opt));
+    const card = () => find(d.$("out-cards"), (e) => e.getAttribute("data-id") === "r1");
+    const del = find(card(), (e) => e.tagName === "BUTTON" && /删除/.test(e.textContent)), saved = find(card(), (e) => e.className === "saved");
+    await del.fire("click");
+    await del.fire("click");
+    await tick();
+    assert.equal(saved.textContent, "这条帖子还有记录没查完,再点「删除这条」并确认,接着往下查、往下删");
+    assert.ok(card(), "卡片还在");
+    assert.equal(d.calls.filter(([p]) => p === "state").length, 2, "重新读了一遍");
+  } finally {
+    globalThis.setTimeout = realTimeout;
+  }
+});

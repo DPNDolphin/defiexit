@@ -206,7 +206,7 @@ test("投递:签名、环境、时间、nonce、旧包", async () => {
   const r = await handle(new Request(HOST + "/api/admin/ingest", { method: "POST", headers: { "X-DX-Sig": ok.sig }, body: ok.raw.replace("2026", "2027") }), baseEnv(w.db), w.edge, w.now());
   assert.equal((await r.json()).error, "sig");
   // 没登录的人拿不到数据:回执里没有库里的内容
-  assert.deepEqual(Object.keys(again.json).sort(), ["docs", "inbox", "ok", "outbox", "receipt", "rejected", "setup"]);
+  assert.deepEqual(Object.keys(again.json).sort(), ["docs", "inbox", "ok", "outbox", "problems", "receipt", "rejected", "setup"]);
 });
 
 test("草稿检查:站外链接、敏感词一律不收", () => {
@@ -1172,7 +1172,7 @@ test("投递读完状态、还没写的时候管理员点了「已发」:草稿�
   const sneaky = {
     prepare(sql) {
       const st = real.prepare(sql);
-      if (!/^SELECT id, mine, status, purged(, draft_admin)? FROM outbox/.test(sql)) return st;
+      if (!/^SELECT id, mine, status, purged\b.* FROM outbox WHERE id IN/.test(sql)) return st;
       return { bind: (...a) => ({ all: async () => { const r = await st.bind(...a).all(); await real.prepare("UPDATE outbox SET status = '已发' WHERE id = ?").bind("r-openeden-1").run(); return r; } }) };
     },
     batch: (s) => real.batch(s),
@@ -1182,6 +1182,9 @@ test("投递读完状态、还没写的时候管理员点了「已发」:草稿�
   const sig = sign(null, Buffer.from(signedText("production", "POST", "/api/admin/ingest", raw)), PROD.privateKey).toString("base64url");
   const r = await handle(new Request(HOST + "/api/admin/ingest", { method: "POST", headers: { "X-DX-Sig": sig }, body: raw }), baseEnv(sneaky), w.edge, w.now());
   assert.equal(r.status, 200);
+  // 回执照实说:这一条没改上(不算进 outbox 的条数)
+  const rc = await r.json();
+  assert.deepEqual([rc.outbox, rc.rejected], [0, [{ kind: "outbox", id: "r-openeden-1", why: "管理员刚处理过这条(点了「已发 / 跳过」或改了草稿),这次没改" }]]);
   const item = (await w.call("/api/admin/state", { cookie: c })).json.outbox[0];
   assert.equal(item.status, "已发");
   assert.equal(item.mine.draft, OUT().draft);
@@ -1196,7 +1199,7 @@ test("到期删过的待发:回复链接不能再写回", async () => {
   const c2 = (await w.call("/api/admin/login", { method: "POST", body: { name: "admin1", password: PW } })).headers.get("Set-Cookie").split(";")[0];
   await w.call("/api/admin/state", { cookie: c2 }); // 触发到期删除
   const r = await w.ingest({ outbox: [OUT({ replyUrl: "https://x.com/owner_acct/status/2116000000000000002" })] });
-  assert.match(r.json.rejected[0].why, /处理过/);
+  assert.equal(r.json.rejected[0].why, "30 天到期删过,不再改"); // 点过「已发」的,到期删过也先说到期
   assert.equal((await w.call("/api/admin/state", { cookie: c2 })).json.outbox[0].reply_url, null);
 });
 
@@ -1264,4 +1267,935 @@ test("一次性设置链接:没有管理员时才收;有效期内能设一次,�
   await w2.ingest({ setup: { hash: hexOf(token), hours: 1 } });
   w2.clock += 2 * 3600e3;
   assert.equal((await w2.call("/api/admin/setup", { method: "POST", body: { code: token, name: "admin1", password: PW }, env })).json.error, "nocode");
+});
+
+// ---------- 问题记录(大家最常问):建表、投递、更新、到期删、导出、运营台、按要求删 ----------
+import { problemKey, goneKey, expKey, isoWeek, purge, PROBLEM_TYPES, SCAN, NEEDS_FIX } from "../server/ops/db.js";
+import { safeLabel } from "../server/ops/names.js";
+
+const PROB = (over = {}) => ({ id: "2117000000000000501", protocol: "Scroll", chain: "Scroll", type: "migration", source: "bot", day: "2026-11-02", url: "https://x.com/user_p/status/2117000000000000501", handle: "user_p", ...over });
+const pid = (n) => "21170000000000006" + String(n).padStart(2, "0");
+const probRows = async (w) => (await w.db.prepare("SELECT * FROM problems ORDER BY id").all()).results;
+const probOf = async (w, id) => w.db.prepare("SELECT * FROM problems WHERE id = ?").bind(await problemKey(id)).first(); // 库里的编号是帖子编号的哈希
+const whyOf = (r) => Object.fromEntries(r.json.rejected.filter((x) => x.kind === "problems").map((x) => [x.id, x.why]));
+const ZERO = Object.fromEntries(PROBLEM_TYPES.map((k) => [k, 0]));
+const NAME_WHY = "只写名字:字母、数字、空格和 . - ( );像网址的不收,比如 ether.fi 写成 ether fi;不带链接、@、钱包地址(0x 加 6 位以上十六进制、连着 25 个以上的字母数字)和连着 6 位以上的数字";
+
+test("问题记录:表和索引在第一次用到时自动建好", async () => {
+  const db = new LocalD1();
+  await ensure(db);
+  const cols = (await db.prepare("SELECT name FROM pragma_table_info('problems') ORDER BY cid").all()).results.map((r) => r.name);
+  assert.deepEqual(cols, ["id", "protocol", "chain", "type", "source", "day", "replied", "url", "handle", "created_at", "updated_at", "purge_after", "purged"]);
+  const idx = (await db.prepare("SELECT name FROM sqlite_master WHERE type = 'index' AND tbl_name = 'problems' AND sql IS NOT NULL ORDER BY name").all()).results.map((r) => r.name);
+  assert.deepEqual(idx, ["problems_day", "problems_due"]);
+});
+
+test("问题记录投递:种类、来源只认那几个;编号是帖子编号(字符串,库里只存哈希);日期是真日子、不晚于今天(北京时间);链接和编号对得上、账号不带 @;协议、链太长截掉;不合格的写进回执", async () => {
+  const w = world(); // 北京时间 11-03 18:00
+  const LONG_P = "Pool ".repeat(14), LONG_C = "Chain ".repeat(9); // 70、54 个字(连着 25 个以上的字母数字不收,所以带空格)
+  const r = await w.ingest({ problems: [
+    PROB(),
+    PROB({ id: pid(1), protocol: LONG_P, chain: LONG_C, day: "2026-11-03", source: "comment", type: "other", url: undefined, handle: undefined }),
+    PROB({ id: pid(2), type: "bridge" }),
+    PROB({ id: pid(3), type: undefined }),
+    PROB({ id: pid(4), source: "dm" }),
+    PROB({ id: "x-1" }),
+    PROB({ id: 2117000000000000601 }), // 写成数字:JSON 里已经变成别的编号了,不收
+    PROB({ id: pid(5), protocol: "  " }),
+    PROB({ id: pid(6), day: "11-02" }),
+    PROB({ id: pid(7), day: "2026-02-30" }),
+    PROB({ id: pid(8), day: "2026-11-04" }),
+    PROB({ id: pid(9), replied: 1 }),
+    PROB({ id: pid(10) }), // 链接是别的帖子的
+    PROB({ id: pid(11), url: "https://evil.example/user_p/status/" + pid(11) }),
+    PROB({ id: pid(12), url: undefined, handle: "@user_p" }),
+    PROB({ id: pid(13), url: undefined, chain: 56 }),
+  ] });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  assert.equal(r.json.problems, 2);
+  assert.equal(r.json.rejected.length, 14);
+  assert.deepEqual(r.json.rejected.filter((x) => x.id === "?").map((x) => x.why), ["id 要是帖子编号(写成字符串)", "id 要是帖子编号(写成字符串)"]);
+  const why = whyOf(r);
+  assert.deepEqual(Object.keys(why).sort(), ["?", ...[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map(pid)].sort());
+  assert.match(why[pid(2)], /^type 只能是 bridge-wait、chain-shutdown、migration、/);
+  assert.match(why[pid(3)], /^type 只能是/);
+  assert.equal(why[pid(4)], "source 只能是 bot、announcement、comment");
+  assert.match(why[pid(5)], /缺 protocol/);
+  for (const n of [6, 7, 8]) assert.match(why[pid(n)], /^day 要是帖子发的那天/, String(n));
+  assert.match(why[pid(9)], /replied 只能是 true 或 false/);
+  for (const n of [10, 11]) assert.match(why[pid(n)], /^链接不合格/, String(n));
+  assert.match(why[pid(12)], /^handle 不合格/);
+  assert.match(why[pid(13)], /chain 要是文字/);
+  const t = new Date(w.clock).toISOString(), due = new Date(w.clock + 30 * 864e5).toISOString();
+  assert.deepEqual(await probOf(w, PROB().id), { id: await problemKey(PROB().id), protocol: "Scroll", chain: "Scroll", type: "migration", source: "bot", day: "2026-11-02", replied: 0, url: PROB().url, handle: "user_p", created_at: t, updated_at: t, purge_after: due, purged: 0 });
+  assert.deepEqual(await probOf(w, pid(1)), { id: await problemKey(pid(1)), protocol: LONG_P.slice(0, 60).trim(), chain: LONG_C.slice(0, 40).trim(), type: "other", source: "comment", day: "2026-11-03", replied: 0, url: null, handle: null, created_at: t, updated_at: t, purge_after: due, purged: 0 });
+  assert.deepEqual([(await probOf(w, pid(1))).protocol.length, (await probOf(w, pid(1))).chain.length], [59, 40]);
+  const rows = await probRows(w);
+  assert.equal(rows.length, 2);
+  assert.ok(rows.every((x) => /^[0-9a-f]{64}$/.test(x.id)), "编号只存哈希");
+  // 北京时间快到零点:服务器的钟慢几分钟也不错拒,明天的帖子收;后天的不收
+  w.clock = Date.parse("2026-11-03T15:55:00Z");
+  const r2 = await w.ingest({ problems: [PROB({ id: pid(14), url: undefined, day: "2026-11-04" }), PROB({ id: pid(15), url: undefined, day: "2026-11-05" })] });
+  assert.deepEqual([r2.json.problems, r2.json.rejected.map((x) => x.id)], [1, [pid(15)]]);
+});
+
+test("问题记录投递:协议、链只收名字(字母、数字、空格、. - ( ) 和汉字);带链接、像网址的(Curve.fi 这种名字也算)、@、连着 6 位以上数字的不收(这两样到期也不删);全角换成半角、连着的空白并成一个再存", async () => {
+  const w = world();
+  const bad = ["https://x.com/user_p/status/1", "x.com/user_p", "app.uniswap.org", "Curve.fi", "evil。com", "ｅｖｉｌ．ｃｏｍ", "例子.中国", "1.2.3.4", "@user_p", "user＠mail", "Lido 2117000000000000501", "Scroll 123456", "user_p", "Fantom/Sonic"];
+  const good = [["Hyperliquid (HyperEVM)", "Hyperliquid (HyperEVM)"], ["Avalanche C-Chain", "Avalanche C-Chain"], ["Lido v2.0", "Lido v2.0"], ["币安钱包", "币安钱包"], ["ＺＫｓｙｎｃ　 Lite", "ZKsync Lite"], ["U.S. Bank 12345", "U.S. Bank 12345"]];
+  const r = await w.ingest({ problems: [
+    ...bad.map((p, i) => PROB({ id: pid(20 + i), url: undefined, protocol: p })),
+    PROB({ id: pid(39), url: undefined, chain: "bridge.evil.com" }),
+    ...good.map(([p], i) => PROB({ id: pid(40 + i), url: undefined, protocol: p, chain: p })),
+  ] });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  assert.equal(r.json.problems, good.length);
+  const why = whyOf(r);
+  bad.forEach((p, i) => assert.equal(why[pid(20 + i)], "protocol " + NAME_WHY, p));
+  assert.equal(why[pid(39)], "chain " + NAME_WHY);
+  for (const [i, [, want]] of good.entries()) {
+    const row = await probOf(w, pid(40 + i));
+    assert.deepEqual([row.protocol, row.chain], [want, want], want);
+  }
+});
+
+test("问题记录投递:字段的类型不对(比如 {\"toString\": null})只拒那一条,同一包里的看板、收件和别的问题记录照收", async () => {
+  const w = world();
+  const odd = { toString: null };
+  const r = await w.ingest({
+    docs: { summary: { updatedAt: "2026-11-03T10:00:00Z", asks: [] } },
+    inbox: [{ id: "3000000000000000801", text: "钱卡住了", author: "user_i" }],
+    problems: [
+      PROB({ id: odd }), PROB({ id: pid(50), type: odd }), PROB({ id: pid(51), source: odd }), PROB({ id: pid(52), protocol: odd }), PROB({ id: pid(53), chain: odd }),
+      PROB({ id: pid(54), day: odd }), PROB({ id: pid(55), replied: odd }), PROB({ id: pid(56), url: odd }), PROB({ id: pid(57), url: undefined, handle: odd }),
+      odd, null, "2117000000000000501", 7, [], PROB({ id: pid(58), url: undefined }),
+    ],
+  });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  assert.deepEqual([r.json.docs, r.json.inbox, r.json.problems], [1, 1, 1]);
+  assert.equal(r.json.rejected.length, 14);
+  assert.ok(r.json.rejected.every((x) => x.kind === "problems"));
+  assert.ok(await probOf(w, pid(58)));
+});
+
+test("问题记录投递:一包最多 50 条(多的不收,回执里说一声)", async () => {
+  const w = world();
+  const many = Array.from({ length: 53 }, (_, i) => PROB({ id: "2117000000000001" + String(i).padStart(3, "0"), url: undefined }));
+  const r = await w.ingest({ problems: many });
+  assert.equal(r.json.problems, 50);
+  assert.deepEqual(r.json.rejected, [{ kind: "problems", id: "?", why: "一包最多 50 条:第 51 条起的 3 条没收,下一包再送" }]);
+  assert.equal((await probRows(w)).length, 50);
+});
+
+test("问题记录:按要求删过的(gone 里有那条帖子的 goneKey)不收,查 gone 和写在同一句,和「删除」同时来也写不回去;收件到期写进 gone 的(expKey)挡不住问题记录的更新", async () => {
+  const w = world();
+  const U62 = "https://x.com/user_p/status/" + pid(62);
+  assert.equal((await w.ingest({ problems: [PROB({ id: pid(62), url: U62 })] })).json.problems, 1);
+  // 按要求删过:不收,回执里说明
+  await w.db.prepare("INSERT INTO gone (id, at) VALUES (?, ?)").bind(await goneKey(pid(60)), "t").run();
+  w.clock += 1000;
+  let r = await w.ingest({ problems: [PROB({ id: pid(60), url: undefined }), PROB({ id: pid(61), url: undefined })] });
+  assert.deepEqual([r.json.problems, r.json.rejected.map((x) => [x.kind, x.id, x.why])], [1, [["problems", pid(60), "管理员按要求删过,不再收"]]]);
+  assert.equal(await probOf(w, pid(60)), null);
+  // 投递已经在路上,管理员这时点了「删除」(删那一行、记进 gone),紧接着这一包写进来:那条照样写不回去
+  const raw = w.db;
+  w.db = { prepare: (sql) => raw.prepare(sql), batch: async (ss) => {
+    if (ss.some((x) => /INSERT INTO problems/.test(x.sql || ""))) {
+      await raw.batch([raw.prepare("DELETE FROM problems WHERE id = ?").bind(await problemKey(pid(62))), raw.prepare("INSERT INTO gone (id, at) VALUES (?, ?) ON CONFLICT(id) DO NOTHING").bind(await goneKey(pid(62)), "t")]);
+    }
+    return raw.batch(ss);
+  } };
+  w.clock += 1000;
+  r = await w.ingest({ problems: [PROB({ id: pid(62), url: U62, replied: true }), PROB({ id: pid(63), url: undefined })] });
+  w.db = raw;
+  assert.deepEqual([r.json.problems, r.json.rejected.map((x) => [x.id, x.why])], [1, [[pid(62), "管理员按要求删过,不再收"]]]);
+  assert.equal(await probOf(w, pid(62)), null, "删掉的没被写回去,链接、账号也没回来");
+  // 收件里的评论 30 天到期:整行删掉、编号记进 gone(防止刷新又收进来);同一条帖子的问题记录照样能改种类、回没回
+  const CM = "3000000000000000901";
+  w.clock += 1000;
+  await w.ingest({ inbox: [{ id: CM, text: "桥上的钱还没到", author: "user_e" }], problems: [PROB({ id: CM, source: "comment", url: undefined, handle: "user_e" })] });
+  w.clock += 31 * 864e5;
+  assert.equal((await w.exp({})).status, 200); // 到期清理
+  assert.equal((await w.db.prepare("SELECT COUNT(*) AS n FROM inbox WHERE id = ?").bind(CM).first()).n, 0);
+  w.clock += 1000;
+  r = await w.ingest({ problems: [PROB({ id: CM, source: "comment", url: undefined, replied: true, type: "bridge-wait" })] });
+  assert.deepEqual([r.json.problems, r.json.rejected], [1, []]);
+  const row = await probOf(w, CM);
+  assert.deepEqual([row.replied, row.type, row.handle, row.purged], [1, "bridge-wait", null, 1]);
+});
+
+test("问题记录更新:按帖子编号改分类;replied 只会从 false 变 true;链、链接、账号这次没写就留原来的;保留期从第一次入库算", async () => {
+  const w = world();
+  await w.ingest({ problems: [PROB({ replied: true }), PROB({ id: pid(30), url: undefined })] });
+  const first = await probOf(w, PROB().id), second = await probOf(w, pid(30));
+  w.clock += 3600e3;
+  const r = await w.ingest({ problems: [
+    PROB({ type: "bridge-wait", source: "announcement", protocol: "Scroll Bridge", day: "2026-11-01", replied: false, chain: undefined, url: undefined, handle: undefined }),
+    PROB({ id: pid(30), url: undefined, handle: undefined, replied: true }),
+  ] });
+  assert.deepEqual([r.json.problems, r.json.rejected], [2, []]);
+  const t = new Date(w.clock).toISOString();
+  assert.deepEqual(await probOf(w, PROB().id), { ...first, type: "bridge-wait", source: "announcement", protocol: "Scroll Bridge", day: "2026-11-01", replied: 1, updated_at: t });
+  assert.deepEqual(await probOf(w, pid(30)), { ...second, replied: 1, updated_at: t });
+  assert.equal(first.replied, 1);
+  assert.deepEqual([second.replied, second.handle], [0, "user_p"]);
+});
+
+test("问题记录 30 天到期:链接、账号删掉(编号本来就只存哈希),协议、链、种类、来源、日期、回没回留着;再送来认得出(不多一行),链接、账号不写回,回没回照样只升不降", async () => {
+  const w = world();
+  await w.ingest({ problems: [PROB(), PROB({ id: pid(1), replied: true, url: "https://x.com/user_q/status/" + pid(1), handle: "user_q" })] });
+  w.clock += 31 * 864e5;
+  assert.equal((await w.exp({})).status, 200); // 导出前先跑到期清理
+  let rows = await probRows(w);
+  assert.equal(rows.length, 2);
+  for (const x of rows) {
+    assert.match(x.id, /^[0-9a-f]{64}$/);
+    assert.deepEqual([x.url, x.handle, x.purged], [null, null, 1]);
+  }
+  assert.ok(!/user_p|user_q|2117000000000000501|21170000000000006/.test(JSON.stringify(rows)), "库里找不回帖子和账号");
+  const a = await probOf(w, PROB().id);
+  assert.deepEqual([a.protocol, a.chain, a.type, a.source, a.day, a.replied], ["Scroll", "Scroll", "migration", "bot", "2026-11-02", 0]);
+  w.clock += 1000;
+  const r = await w.ingest({ problems: [PROB({ replied: true, type: "bridge-wait" })] });
+  assert.deepEqual([r.json.problems, r.json.rejected], [1, []]);
+  assert.equal((await probRows(w)).length, 2, "认出是同一条,没有多一行");
+  const b = await probOf(w, PROB().id);
+  assert.deepEqual([b.url, b.handle, b.replied, b.type, b.purged], [null, null, 1, "bridge-wait", 1]);
+  w.clock += 1000;
+  await w.ingest({ problems: [PROB({ replied: false, type: "bridge-wait" })] });
+  assert.equal((await probOf(w, PROB().id)).replied, 1);
+  // 只留下的那几样照样数得到
+  w.clock += 1000;
+  assert.deepEqual((({ total, replied, byType }) => [total, replied, byType["bridge-wait"]])((await w.exp({})).json.problems), [2, 2, 1]);
+});
+
+test("问题记录到期:一句把到期的全删(不分批,到期的链接、账号不会多留一会儿);没到期的不动", async () => {
+  const db = new LocalD1();
+  await ensure(db);
+  for (let i = 0; i < 505; i++) await db.prepare("INSERT INTO problems (id, protocol, type, source, day, url, handle, created_at, updated_at, purge_after) VALUES (?, 'P', 'other', 'bot', '2026-11-01', ?, 'user_z', 't', 't', ?)").bind("k" + i, "https://x.com/user_z/status/" + (2117000000000003000n + BigInt(i)), i < 500 ? "2026-12-01T00:00:00.000Z" : "2026-12-31T00:00:00.000Z").run();
+  const now = new Date("2026-12-10T00:00:00Z");
+  assert.equal((await purge(db, now)).problems, 500);
+  assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM problems WHERE url IS NOT NULL OR handle IS NOT NULL").first()).n, 5, "没到期的 5 条还留着");
+  assert.equal((await purge(db, now)).problems, 0);
+});
+
+test("ISO 周:周一开始,第 1 周是有 1 月 4 日的那周;年头年尾几天算进相邻那年", () => {
+  for (const [d, wk] of [["2026-11-02", "2026-W45"], ["2026-11-05", "2026-W45"], ["2026-11-08", "2026-W45"], ["2026-11-09", "2026-W46"], ["2026-01-01", "2026-W01"],
+    ["2025-12-29", "2026-W01"], ["2027-01-01", "2026-W53"], ["2027-01-04", "2027-W01"], ["2024-12-30", "2025-W01"], ["2021-01-03", "2020-W53"]]) assert.equal(isoWeek(d), wk, d);
+});
+
+test("导出带问题记录的数:最近 90 天(北京时间,按发帖那天)共几条、每种几条(九种都列)、问得多的 20 个协议、每周几条、回了几成;没有编号、账号、链接;since 不管它", async () => {
+  const w = world(); // 北京 11-03 18:00:最近 90 天从 08-06 算起
+  assert.deepEqual((await w.exp({})).json.problems, { since: "2026-08-06", total: 0, replied: 0, repliedShare: null, byType: ZERO, byProtocol: [], byWeek: {} });
+  const recs = [];
+  const add = (protocol, type, day, replied = false) => recs.push({ id: "2117000000000002" + String(recs.length).padStart(3, "0"), protocol, type, source: "bot", day, replied });
+  add("P01", "migration", "2026-11-03", true); add("P01", "migration", "2026-11-02"); add("P01", "bridge-wait", "2026-10-28", true);
+  add("P02", "scam", "2026-11-02"); add("P02", "scam", "2026-08-06", true); // 08-06 正好是 90 天的头一天
+  for (let k = 3; k <= 25; k++) add("P" + String(k).padStart(2, "0"), "other", "2026-10-28");
+  add("P99", "chain-shutdown", "2026-08-05", true); // 90 天以外,不算
+  w.clock += 1000;
+  const r = await w.ingest({ problems: recs.map((x) => ({ ...x, url: "https://x.com/user_z/status/" + x.id, handle: "user_z" })) });
+  assert.deepEqual([r.json.problems, r.json.rejected], [29, []]);
+  w.clock += 1000;
+  const e = (await w.exp({ since: "2026-11-03T00:00:00Z" })).json;
+  assert.deepEqual(e.problems, {
+    since: "2026-08-06", total: 28, replied: 3, repliedShare: 0.107,
+    byType: { ...ZERO, migration: 2, "bridge-wait": 1, scam: 2, other: 23 },
+    byProtocol: [{ protocol: "P01", n: 3 }, { protocol: "P02", n: 2 }, ...Array.from({ length: 18 }, (_, k) => ({ protocol: "P" + String(k + 3).padStart(2, "0"), n: 1 }))],
+    byWeek: { "2026-W32": 1, "2026-W44": 24, "2026-W45": 3 },
+  });
+  assert.ok(!/user_z|2117000000000002/.test(JSON.stringify(e)), "导出里没有账号和帖子编号");
+});
+
+test("问题记录的数不算明天:快到零点时收下的写成明天的帖子,到了那天才算", async () => {
+  const w = world();
+  w.clock = Date.parse("2026-11-03T15:55:00Z"); // 北京 11-03 23:55
+  assert.equal((await w.ingest({ problems: [PROB({ url: undefined, day: "2026-11-04" }), PROB({ id: pid(70), url: undefined, day: "2026-11-03" })] })).json.problems, 2);
+  w.clock += 1000;
+  let p = (await w.exp({})).json.problems;
+  assert.deepEqual([p.total, p.byType.migration, p.byWeek], [1, 1, { "2026-W45": 1 }]);
+  w.clock += 10 * 60e3; // 北京 11-04 00:05
+  p = (await w.exp({})).json.problems;
+  assert.deepEqual([p.total, p.byWeek], [2, { "2026-W45": 2 }]);
+});
+
+test("运营台带问题记录的数:最近 7 天、30 天(北京时间,含今天),各带问得多的 10 个协议;没有编号、账号、链接", async () => {
+  const w = world(); // 北京 11-03:7 天从 10-28 算起,30 天从 10-05 算起
+  const c = await w.login();
+  const recs = [];
+  const add = (protocol, type, day, replied = false) => { const id = "2117000000000004" + String(recs.length).padStart(3, "0"); recs.push({ id, protocol, type, source: "comment", day, replied, url: "https://x.com/user_s/status/" + id, handle: "user_s" }); };
+  add("Hyperliquid", "bridge-wait", "2026-11-03", true); add("Hyperliquid", "bridge-wait", "2026-10-28");
+  add("Scroll", "migration", "2026-10-27", true); add("ZKsync Lite", "chain-shutdown", "2026-10-05"); add("Old", "scam", "2026-10-04");
+  for (let k = 1; k <= 10; k++) add("Q" + String(k).padStart(2, "0"), "other", "2026-10-20");
+  w.clock += 1000;
+  assert.equal((await w.ingest({ problems: recs })).json.problems, 15);
+  const p = (await w.call("/api/admin/state", { cookie: c })).json.problems;
+  assert.deepEqual(Object.keys(p).sort(), ["d30", "d7"]);
+  assert.deepEqual(p.d7, { since: "2026-10-28", total: 2, replied: 1, repliedShare: 0.5, byType: { ...ZERO, "bridge-wait": 2 }, byProtocol: [{ protocol: "Hyperliquid", n: 2 }], byWeek: { "2026-W44": 1, "2026-W45": 1 } });
+  assert.deepEqual([p.d30.since, p.d30.total, p.d30.replied, p.d30.byType], ["2026-10-05", 14, 2, { ...ZERO, "bridge-wait": 2, migration: 1, "chain-shutdown": 1, other: 10 }]);
+  assert.deepEqual(p.d30.byProtocol, [{ protocol: "Hyperliquid", n: 2 }, ...Array.from({ length: 9 }, (_, k) => ({ protocol: "Q0" + (k + 1), n: 1 }))]);
+  assert.ok(!/user_s|2117000000000004/.test(JSON.stringify(p)));
+});
+
+test("按要求删掉一条:问题记录里同一条帖子的那行一起删(收件:评论本身;待发:要回的那条帖子),以后也不再收", async () => {
+  const w = world();
+  const c = await w.login();
+  const CM = "3000000000000000701";
+  await w.ingest({ inbox: [{ id: CM, text: "钱卡在桥上了", author: "user_c" }], outbox: [OUT()], problems: [PROB({ id: CM, source: "comment", url: undefined, handle: "user_c" }), PROB({ id: TARGET.id, url: TARGET.url, handle: TARGET.handle }), PROB({ id: pid(40), url: undefined })] });
+  assert.equal((await probRows(w)).length, 3);
+  assert.equal((await w.call("/api/admin/delete", { method: "POST", body: { kind: "inbox", id: CM }, cookie: c })).status, 200);
+  assert.equal((await w.call("/api/admin/delete", { method: "POST", body: { kind: "outbox", id: "r-openeden-1" }, cookie: c })).status, 200);
+  assert.deepEqual((await probRows(w)).map((x) => x.id), [await problemKey(pid(40))]);
+  w.clock += 1000;
+  const r = await w.ingest({ problems: [PROB({ id: CM, url: undefined }), PROB({ id: TARGET.id, url: undefined })] });
+  assert.deepEqual([r.json.problems, r.json.rejected.map((x) => [x.id, x.why])], [0, [[CM, "管理员按要求删过,不再收"], [TARGET.id, "管理员按要求删过,不再收"]]]);
+  assert.equal((await probRows(w)).length, 1);
+});
+
+test("按要求删掉一条待发:到期删了目标帖子的编号以后(只留哈希 key),问题记录里那条帖子后来记的一行(还带着链接、账号)照样删得掉,以后也不再收", async () => {
+  const w = world();
+  await w.login();
+  await w.ingest({ outbox: [OUT()] });
+  w.clock += 31 * 864e5;
+  assert.equal((await w.exp({})).status, 200); // 待发到期:目标帖子的账号、链接、编号删掉
+  const m = JSON.parse((await w.db.prepare("SELECT mine FROM outbox WHERE id = 'r-openeden-1'").first()).mine);
+  assert.deepEqual([m.target.id, m.target.handle, m.target.url, m.target.protocol, m.target.key], [undefined, undefined, undefined, "OpenEden", await problemKey(TARGET.id)]);
+  w.clock += 1000;
+  await w.ingest({ problems: [PROB({ id: TARGET.id, url: TARGET.url, handle: TARGET.handle })] }); // 待发到期以后才记的,带着链接和账号
+  assert.equal((await probOf(w, TARGET.id)).handle, TARGET.handle);
+  const c2 = (await w.call("/api/admin/login", { method: "POST", body: { name: "admin1", password: PW } })).headers.get("Set-Cookie").split(";")[0];
+  assert.equal((await w.call("/api/admin/delete", { method: "POST", body: { kind: "outbox", id: "r-openeden-1" }, cookie: c2 })).status, 200);
+  assert.equal(await probOf(w, TARGET.id), null);
+  w.clock += 1000;
+  assert.deepEqual((await w.ingest({ problems: [PROB({ id: TARGET.id, url: undefined })] })).json.rejected.map((x) => x.why), ["管理员按要求删过,不再收"]);
+});
+
+// ---------- 按要求删除(11-06 审查):挡的是那条帖子,收件、待发、问题记录都查,查和写同一句;收件到期删的另记(expKey),只挡收件 ----------
+const GONE_WHY = "管理员按要求删过,不再收";
+const T2 = "2116000000000000002", U2 = "https://x.com/user_t/status/" + T2;
+const TG2 = { ...TARGET, id: T2, handle: "user_t", url: U2 };
+const relogin = async (w) => (await w.call("/api/admin/login", { method: "POST", body: { name: "admin1", password: PW } })).headers.get("Set-Cookie").split(";")[0];
+// 整个库倒出来(找账号、帖子编号还在不在)
+const dumpDb = async (w) => {
+  const out = {};
+  for (const { name } of (await w.db.prepare("SELECT name FROM sqlite_master WHERE type = 'table'").all()).results) out[name] = (await w.db.prepare(`SELECT * FROM ${name}`).all()).results;
+  return JSON.stringify(out);
+};
+// 刷新时我们的帖子(3000000000000000005)底下有一条评论
+const OUR_POST = { x_posts: { posts: [{ name: "X 长文", id: "3000000000000000005", points: [] }] } };
+const replyUnder = (w, id, sn) => { w.fetchImpl = async () => new Response(JSON.stringify({ status: { id: "3000000000000000005", author: { id: "1", screen_name: "owner_acct" }, replies: 1 }, replies: [{ id, text: "钱卡住了", author: { id: "9", screen_name: sn } }] })); };
+
+test("按要求删掉一张待发卡片:要回的那条帖子以后收件、待发、问题记录都不收(回执写明为什么),刷新也不收;库里找不到它的账号、链接和编号", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ docs: OUR_POST, outbox: [OUT({ id: "r-test-1", target: TG2 })] });
+  assert.equal((await w.call("/api/admin/delete", { method: "POST", body: { kind: "outbox", id: "r-test-1" }, cookie: c })).status, 200);
+  w.clock += 1000;
+  const r = await w.ingest({
+    inbox: [{ id: T2, source: "X 长文", url: U2, author: "user_t", text: "我的钱卡在桥上了", type: "求助" }],
+    problems: [PROB({ id: T2, url: U2, handle: "user_t" })],
+    outbox: [OUT({ id: "r-test-2", target: TG2 }), OUT({ id: "r-test-1", target: TG2 })],
+  });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  assert.deepEqual([r.json.inbox, r.json.problems, r.json.outbox], [0, 0, 0]);
+  assert.deepEqual(r.json.rejected.map((x) => [x.kind, x.id, x.why]), [["outbox", "r-test-2", GONE_WHY], ["outbox", "r-test-1", GONE_WHY], ["inbox", T2, GONE_WHY], ["problems", T2, GONE_WHY]]);
+  replyUnder(w, T2, "user_t");
+  assert.equal((await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c })).json.newReplies, 0);
+  const all = await dumpDb(w);
+  assert.ok(!all.includes("user_t") && !all.includes(T2), "库里没有这个账号和帖子编号");
+});
+
+test("待发到期删了目标帖子编号以后再按要求删这张卡片:用到期时留下的哈希,那条帖子收件、待发、问题记录照样都不收", async () => {
+  const w = world();
+  await w.login();
+  await w.ingest({ outbox: [OUT({ id: "r-test-1", target: TG2 })] });
+  w.clock += 31 * 864e5;
+  assert.equal((await w.exp({})).status, 200); // 到期清理:目标帖子的账号、链接、编号删掉,只留两个哈希
+  const m = JSON.parse((await w.db.prepare("SELECT mine FROM outbox WHERE id = 'r-test-1'").first()).mine);
+  assert.deepEqual([m.target.id, m.target.handle, m.target.url, m.target.key, m.target.gone], [undefined, undefined, undefined, await problemKey(T2), await goneKey(T2)]);
+  assert.ok(!(await dumpDb(w)).includes(T2), "到期以后库里没有编号本身");
+  const c2 = await relogin(w);
+  assert.equal((await w.call("/api/admin/delete", { method: "POST", body: { kind: "outbox", id: "r-test-1" }, cookie: c2 })).status, 200);
+  w.clock += 1000;
+  const r = await w.ingest({ inbox: [{ id: T2, author: "user_t", url: U2, text: "还是取不出来" }], outbox: [OUT({ id: "r-test-3", target: TG2 })], problems: [PROB({ id: T2, url: U2, handle: "user_t" })] });
+  assert.deepEqual([r.json.inbox, r.json.outbox, r.json.problems], [0, 0, 0]);
+  assert.deepEqual(r.json.rejected.map((x) => [x.kind, x.id, x.why]), [["outbox", "r-test-3", GONE_WHY], ["inbox", T2, GONE_WHY], ["problems", T2, GONE_WHY]]);
+  const all = await dumpDb(w);
+  assert.ok(!all.includes("user_t") && !all.includes(T2));
+});
+
+test("收件评论 30 天到期删掉:只挡收件(回执写明是到期删的,刷新也不收回来);同一条帖子的问题记录、待发照样收", async () => {
+  const w = world();
+  await w.login();
+  const CM = "3000000000000000950", UC = "https://x.com/user_e/status/" + CM;
+  await w.ingest({ docs: OUR_POST, inbox: [{ id: CM, text: "钱卡在桥上", author: "user_e", url: UC }] });
+  w.clock += 31 * 864e5;
+  assert.equal((await w.exp({})).status, 200); // 到期清理
+  const k = await goneKey(CM);
+  const marked = async (id) => !!(await w.db.prepare("SELECT 1 AS x FROM gone WHERE id = ?").bind(id).first());
+  assert.deepEqual([await marked(expKey(k)), await marked(k)], [true, false], "到期记的是 expKey,不是按要求删的 goneKey");
+  w.clock += 1000;
+  const r = await w.ingest({
+    inbox: [{ id: CM, text: "又送来一遍原文", author: "user_e" }],
+    problems: [PROB({ id: CM, source: "comment", url: UC, handle: "user_e" })],
+    outbox: [OUT({ id: "r-cm-1", target: { ...TARGET, id: CM, handle: "user_e", url: UC } })],
+  });
+  assert.deepEqual([r.json.inbox, r.json.problems, r.json.outbox], [0, 1, 1]);
+  assert.deepEqual(r.json.rejected, [{ kind: "inbox", id: CM, why: "30 天到期删过,不再收" }]);
+  replyUnder(w, CM, "user_e");
+  assert.equal((await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: await relogin(w) })).json.newReplies, 0);
+  assert.equal((await w.db.prepare("SELECT COUNT(*) AS n FROM inbox").first()).n, 0);
+});
+
+test("正式库里旧版本按要求删时记的 gone(收件评论编号、待发卡片编号的 goneKey)照样认:那条评论收件、待发、问题记录都不收,那张卡片也不收", async () => {
+  const w = world();
+  await w.ingest({ docs: {} }); // 建表
+  const OLD = "3000000000000000960", UO = "https://x.com/user_o/status/" + OLD;
+  // 旧版本(main 7d8a2b5)点「删除」写的就是这两种:goneKey(收件的编号)、goneKey(待发卡片的编号)
+  await (await goneStmt(w.db, OLD, w.now())).run();
+  await (await goneStmt(w.db, "r-old-1", w.now())).run();
+  w.clock += 1000;
+  const r = await w.ingest({
+    inbox: [{ id: OLD, text: "x", author: "user_o", url: UO }],
+    problems: [PROB({ id: OLD, url: UO, handle: "user_o" })],
+    outbox: [OUT({ id: "r-old-1" }), OUT({ id: "r-new-1", target: { ...TARGET, id: OLD, handle: "user_o", url: UO } }), OUT({ id: "r-new-2" })],
+  });
+  assert.deepEqual([r.json.inbox, r.json.problems, r.json.outbox], [0, 0, 1]);
+  assert.deepEqual(r.json.rejected.map((x) => [x.kind, x.id, x.why]), [["outbox", "r-old-1", GONE_WHY], ["outbox", "r-new-1", GONE_WHY], ["inbox", OLD, GONE_WHY], ["problems", OLD, GONE_WHY]]);
+  assert.ok(!(await dumpDb(w)).includes("user_o"));
+});
+
+test("投递已经在路上,管理员这时按要求删了那条帖子:待发、收件、问题记录照样写不回去(查 gone 和写在同一句),回执写明", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outbox: [OUT({ id: "r-test-1", target: TG2 })] });
+  // 投递读完库、还没写的时候,管理员点了「删除」
+  const raw = w.db;
+  w.db = { prepare: (sql) => raw.prepare(sql), batch: async (ss) => {
+    if (ss.some((x) => /INTO inbox/.test(x.sql || ""))) {
+      w.db = raw;
+      assert.equal((await w.call("/api/admin/delete", { method: "POST", body: { kind: "outbox", id: "r-test-1" }, cookie: c })).status, 200);
+    }
+    return raw.batch(ss);
+  } };
+  w.clock += 1000;
+  const r = await w.ingest({ outbox: [OUT({ id: "r-test-1", target: TG2, draft: "在途的新草稿。" }), OUT({ id: "r-test-2", target: TG2 })], inbox: [{ id: T2, author: "user_t", url: U2, text: "钱卡住了" }], problems: [PROB({ id: T2, url: U2, handle: "user_t" })] });
+  w.db = raw;
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  assert.deepEqual([r.json.outbox, r.json.inbox, r.json.problems], [0, 0, 0]);
+  assert.deepEqual(r.json.rejected.map((x) => [x.kind, x.id, x.why]), [["outbox", "r-test-1", GONE_WHY], ["outbox", "r-test-2", GONE_WHY], ["inbox", T2, GONE_WHY], ["problems", T2, GONE_WHY]]);
+  const all = await dumpDb(w);
+  assert.ok(!all.includes("user_t") && !all.includes(T2));
+});
+
+test("按要求删掉一条:库里同一条帖子的别的几行一起删(删待发:收件里这条帖子、别的要回它的待发,连到期只留哈希的旧卡片;删收件:要回这条评论的待发);别的帖子不动", async () => {
+  const w = world();
+  await w.login();
+  await w.ingest({ outbox: [OUT({ id: "r-old-1", target: TG2 })] });
+  w.clock += 31 * 864e5;
+  assert.equal((await w.exp({})).status, 200); // r-old-1 到期:目标帖子编号只留哈希
+  const c = await relogin(w);
+  const CM = "3000000000000000990", UC = "https://x.com/user_c/status/" + CM;
+  w.clock += 1000;
+  await w.ingest({
+    inbox: [{ id: T2, author: "user_t", url: U2, text: "钱卡住了" }, { id: CM, author: "user_c", url: UC, text: "桥上的钱没到" }],
+    outbox: [OUT({ id: "r-test-1", target: TG2 }), OUT({ id: "r-test-2", target: TG2 }), OUT({ id: "r-cm-1", target: { ...TARGET, id: CM, handle: "user_c", url: UC } }), OUT({ id: "r-other-1" })],
+  });
+  assert.equal((await w.call("/api/admin/delete", { method: "POST", body: { kind: "outbox", id: "r-test-1" }, cookie: c })).status, 200);
+  assert.equal((await w.call("/api/admin/delete", { method: "POST", body: { kind: "inbox", id: CM }, cookie: c })).status, 200);
+  const st = (await w.call("/api/admin/state", { cookie: c })).json;
+  assert.deepEqual([st.outbox.map((x) => x.id), st.inbox.map((x) => x.id)], [["r-other-1"], []]);
+  const all = await dumpDb(w);
+  assert.ok(!/user_t|user_c|2116000000000000002|3000000000000000990/.test(all), "两条帖子的账号、编号都不在了");
+  assert.ok(all.includes(TARGET.handle), "别的帖子的待发还在");
+});
+
+test("按要求删掉一张到期只留哈希的旧待发:同一条帖子后来进来的收件、新的待发、问题记录一起删(行里不存哈希,删的时候把编号算成哈希比)", async () => {
+  const w = world();
+  await w.login();
+  await w.ingest({ docs: OUR_POST, outbox: [OUT({ id: "r-old-1", target: TG2 })] });
+  w.clock += 31 * 864e5;
+  assert.equal((await w.exp({})).status, 200); // r-old-1 到期:目标帖子编号只留哈希
+  const c = await relogin(w);
+  const T4 = "2116000000000000004";
+  w.clock += 1000;
+  await w.ingest({ inbox: [{ id: T2, author: "user_t", url: U2, text: "钱卡住了" }], outbox: [OUT({ id: "r-test-1", target: TG2 }), OUT({ id: "r-other-1" })], problems: [PROB({ id: T2, url: U2, handle: "user_t" })] });
+  replyUnder(w, T4, "user_t"); // 同一个人在我们帖子底下的另一条评论(别的帖子编号):不在这次删的范围里
+  assert.equal((await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c })).json.newReplies, 1);
+  assert.equal(JSON.parse((await w.db.prepare("SELECT mine FROM inbox WHERE id = ?").bind(T2).first()).mine).gone, undefined, "行里不存哈希");
+  assert.equal((await w.call("/api/admin/delete", { method: "POST", body: { kind: "outbox", id: "r-old-1" }, cookie: c })).status, 200);
+  assert.deepEqual((await w.db.prepare("SELECT id FROM outbox ORDER BY id").all()).results.map((x) => x.id), ["r-other-1"]);
+  assert.deepEqual((await w.db.prepare("SELECT id FROM inbox ORDER BY id").all()).results.map((x) => x.id), [T4]);
+  assert.equal(await probOf(w, T2), null);
+  assert.ok(!(await dumpDb(w)).includes(T2));
+});
+
+test("待发、收件投递:字段的类型不对(比如 {\"toString\": null})只拒那一条,同一包里的看板、别的待发、收件、问题记录照收;看板、设置码、nonce 里这样的也不让整包出错", async () => {
+  const w = world();
+  const odd = { toString: null };
+  const r = await w.ingest({
+    docs: { summary: { asks: [{ text: "x", href: odd }] }, funnel: { target: 5, stages: [{ key: "seen", label: "看到", value: 1 }] } },
+    setup: { hash: odd, hours: 24 },
+    outbox: [
+      OUT({ id: odd }), OUT({ id: "r-odd-1", why: odd }), OUT({ id: "r-odd-2", replyUrl: odd }), OUT({ id: "r-odd-3", target: { ...TARGET, url: odd } }),
+      OUT({ id: "r-odd-4", target: { ...TARGET, id: odd } }), OUT({ id: "r-odd-5", draft: odd }), { id: "p-odd-6", kind: "post", topic: "迁移提醒", draft: "Scroll 提案。", quote: odd },
+      odd, null, 7, "r-odd-7", [], OUT({ id: "r-ok-1" }),
+    ],
+    inbox: [
+      { id: odd, text: "x" }, { id: "3000000000000000970", text: odd }, { id: "3000000000000000971", url: odd }, { id: "3000000000000000972", author: odd },
+      { id: "3000000000000000973", replyToId: odd }, { id: "3000000000000000974", replied: odd }, { id: "3000000000000000975", draft: odd },
+      odd, null, { id: "3000000000000000979", text: "好的,谢谢", author: "user_k" },
+    ],
+    problems: [PROB({ id: pid(80), url: undefined })],
+  });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  assert.deepEqual([r.json.docs, r.json.outbox, r.json.inbox, r.json.problems, r.json.setup], [1, 1, 1, 1, false]);
+  const of = (k) => r.json.rejected.filter((x) => x.kind === k);
+  assert.deepEqual(of("doc").map((x) => [x.id, x.why]), [["summary", "格式不对"]]);
+  assert.deepEqual(of("setup").map((x) => x.why), ["格式不对"]);
+  assert.equal(of("outbox").length, 12);
+  assert.equal(of("inbox").length, 9);
+  const why = Object.fromEntries([...of("outbox"), ...of("inbox")].filter((x) => x.id !== "?").map((x) => [x.id, x.why]));
+  for (const [id, field] of [["r-odd-1", "why"], ["r-odd-2", "replyUrl"], ["r-odd-3", "target.url"], ["r-odd-4", "target.id"], ["r-odd-5", "draft"], ["p-odd-6", "quote"],
+    ["3000000000000000970", "text"], ["3000000000000000971", "url"], ["3000000000000000972", "author"], ["3000000000000000973", "replyToId"], ["3000000000000000974", "replied"], ["3000000000000000975", "draft"]]) {
+    assert.equal(why[id], field + " 格式不对(不能是对象或数组)", id);
+  }
+  assert.equal(of("outbox").filter((x) => x.id === "?").length, 6);
+  assert.equal(of("inbox").filter((x) => x.id === "?").length, 3);
+  assert.deepEqual((await w.db.prepare("SELECT id FROM outbox").all()).results.map((x) => x.id), ["r-ok-1"]);
+  assert.deepEqual((await w.db.prepare("SELECT id FROM inbox").all()).results.map((x) => x.id), ["3000000000000000979"]);
+  // nonce 是对象:回 400(不是服务器出错)
+  assert.equal((await w.ingest({ nonce: odd }, { ts: w.clock + 1 })).status, 400);
+});
+
+test("同一包里同一张新的待发卡片送了两遍:第二遍不收(回执写明),别的照收;不再整包被当成重放", async () => {
+  const w = world();
+  const r = await w.ingest({ outbox: [OUT({ id: "r-dup-1" }), OUT({ id: "r-dup-1", draft: "另一版草稿。" })], inbox: [{ id: "3000000000000000981", text: "x" }] });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  assert.deepEqual([r.json.outbox, r.json.inbox, r.json.rejected], [1, 1, [{ kind: "outbox", id: "r-dup-1", why: "同一包里重复了,只收第一条" }]]);
+  assert.equal(JSON.parse((await w.db.prepare("SELECT mine FROM outbox WHERE id = 'r-dup-1'").first()).mine).draft, OUT().draft);
+});
+
+test("问题记录投递:协议、链里的钱包地址不收(0x 加 6 位以上十六进制;连着 25 个以上的字母数字:base58、bech32 的地址和长编号);像网址的名字(ether.fi、yearn.finance)不收,回执说写成 ether fi;截断处切在地址中间也不留半截", async () => {
+  const w = world();
+  const nid = (n) => "2117000000000007" + String(n).padStart(3, "0");
+  const SOL = "7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV", TRON = "TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE", BECH = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh";
+  const HEX40 = "0x" + "ab".repeat(20);
+  const bad = [HEX40, "Lido 0x1234abcd", "pool0xdeadbeef", "０ｘａｂｃｄｅｆ１２", SOL, TRON, BECH, "Pool " + SOL, "a".repeat(25), "ether.fi", "yearn.finance", "ETHER.FI",
+    "Lido Finance Staking Pool on Solana chain v2 " + SOL]; // 最后这条截到 60 个字正好切在地址中间(只剩 15 个字),截之前一起查,整条不收
+  const good = ["0x Protocol", "0xbabe", "ether fi", "yearn finance", "a".repeat(24)];
+  const r = await w.ingest({ problems: [
+    ...bad.map((p, i) => PROB({ id: nid(i), url: undefined, protocol: p })),
+    PROB({ id: nid(50), url: undefined, chain: HEX40 }), PROB({ id: nid(51), url: undefined, chain: "ether.fi" }), PROB({ id: nid(52), url: undefined, chain: BECH }),
+    ...good.map((p, i) => PROB({ id: nid(60 + i), url: undefined, protocol: p, chain: p })),
+  ] });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  assert.equal(r.json.problems, good.length);
+  const why = whyOf(r);
+  bad.forEach((p, i) => assert.equal(why[nid(i)], "protocol " + NAME_WHY, p));
+  for (const n of [50, 51, 52]) assert.equal(why[nid(n)], "chain " + NAME_WHY, String(n));
+  assert.match(NAME_WHY, /像网址的不收,比如 ether\.fi 写成 ether fi/);
+  assert.match(NAME_WHY, /钱包地址/);
+  for (const [i, p] of good.entries()) {
+    const row = await probOf(w, nid(60 + i));
+    assert.deepEqual([row.protocol, row.chain], [p, p], p);
+  }
+  // 审查里的例子:原来收下了(到期只删链接和账号,地址一直留在 protocol 里),现在整条不收
+  assert.equal(await probOf(w, nid(0)), null);
+  const all = await dumpDb(w);
+  assert.ok(!/abababab|7EcDhSYG|TQn9Y2kh|bc1qxy2k/.test(all), "库里没有地址");
+});
+
+// ---------- 第二轮审查(11-06):链接里的帖子编号、旧行没存哈希、待发的协议和链、到期和管理员同时来、回执说法、评论来源 ----------
+const QPOST = (over = {}) => ({ id: "p-quote-1", kind: "post", topic: "迁移提醒", why: "测试", draft: "Scroll 提案:$SCR 迁到以太坊主网。", quote: U2, ...over });
+const OWNER_ACCT = { id: "1000000000000000001", screen_name: "owner_acct" };
+// 刷新时:目标帖子底下有 replies(别的帖子都是我们账号发的、底下没有评论);onTarget 在读目标帖子时先跑
+const underTarget = (w, replies, onTarget) => { w.fetchImpl = async (u) => {
+  const id = String(u).split("/").pop();
+  const body = { status: { id, author: id === TARGET.id ? { id: "555", screen_name: "someone" } : OWNER_ACCT, views: 1, replies: 1 }, replies: [] };
+  if (id === TARGET.id) { body.replies = replies; if (onTarget) await onTarget(); }
+  return new Response(JSON.stringify(body));
+}; };
+
+test("按要求删掉一条帖子以后:别的字段带着它的也不收(项目帖引用的原帖、回复链接、收件的链接和要回的那条),回执写明;已有的卡片补链接(投递的、管理员贴的)指着它也不收", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outbox: [OUT({ id: "r-test-1", target: TG2 })] });
+  assert.equal((await w.call("/api/admin/delete", { method: "POST", body: { kind: "outbox", id: "r-test-1" }, cookie: c })).status, 200);
+  w.clock += 1000;
+  const r = await w.ingest({
+    outbox: [QPOST(), OUT({ id: "r-other-1", replyUrl: U2 })], // 审查的复现:引用的原帖、回复链接是删过的那条
+    inbox: [{ id: "3000000000000000901", url: U2, author: "user_t", text: "x" }, { id: "3000000000000000902", replyToId: T2, author: "user_k", text: "y" }],
+  });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  assert.deepEqual([r.json.outbox, r.json.inbox], [0, 0]);
+  assert.deepEqual(r.json.rejected.map((x) => [x.kind, x.id, x.why]), [["outbox", "p-quote-1", GONE_WHY], ["outbox", "r-other-1", GONE_WHY], ["inbox", "3000000000000000901", GONE_WHY], ["inbox", "3000000000000000902", GONE_WHY]]);
+  assert.ok(!(await dumpDb(w)).includes(T2));
+  w.clock += 1000;
+  await w.ingest({ outbox: [OUT({ id: "r-sent-1" })] });
+  assert.equal((await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-sent-1", status: "已发" }, cookie: c })).status, 200);
+  w.clock += 1000;
+  const r2 = await w.ingest({ outbox: [OUT({ id: "r-sent-1", replyUrl: U2 })] });
+  assert.deepEqual([r2.json.outbox, r2.json.rejected.map((x) => x.why)], [0, [GONE_WHY]]);
+  const p = await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-sent-1", reply_url: U2 }, cookie: c });
+  assert.deepEqual([p.status, p.json.error], [409, "gone"]);
+  assert.equal((await w.db.prepare("SELECT reply_url FROM outbox WHERE id = 'r-sent-1'").first()).reply_url, null);
+});
+
+test("按要求删过的那条是我们的回复:刷新时在目标帖子底下找到它,也不把链接补回去", async () => {
+  const w = world();
+  const c = await w.login();
+  const R3 = "2116000000000000033";
+  await w.ingest({ docs: OUR_POST, outbox: [OUT()], inbox: [{ id: R3, text: "x", author: "owner_acct" }] });
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", status: "已发" }, cookie: c });
+  assert.equal((await w.call("/api/admin/delete", { method: "POST", body: { kind: "inbox", id: R3 }, cookie: c })).status, 200);
+  underTarget(w, [{ id: R3, author: OWNER_ACCT, replying_to: { status: TARGET.id } }]);
+  assert.equal((await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c })).status, 200);
+  assert.equal((await w.db.prepare("SELECT reply_url FROM outbox WHERE id = 'r-openeden-1'").first()).reply_url, null);
+});
+
+test("按要求删掉一条帖子:库里别的字段带着它的几行一起删(项目帖引用它的、回复链接是它的、收件链接和要回的是它的);别的不动", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({
+    outbox: [OUT({ id: "r-test-1", target: TG2 }), QPOST(), OUT({ id: "r-other-1", replyUrl: U2 }), OUT({ id: "r-keep-1" })],
+    inbox: [{ id: "3000000000000000901", url: U2, author: "user_t", text: "x" }, { id: "3000000000000000902", replyToId: T2, author: "user_k", text: "y" }, { id: "3000000000000000903", author: "user_m", text: "z" }],
+  });
+  assert.equal((await w.call("/api/admin/delete", { method: "POST", body: { kind: "outbox", id: "r-test-1" }, cookie: c })).status, 200);
+  assert.deepEqual((await w.db.prepare("SELECT id FROM outbox ORDER BY id").all()).results.map((x) => x.id), ["r-keep-1"]);
+  assert.deepEqual((await w.db.prepare("SELECT id FROM inbox ORDER BY id").all()).results.map((x) => x.id), ["3000000000000000903"]);
+  assert.ok(!(await dumpDb(w)).includes(T2));
+});
+
+test("这一版以前收进来的行(没存哈希):11-03 的卡片 A,11-05 同一条帖子的卡片 B、引用它的项目帖和收件;12-03 A 到期以后按要求删 A,别的也一起删,删了就改不了、再送来也不收", async () => {
+  const w = world(); // 11-03 10:00(UTC)
+  await w.login();
+  const day = (d) => new Date(Date.parse(d + "T10:00:00Z")).toISOString();
+  const put = (id, mine, made, due) => w.db.prepare("INSERT INTO outbox (id, mine, created_at, updated_at, purge_after) VALUES (?, ?, ?, ?, ?)").bind(id, JSON.stringify(mine), day(made), day(made), day(due)).run();
+  // 旧版本写进库的样子:mine 里只有送来的那几样,没有任何哈希
+  const card = { target: TG2, why: "原帖写明自己的钱卡在到期金库", draft: "到期金库可以在官方合约上自己取出。" };
+  await put("r-a-1", card, "2026-11-03", "2026-12-03");
+  await put("r-b-1", card, "2026-11-05", "2026-12-05");
+  await put("p-q-1", { kind: "post", topic: "提醒", quote: U2, draft: "项目帖。" }, "2026-11-05", "2026-12-05");
+  await w.db.prepare("INSERT INTO inbox (id, mine, text, created_at, updated_at, purge_after) VALUES (?, ?, ?, ?, ?, ?)").bind(T2, JSON.stringify({ url: U2, author: "user_t" }), "钱卡住了", day("2026-11-05"), day("2026-11-05"), day("2026-12-05")).run();
+  w.clock = Date.parse("2026-12-03T10:00:01Z");
+  assert.equal((await w.exp({})).status, 200); // A 到期:删编号之前从编号算好两个哈希
+  const a = JSON.parse((await w.db.prepare("SELECT mine FROM outbox WHERE id = 'r-a-1'").first()).mine);
+  assert.deepEqual([a.target.id, a.target.gone, a.target.key], [undefined, await goneKey(T2), await problemKey(T2)]);
+  const c = await relogin(w);
+  assert.equal((await w.call("/api/admin/delete", { method: "POST", body: { kind: "outbox", id: "r-a-1" }, cookie: c })).status, 200);
+  assert.deepEqual([(await w.db.prepare("SELECT COUNT(*) AS n FROM outbox").first()).n, (await w.db.prepare("SELECT COUNT(*) AS n FROM inbox").first()).n], [0, 0]);
+  assert.equal((await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-b-1", draft: "再改一版" }, cookie: c })).status, 404);
+  assert.equal((await w.call("/api/admin/inbox", { method: "POST", body: { id: T2, note: "备注" }, cookie: c })).status, 404);
+  w.clock += 1000;
+  const r = await w.ingest({ inbox: [{ id: T2, text: "x", author: "user_t" }], outbox: [OUT({ id: "r-b-1", target: TG2 })] });
+  assert.deepEqual([r.json.inbox, r.json.outbox], [0, 0]);
+  assert.ok(!(await dumpDb(w)).includes(T2));
+});
+
+test("待发目标帖子的协议、链:随手写的名字照收(箭头、斜杠换成「 - 」);钱包地址、像网址的、@ 这一项不存,回执写一句,卡片照收;到期以后也没有;这一版以前收进来的,到期时也过一遍", async () => {
+  const w = world();
+  const HEX40 = "0x" + "ab".repeat(20);
+  const r = await w.ingest({ outbox: [
+    OUT({ id: "r-name-1", target: { ...TARGET, protocol: "StandX 有序关停", chain: "Blast L2 → 以太坊" } }),
+    OUT({ id: "r-name-2", target: { ...TARGET, protocol: HEX40, chain: HEX40 } }),
+    OUT({ id: "r-name-3", target: { ...TARGET, protocol: "ether.fi", chain: "@user_p" } }),
+  ] });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  assert.equal(r.json.outbox, 3);
+  assert.deepEqual(r.json.rejected.map((x) => [x.id, x.why.split("(")[0], /钱包地址/.test(x.why) && x.why.endsWith("这张卡片照收")]),
+    [["r-name-2", "target.protocol 没存", true], ["r-name-2", "target.chain 没存", true], ["r-name-3", "target.protocol 没存", true], ["r-name-3", "target.chain 没存", true]]);
+  const tgt = async (id) => JSON.parse((await w.db.prepare("SELECT mine FROM outbox WHERE id = ?").bind(id).first()).mine).target;
+  const names = async (id) => { const t = await tgt(id); return [t.protocol, t.chain]; };
+  assert.deepEqual(await names("r-name-1"), ["StandX 有序关停", "Blast L2 - 以太坊"]);
+  for (const id of ["r-name-2", "r-name-3"]) assert.deepEqual(await names(id), [undefined, undefined], id);
+  // 这一版以前收进来的(库里直接带着地址、账号),到期时也过一遍
+  await w.db.prepare("INSERT INTO outbox (id, mine, created_at, updated_at, purge_after) VALUES (?, ?, 't', 't', ?)").bind("r-old-name", JSON.stringify({ target: { ...TARGET, protocol: HEX40, chain: "Fantom/Sonic", type: "到期 @user_p" }, draft: "旧的。" }), new Date(w.clock + 30 * 864e5).toISOString()).run();
+  w.clock += 31 * 864e5;
+  assert.equal((await w.exp({})).status, 200);
+  assert.deepEqual(await names("r-name-1"), ["StandX 有序关停", "Blast L2 - 以太坊"]);
+  const old = await tgt("r-old-name");
+  assert.deepEqual([old.protocol, old.chain, old.type], [undefined, "Fantom - Sonic", undefined]);
+  assert.ok(!/abababab|user_p/.test(await dumpDb(w)), "库里没有地址和账号");
+});
+
+test("到期清理和管理员点「已发」交错:点之前读到的卡片已经到期删了,不把目标帖子编号、没换掉账号的草稿写回去(回 409)", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outbox: [OUT({ draft: "@someone 到期金库可以在官方合约上自己取出。" })] });
+  const raw = w.db;
+  let once = false;
+  w.db = { prepare: (sql) => {
+    const st = raw.prepare(sql);
+    if (sql !== "SELECT * FROM outbox WHERE id = ?" || once) return st;
+    // 管理员这一下刚读完卡片,到期清理就跑了
+    return { bind: (...a) => ({ first: async () => { const row = await st.bind(...a).first(); once = true; await purge(raw, new Date(w.clock + 31 * 864e5)); return row; } }) };
+  }, batch: (ss) => raw.batch(ss) };
+  const r = await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", status: "已发" }, cookie: c });
+  w.db = raw;
+  assert.deepEqual([r.status, r.json.error], [409, "purged"]);
+  const row = await raw.prepare("SELECT status, sent_target, sent_text, purged FROM outbox WHERE id = 'r-openeden-1'").first();
+  assert.deepEqual([row.status, row.sent_target, row.sent_text, row.purged], ["待发", null, null, 1]);
+  assert.ok(!/someone|2116000000000000001/.test(await dumpDb(w)));
+});
+
+test("到期清理和刷新自动补链接交错:读到「已发」的卡片以后它到期删了,不把回复链接写回去", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ docs: OUR_POST, outbox: [OUT()] });
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", status: "已发" }, cookie: c });
+  const raw = w.db;
+  underTarget(w, [{ id: "2116000000000000004", author: OWNER_ACCT, replying_to: { status: TARGET.id } }], () => purge(raw, new Date(w.clock + 31 * 864e5)));
+  assert.equal((await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c })).status, 200);
+  const row = await raw.prepare("SELECT reply_url, sent_target, purged FROM outbox WHERE id = 'r-openeden-1'").first();
+  assert.deepEqual([row.reply_url, row.sent_target, row.purged], [null, null, 1]);
+});
+
+test("回执:没人点过、30 天到了自己删掉的待发再送来,写「30 天到期删过」(不是「管理员处理过」);待发、收件一包超过 50 条,多的写进回执", async () => {
+  const w = world();
+  await w.ingest({ outbox: [OUT()] });
+  w.clock += 31 * 864e5;
+  assert.equal((await w.exp({})).status, 200);
+  w.clock += 1000;
+  let r = await w.ingest({ outbox: [OUT({ draft: "改一版。" })] });
+  assert.deepEqual([r.json.outbox, r.json.rejected], [0, [{ kind: "outbox", id: "r-openeden-1", why: "30 天到期删过,不再改" }]]);
+  w.clock += 1000;
+  const outs = Array.from({ length: 51 }, (_, i) => OUT({ id: "r-many-" + i }));
+  const ins = Array.from({ length: 51 }, (_, i) => ({ id: String(3000000000000001000n + BigInt(i)), text: "x" }));
+  r = await w.ingest({ outbox: outs, inbox: ins });
+  assert.deepEqual([r.json.outbox, r.json.inbox], [50, 50]);
+  const MORE = "一包最多 50 条:第 51 条起的 1 条没收,下一包再送";
+  assert.deepEqual(r.json.rejected, [{ kind: "outbox", id: "?", why: MORE }, { kind: "inbox", id: "?", why: MORE }]);
+});
+
+test("我们回复底下的评论:来源不带对方账号(没写协议的写卡片编号);到期留下的需求摘要,来源里的 @账号也换掉(这一版以前收进来的)", async () => {
+  const w = world();
+  const c = await w.login();
+  const MINE = "2116000000000000004", NOPROTO = { ...TARGET, protocol: undefined };
+  await w.ingest({ docs: OUR_POST, outbox: [OUT({ target: NOPROTO })] });
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", status: "已发" }, cookie: c });
+  w.clock += 1000;
+  await w.ingest({ outbox: [OUT({ target: NOPROTO, replyUrl: "https://x.com/owner_acct/status/" + MINE })] });
+  w.fetchImpl = async (u) => {
+    const id = String(u).split("/").pop();
+    if (id === MINE) return new Response(JSON.stringify({ status: { id, author: OWNER_ACCT, views: 1, replies: 1 }, replies: [{ id: "2116000000000000007", text: "桥上的钱没到", author: { id: "555", screen_name: "visitor" }, replying_to: { status: MINE } }] }));
+    return new Response(JSON.stringify({ status: { id, author: OWNER_ACCT, views: 1, replies: 0 }, replies: [] }));
+  };
+  assert.equal((await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c })).json.newReplies, 1);
+  assert.equal(JSON.parse((await w.db.prepare("SELECT mine FROM inbox WHERE id = '2116000000000000007'").first()).mine).source, "我们的回复 · r-openeden-1");
+  await w.db.prepare("INSERT INTO inbox (id, mine, text, created_at, updated_at, purge_after) VALUES (?, ?, 'x', 't', 't', ?)").bind("3000000000000000999", JSON.stringify({ source: "我们的回复 · @someone", author: "visitor2", type: "提问", need: "想知道桥什么时候恢复" }), new Date(w.clock + 30 * 864e5).toISOString()).run();
+  w.clock += 31 * 864e5;
+  assert.equal((await w.exp({})).status, 200);
+  const sources = (await w.db.prepare("SELECT v FROM needs").all()).results.map((x) => JSON.parse(x.v).source).sort();
+  assert.deepEqual(sources, ["我们的回复 · r-openeden-1", "我们的回复 · …"]);
+  assert.ok(!(await dumpDb(w)).includes("someone"), "库里没有对方账号");
+});
+
+// ---------- 第三轮审查(11-06):改一行查改完以后还带着的帖子、按页翻、旧协议名、纯数字卡片编号、补链接遇到期 ----------
+test("按要求删一张到期旧卡片,第二步(翻库)出错:gone 已经记下,剩下带着这条帖子的行管理员改不了、投递补不进、刷新补不上链接;再点一次删除全删干净", async () => {
+  const w = world();
+  await w.login();
+  await w.ingest({ docs: OUR_POST, outbox: [OUT({ id: "r-a-1", target: TG2 })] });
+  w.clock += 31 * 864e5;
+  assert.equal((await w.exp({})).status, 200); // A 到期:只剩哈希
+  const c = await relogin(w);
+  const MINE = "2116000000000000044";
+  w.clock += 1000;
+  await w.ingest({ outbox: [OUT({ id: "r-b-1", target: TG2 })], inbox: [{ id: "3000000000000000931", url: U2, author: "user_k", text: "x" }, { id: "3000000000000000932", replyToId: T2, author: "user_k", text: "y" }] });
+  assert.equal((await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-b-1", status: "已发" }, cookie: c })).status, 200);
+  // 删 A:记完 gone,翻库那一步出错
+  const raw = w.db;
+  let boom = true;
+  w.db = { prepare: (sql) => { if (boom && /FROM inbox WHERE id > \?/.test(sql)) { boom = false; throw new Error("D1 出错了"); } return raw.prepare(sql); }, batch: (ss) => raw.batch(ss) };
+  await assert.rejects(w.call("/api/admin/delete", { method: "POST", body: { kind: "outbox", id: "r-a-1" }, cookie: c }));
+  w.db = raw;
+  assert.deepEqual([(await raw.prepare("SELECT COUNT(*) AS n FROM outbox").first()).n, (await raw.prepare("SELECT COUNT(*) AS n FROM inbox").first()).n], [2, 2], "行还在");
+  for (const [path, body] of [["outbox", { id: "r-b-1", note: "备注" }], ["inbox", { id: "3000000000000000931", note: "备注" }], ["inbox", { id: "3000000000000000932", decision: "采纳" }]]) {
+    const r = await w.call("/api/admin/" + path, { method: "POST", body, cookie: c });
+    assert.deepEqual([r.status, r.json.error], [409, "gone"], path + " " + body.id);
+  }
+  w.clock += 1000;
+  const r = await w.ingest({ inbox: [{ id: "3000000000000000931", need: "想知道桥什么时候恢复" }, { id: "3000000000000000932", need: "同上" }], outbox: [OUT({ id: "r-b-1", target: TG2, replyUrl: "https://x.com/owner_acct/status/" + MINE })] });
+  assert.deepEqual([r.json.inbox, r.json.outbox, r.json.rejected.map((x) => x.why)], [0, 0, [GONE_WHY, GONE_WHY, GONE_WHY]]);
+  w.fetchImpl = async (u) => {
+    const id = String(u).split("/").pop();
+    const body = { status: { id, author: id === T2 ? { id: "555", screen_name: "user_t" } : OWNER_ACCT, views: 1, replies: 1 }, replies: [] };
+    if (id === T2) body.replies = [{ id: MINE, author: OWNER_ACCT, replying_to: { status: T2 } }];
+    return new Response(JSON.stringify(body));
+  };
+  assert.equal((await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c })).status, 200);
+  assert.equal((await raw.prepare("SELECT reply_url FROM outbox WHERE id = 'r-b-1'").first()).reply_url, null, "刷新补不上 B 的回复链接");
+  assert.equal((await w.call("/api/admin/delete", { method: "POST", body: { kind: "outbox", id: "r-a-1" }, cookie: c })).status, 200);
+  assert.deepEqual([(await raw.prepare("SELECT COUNT(*) AS n FROM outbox").first()).n, (await raw.prepare("SELECT COUNT(*) AS n FROM inbox").first()).n], [0, 0]);
+  assert.ok(!(await dumpDb(w)).includes(T2));
+});
+
+test("按要求删到期只留哈希的旧卡片:按编号一页页翻(只读编号和链接那几样),一次翻不完回 more、卡片先留着,再点接着翻,翻完全删", async () => {
+  const w = world();
+  await w.login();
+  await w.ingest({ outbox: [OUT({ id: "r-a-1", target: TG2 })] });
+  w.clock += 31 * 864e5;
+  assert.equal((await w.exp({})).status, 200);
+  const c = await relogin(w);
+  w.clock += 1000;
+  await w.ingest({
+    outbox: [...[1, 2, 3].map((i) => OUT({ id: "r-t-" + i, target: TG2 })), ...[1, 2, 3, 4, 5, 6].map((i) => OUT({ id: "r-x-" + i }))],
+    inbox: [{ id: "3000000000000000941", url: U2, text: "x" }, { id: "3000000000000000942", replyToId: T2, text: "y" }, { id: "3000000000000000943", text: "z" }],
+  });
+  const keep = { ...SCAN }, raw = w.db, seen = [];
+  Object.assign(SCAN, { page: 2, pages: 2 });
+  w.db = { prepare: (sql) => { seen.push(sql); return raw.prepare(sql); }, batch: (ss) => raw.batch(ss) };
+  try {
+    const del = () => w.call("/api/admin/delete", { method: "POST", body: { kind: "outbox", id: "r-a-1" }, cookie: c });
+    let r = await del(), tries = 1;
+    assert.deepEqual([r.status, r.json.error], [409, "more"]);
+    assert.ok(await raw.prepare("SELECT 1 AS x FROM outbox WHERE id = 'r-a-1'").first(), "没翻完,这张卡片先留着");
+    while (r.status === 409 && tries < 10) { r = await del(); tries++; }
+    assert.equal(r.status, 200, JSON.stringify(r.json));
+  } finally {
+    Object.assign(SCAN, keep);
+    w.db = raw;
+  }
+  assert.deepEqual((await raw.prepare("SELECT id FROM outbox ORDER BY id").all()).results.map((x) => x.id), ["r-x-1", "r-x-2", "r-x-3", "r-x-4", "r-x-5", "r-x-6"]);
+  assert.deepEqual((await raw.prepare("SELECT id FROM inbox").all()).results.map((x) => x.id), ["3000000000000000943"]);
+  assert.equal(await raw.prepare("SELECT v FROM kv WHERE k LIKE 'del_scan:%'").first(), null, "翻完了,记的进度也删了");
+  const scans = seen.filter((s) => /FROM (inbox|outbox) WHERE (purged = 0 AND )?id > \?/.test(s));
+  assert.ok(scans.length >= 4 && scans.every((s) => /LIMIT \?$/.test(s) && !/SELECT id, mine\b/.test(s)), "按页翻、只读编号和链接");
+});
+
+test("这一版以前收进来的卡片协议里带着地址:刷新时评论的来源写卡片编号;到期留下的需求摘要,来源里的地址、@账号换成「…」;库里已经有的需求摘要由定时任务过一遍", async () => {
+  const w = world();
+  const c = await w.login();
+  const HEX40 = "0x" + "ab".repeat(20), MINE = "2116000000000000004";
+  // 旧版本留下的需求摘要(以前的来源只换 @账号,更早的一个都没换)
+  for (const [id, source] of [["n-old-1", "我们的回复 · " + HEX40], ["n-old-2", "我们的回复 · @someone"], ["n-old-3", "X 长文"]]) await w.db.prepare("INSERT INTO needs (id, month, v) VALUES (?, '2026-11', ?)").bind(id, JSON.stringify({ source, type: "提问" })).run();
+  await w.ingest({ docs: OUR_POST });
+  assert.equal((await w.task({ do: "leads", leads: [] })).status, 200); // 定时任务(盯项目变动那一次)顺手过一遍
+  const needOf = async (id) => JSON.parse((await w.db.prepare("SELECT v FROM needs WHERE id = ?").bind(id).first()).v).source;
+  assert.deepEqual([await needOf("n-old-1"), await needOf("n-old-2"), await needOf("n-old-3")], ["我们的回复 · …", "我们的回复 · …", "X 长文"]);
+  // 旧版本收进来的卡片:协议里直接带着地址,已发,核到了我们那条回复
+  await w.db.prepare("INSERT INTO outbox (id, mine, status, decided_at, sent_target, reply_url, created_at, updated_at, purge_after) VALUES (?, ?, '已发', ?, ?, ?, 't', 't', ?)")
+    .bind("r-old-hex", JSON.stringify({ target: { ...TARGET, protocol: HEX40 }, draft: "旧的。" }), new Date(w.clock).toISOString(), TARGET.id, "https://x.com/owner_acct/status/" + MINE, new Date(w.clock + 30 * 864e5).toISOString()).run();
+  w.fetchImpl = async (u) => {
+    const id = String(u).split("/").pop();
+    if (id === MINE) return new Response(JSON.stringify({ status: { id, author: OWNER_ACCT, views: 1, replies: 1 }, replies: [{ id: "2116000000000000007", text: "桥上的钱没到", author: { id: "555", screen_name: "visitor" }, replying_to: { status: MINE } }] }));
+    return new Response(JSON.stringify({ status: { id, author: OWNER_ACCT, views: 1, replies: 0 }, replies: [] }));
+  };
+  assert.equal((await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c })).json.newReplies, 1);
+  assert.equal(JSON.parse((await w.db.prepare("SELECT mine FROM inbox WHERE id = '2116000000000000007'").first()).mine).source, "我们的回复 · r-old-hex");
+  // 旧版本刷新时已经收进来的:来源里带着地址
+  await w.db.prepare("INSERT INTO inbox (id, mine, text, created_at, updated_at, purge_after) VALUES (?, ?, 'x', 't', 't', ?)").bind("3000000000000000951", JSON.stringify({ source: "我们的回复 · " + HEX40, author: "visitor2" }), new Date(w.clock + 30 * 864e5).toISOString()).run();
+  w.clock += 31 * 864e5;
+  assert.equal((await w.exp({})).status, 200);
+  const sources = (await w.db.prepare("SELECT v FROM needs WHERE id NOT LIKE 'n-old-%'").all()).results.map((x) => JSON.parse(x.v).source).sort();
+  assert.deepEqual(sources, ["我们的回复 · r-old-hex", "我们的回复 · …"]);
+  assert.ok(!/abababab|someone/.test(await dumpDb(w)), "库里没有地址和账号");
+});
+
+test("待发卡片编号不能全是数字(删卡片的标记会和同号的帖子撞在一起):整条不收,回执写明;r-xxx、p-xxx 照收", async () => {
+  const w = world();
+  const NUM_WHY = "id 不能全是数字(会和帖子编号混在一起),写成 r-xxx、p-xxx 这种";
+  const r = await w.ingest({ outbox: [
+    OUT({ id: "2116000000000000001" }),
+    { id: "2117000000000000777", kind: "post", topic: "提醒", draft: "项目帖。", quote: "https://x.com/Scroll_ZKP/status/2117000000000000777" },
+    OUT({ id: "r-123" }), { id: "p-2116", kind: "post", topic: "提醒", draft: "项目帖。" },
+  ] });
+  assert.equal(r.json.outbox, 2);
+  assert.deepEqual(r.json.rejected.map((x) => [x.id, x.why]), [["2116000000000000001", NUM_WHY], ["2117000000000000777", NUM_WHY]]);
+});
+
+test("回执:已发的卡片补回复链接,读完状态以后它到期删了:写「30 天到期删过,不再改」(不是「管理员处理过」)", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outbox: [OUT()] });
+  assert.equal((await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", status: "已发" }, cookie: c })).status, 200);
+  const real = w.db;
+  w.db = { prepare(sql) {
+    const st = real.prepare(sql);
+    if (!/^SELECT id, mine, status, purged\b.* FROM outbox WHERE id IN/.test(sql)) return st;
+    // 投递刚读完卡片的状态,到期清理就跑了
+    return { bind: (...a) => ({ all: async () => { const r = await st.bind(...a).all(); await purge(real, new Date(w.clock + 31 * 864e5)); return r; } }) };
+  }, batch: (s) => real.batch(s) };
+  w.clock += 1000;
+  const r = await w.ingest({ outbox: [OUT({ replyUrl: "https://x.com/owner_acct/status/2116000000000000004" })] });
+  w.db = real;
+  assert.deepEqual([r.json.outbox, r.json.rejected], [0, [{ kind: "outbox", id: "r-openeden-1", why: "30 天到期删过,不再改" }]]);
+  assert.equal((await real.prepare("SELECT reply_url FROM outbox WHERE id = 'r-openeden-1'").first()).reply_url, null);
+});
+
+// ---------- 最后一轮(11-06):需求摘要分页过、来源标签的规则、同时点两次删除 ----------
+test("以前的需求摘要过一遍:只在定时任务(盯项目变动那一次)里跑,按编号一页页翻、记下翻到哪,翻完才记 needs_v2;打开运营台、投递不碰;出错不连累线索", async () => {
+  const w = world();
+  const c = await w.login();
+  const HEX40 = "0x" + "ab".repeat(20);
+  for (let i = 0; i < 5; i++) await w.db.prepare("INSERT INTO needs (id, month, v) VALUES (?, '2026-11', ?)").bind("n-" + i, JSON.stringify({ source: i % 2 ? "我们的回复 · " + HEX40 : "X 长文", type: "提问" })).run();
+  const sources = async () => (await w.db.prepare("SELECT v FROM needs ORDER BY id").all()).results.map((x) => JSON.parse(x.v).source);
+  const kvOf = async (k) => (await w.db.prepare("SELECT v FROM kv WHERE k = ?").bind(k).first())?.v ?? null;
+  await w.call("/api/admin/state", { cookie: c });
+  await w.ingest({ docs: {} });
+  assert.equal((await sources()).filter((s) => s.includes("abab")).length, 2, "打开运营台、投递都不碰");
+  // 这一步出错:线索照收,needs_v2 不记
+  const raw = w.db;
+  w.db = { prepare: (sql) => { if (/FROM needs WHERE id > \?/.test(sql)) throw new Error("D1 出错了"); return raw.prepare(sql); }, batch: (ss) => raw.batch(ss) };
+  w.clock += 1000;
+  const t1 = await w.task({ do: "leads", leads: [LEAD()] });
+  w.db = raw;
+  assert.deepEqual([t1.status, t1.json.stored, await kvOf("needs_v2")], [200, 1, null]);
+  // 一次只翻 1 页、每页 2 行:记下翻到哪,翻完才记 needs_v2
+  const keep = { ...NEEDS_FIX };
+  Object.assign(NEEDS_FIX, { page: 2, pages: 1 });
+  try {
+    for (let i = 0; i < 2; i++) { w.clock += 1000; assert.equal((await w.task({ do: "leads", leads: [] })).status, 200); }
+    assert.deepEqual([await kvOf("needs_v2"), await kvOf("needs_v2_at")], [null, "n-3"]);
+    w.clock += 1000;
+    assert.equal((await w.task({ do: "leads", leads: [] })).status, 200);
+    assert.deepEqual([await kvOf("needs_v2"), await kvOf("needs_v2_at")], ["1", null]);
+  } finally {
+    Object.assign(NEEDS_FIX, keep);
+  }
+  assert.deepEqual(await sources(), ["X 长文", "我们的回复 · …", "X 长文", "我们的回复 · …", "X 长文"]);
+});
+
+test("需求摘要的来源:只换掉认得出人、帖子、钱包的那几样(链接、网址、IP、@账号、0x 地址、25 个以上的英文字母数字、15 位以上的数字);长的中文标题、日期、短数字照留", () => {
+  for (const s of ["项目帖 · 跨链桥到账延迟时如何确认资金状态并找到官方处理进度", "项目帖 · 20261106 每日观察", "我们的回复 · OpenEden", "X 长文", "Lido v2.0 · 2026-11-06", "我们的回复 · r-openeden-1"]) assert.equal(safeLabel(s), s, s);
+  for (const [s, want] of [
+    ["我们的回复 · 0x" + "ab".repeat(20), "我们的回复 · …"], ["我们的回复 · @someone", "我们的回复 · …"], ["我们的回复 · 7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV", "我们的回复 · …"],
+    ["看 https://evil.example/a 的说明", "看 … 的说明"], ["去 app.uniswap.org 看", "去 … 看"], ["节点 1.2.3.4", "节点 …"], ["帖子 2116000000000000002", "帖子 …"],
+  ]) assert.equal(safeLabel(s), want, s);
+});
+
+test("同时点了两次删除(只剩哈希、要翻好几页):慢的那次不把删完的任务写回旧进度,也不说「还没查完」", async () => {
+  const w = world();
+  await w.login();
+  await w.ingest({ outbox: [OUT({ id: "r-a-1", target: TG2 })] });
+  w.clock += 31 * 864e5;
+  assert.equal((await w.exp({})).status, 200);
+  const c = await relogin(w);
+  w.clock += 1000;
+  await w.ingest({ outbox: [...[1, 2, 3].map((i) => OUT({ id: "r-t-" + i, target: TG2 })), ...[1, 2, 3, 4].map((i) => OUT({ id: "r-x-" + i }))] });
+  const keep = { ...SCAN }, raw = w.db;
+  Object.assign(SCAN, { page: 2, pages: 1 });
+  const del = () => w.call("/api/admin/delete", { method: "POST", body: { kind: "outbox", id: "r-a-1" }, cookie: c });
+  let a;
+  try {
+    // 请求 A 翻完一页、记进度之前停住;这时请求 B 一路删完
+    let paused = false;
+    w.db = { prepare: (sql) => raw.prepare(sql), batch: async (ss) => {
+      if (!paused && ss.some((x) => /INSERT INTO kv \(k, v\) SELECT/.test(x.sql || ""))) {
+        paused = true;
+        w.db = raw;
+        let r;
+        do { r = await del(); } while (r.status === 409);
+        assert.equal(r.status, 200);
+      }
+      return raw.batch(ss);
+    } };
+    a = await del();
+  } finally {
+    Object.assign(SCAN, keep);
+    w.db = raw;
+  }
+  assert.deepEqual([a.status, a.json.ok], [200, true], JSON.stringify(a.json));
+  assert.equal(await raw.prepare("SELECT v FROM kv WHERE k LIKE 'del_scan:%'").first(), null, "没有留下旧进度");
+  assert.deepEqual((await raw.prepare("SELECT id FROM outbox ORDER BY id").all()).results.map((x) => x.id), ["r-x-1", "r-x-2", "r-x-3", "r-x-4"]);
 });

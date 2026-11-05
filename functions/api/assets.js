@@ -7,6 +7,9 @@
 export const ZERION = { url: "https://api.zerion.io/v1/wallets/", timeoutMs: 12000 };
 const MIN_USD = 0.01; // 不到 1 美分的不单列,只算个数
 const MAX_TOKENS = 8; // 每条链最多列 8 种币,其余只说「还有几种小额币」
+// 排在 8 种以后的,只传符号和合约地址(最多 40 个):体检结果页拿去对截止提醒(比如排第 9 的 STG,按地址对,同名的假币不算),不显示。
+// 和别的一样只回给查的那个浏览器,这里不存也不记
+const MAX_REST = 40;
 
 // Zerion 的链编号 → 显示名;没列的把编号整理一下直接用
 const CHAINS = {
@@ -93,7 +96,7 @@ export function shape(json) {
   const byUsd = (x, y) => (y.usd || 0) - (x.usd || 0);
   const walletList = [...wallet.values()].sort(byUsd).map((g) => {
     const tokens = g.tokens.sort(byUsd);
-    return { chain: g.chain, cid: g.cid, usd: g.usd, tokens: tokens.slice(0, MAX_TOKENS), more: Math.max(0, tokens.length - MAX_TOKENS), gas: gas.get(g.chain) || null };
+    return { chain: g.chain, cid: g.cid, usd: g.usd, tokens: tokens.slice(0, MAX_TOKENS), more: Math.max(0, tokens.length - MAX_TOKENS), rest: tokens.slice(MAX_TOKENS, MAX_TOKENS + MAX_REST).map((x) => ({ sym: x.sym, addr: x.addr })), gas: gas.get(g.chain) || null };
   });
   const defiList = [...defi.values()].sort(byUsd).map((g) => ({ ...g, items: g.items.sort(byUsd) }));
   return {

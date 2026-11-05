@@ -6,18 +6,26 @@
 // 投递只能:替换看板的几份 JSON;新建待发、收件,或者改它们 Claude 写的部分(mine)。永远不碰管理员点的状态、决定、备注、改过的草稿;
 // 待发一旦被管理员点过「已发 / 跳过」,草稿和目标帖子就不能再改;目标帖子的编号建好以后不能换;回帖和自己发的帖子建好以后不能互换;
 // 项目帖引用的原帖建好以后不能换、不能去掉(原来没有的,管理员没改过草稿才能补上)。
+// 问题记录(problems,见 cleanProblem):按帖子编号新建或更新(库里只存编号的哈希),分类以最新送来的为准;replied 只会从 false 变 true;
+// 到期删过的不再写回链接和账号。
+// 按要求删过的(gone 里有它的 goneKey,见 db.js):那条帖子收件、待发、问题记录都不收,哪个字段带着它都不收
+// (收件的编号、链接、要回的那条;待发的目标帖子、引用的原帖、回复链接),删过的那张待发卡片也不收;收件评论到期删过的,收件不收。
+// 查 gone 和写是同一句(和管理员点「删除」同时来也写不回去);没写进去的,回执里写明为什么。一包待发、收件、问题记录各最多 50 条。
 // 草稿入库前检查:不许出现私信、客服、加群、转账、授权、助记词、私钥、找回、领取、recover、claim、返佣等词;链接分三种(回复写法 11-05):
 //   对人的首回(待发里回别人的)一个链接、域名都不许带,连 defiexit.com 也不带(对方接着问了,续答再给);
 //   项目帖只许 defiexit.com(引用的原帖另放 quote);收件里的续答许 defiexit.com,加上运营规则(rules.officialHosts)列的官方网址。
 // 只查送进来的草稿,库里原有的不回头查(照常显示)。不合格的那一条不入库,回执里写明哪条为什么;回执不含任何库里的数据。
 
-import { iso, plusDays, KEEP_DAYS, DOC_KEYS, docStmt, getKv, getDoc, getDocs, goneSet } from "./db.js";
+import { iso, plusDays, KEEP_DAYS, DOC_KEYS, docStmt, getKv, getDoc, getDocs, existing, goneKey, expKey, NOT_GONE, goneArg, outKeys, inKeys, sameRefs, sameInRefs, bjDay, problemKey, PROBLEM_TYPES, PROBLEM_SOURCES } from "./db.js";
 import { unb64u, sha256 } from "./auth.js";
+import { ASCII_HOST, IPV4, UNICODE_HOST, DOTS, TLD_GLUED, NAME_RULE, RISK_RULE, plainName, softName } from "./names.js";
 
 export const SKEW_MS = 10 * 60 * 1000;
 export const MAX = { draft: 1000, short: 300, doc: 200 * 1024, items: 50, perDay: 200, body: 512 * 1024 };
 
 export const signedText = (envName, method, path, raw) => `dx-ingest-v1\n${envName}\n${method}\n${path}\n${raw}`;
+// 回执里没收的几种说法:按要求删过的;管理员点过「已发 / 跳过」的待发;没人点过、30 天到了自己删过的待发
+const GONE_WHY = "管理员按要求删过,不再收", HANDLED_WHY = "管理员已经处理过,草稿不再改", EXPIRED_OUT_WHY = "30 天到期删过,不再改";
 
 export async function verify(text, sigB64u, pubList) {
   if (!sigB64u) return false;
@@ -38,18 +46,11 @@ const ALLOWED_HOSTS = ["defiexit.com", "www.defiexit.com"];
 export const outHosts = (mine) => (mine && mine.kind === "post" ? ALLOWED_HOSTS : []);
 // 收件续答许带的网址:本站,加上运营规则里列的官方网址(入库时已经查过格式)
 const inHosts = (rules) => [...ALLOWED_HOSTS, ...(rules && Array.isArray(rules.officialHosts) ? rules.officialHosts : [])];
-// 链接的几种写法:带协议的(任何 xxx://)、英文域名(含 xn-- 编码的)、IP 地址、中文域名(汉字之间夹着英文句点)
+// 链接的几种写法:带协议的(任何 xxx://)、英文域名(含 xn-- 编码的)、IP 地址、中文域名(汉字之间夹着英文句点);
+// 后几种和「长得像句点的」(DOTS)、「最后一段紧跟着别的文字」(TLD_GLUED)在 names.js,协议、链的名字检查也用
 const SCHEME = /[a-z][a-z0-9+.-]{1,20}:\/\/[^\s]*/gi;
-const ASCII_HOST = /[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\.(?:[a-z]{2,63}|xn--[a-z0-9-]{2,59})(?![a-z0-9-])/gi;
-const IPV4 = /(?:^|[^\d.])\d{1,3}(?:\.\d{1,3}){3}(?![\d.])/;
-const UNICODE_HOST = /[^\x00-\x7f]\.[\p{L}\p{N}]|[\p{L}\p{N}]\.[^\x00-\x7f]/u; // 英文句点紧挨着汉字等非英文字符
-// 长得像句点的:中文句号「。」、全角「．」、半角「｡」,浏览器都当成网址里的点(evil。com 就是 evil.com)。夹在英文字母、数字之间的先换成点再找;
-// 夹在汉字之间的是正常的句号,不动
-const DOTS = /(?<=[a-z0-9-])[\u3002\uff0e\uff61](?=[a-z0-9-])/gi;
 // 英文域名前后紧挨着字母、数字(哪种文字都算)、附加符号、连字号或下划线:真正的主机名比找到的长(éblast.io 其实是 xn--blast-9ra.io),当可疑网址
 const GLUED_BEFORE = /[\p{L}\p{N}\p{M}_-]$/u, GLUED_AFTER = /^[\p{L}\p{N}\p{M}_-]/u;
-// 最后一段是英文字母、紧跟着别的文字的字母(blast.ió):上面的英文域名找不出来,一样当可疑网址
-const TLD_GLUED = /[a-z0-9-]\.[a-z]+(?![\x00-\x7f])[\p{L}\p{N}\p{M}]/iu;
 function hostOf(s) {
   try { return new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(s) ? s : "http://" + s).hostname.toLowerCase().replace(/\.$/, ""); } catch { return null; }
 }
@@ -83,23 +84,40 @@ export function checkText(s, max = MAX.draft, hosts = ALLOWED_HOSTS) {
 }
 
 const str = (v, max = MAX.short) => (typeof v === "string" && v.trim() ? v.trim().slice(0, max) : undefined);
-const tweetId = (v) => (/^\d{1,25}$/.test(String(v ?? "")) ? String(v) : undefined);
-const xUrl = (v) => (/^https:\/\/(x|twitter)\.com\/[A-Za-z0-9_]{1,15}\/status\/\d{1,25}$/.test(String(v ?? "")) ? String(v) : undefined);
-const handle = (v) => (/^[A-Za-z0-9_]{1,15}$/.test(String(v ?? "")) ? String(v) : undefined);
+// 先看类型再转成文字:只转文字和数字,别的(对象、数组、true / false)一律当没写。不拿对象当文字转({"toString": null} 一转就报错,连累整包)
+const txt = (v) => (typeof v === "string" ? v : typeof v === "number" ? String(v) : "");
+const tweetId = (v) => (/^\d{1,25}$/.test(txt(v)) ? txt(v) : undefined);
+const xUrl = (v) => (/^https:\/\/(x|twitter)\.com\/[A-Za-z0-9_]{1,15}\/status\/\d{1,25}$/.test(txt(v)) ? txt(v) : undefined);
+const handle = (v) => (/^[A-Za-z0-9_]{1,15}$/.test(txt(v)) ? txt(v) : undefined);
 const when = (v) => (typeof v === "string" && !Number.isNaN(Date.parse(v)) ? v : undefined);
-const itemId = (v) => (/^[a-z0-9][a-z0-9-]{2,63}$/.test(String(v ?? "")) ? String(v) : undefined);
+const itemId = (v) => (/^[a-z0-9][a-z0-9-]{2,63}$/.test(txt(v)) ? txt(v) : undefined);
 const drop = (o) => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined));
+const isBox = (v) => v !== null && typeof v === "object";
+// 该是一个值(文字、数字、true / false)的字段送来了对象或数组:回字段名,这一条整条不收(同一包里别的照收)
+const oddField = (o, keys, pre = "") => { const k = keys.find((f) => isBox(o[f])); return k ? pre + k : null; };
+const ODD = " 格式不对(不能是对象或数组)";
 
 // 待发有两种:回别人的帖子(要目标帖子),或者自己发一条新帖(kind: "post",没有目标帖子,topic 是一句话的题目,quote 可选:引用的官方原帖)
 export function cleanOut(x) {
   const id = itemId(x?.id);
   if (!id) return { error: "id 不合格" };
+  // 卡片编号和帖子编号的按要求删标记是同一种算法(goneKey):全是数字的卡片编号会和帖子编号撞在一起(删这张卡片会挡住同号的帖子),不收。
+  // 这一版上线时核过正式库:47 张卡片没有全是数字的(11-06 导出),旧数据不用另外处理
+  if (/^\d+$/.test(id)) return { id, error: "id 不能全是数字(会和帖子编号混在一起),写成 r-xxx、p-xxx 这种" };
+  const odd = oddField(x, ["kind", "quote", "draft", "why", "topic", "replyUrl"])
+    || (isBox(x.target) ? oddField(x.target, ["id", "handle", "url", "postedAt", "protocol", "chain", "type", "summary"], "target.") : null);
+  if (odd) return { id, error: odd + ODD };
   const post = x.kind === "post";
   if (!post && x.kind !== undefined) return { id, error: "kind 只能不写(回帖)或写 post(自己发的帖子)" };
   let target;
+  const notes = []; // 卡片照收、只是某一项没存的,回执里各写一句
   if (!post) {
     const t = x.target || {};
-    target = drop({ id: tweetId(t.id), handle: handle(t.handle), url: xUrl(t.url), postedAt: when(t.postedAt), protocol: str(t.protocol, 60), chain: str(t.chain, 40), type: str(t.type, 40), summary: str(t.summary, 200) });
+    // 协议、链到期也留着:按 names.js 的 softName 统一写法(「Blast L2 → 以太坊」存成「Blast L2 - 以太坊」),
+    // 能认出人、帖子、钱包的这一项不存,卡片照收
+    const protocol = softName(t.protocol, 60), chain = softName(t.chain, 40);
+    for (const [f, v] of [["protocol", protocol], ["chain", chain]]) if (v === null) notes.push(`target.${f} 没存(${RISK_RULE}),这张卡片照收`);
+    target = drop({ id: tweetId(t.id), handle: handle(t.handle), url: xUrl(t.url), postedAt: when(t.postedAt), protocol: protocol || undefined, chain: chain || undefined, type: str(t.type, 40), summary: str(t.summary, 200) });
     if (!target.id || !target.url || !target.url.endsWith("/status/" + target.id)) return { id, error: "目标帖子的编号或链接不合格(两者要对得上)" };
   }
   // 项目帖可以引用一条官方在 X 上的原帖(quote):发出去下面带着原帖的卡片;链接不写进草稿,草稿照样只许 defiexit.com
@@ -108,13 +126,15 @@ export function cleanOut(x) {
   const bad = checkText(x.draft, MAX.draft, outHosts(x));
   if (bad) return { id, error: "草稿" + bad };
   const mine = post ? drop({ kind: "post", topic: str(x.topic, 40), quote, why: str(x.why), draft: x.draft.trim() }) : drop({ target, why: str(x.why), draft: x.draft.trim() });
-  return { id, mine, replyUrl: xUrl(x.replyUrl) };
+  return { id, mine, replyUrl: xUrl(x.replyUrl), notes };
 }
 
 // hosts:续答许带的网址(本站 + 运营规则里的官方网址)
 export function cleanIn(x, hosts = ALLOWED_HOSTS) {
   const id = tweetId(x?.id);
   if (!id) return { error: "id 要是评论的帖子编号" };
+  const odd = oddField(x, ["source", "url", "author", "at", "type", "need", "suggestion", "suggestionWhy", "draft", "replyToId", "yourReply", "text", "replied", "repliedAt"]);
+  if (odd) return { id, error: odd + ODD };
   if (x.draft != null) {
     const bad = checkText(x.draft, MAX.draft, hosts);
     if (bad) return { id, error: "草稿" + bad };
@@ -125,6 +145,32 @@ export function cleanIn(x, hosts = ALLOWED_HOSTS) {
     suggestionWhy: str(x.suggestionWhy), draft: typeof x.draft === "string" ? x.draft.trim() : undefined, replyToId: tweetId(x.replyToId), yourReply: str(x.yourReply, MAX.draft),
   });
   return { id, mine, text: str(x.text, 2000), replied: x.replied === true, repliedAt: when(x.repliedAt) };
+}
+
+// 问题记录:X 上说自己钱卡住的一条帖子(source:机器人找到的 bot、官方公告底下的评论 announcement、我们帖子底下的评论 comment)。
+// 编号要写成字符串(帖子编号比 JSON 数字能准确表示的大,写成数字会悄悄变成别的编号);种类、来源只认那几个;
+// day 是帖子发的那天(北京时间),不能晚于今天;链接要和编号对得上,账号不带 @;协议、链太长截掉。chain、url、handle 可以不写。
+// 每个字段先看类型再用(不拿别的东西当文字转),格式不对的只拒这一条,不连累同一包里别的
+const ymd = (v) => { const t = typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) ? Date.parse(v + "T00:00:00Z") : NaN; return Number.isFinite(t) && iso(t).slice(0, 10) === v ? v : undefined; };
+// 协议、链只收名字(names.js 的 plainName,规则见 NAME_RULE):这两样到期也不删,能认出人、帖子、钱包的整条不收
+export function cleanProblem(x, now) {
+  const id = typeof x?.id === "string" ? tweetId(x.id) : undefined;
+  if (!id) return { error: "id 要是帖子编号(写成字符串)" };
+  if (!PROBLEM_TYPES.includes(x.type)) return { id, error: "type 只能是 " + PROBLEM_TYPES.join("、") };
+  if (!PROBLEM_SOURCES.includes(x.source)) return { id, error: "source 只能是 " + PROBLEM_SOURCES.join("、") };
+  const protocol = plainName(x.protocol, 60), chain = plainName(x.chain, 40);
+  if (protocol === undefined) return { id, error: "缺 protocol(协议名,文字)" };
+  if (protocol === null) return { id, error: "protocol " + NAME_RULE };
+  if (x.chain != null && typeof x.chain !== "string") return { id, error: "chain 要是文字" };
+  if (chain === null) return { id, error: "chain " + NAME_RULE };
+  const day = ymd(x.day);
+  if (!day || day > bjDay(+now + SKEW_MS)) return { id, error: "day 要是帖子发的那天(北京时间,写成 2026-11-05),不能晚于今天" };
+  if (x.replied != null && typeof x.replied !== "boolean") return { id, error: "replied 只能是 true 或 false" };
+  const url = typeof x.url === "string" ? xUrl(x.url) : undefined;
+  if (x.url != null && (!url || !url.endsWith("/status/" + id))) return { id, error: "链接不合格(要 https://x.com/账号/status/编号,编号和 id 一样)" };
+  const who = typeof x.handle === "string" ? handle(x.handle) : undefined;
+  if (x.handle != null && !who) return { id, error: "handle 不合格(X 账号名,不带 @)" };
+  return { id, protocol, chain, type: x.type, source: x.source, day, replied: x.replied === true, url, handle: who };
 }
 
 // 看板 JSON:逐项查形状(页面渲染时还会再兜一层);数字不许是负数或特别大
@@ -151,7 +197,8 @@ const SHAPES = {
 function cleanDoc(k, v) {
   if (!DOC_KEYS.includes(k) || !isObj(v)) return "不认识的看板项";
   if (JSON.stringify(v).length > MAX.doc) return "太大";
-  return SHAPES[k](v) ? null : "格式不对";
+  // 形状检查里有把值当文字转的地方:该是文字的地方送来 {"toString": null} 这种,一转就报错,只算这一项格式不对
+  try { return SHAPES[k](v) ? null : "格式不对"; } catch { return "格式不对"; }
 }
 
 // x_posts 有两个写的人:管理员点「刷新」时服务器追加读数,Claude 投递时带来本地记的读数。按帖子、按时间合并,谁的都不丢
@@ -174,7 +221,7 @@ export async function ingest(db, { raw, sig, envName, method, path, pubkeys }, n
   try { body = JSON.parse(raw); } catch { return { status: 400, body: { error: "bad" } }; }
   if (!body || typeof body !== "object" || body.v !== 1) return { status: 400, body: { error: "bad" } };
   if (typeof body.ts !== "number" || Math.abs(+now - body.ts) > SKEW_MS) return { status: 401, body: { error: "stale" } };
-  if (!/^[A-Za-z0-9_-]{16,64}$/.test(String(body.nonce || ""))) return { status: 400, body: { error: "nonce" } };
+  if (isBox(body.nonce) || !/^[A-Za-z0-9_-]{16,64}$/.test(String(body.nonce || ""))) return { status: 400, body: { error: "nonce" } };
   // 一次只处理一包(两包同时到,后到的回 busy):「比上一包新」的检查和写入之间不会被别的包插进来。锁 60 秒没放就算失效
   const lock = await db.prepare("INSERT INTO kv (k, v) VALUES ('ingest_lock', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v WHERE CAST(kv.v AS INTEGER) < ?").bind(String(+now), +now - 60000).run();
   if (!lock.meta || lock.meta.changes !== 1) return { status: 409, body: { error: "busy" } };
@@ -200,13 +247,13 @@ async function locked(db, raw, body, now) {
     db.prepare("INSERT INTO kv (k, v) VALUES ('ingest_ts', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(String(body.ts)),
     db.prepare("INSERT INTO kv (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind("ingest_day:" + day, String(used + 1)),
   ];
-  let docs = 0, outN = 0, inN = 0, setup = false;
+  let docs = 0, setup = false;
   // 一次性设置链接:我在本机生成一串随机码,只把它的 SHA-256 送进来;还没有管理员时才收,最多 48 小时有效
   if (body.setup !== undefined) {
     const s = body.setup;
     const hasAdmin = await db.prepare("SELECT 1 FROM admin WHERE id = 1").first();
     if (hasAdmin) rejected.push({ kind: "setup", id: "setup", why: "已经有管理员了" });
-    else if (!s || !/^[0-9a-f]{64}$/.test(String(s.hash)) || !(s.hours > 0 && s.hours <= 48)) rejected.push({ kind: "setup", id: "setup", why: "格式不对" });
+    else if (!s || isBox(s.hash) || isBox(s.hours) || !/^[0-9a-f]{64}$/.test(String(s.hash)) || !(s.hours > 0 && s.hours <= 48)) rejected.push({ kind: "setup", id: "setup", why: "格式不对" });
     else {
       stmts.push(db.prepare("INSERT INTO kv (k, v) VALUES ('setup_hash', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(s.hash));
       stmts.push(db.prepare("INSERT INTO kv (k, v) VALUES ('setup_exp', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(String(+now + s.hours * 3600e3)));
@@ -224,63 +271,133 @@ async function locked(db, raw, body, now) {
     docs++;
   }
 
-  const outs = Array.isArray(body.outbox) ? body.outbox.slice(0, MAX.items) : [];
-  const ins = Array.isArray(body.inbox) ? body.inbox.slice(0, MAX.items) : [];
+  // 待发、收件、问题记录一包各最多 MAX.items 条,多的不收,回执里写明(下一包再送)
+  const cap = (kind, list) => {
+    if (!Array.isArray(list)) return [];
+    if (list.length > MAX.items) rejected.push({ kind, id: "?", why: `一包最多 ${MAX.items} 条:第 ${MAX.items + 1} 条起的 ${list.length - MAX.items} 条没收,下一包再送` });
+    return list.slice(0, MAX.items);
+  };
+  const outs = cap("outbox", body.outbox), ins = cap("inbox", body.inbox), probIn = cap("problems", body.problems);
   const ids = outs.map((x) => itemId(x?.id)).filter(Boolean);
   const have = new Map();
   if (ids.length) {
-    const { results } = await db.prepare(`SELECT id, mine, status, purged, draft_admin FROM outbox WHERE id IN (${ids.map(() => "?").join(",")})`).bind(...ids).all();
+    const { results } = await db.prepare(`SELECT id, mine, status, purged, draft_admin, reply_url, sent_target FROM outbox WHERE id IN (${ids.map(() => "?").join(",")})`).bind(...ids).all();
     for (const r of results) have.set(r.id, r);
   }
-  const gone = await goneSet(db, [...ids, ...ins.map((x) => String(x?.id ?? ""))].filter(Boolean));
+  // 待发、收件、问题记录每写一句记一笔 { at: 在 stmts 里的位置, kind, id, how: 新建 / 改 / 补链接, gone: 挡它的 goneKey, exp: 收件到期的标记, notes }:
+  // 按要求删过的、到期删过的不先查,直接写在语句的条件里(查和写同一句);写完看改了几行,0 行的就是被挡住了,回执里写明为什么。
+  // 改已有的一行(待发改草稿、补链接,收件补分析):查的是改完以后这一行还带着的帖子,没写的那几样用读到的、在语句里核对没变过(见 db.js 的 sameRefs)
+  const writes = [];
+  const added = new Set(); // 这一包新建的待发:同一张新卡片送了两遍,第二遍不收(两句新建撞在一起,整包都写不进去)
   for (const x of outs) {
     const c = cleanOut(x);
     if (c.error) { rejected.push({ kind: "outbox", id: c.id || "?", why: c.error }); continue; }
-    if (gone.has(c.id)) { rejected.push({ kind: "outbox", id: c.id, why: "管理员按要求删过,不再收" }); continue; }
     const old = have.get(c.id);
+    if (!old && added.has(c.id)) { rejected.push({ kind: "outbox", id: c.id, why: "同一包里重复了,只收第一条" }); continue; }
     if (!old) {
-      stmts.push(db.prepare("INSERT INTO outbox (id, mine, reply_url, created_at, updated_at, purge_after) VALUES (?, ?, ?, ?, ?, ?)").bind(c.id, JSON.stringify(c.mine), c.replyUrl ?? null, t, t, plusDays(now, KEEP_DAYS)));
+      // 新建:这张卡片,和它带着的每条帖子(要回的帖子、引用的原帖、这次送来的回复链接),按要求删过的都不收
+      const gone = await outKeys(c.id, c.mine, c.replyUrl, null);
+      added.add(c.id);
+      writes.push({ kind: "outbox", id: c.id, gone, notes: c.notes, at: stmts.length, how: "new" });
+      stmts.push(db.prepare(`INSERT INTO outbox (id, mine, reply_url, created_at, updated_at, purge_after) SELECT ?, ?, ?, ?, ?, ? WHERE ${NOT_GONE}`).bind(c.id, JSON.stringify(c.mine), c.replyUrl ?? null, t, t, plusDays(now, KEEP_DAYS), goneArg(gone)));
     } else {
       const oldMine = (() => { try { return JSON.parse(old.mine) || {}; } catch { return {}; } })();
       if ((oldMine.kind || "reply") !== (c.mine.kind || "reply")) { rejected.push({ kind: "outbox", id: c.id, why: "回帖和自己发的帖子不能互换" }); continue; }
       const oldTarget = oldMine.target?.id;
       if (oldTarget && oldTarget !== c.mine.target?.id) { rejected.push({ kind: "outbox", id: c.id, why: "目标帖子不能换" }); continue; }
       if (old.purged || old.status !== "待发") {
-        // 管理员点过了(或已到期删过):只许给「已发」且没到期删过的补他那条回复的链接
-        if (c.replyUrl && !old.purged && old.status === "已发") stmts.push(db.prepare("UPDATE outbox SET reply_url = ?, updated_at = ? WHERE id = ? AND status = '已发' AND purged = 0").bind(c.replyUrl, t, c.id));
-        else rejected.push({ kind: "outbox", id: c.id, why: "管理员已经处理过,草稿不再改" });
+        // 管理员点过了(或已到期删过):只许给「已发」且没到期删过的补他那条回复的链接。
+        // 改完以后还带着库里的 mine(目标帖子、引用的原帖)和点「已发」记下的目标:语句里核对它们没变,和新链接一起查 gone
+        if (c.replyUrl && !old.purged && old.status === "已发") {
+          const gone = await outKeys(c.id, oldMine, c.replyUrl, old.sent_target);
+          const [same, sameArgs] = sameRefs(oldMine);
+          writes.push({ kind: "outbox", id: c.id, gone, notes: [], at: stmts.length, how: "link" });
+          stmts.push(db.prepare(`UPDATE outbox SET reply_url = ?, updated_at = ? WHERE id = ? AND status = '已发' AND purged = 0 AND ${same} AND sent_target IS ? AND ${NOT_GONE}`).bind(c.replyUrl, t, c.id, ...sameArgs, old.sent_target ?? null, goneArg(gone)));
+        } else rejected.push({ kind: "outbox", id: c.id, why: old.purged ? EXPIRED_OUT_WHY : HANDLED_WHY }); // 到期删过的先说到期(点过「已发」的也一样)
       } else {
         // 引用的原帖建好以后不能换、不能去掉(老板可能已经照着它改了草稿);原来没有的,老板没改过草稿才能补上
         const oldQuote = oldMine.quote || null, newQuote = c.mine.quote || null;
         if (oldQuote !== newQuote && (oldQuote || old.draft_admin != null)) { rejected.push({ kind: "outbox", id: c.id, why: "引用的原帖建好以后不能换" }); continue; }
-        // 条件写在语句里:读和写之间管理员点了「已发 / 跳过」(补引用时还有:改了草稿),这条就不改
-        stmts.push(db.prepare("UPDATE outbox SET mine = ?, reply_url = COALESCE(?, reply_url), updated_at = ? WHERE id = ? AND status = '待发' AND purged = 0" + (oldQuote !== newQuote ? " AND draft_admin IS NULL" : "")).bind(JSON.stringify(c.mine), c.replyUrl ?? null, t, c.id));
+        // 条件写在语句里:读和写之间管理员点了「已发 / 跳过」(补引用时还有:改了草稿),这条就不改。
+        // 这次没送回复链接的,留着库里那条(和点「已发」记下的目标一样,语句里核对没变),一起查 gone
+        const gone = await outKeys(c.id, c.mine, c.replyUrl || old.reply_url, old.sent_target);
+        writes.push({ kind: "outbox", id: c.id, gone, notes: c.notes, at: stmts.length, how: "edit" });
+        stmts.push(db.prepare("UPDATE outbox SET mine = ?, " + (c.replyUrl ? "reply_url = ?, " : "") + "updated_at = ? WHERE id = ? AND status = '待发' AND purged = 0" + (oldQuote !== newQuote ? " AND draft_admin IS NULL" : "") +
+          " AND sent_target IS ?" + (c.replyUrl ? "" : " AND reply_url IS ?") + ` AND ${NOT_GONE}`)
+          .bind(JSON.stringify(c.mine), ...(c.replyUrl ? [c.replyUrl] : []), t, c.id, old.sent_target ?? null, ...(c.replyUrl ? [] : [old.reply_url ?? null]), goneArg(gone)));
       }
     }
-    outN++;
   }
 
   if (!rules && ins.some((x) => x && x.draft != null)) rules = await getDoc(db, "rules");
   const hosts = inHosts(rules);
+  // 收件里已经有的:改完以后还带着库里的链接、要回的那条(这次没送的就留着),先读出来
+  const inIds = ins.map((x) => tweetId(x?.id)).filter(Boolean);
+  const inHave = new Map(inIds.length ? (await db.prepare("SELECT id, mine FROM inbox WHERE id IN (SELECT value FROM json_each(?))").bind(JSON.stringify(inIds)).all()).results.map((r) => [r.id, r]) : []);
   for (const x of ins) {
     const c = cleanIn(x, hosts);
     if (c.error) { rejected.push({ kind: "inbox", id: c.id || "?", why: c.error }); continue; }
-    if (gone.has(c.id)) { rejected.push({ kind: "inbox", id: c.id, why: "管理员按要求删过,不再收" }); continue; }
-    // 原文只在新建时写;到期删过的不再补回;回复保留期从第一次入库算,更新不重置;replied 只会从 0 变 1
+    // 原文只在新建时写;到期删过的不再补回;回复保留期从第一次入库算,更新不重置;replied 只会从 0 变 1。
+    // 这条评论和它改完以后带着的帖子(链接里的、要回的那条:这次送的,没送的用库里的)按要求删过的、这条评论 30 天到期删过的(expKey),都不写;
+    // 库里那两样在语句里核对没变过
+    const om = (() => { try { return inHave.has(c.id) ? JSON.parse(inHave.get(c.id).mine) || {} : null; } catch { return {}; } })();
+    const after = { url: c.mine.url ?? om?.url, replyToId: c.mine.replyToId ?? om?.replyToId };
+    const k = await goneKey(c.id);
+    const gone = await inKeys(c.id, after);
+    const [same, sameArgs] = om ? sameInRefs(om, "inbox.mine") : ["1", []];
+    writes.push({ kind: "inbox", id: c.id, gone, exp: expKey(k), at: stmts.length, how: "put" });
     stmts.push(db.prepare(
-      "INSERT INTO inbox (id, mine, text, replied, replied_at, created_at, updated_at, purge_after) VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
+      `INSERT INTO inbox (id, mine, text, replied, replied_at, created_at, updated_at, purge_after) SELECT ?, ?, ?, ?, ?, ?, ?, ? WHERE ${NOT_GONE} ` +
       "ON CONFLICT(id) DO UPDATE SET mine = CASE WHEN inbox.purged = 1 THEN inbox.mine ELSE json_patch(inbox.mine, excluded.mine) END, " +
-      "replied = MAX(inbox.replied, excluded.replied), replied_at = COALESCE(inbox.replied_at, excluded.replied_at), updated_at = excluded.updated_at",
-    ).bind(c.id, JSON.stringify(c.mine), c.text ?? null, c.replied ? 1 : 0, c.repliedAt ?? null, t, t, plusDays(now, KEEP_DAYS)));
-    inN++;
+      `replied = MAX(inbox.replied, excluded.replied), replied_at = COALESCE(inbox.replied_at, excluded.replied_at), updated_at = excluded.updated_at WHERE ${same}`,
+    ).bind(c.id, JSON.stringify(c.mine), c.text ?? null, c.replied ? 1 : 0, c.repliedAt ?? null, t, t, plusDays(now, KEEP_DAYS), goneArg([...gone, expKey(k)]), ...sameArgs));
   }
 
+  // 问题记录:每条一句,和别的同一批写(库里的编号是哈希,见 db.js 的 problemKey):
+  // 按要求删过的(gone 里有那条帖子的 goneKey)不写;收件评论到期删过的照样能改;到期删过的问题记录只改分类和回没回,链接、账号不再写回;
+  // 保留期从第一次入库算,更新不重置;chain、url、handle 这次没写就留原来的
+  for (const x of probIn) {
+    const c = cleanProblem(x, now);
+    if (c.error) { rejected.push({ kind: "problems", id: c.id || "?", why: c.error }); continue; }
+    const key = await problemKey(c.id), gk = await goneKey(c.id);
+    writes.push({ kind: "problems", id: c.id, gone: [gk], at: stmts.length, how: "put" });
+    stmts.push(db.prepare(
+      `INSERT INTO problems (id, protocol, chain, type, source, day, replied, url, handle, created_at, updated_at, purge_after) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE ${NOT_GONE} ` +
+      "ON CONFLICT(id) DO UPDATE SET protocol = excluded.protocol, chain = COALESCE(excluded.chain, problems.chain), type = excluded.type, source = excluded.source, day = excluded.day, replied = MAX(problems.replied, excluded.replied), " +
+      "url = CASE WHEN problems.purged = 1 THEN NULL ELSE COALESCE(excluded.url, problems.url) END, handle = CASE WHEN problems.purged = 1 THEN NULL ELSE COALESCE(excluded.handle, problems.handle) END, updated_at = excluded.updated_at",
+    ).bind(key, c.protocol, c.chain ?? null, c.type, c.source, c.day, c.replied ? 1 : 0, c.url ?? null, c.handle ?? null, t, t, plusDays(now, KEEP_DAYS), goneArg([gk])));
+  }
+
+  let res;
   try {
-    await db.batch(stmts);
+    res = await db.batch(stmts);
   } catch (e) {
     // 同一个 nonce 同时投两次:后到的那批整个回滚
     if (/UNIQUE|constraint/i.test(String(e && e.message))) return { status: 409, body: { error: "replay" } };
     throw e;
   }
-  return { status: 200, body: { ok: true, receipt: (await sha256(raw)).slice(0, 16), docs, outbox: outN, inbox: inN, setup, rejected } };
+  // 改了几行:0 行的是写的时候被挡住了。查一次 gone 看是哪种:按要求删过的、收件到期删过的;
+  // 都不是的(只有待发的「改」「补链接」会这样),再看一眼那几行现在的样子:读和写之间到期删了(就说到期删过,补链接的也一样),
+  // 还是管理员点了「已发 / 跳过」、改了草稿。
+  // 写上了、只是某一项没存的(协议、链),也写进回执
+  const changed = (w) => Number((res && res[w.at] && res[w.at].meta && res[w.at].meta.changes) || 0) > 0;
+  const missed = writes.filter((w) => !changed(w));
+  const hit = missed.length ? await existing(db, "gone", missed.flatMap((w) => (w.exp ? [...w.gone, w.exp] : w.gone))) : new Set();
+  const late = missed.filter((w) => w.kind === "outbox" && w.how !== "new" && !w.gone.some((k) => hit.has(k))).map((w) => w.id);
+  const rowNow = new Map(late.length ? (await db.prepare("SELECT id, status, purged FROM outbox WHERE id IN (SELECT value FROM json_each(?))").bind(JSON.stringify(late)).all()).results.map((r) => [r.id, r]) : []);
+  const count = { outbox: 0, inbox: 0, problems: 0 };
+  for (const w of writes) {
+    if (changed(w)) {
+      count[w.kind]++;
+      for (const n of w.notes || []) rejected.push({ kind: w.kind, id: w.id, why: n });
+      continue;
+    }
+    const r = rowNow.get(w.id);
+    const why = w.gone.some((k) => hit.has(k)) ? GONE_WHY
+      : w.exp && hit.has(w.exp) ? "30 天到期删过,不再收"
+      : w.kind === "outbox" && w.how !== "new" ? (!r ? GONE_WHY : r.purged ? EXPIRED_OUT_WHY : "管理员刚处理过这条(点了「已发 / 跳过」或改了草稿),这次没改")
+      : "这次没写进去,下一包再送";
+    rejected.push({ kind: w.kind, id: w.id, why });
+  }
+  return { status: 200, body: { ok: true, receipt: (await sha256(raw)).slice(0, 16), docs, outbox: count.outbox, inbox: count.inbox, problems: count.problems, setup, rejected } };
 }

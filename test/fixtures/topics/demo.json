@@ -1,0 +1,20 @@
+{
+  "slug": "demo",
+  "checked": "2026-11-05",
+  "title": {"zh": "示例专题:网站下线以后", "en": "Sample topic: after a website goes offline"},
+  "summary": {"zh": "测试用的样例,不是真内容:**网站**没了,钱还在合约里。", "en": "A test sample, not real content: the **website** is gone, the money is still in the contract."},
+  "sections": [
+    {"h": {"zh": "发生了什么", "en": "What happened"}, "p": [{"zh": "网站下线,不等于合约停了。", "en": "A website going offline doesn't mean the contract stopped."}, {"zh": "先看官方公告,网址写成 `example.com` 这样的文字。", "en": "Read the official notice first; addresses are written as text, like `example.com`."}]},
+    {"h": {"zh": "该做什么", "en": "What to do"}, "list": [{"zh": "只信官方链接", "en": "Only trust official links"}, {"zh": "签名前看清弹窗", "en": "Read the pop-up before you sign"}]},
+    {"h": {"zh": "还有疑问", "en": "Still unsure"}, "p": [{"zh": "拿不准就先停下。", "en": "If in doubt, stop."}], "list": [{"zh": "别信私信", "en": "Ignore DMs"}]}
+  ],
+  "faq": [
+    {"q": {"zh": "网站没了还能取吗?", "en": "Can I still withdraw without the website?"}, "a": {"zh": "看官方怎么说。", "en": "It depends on what the project says."}},
+    {"q": {"zh": "要不要给别人助记词?", "en": "Should I give anyone my seed phrase?"}, "a": {"zh": "不要。", "en": "No."}}
+  ],
+  "related": ["sophon-chain-shutdown", "woofi"],
+  "sources": [
+    {"label": {"zh": "示例来源一", "en": "Sample source one"}, "url": "https://example.com/one"},
+    {"label": {"zh": "示例来源二", "en": "Sample source two"}, "url": "https://example.com/two?a=1&b=2"}
+  ]
+}

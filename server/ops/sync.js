@@ -9,7 +9,8 @@
 // - 待发里管理员点过「已发」的,去目标帖子底下找他那条回复,找到就填上链接(这才算核到,不靠自报)。
 // 读不到的帖子写进 errors(带原因),页面明说「不算没有新评论」;接口给的回复比帖子显示的少,也标「可能没读全」。两分钟内只许刷一次(按钮和定时任务共用)。
 
-import { iso, plusDays, KEEP_DAYS, getDocs, docStmt, existing, goneSet } from "./db.js";
+import { iso, plusDays, KEEP_DAYS, getDocs, docStmt, existing, goneKeys, inboxGone, expKey, NOT_GONE, goneArg, outKeys, inKeys, sameRefs, sameInRefs } from "./db.js";
+import { softName } from "./names.js";
 
 export const UPSTREAM = "https://api.fxtwitter.com/2/conversation/";
 export const MIN_GAP_MS = 120 * 1000;
@@ -138,7 +139,13 @@ export async function sync(db, fetchImpl, now) {
     const mineReply = (j.replies || []).find((q) => q.replying_to && String(q.replying_to.status) === target && ours.has(String(q.author && q.author.id)));
     if (mineReply && /^\d{1,25}$/.test(String(mineReply.id)) && /^[A-Za-z0-9_]{1,15}$/.test(String(mineReply.author.screen_name))) {
       const url = `https://x.com/${mineReply.author.screen_name}/status/${mineReply.id}`;
-      links.push(db.prepare("UPDATE outbox SET reply_url = ?, updated_at = ? WHERE id = ?").bind(url, t, r.id));
+      // 条件写在语句里:读和写之间到期删了(目标帖子的编号已经清掉)、被别处改了(目标、引用、记下的目标、已经有的链接),就不写;
+      // 改完以后这张卡片带着的帖子(要回的帖子、这条回复)、卡片本身按要求删过的,也不写
+      let mine = {};
+      try { mine = JSON.parse(r.mine) || {}; } catch { /* 读不出:按空的核对,对不上就不写 */ }
+      const [same, sameArgs] = sameRefs(mine);
+      links.push(db.prepare(`UPDATE outbox SET reply_url = ?, updated_at = ? WHERE id = ? AND purged = 0 AND reply_url IS NULL AND sent_target IS ? AND ${same} AND ${NOT_GONE}`)
+        .bind(url, t, r.id, r.sent_target ?? null, ...sameArgs, goneArg(await outKeys(r.id, mine, url, r.sent_target))));
       found.push({ ...r, reply_url: url }); // 这一次就接着读它(读数、别人接着回的)
     }
   }
@@ -154,7 +161,9 @@ export async function sync(db, fetchImpl, now) {
     let mine = {};
     try { mine = JSON.parse(r.mine) || {}; } catch { /* 读不出就只用编号 */ }
     const tg = mine.target || {};
-    const name = mine.kind === "post" ? "项目帖 · " + (mine.topic || r.id) : "我们的回复 · " + (tg.protocol || "@" + (tg.handle || "?"));
+    // 名字会存进这条回复底下评论的「来源」(到期以后还留在需求摘要里):不带对方账号;协议先过一遍名字检查
+    // (这一版以前收进来的卡片,协议里可能带着地址),没写或不合格的写卡片编号
+    const name = mine.kind === "post" ? "项目帖 · " + (mine.topic || r.id) : "我们的回复 · " + (softName(tg.protocol, 60) || r.id);
     list.push({ kind: "mine", id: m[1], name: clip(name, 40), out: r.id });
   }
   list.sort((a, b) => lastOf(a).localeCompare(lastOf(b)) || (a.kind === b.kind ? 0 : a.kind === "watch" ? -1 : 1));
@@ -167,7 +176,8 @@ export async function sync(db, fetchImpl, now) {
     comments.set(n.id, { id: n.id, focal: n.focal, mine: { source: clip(n.name, 40), url: `https://x.com/${n.sn}/status/${n.id}`, author: n.sn, at: n.at, replyToId: n.id }, text: n.text });
   }
 
-  // 新评论:读到的全部拿去查重(一条语句);收件里没有的先查到期删过的(全查,不设上限,免得删过的一直占着名额);
+  // 新评论:读到的全部拿去查重(一条语句);收件里没有的先查按要求删过、到期删过的(全查,不设上限,免得删过的一直占着名额;
+  // 写的时候同一句里再查一遍,和管理员点「删除」同时来也写不回去);
   // 被我们回过的全收(收进来就标已回复,证据不丢),其余最多再收 MAX_NEW 条:各条帖子轮流、每条先拿自己最新的(一条帖子评论再多也挤不掉别的);
   // 没收到的下次照样会再查,不会永远跳过。计数按数据库实际改动的行数
   const newest = (a, b) => b.length - a.length || (b > a ? 1 : b < a ? -1 : 0); // 帖子编号是数字串:长的大,一样长按字面比(比转成大整数省 CPU)
@@ -179,30 +189,38 @@ export async function sync(db, fetchImpl, now) {
     for (let i = 0; out.length < n && lanes.some((l) => i < l.length); i++) for (const l of lanes) if (i < l.length && out.length < n) out.push(l[i]);
     return out;
   };
-  const markStmt = (to, it) => db.prepare(
-    "UPDATE inbox SET replied = 1, replied_at = COALESCE(replied_at, ?), mine = CASE WHEN purged = 1 OR json_extract(mine, '$.yourReply') IS NOT NULL THEN mine ELSE json_set(mine, '$.yourReply', ?) END, updated_at = ? WHERE id = ? AND replied = 0",
-  ).bind(it.at, it.text, t, to);
+  // 标已回复:这一行的链接、要回的那条在语句里核对还是 refs 的样子(读的时候的,或这次刚收进来时写的),它们和这条评论按要求删过的就不标
+  const markStmt = async (to, it, refs) => {
+    const [same, sameArgs] = sameInRefs(refs);
+    return db.prepare(
+      "UPDATE inbox SET replied = 1, replied_at = COALESCE(replied_at, ?), mine = CASE WHEN purged = 1 OR json_extract(mine, '$.yourReply') IS NOT NULL THEN mine ELSE json_set(mine, '$.yourReply', ?) END, updated_at = ? " +
+      `WHERE id = ? AND replied = 0 AND ${same} AND ${NOT_GONE}`,
+    ).bind(it.at, it.text, t, to, ...sameArgs, goneArg(await inKeys(to, refs)));
+  };
   const all = [...comments.values()];
   const known = await existing(db, "inbox", all.map((c) => c.id));
   const unknown = all.filter((c) => !known.has(c.id));
-  const gone = await goneSet(db, unknown.map((c) => c.id));
+  const keys = await goneKeys(unknown.map((c) => c.id));
+  const gone = await inboxGone(db, keys);
   const fresh = unknown.filter((c) => !gone.has(c.id));
   const answered = fresh.filter((c) => ownerReplies.has(c.id));
   const others = fair(fresh.filter((c) => !ownerReplies.has(c.id)), MAX_NEW);
   const insAt = [], markAt = [];
   for (const c of [...answered, ...others]) {
     insAt.push(stmts.length);
-    stmts.push(db.prepare("INSERT INTO inbox (id, mine, text, created_at, updated_at, purge_after) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO NOTHING").bind(c.id, JSON.stringify(c.mine), c.text, t, t, plusDays(now, KEEP_DAYS)));
+    const k = keys.get(c.id); // 链接、要回的都是这条评论本身,查它一个就够
+    stmts.push(db.prepare(`INSERT INTO inbox (id, mine, text, created_at, updated_at, purge_after) SELECT ?, ?, ?, ?, ?, ? WHERE ${NOT_GONE} ON CONFLICT(id) DO NOTHING`).bind(c.id, JSON.stringify(c.mine), c.text, t, t, plusDays(now, KEEP_DAYS), goneArg([k, expKey(k)])));
   }
   const more = fresh.length > answered.length + others.length;
-  // 我们回了的:这次刚收进来的,和收件里已经有、还没标的(一条 json_each 查询),都标上已回复、记下回的话(新评论先写进去,再标;
-  // 刚收的那条要是同时被投递先写进去了,这一步照样标得上)
+  // 我们回了的:这次刚收进来的,和收件里已经有、还没标的(一条 json_each 查询,顺便读出它的链接、要回的那条),都标上已回复、记下回的话
+  // (新评论先写进去,再标;刚收的那条要是同时被投递先写进去了、链接对不上,这次不标,下次刷新按读到的再标)
   const fresh1 = new Set(answered.map((c) => c.id));
   const rest = [...ownerReplies.keys()].filter((id) => !fresh1.has(id));
-  const open = rest.length ? new Set((((await db.prepare("SELECT value AS id FROM json_each(?) WHERE value IN (SELECT id FROM inbox WHERE replied = 0)").bind(JSON.stringify(rest)).all()).results) || []).map((r) => String(r.id))) : new Set();
+  const open = new Map(rest.length ? ((await db.prepare("SELECT id, json_extract(mine, '$.url') AS url, json_extract(mine, '$.replyToId') AS rto FROM inbox WHERE replied = 0 AND id IN (SELECT value FROM json_each(?))").bind(JSON.stringify(rest)).all()).results || []).map((r) => [String(r.id), { url: r.url, replyToId: r.rto }]) : []);
   for (const to of [...fresh1, ...rest.filter((id) => open.has(id)).sort(newest).slice(0, MAX_NEW)]) {
     markAt.push(stmts.length);
-    stmts.push(markStmt(to, ownerReplies.get(to)));
+    const c = comments.get(to);
+    stmts.push(await markStmt(to, ownerReplies.get(to), fresh1.has(to) ? { url: c.mine.url, replyToId: c.mine.replyToId } : open.get(to)));
   }
   stmts.push(...links);
 

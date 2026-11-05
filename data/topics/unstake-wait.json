@@ -1,0 +1,313 @@
+{
+  "slug": "unstake-wait",
+  "checked": "2026-11-05",
+  "title": {
+    "zh": "解除质押要等多久？",
+    "en": "How long does unstaking take?"
+  },
+  "summary": {
+    "zh": "看协议，而且多数要做两步：先申请，等满，再回来点一次提取。按官方文档：EigenLayer 固定 14 天；Lido 正常 1–5 天，排队多时更久；Ethena 的 sUSDe 冷却期目前是 1–7 天，会调整。ether.fi 和 Rocket Pool 官方没写固定天数，能不能马上拿回，要看协议手里有没有现成的 ETH。",
+    "en": "It depends on the protocol, and most take two steps: request, wait, then come back to withdraw. Per the official docs: EigenLayer is a fixed 14 days; Lido is normally 1–5 days and longer when the queue is long; Ethena's sUSDe cooldown is currently 1–7 days and can change. ether.fi and Rocket Pool give no fixed number of days — whether you get ETH right away depends on how much ETH the protocol has on hand."
+  },
+  "sections": [
+    {
+      "h": {
+        "zh": "为什么不能马上拿回",
+        "en": "Why you can't always get it back at once"
+      },
+      "p": [
+        {
+          "zh": "质押的钱在协议的合约里。要拿回，协议要么先凑出现成的币，要么要按规则走完一段安全等待。所以多数协议分两步：先申请，等满，再回到官网点一次提取，钱才回到钱包。",
+          "en": "Staked money sits in the protocol's contracts. To give it back, the protocol either needs ready coins on hand or has to run out a security wait set by its rules. So most protocols take two steps: you request, wait, then return to the official site and withdraw before the money is back in your wallet."
+        },
+        {
+          "zh": "下面按各协议官方文档整理（查于 2026-11-05）。数字会变，以你操作时官网显示的为准。",
+          "en": "Below is what each protocol's official docs say (checked 2026-11-05). Numbers change, so go by what the official site shows when you act."
+        }
+      ]
+    },
+    {
+      "h": {
+        "zh": "各协议要等多久",
+        "en": "How long each protocol takes"
+      },
+      "p": [
+        {
+          "zh": "有的是固定天数，有的看排队，有的看协议手里的现钱。",
+          "en": "Some waits are a fixed number of days, some depend on a queue, and some depend on how much ready money the protocol holds."
+        }
+      ],
+      "list": [
+        {
+          "zh": "EigenLayer：点 Unstake 后进入提款队列，主网固定等 14 天（合约里是 100800 个区块）。到时在「Available to Withdraw」下点 Withdraw，再签一次，钱才回到钱包。原生再质押（EigenPod）还要先退出验证者：退出排队（官方说通常不到 1 天，极端拥堵时没有上限）、约 27 小时的固定延迟，再加 0–9.1 天的轮询，所以总时间更长。",
+          "en": "EigenLayer: after you press Unstake, the funds enter the withdrawal queue for a fixed 14 days on mainnet (100,800 blocks in the contract). Then press Withdraw under 'Available to Withdraw' and sign once more to get the money back. Native restaking (EigenPods) also requires exiting the validator first: an exit queue (usually under a day per the docs, but unbounded in extreme congestion), a fixed delay of about 27 hours, and a 0–9.1 day sweep, so the total is longer."
+        },
+        {
+          "zh": "Lido（stETH、wstETH）：在官网 Request 页提交申请，正常情况下 1–5 天。排队的量、以太坊验证者的退出队列、协议进入 Bunker 模式等，都会让它变长。提交后在 Claim 页能看到预计时间；好了以后点 Claim，ETH 才到钱包。",
+          "en": "Lido (stETH, wstETH): submit a request on the Request tab; under normal conditions it takes 1–5 days. The size of the queue, Ethereum's validator exit queue and Bunker mode can all make it longer. After you submit, the Claim tab shows the estimate; when it's ready, press Claim to get the ETH."
+        },
+        {
+          "zh": "Ethena（sUSDe）：解除质押有冷却期。官方文档写的是「动态的，目前 1 到 7 天」，按储备情况由治理调整；合约允许设的上限是 90 天。冷却期间 USDe 放在一个专门的合约里，冷却结束后再提取。以你申请时页面显示的时间为准。",
+          "en": "Ethena (sUSDe): unstaking has a cooldown. The docs call it 'dynamic (currently between 1 and 7 days)', set by governance depending on reserve conditions, and the contract allows up to 90 days. During the cooldown your USDe sits in a separate contract, and you withdraw it when the cooldown ends. Go by the time shown when you request."
+        },
+        {
+          "zh": "ether.fi（eETH、weETH）：有两条路。立即赎回：协议备用资金够时马上到账，扣一小笔退出手续费。排队提款：不收手续费，提交后会得到一个提款凭证 NFT，等处理完再领取 ETH。官方没写固定天数，说时间取决于协议流动性、以太坊验证者提款和网络状况。",
+          "en": "ether.fi (eETH, weETH): two routes. Instant redemption pays out at once, minus a small exit fee, when the protocol's buffer has enough liquidity. A queued withdrawal has no fee: you get a withdrawal-request NFT and claim the ETH once it's processed. The docs give no fixed number of days; timing depends on protocol liquidity, Ethereum validator withdrawals and network conditions."
+        },
+        {
+          "zh": "Rocket Pool（rETH）：没有排队。在官网直接换回 ETH 是即时的，前提是协议的存款池里有足够的 ETH；不够时页面会显示「Insufficient liquidity」，官网会改走第三方的 CoW Swap，或者你去去中心化交易所换，可能要付一点溢价。",
+          "en": "Rocket Pool (rETH): there's no queue. Swapping back to ETH on the official site is instant, but only when the deposit pool holds enough ETH. If it doesn't, the site shows 'Insufficient liquidity' and routes through the third-party CoW Swap instead, or you can swap on a decentralized exchange, likely at a small premium."
+        }
+      ]
+    },
+    {
+      "h": {
+        "zh": "不想等，可以直接卖吗",
+        "en": "Can I sell instead of waiting?"
+      },
+      "p": [
+        {
+          "zh": "多数质押凭证代币可以在交易所直接换，但价格不一定等于赎回价，也不保证随时有人接。",
+          "en": "Most liquid staking tokens can be swapped on an exchange, but the price isn't always the redemption value, and there's no guarantee of a buyer at every moment."
+        }
+      ],
+      "list": [
+        {
+          "zh": "Lido 官方说，不想等的话，可以通过去中心化交易所或聚合器把 stETH、wstETH 换成别的资产，即时到账。",
+          "en": "Lido says that if you don't want to wait, you can swap stETH or wstETH on decentralized exchanges or aggregators for an instant exit."
+        },
+        {
+          "zh": "Ethena 官方说，冷却前可以卖掉 sUSDe，前提是外面有市场；官方不打算建这种市场，也不保证一定有。",
+          "en": "Ethena says you can sell sUSDe before the cooldown if outside markets exist, but it doesn't plan to create such markets and can't guarantee one."
+        },
+        {
+          "zh": "ether.fi 官方说，二级市场有流动性，不代表 weETH 总能按赎回价成交。",
+          "en": "ether.fi says a liquid secondary market doesn't guarantee that weETH always trades at its redemption value."
+        },
+        {
+          "zh": "Rocket Pool 官方说，去交易所换可能要付一点溢价。",
+          "en": "Rocket Pool says swapping on an exchange will likely come with a small premium."
+        }
+      ]
+    },
+    {
+      "h": {
+        "zh": "等的时候要注意",
+        "en": "While you wait"
+      },
+      "p": [
+        {
+          "zh": "等待期间，钱还在协议的合约里，下面几件事要心里有数。",
+          "en": "While you wait, the money is still in the protocol's contracts. Keep these in mind."
+        }
+      ],
+      "list": [
+        {
+          "zh": "到手的可能比申请的少：Lido 官方说，遇到罚没和惩罚，可领的 ETH 可能少于申请时的数；EigenLayer 官方说，排队期间份额仍可能被罚没。",
+          "en": "You may get less than you requested: Lido says slashing and penalties can make the claimable ETH lower than the requested amount, and EigenLayer says shares in the withdrawal queue can still be slashed."
+        },
+        {
+          "zh": "提款凭证 NFT 就是领钱的权利：Lido 官方说这个 NFT 可以转让，转给谁，谁就能领，你自己就领不了。不要把它发给任何「客服」。",
+          "en": "The withdrawal NFT is the right to the money: Lido says the NFT is transferable, and whoever holds it can claim, while you lose that ability. Never send it to any 'support' agent."
+        },
+        {
+          "zh": "只在官网操作：Lido 是 stake.lido.fi，EigenLayer 是 app.eigenlayer.xyz。不要用搜索结果或私信里的链接。",
+          "en": "Use only the official sites: stake.lido.fi for Lido, app.eigenlayer.xyz for EigenLayer. Don't use links from search results or DMs."
+        },
+        {
+          "zh": "官网打不开时，先看项目官方 X 或 Discord 的公告。EigenLayer 官方文档专门写了：网页用不了时，可以在 Etherscan 上直接调用它的委托合约完成提款，但只适合熟悉合约操作的人，要付 gas，不满 14 天会失败。不熟悉就等官方恢复，别找人「代操作」。",
+          "en": "If the site won't load, check the project's official X or Discord first. EigenLayer's docs describe finishing a withdrawal directly through its Delegation contract on Etherscan when the app has problems. That is only for people comfortable with contracts; it costs gas and fails before the 14 days are up. If that's not you, wait for the official site rather than letting someone 'do it for you'."
+        },
+        {
+          "zh": "DeFiExit 网站只会请钱包共享地址，从不让你签名、批准或发交易；我们不会主动找你。",
+          "en": "DeFiExit only asks your wallet to share its address — it never asks you to sign, approve or send anything, and we never message first."
+        }
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": {
+        "zh": "我质押了，现在网站打不开（或者显示流量太大），钱还在吗？",
+        "en": "I staked and now the site doesn't work (or says traffic is too high). Is my money still there?"
+      },
+      "a": {
+        "zh": "质押的钱记在链上的合约里，不在网页上；网页只是操作入口。先去项目的官方 X 或 Discord 看公告，过一会儿再试。EigenLayer 官方文档写了网页用不了时在 Etherscan 上直接完成提款的方法，但只适合会用合约的人。不要搜「备用网站」，也不要让私信你的人帮忙。",
+        "en": "Staked funds are recorded in contracts on the chain, not on the website; the site is only a way to reach them. Check the project's official X or Discord for notices and try again later. EigenLayer's docs explain how to finish a withdrawal on Etherscan when the app isn't working, but that's only for people comfortable with contracts. Don't search for a 'backup site', and don't accept help from anyone who DMs you."
+      }
+    },
+    {
+      "q": {
+        "zh": "在 EigenLayer 点了 Unstake，为什么要等 14 天？",
+        "en": "I pressed Unstake on EigenLayer. Why 14 days?"
+      },
+      "a": {
+        "zh": "这是 EigenLayer 合约里定的安全延迟：主网 100800 个区块，约 14 天。官方说，这段延迟是在发现漏洞或异常时保护协议用的。14 天到了钱不会自己回来，要回到官网点 Withdraw 再签一次。",
+        "en": "It's a security delay set in EigenLayer's contracts: 100,800 blocks on mainnet, about 14 days. EigenLayer says the delay protects the protocol when a vulnerability or unusual activity is found. When the 14 days are up the money doesn't come back by itself: return to the app, press Withdraw and sign again."
+      }
+    },
+    {
+      "q": {
+        "zh": "Lido 显示要等好几天，正常吗？",
+        "en": "Lido says it will take several days. Is that normal?"
+      },
+      "a": {
+        "zh": "正常。Lido 官方说正常情况下 1–5 天；排队的人多、以太坊验证者退出排队长、或者协议进入 Bunker 模式时会更久。提交后在 Claim 页能看到剩余时间，好了以后要点 Claim 才到账。",
+        "en": "Yes. Lido says 1–5 days under normal conditions, and longer when the queue is long, Ethereum's validator exit queue is backed up, or the protocol is in Bunker mode. After submitting, the Claim tab shows the time left; when it's ready, you still have to press Claim."
+      }
+    },
+    {
+      "q": {
+        "zh": "等待期过了，钱为什么还没回到钱包？",
+        "en": "The waiting period is over. Why isn't the money in my wallet?"
+      },
+      "a": {
+        "zh": "多数协议的第二步要你自己点：EigenLayer 点 Withdraw，Lido 点 Claim，Ethena 冷却结束后提取，ether.fi 排队提款处理完要领取。回到原来的官网，连接同一个钱包，找到这一笔，点完并签名，要付一点 gas。",
+        "en": "With most protocols you have to do the second step yourself: Withdraw on EigenLayer, Claim on Lido, withdraw after the cooldown on Ethena, and claim a processed queued withdrawal on ether.fi. Go back to the official site, connect the same wallet, find the request, confirm and sign. It costs a little gas."
+      }
+    },
+    {
+      "q": {
+        "zh": "有人说交钱就能帮我跳过等待期？",
+        "en": "Someone says they can skip the waiting period for a fee."
+      },
+      "a": {
+        "zh": "骗局。等待期是协议合约里的规则，比如 EigenLayer 的 14 天，没人能收费跳过。想马上拿到钱，只能用协议自己提供的即时通道（如果有），或者自己在交易所卖掉，接受当时的价格。",
+        "en": "That's a scam. The wait is a rule in the protocol's contracts, such as EigenLayer's 14 days, and nobody can skip it for a fee. If you need the money now, use the protocol's own instant route if it has one, or sell the token yourself on an exchange at the going price."
+      }
+    }
+  ],
+  "related": [
+    "woofi",
+    "okx-boost",
+    "scams-during-exits"
+  ],
+  "sources": [
+    {
+      "label": {
+        "zh": "EigenLayer 合约文档：DelegationManager（主网 100800 区块 = 14 天）",
+        "en": "EigenLayer contracts docs: DelegationManager (mainnet 100,800 blocks = 14 days)"
+      },
+      "url": "https://github.com/Layr-Labs/eigenlayer-contracts/blob/main/docs/core/DelegationManager.md"
+    },
+    {
+      "label": {
+        "zh": "EigenLayer 官方文档（GitHub 源文件）：解除质押与提款（Unstake → Withdraw）",
+        "en": "EigenLayer docs (GitHub source): Unstake and Withdraw"
+      },
+      "url": "https://github.com/Layr-Labs/eigencloud-docs/blob/main/docs/eigenlayer/restakers/restaking-guides/0-restaking-user-guide/liquid-restaking/withdraw-from-eigenlayer.md"
+    },
+    {
+      "label": {
+        "zh": "EigenLayer 官方文档（GitHub 源文件）：测试网与主网差异（主网 14 天托管期）",
+        "en": "EigenLayer docs (GitHub source): Testnet vs mainnet (14-day escrow on mainnet)"
+      },
+      "url": "https://github.com/Layr-Labs/eigencloud-docs/blob/main/docs/eigenlayer/restakers/restaking-guides/testnet/README.md"
+    },
+    {
+      "label": {
+        "zh": "EigenLayer 官方文档（GitHub 源文件）：提款延迟是安全措施",
+        "en": "EigenLayer docs (GitHub source): Withdrawal delay as a security measure"
+      },
+      "url": "https://github.com/Layr-Labs/eigencloud-docs/blob/main/docs/eigenlayer/security/withdrawal-delay.md"
+    },
+    {
+      "label": {
+        "zh": "EigenLayer 官方文档（GitHub 源文件）：原生 ETH 再质押的提款延迟",
+        "en": "EigenLayer docs (GitHub source): Native ETH restaking withdrawal delays"
+      },
+      "url": "https://github.com/Layr-Labs/eigencloud-docs/blob/main/docs/eigenlayer/restakers/concepts/native-restaking-withdrawal-delays.md"
+    },
+    {
+      "label": {
+        "zh": "EigenLayer 官方文档（GitHub 源文件）：网页用不了时用合约提款",
+        "en": "EigenLayer docs (GitHub source): Withdraw using the contract when the app has issues"
+      },
+      "url": "https://github.com/Layr-Labs/eigencloud-docs/blob/main/docs/eigenlayer/restakers/restaking-guides/withdraw-using-smart-contract.md"
+    },
+    {
+      "label": {
+        "zh": "Lido 帮助中心：以太坊提款要多久（1–5 天、影响因素）",
+        "en": "Lido Help Center: How long does an Ethereum withdrawal take? (1–5 days, factors)"
+      },
+      "url": "https://help.lido.fi/en/articles/7858315-how-long-does-an-ethereum-withdrawal-take"
+    },
+    {
+      "label": {
+        "zh": "Lido 帮助中心：以太坊提款常见问题（两步、可能少于申请数）",
+        "en": "Lido Help Center: FAQ on Ethereum withdrawals (two steps, may be lower than requested)"
+      },
+      "url": "https://help.lido.fi/en/articles/7858292-faq-ethereum-withdrawals"
+    },
+    {
+      "label": {
+        "zh": "Lido 帮助中心：怎样解除质押 stETH（不想等可在交易所换）",
+        "en": "Lido Help Center: How do I unstake my stETH? (swap if you don't want to wait)"
+      },
+      "url": "https://help.lido.fi/en/articles/7858323-how-do-i-unstake-my-steth"
+    },
+    {
+      "label": {
+        "zh": "Lido 帮助中心：提款 NFT 怎么用（转给谁谁就能领）",
+        "en": "Lido Help Center: How do Lido withdrawal NFTs work? (whoever holds it can claim)"
+      },
+      "url": "https://help.lido.fi/en/articles/7858352-how-do-lido-withdrawal-nfts-work"
+    },
+    {
+      "label": {
+        "zh": "Ethena 官方文档：如何质押 USDe（冷却期目前 1–7 天）",
+        "en": "Ethena docs: How to stake USDe (cooldown currently 1–7 days)"
+      },
+      "url": "https://docs.ethena.fi/video-guides/how-to-stake-usde"
+    },
+    {
+      "label": {
+        "zh": "Ethena 官方文档：质押 USDe（冷却期流程、冷却前能否卖出）",
+        "en": "Ethena docs: Staking USDe (cooldown flow; selling before the cooldown)"
+      },
+      "url": "https://docs.ethena.fi/technical-design/staking-usde"
+    },
+    {
+      "label": {
+        "zh": "Ethena 官方文档：质押合约关键函数（冷却期上限 90 天）",
+        "en": "Ethena docs: Staking key functions (cooldown capped at 90 days)"
+      },
+      "url": "https://docs.ethena.fi/technical-design/staking-usde/staking-key-functions"
+    },
+    {
+      "label": {
+        "zh": "ether.fi 官方文档：weETH / eETH（赎回时间取决于流动性等）",
+        "en": "ether.fi docs: weETH / eETH (redemption timing depends on liquidity and more)"
+      },
+      "url": "https://etherfi.gitbook.io/etherfi/products/staking/eeth"
+    },
+    {
+      "label": {
+        "zh": "ether.fi 官方文档：集成指南（立即赎回与排队提款）",
+        "en": "ether.fi docs: Integration guide (instant redemption vs. queued withdrawal)"
+      },
+      "url": "https://etherfi.gitbook.io/etherfi/developers/contracts-and-integrations/integration-guide"
+    },
+    {
+      "label": {
+        "zh": "ether.fi 官方文档：以太坊质押（二级市场价格不保证）",
+        "en": "ether.fi docs: Ethereum staking (secondary market price not guaranteed)"
+      },
+      "url": "https://etherfi.gitbook.io/etherfi/resources/ether.fi-whitepaper/ether.fi-staking"
+    },
+    {
+      "label": {
+        "zh": "Rocket Pool 官方文档：流动性质押概览（存款池不够时去交易所换）",
+        "en": "Rocket Pool docs: Liquid staking overview (use an exchange when the pool is short)"
+      },
+      "url": "https://docs.rocketpool.net/liquid-staking/overview.html"
+    },
+    {
+      "label": {
+        "zh": "Rocket Pool 官方文档：通过 Rocket Pool 质押和解除（即时、流动性不足时）",
+        "en": "Rocket Pool docs: Staking via Rocket Pool (instant; when liquidity runs out)"
+      },
+      "url": "https://docs.rocketpool.net/liquid-staking/via-rp.html"
+    }
+  ]
+}

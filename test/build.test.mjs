@@ -1,13 +1,14 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, existsSync } from "node:fs";
-import { build, splitMarks, localize } from "../scripts/build.mjs";
+import { readFileSync, existsSync, readdirSync } from "node:fs";
+import { build, splitMarks, localize, TITLE_BAN } from "../scripts/build.mjs";
 import { STR } from "../src/js/lib/i18n.js";
 import { svgString } from "../src/js/lib/icons.js";
 import { site } from "../scripts/site.mjs";
 
 const read = (f) => readFileSync(f, "utf8");
-const PAGES = ["dist/index.html", "dist/en/index.html", "dist/check/index.html", "dist/en/check/index.html", "dist/r/hyperliquid/index.html", "dist/en/r/hyperliquid/index.html", "dist/r/woofi/index.html", "dist/en/r/woofi/index.html", "dist/404.html"];
+const PAGES = ["dist/index.html", "dist/en/index.html", "dist/check/index.html", "dist/en/check/index.html", "dist/r/hyperliquid/index.html", "dist/en/r/hyperliquid/index.html", "dist/r/woofi/index.html", "dist/en/r/woofi/index.html", "dist/404.html",
+  "dist/deadlines/index.html", "dist/en/deadlines/index.html", "dist/topics/index.html", "dist/en/topics/index.html"];
 
 test("构建:中英两套页面齐全、没有漏填的变量、不用内联脚本和内联样式", () => {
   build();
@@ -28,7 +29,7 @@ test("构建:中英两套页面齐全、没有漏填的变量、不用内联脚�
 });
 
 test("英文页面里没有中文(语言切换按钮上的「中文」除外)", () => {
-  for (const f of ["dist/en/index.html", "dist/en/check/index.html", "dist/en/r/hyperliquid/index.html", "dist/en/r/woofi/index.html"]) {
+  for (const f of ["dist/en/index.html", "dist/en/check/index.html", "dist/en/r/hyperliquid/index.html", "dist/en/r/woofi/index.html", "dist/en/deadlines/index.html", "dist/en/topics/index.html"]) {
     const html = read(f).replace(/<nav class="langs"[\s\S]*?<\/nav>/g, "");
     const cjk = html.match(/[　-〿一-鿿＀-￯]+/);
     assert.equal(cjk, null, `${f} 里有中文:${cjk?.[0]}`);
@@ -203,11 +204,51 @@ test("查到用户往前走了才说恭喜;往回退的只是提示", () => {
 
 test("每个网页都带 no-transform:Cloudflare 不往页面里插统计脚本", () => {
   const h = read("dist/_headers");
-  for (const p of ["/", "/en/", "/check/", "/en/check/", "/r/hyperliquid/", "/en/r/hyperliquid/", "/r/woofi/", "/en/r/woofi/", "/404.html"]) {
+  for (const p of ["/", "/en/", "/check/", "/en/check/", "/r/hyperliquid/", "/en/r/hyperliquid/", "/r/woofi/", "/en/r/woofi/", "/404.html", "/deadlines/", "/en/deadlines/", "/topics/", "/en/topics/"]) {
     assert.ok(h.includes(`
 ${p}
   Cache-Control: public, max-age=0, must-revalidate, no-transform
 `), `缺 ${p}`);
+  }
+});
+
+test("截止日历、专题:首页正文和顶栏导航都有入口;两页带 canonical 和 og 信息,标题不写领取类的词;倒数脚本拷进了网站", () => {
+  const home = read("dist/index.html"), homeEn = read("dist/en/index.html");
+  // 顶栏导航(电脑上显示);手机上顶栏不显示导航,靠首页正文里那一块
+  assert.match(home, /<nav class="links" aria-label="DeFiExit"><a href="#how">[\s\S]*?<a href="\/deadlines\/">截止日历<\/a><a href="\/topics\/">专题<\/a><a href="https:\/\/github\.com/);
+  assert.match(homeEn, /<nav class="links" aria-label="DeFiExit"><a href="#how">[\s\S]*?<a href="\/en\/deadlines\/">Exit deadlines<\/a><a href="\/en\/topics\/">Topics<\/a>/);
+  assert.ok(home.includes('<a class="more-card" href="/deadlines/">') && home.includes('<a class="more-card" href="/topics/">'));
+  assert.ok(homeEn.includes('<a class="more-card" href="/en/deadlines/">') && homeEn.includes('<a class="more-card" href="/en/topics/">'));
+  // 截止日历页:导航里标出当前页;首页上的页内跳转换成「体检」回首页
+  const dl = read("dist/deadlines/index.html");
+  assert.ok(dl.includes('<a href="/deadlines/" aria-current="page">截止日历</a>') && dl.includes('<a href="/">体检</a>') && !dl.includes('href="#how"'));
+  assert.ok(read("dist/en/deadlines/index.html").includes('<a href="/en/">Checkup</a>'));
+  assert.ok(dl.includes('<script type="module" src="/assets/js/deadlines.js"></script>'));
+  assert.ok(existsSync("dist/assets/js/deadlines.js") && existsSync("dist/assets/js/lib/deadline.js"));
+  for (const [f, url] of [["dist/deadlines/index.html", "/deadlines/"], ["dist/en/deadlines/index.html", "/en/deadlines/"], ["dist/topics/index.html", "/topics/"], ["dist/en/topics/index.html", "/en/topics/"]]) {
+    const h = read(f);
+    assert.ok(h.includes(`<link rel="canonical" href="https://defiexit.com${url}">`), f);
+    assert.ok(h.includes(`<meta property="og:url" content="https://defiexit.com${url}">`), f);
+    assert.match(h, /<meta property="og:title" content="[^"]+">\n<meta property="og:description" content="[^"]+">/, f);
+    assert.ok(!TITLE_BAN.test(h.match(/<title>([^<]*)<\/title>/)[1]), `${f} 的标题写了领取类的词`);
+    // 顶栏里已经有语言和深浅色,页脚不再放一遍
+    assert.ok(!h.includes('class="foot-tools"'), f);
+  }
+});
+
+test("专题:data/topics 里的每一篇都出了中英两页,列表里都有;英文页没有中文,不用内联脚本和样式,也带 no-transform", () => {
+  const slugs = readdirSync("data/topics").filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5));
+  assert.ok(slugs.length > 0);
+  const headers = read("dist/_headers");
+  for (const s of slugs) {
+    for (const P of ["", "/en"]) {
+      const f = `dist${P}/topics/${s}/index.html`;
+      const h = read(f);
+      assert.ok(read(`dist${P}/topics/index.html`).includes(`<a href="${P}/topics/${s}/">`), `${f} 不在列表里`);
+      assert.ok(!/<script(?![^>]*\ssrc=)[^>]*>/.test(h) && !/\sstyle="/.test(h), f);
+      assert.ok(headers.includes(`\n${P}/topics/${s}/\n  Cache-Control: public, max-age=0, must-revalidate, no-transform\n`), f);
+      if (P) assert.equal(h.replace(/<nav class="langs"[\s\S]*?<\/nav>/g, "").match(/[　-〿一-鿿＀-￯]+/), null, f);
+    }
   }
 });
 
@@ -427,4 +468,13 @@ test("体检结果页:有取回弹层;链图标拷进了网站", () => {
     assert.match(h, /<li data-id="woofi"[^>]*data-chain="arbitrum"/);
   }
   assert.ok(existsSync("dist/assets/chains/xlayer.svg") && existsSync("dist/assets/chains/merlin.webp"));
+});
+
+test("体检结果页:最上面(结果概要前面)留着截止提醒的位置;截止日历按页面语言嵌在页面里,不另外发请求(没有 data/deadlines.json 就是空列表)", () => {
+  for (const f of ["dist/check/index.html", "dist/en/check/index.html"]) {
+    const h = read(f);
+    const box = h.indexOf('<section class="dues" id="dueBox"');
+    assert.ok(box > 0 && box < h.indexOf('id="sum"'), f);
+    assert.match(h, /<ul id="due" hidden>(<li data-event="[^"]*"><\/li>)*<\/ul>/);
+  }
 });

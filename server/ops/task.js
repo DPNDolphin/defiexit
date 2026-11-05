@@ -2,15 +2,18 @@
 //
 // POST /api/admin/task    定时任务(GitHub Actions)用的「小钥匙」,公钥在 TASK_PUBKEYS。只能做两件事:
 //   { do: "sync" }                          请运营台自己刷新一次(和管理员点按钮是同一套,两分钟一次,另加每天上限)
-//   { do: "leads", leads: [...], read, failed }  往「项目变动线索」里加监控找到的线索(只加不改,按编号去重,每次、每天有上限)
+//   { do: "leads", leads: [...], read, failed }  往「项目变动线索」里加监控找到的线索(只加不改,按编号去重,每次、每天有上限);
+//                                           顺手把以前的需求摘要按页过一遍(db.js 的 fixNeeds,翻完为止)
 //   改不了待发、收件、看板,也设不了管理员。钥匙丢了,别人最多让它多刷新几次、塞几条线索(来源链接只认白名单里的网站)。
 // POST /api/admin/export  维护者(Claude 主窗口)用投递那把钥匙读:管理员点的决定、状态、时间,管理员自己写的备注(可能提到别人),
 //   我们自己发出去的回复的链接和读数(浏览、点赞、回复数),线索(公开信息),定时任务的情况,
-//   体检次数 hits(每种的总数、开始数的那天、最近 60 天每天的数,北京时间;见 db.js 的 hitCounts)。不回评论原文、评论人账号、目标帖子信息。导出前先跑一遍到期清理,过期的不会导出。
+//   体检次数 hits(每种的总数、开始数的那天、最近 60 天每天的数,北京时间;见 db.js 的 hitCounts),
+//   问题记录 problems(最近 90 天的数:每种、问得多的 20 个协议、每周几条、回了几成;见 db.js 的 problemCounts,只有数,不带编号、账号、链接)。
+//   不回评论原文、评论人账号、目标帖子信息。导出前先跑一遍到期清理,过期的不会导出。
 // 两个入口都查:签名、时间(±10 分钟)、nonce 只能用一次;task 还要求 ts 比上一次大,同一时刻只处理一包(锁 5 分钟,比最慢的一次刷新长)。
 // 「每天」按 UTC 算。
 
-import { iso, getKv, setKv, purge, hitCounts } from "./db.js";
+import { iso, getKv, setKv, purge, fixNeeds, hitCounts, problemCounts, PROBLEM_DAYS } from "./db.js";
 import { verify, SKEW_MS } from "./ingest.js";
 import { sync } from "./sync.js";
 
@@ -121,6 +124,8 @@ export async function task(db, { raw, sig, envName, method, path, pubkeys }, now
       stmts.push(db.prepare("INSERT INTO kv (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind("leads_day:" + day, String(dayUsed + add.length)));
       stmts.push(db.prepare("INSERT INTO kv (k, v) VALUES ('monitor_last', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(JSON.stringify({ at: t, read, failed, sent: list.length, stored: add.length, rejected: rejected.length })));
       await db.batch(stmts);
+      // 顺手把以前的需求摘要过一遍(db.js 的 fixNeeds,一次翻几页、接着上次翻):这一次请求用的数据库查询少;出错不连累线索
+      try { await fixNeeds(db); } catch { /* 下次接着翻 */ }
       return { status: 200, body: { ok: true, stored: add.length, duplicate: ids.length - add.length, rejected: rejected.slice(0, 10) } };
     }
     return { status: 400, body: { error: "do" } };
@@ -150,6 +155,6 @@ export async function exportFor(db, { raw, sig, envName, method, path, pubkeys }
     .map((r) => ({ id: r.id, found_at: r.found_at, ...(parse(r.v, {}) || {}) }));
   let outStats = {};
   try { outStats = JSON.parse((await getKv(db, "out_stats")) || "{}") || {}; } catch { outStats = {}; }
-  // 体检次数不看 since:总是给总数和最近 60 天
-  return { status: 200, body: { ok: true, at: iso(now), inbox, outbox, leads, auto: await autoState(db), outStats, hits: await hitCounts(db, now) } };
+  // 体检次数不看 since:总是给总数和最近 60 天;问题记录也不看 since:总是最近 90 天的数
+  return { status: 200, body: { ok: true, at: iso(now), inbox, outbox, leads, auto: await autoState(db), outStats, hits: await hitCounts(db, now), problems: await problemCounts(db, now, PROBLEM_DAYS, 20) } };
 }

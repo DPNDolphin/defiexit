@@ -4,6 +4,14 @@
 
 // 中文句子里嵌进一个词:词的头尾是英文就和汉字空一格,是汉字就不空(「由 Hyperliquid 执行」「由 WOOFi 的合约执行」)
 const embed = (w) => `${/^[一-鿿]/.test(w) ? "" : " "}${w}${/[一-鿿]$/.test(w) ? "" : " "}`;
+// 词前面空一格(英文币名接在汉字后面);后面接全角冒号,不空
+const lead = (w) => `${/^[一-鿿]/.test(w) ? "" : " "}${w}`;
+const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const md = (iso) => String(iso).split("-").slice(1).map(Number);
+// 倒数:x 是 lib/deadline.js 的 timeLeft。只写了日子、到了那一天(UTC)的说「按 UTC 算,今天是截止日」,不写几小时;
+// 48 小时以内说还剩几个整小时;不说没带 UTC 的「今天」「明天」(读的人那边可能已经是另一天);过了的说已过
+const leftZh = ({ days, hours, day }) => (day ? `按 UTC 算,今天是截止日(${md(day)[0]} 月 ${md(day)[1]} 日)` : hours != null ? (hours ? `还剩 ${hours} 小时` : "还剩不到 1 小时") : days >= 0 ? `还有 ${days} 天` : "已过截止日");
+const leftEn = ({ days, hours, day }) => (day ? `Deadline day (UTC): ${MON[md(day)[0] - 1]} ${md(day)[1]}` : hours != null ? (hours > 1 ? `${hours} hours left` : hours === 1 ? "1 hour left" : "Less than 1 hour left") : days >= 0 ? (days === 1 ? "1 day left" : `${days} days left`) : "Deadline passed");
 
 export const STR = {
   zh: {
@@ -159,6 +167,39 @@ export const STR = {
     resultsFoot: "数字按实时数据算,以官方页面为准。有指南的项目,地址从你的浏览器直接发给它们的官方公开接口(看得到你的地址和 IP);本站不保存地址。",
     badHash: "没认出这个地址:应该是 0x 开头,一共 42 位。",
     youAreHere: "你在这里",
+    // 截止提醒(结果最上面,见 lib/due.js):查到的东西在快要关停的链、要结束的项目上。where 是链名或项目名,date 是 dueDate 拼好的(没定日子是空的)
+    // 标题按事件是哪一类说(kind 见 due.js 的 titleKind):要转出来的、要桥出来的、要换新的币、要赎回的、往期奖励;别的、没定日子的说得中性。
+    // 按币对上的(tokens 是对上的币名,比如 CAKE):标题说出是哪个币,不说「还有资产」——那样像是这条链上的东西都得搬走
+    // (before 管英文说 before 还是 by,中文都说「前」)
+    dueAria: "截止提醒",
+    dueTitle: (kind, where, date, { tokens = [] } = {}) => {
+      // 币名(英文)和日子(数字)中间的冒号 zh() 换不了,直接写全角
+      const tk = tokens.join("、");
+      if (tk) {
+        return (date && {
+          move: `你在${embed(where)}上有${lead(tk)}：${date}前要转出来`,
+          bridge: `你在${embed(where)}上有${lead(tk)}：${date}前要桥出来`,
+          swap: `你在${embed(where)}上有${lead(tk)}：${date}前换,过了换得少或换不了`,
+          redeem: `你在${embed(where)}上有${lead(tk)}：${date}前赎回`,
+          rewards: `你有${lead(tk)}：如果还有往期奖励没领,${date}前去领`,
+        }[kind]) || `你有${lead(tk)}：这个项目有退出安排,看官方怎么说`;
+      }
+      return (date && {
+        move: `你在${embed(where)}上还有资产:${date}前要转出来`,
+        swap: `你有要换新的币:${date}前换,过了换得少或换不了`,
+        redeem: `你有要清盘的稳定币:${date}前赎回`,
+        // 往期奖励:手里有这个币不等于还有奖励没领,截止的也只是领奖励,本金不用跟着动——说成「如果」
+        rewards: `如果你还有往期奖励没领,${date}前去领`,
+      }[kind]) || "这个项目有退出安排,看官方怎么说";
+    },
+    // 对上的币:借来的(仓位里的借款)说清是借款
+    dueToken: (sym, loan) => (loan ? `${sym} 借款` : sym),
+    dueDate: (y, m, d, thisYear) => `${thisYear ? "" : `${y} 年 `}${m} 月 ${d} 日`,
+    dueLeft: leftZh,
+    // 没定日子的:有的官方说了没有截止日(比如 VAI 金库随时可取),不说「还没公布」,免得像是有个截止日要来
+    dueNoDate: "官方没定截止日期",
+    dueNext: (date, x, note) => `下一步 ${date}:${note}(${x.day ? "按 UTC 算就是今天" : leftZh(x)})`,
+    dueCal: "看截止日历",
 
     // 指南
     exitGuide: "退出指南",
@@ -299,6 +340,57 @@ export const STR = {
     errHttp: (s) => `接口返回 ${s}`,
     errTimeout: "查询超时",
     errNetwork: "网络错误",
+
+    // 退出截止日历、专题。顶栏导航只在电脑上显示,手机上靠首页那一块入口;不在首页时,导航里的页内跳转换成「体检」回首页
+    navDeadlines: "截止日历", navTopics: "专题", navCheck: "体检",
+    moreH: "链要关、网站要下线?",
+    moreDlT: "退出截止日历",
+    moreDlD: "正在关停的链、要下线的网站、只剩取款的协议,按截止日排好,只放官方链接。",
+    moreTpT: "专题",
+    moreTpD: "链关了、网站没了、币要换新:钱还能怎么拿出来,一篇讲清一种情况。",
+    lastChecked: (d) => `最后核对 ${d}`,
+    // 「转给朋友」打开 X 的发帖页,用户自己点「发帖」
+    shareX: "转给朋友",
+    shareXAria: (name) => `转给朋友(在 X 上发帖):${name}`,
+    dlTitle: "退出截止日历:链关停、网站下线、换币截止",
+    dlDesc: "链要关停、网站要下线、协议只剩取款、代币要换新:这些事都有截止日。按截止日排好,写清谁受影响、该做什么,只放官方链接。",
+    dlH1: "退出截止日历",
+    dlLead: "链要关停、网站要下线、协议只剩取款:这些事都有截止日,过了钱可能就取不出来。这里按截止日排好,每一条写清谁受影响、该做什么,只放项目官方的链接。",
+    dlJumpOpen: "件还没到截止日", dlJumpNoDate: "件没定日期", dlJumpPassed: "件已过截止日",
+    dlOfficialOnly: "每一条只放项目官方的链接:官方 X、博客、文档、治理论坛。关停前后假迁移站、假客服特别多,打开后先核对网址;私信你的「客服」都是骗子。",
+    dlOpenH: "还没到截止日",
+    dlOpenSub: "截止日近的在前。日期照官方原文,写了 UTC 的照 UTC。",
+    dlNoDateH: "官方还没定日期",
+    dlNoDateSub: "已经在停用,官方还没给截止日。越早处理越稳。",
+    dlPassedH: "已过截止日",
+    dlPassedSub: "过了截止日,有的官方还留着路:每一条都写了现在还能做什么。",
+    dlPassedShow: "展开看看",
+    dlPassedHide: "收起来",
+    dlLeft: leftZh,
+    dlNoDate: "日期未定",
+    dlDue: "截止",
+    dlAnyEvm: "多条 EVM 链",
+    dlType: (k) => ({ "chain-shutdown": "链关停", "frontend-down": "网站下线", "withdraw-only": "只能取款", "token-migration": "换币迁移", "bridge-route-end": "跨链路线停用", "stablecoin-redemption": "稳定币赎回", "rewards-deadline": "奖励截止", other: "其他" })[k],
+    dlWhen: "关键日期", dlWho: "谁受影响", dlTodo: "该做什么", dlCaution: "注意",
+    dlSteps: "分几步截止", dlStepPast: "已过",
+    dlOfficialH: "官方链接",
+    dlAnnounced: (d) => `宣布 ${d}`,
+    dlMoreH: "接着看",
+    dlMoreCheck: "粘贴钱包地址,免费查一遍有没有忘在链上的钱",
+    dlMoreTopics: "专题:链关了、网站没了,钱还能怎么拿出来",
+    dlScope: "收录 2026 年 7 月以来宣布或生效、要用户自己动手把钱撤出来的事(取款、换币、平仓、撤出流动性),只收 EVM 链。本页只读,不连接钱包。",
+    tpTitle: "专题:链关了、网站没了,钱还能怎么拿出来",
+    tpDesc: "链关停、网站下线、代币迁移以后,钱还能怎么拿出来。一篇讲清一种情况,附官方依据。",
+    tpH1: "专题",
+    tpLead: "链关了、网站没了、币要换新:钱还能怎么拿出来。一篇讲清一种情况,附官方依据。",
+    tpEmpty: "专题正在整理,很快上线。",
+    tpSeeDl: "正在关停的链和协议,按截止日排好:",
+    tpBack: "全部专题",
+    tpToc: "本页目录",
+    tpFaqH: "常见问题",
+    tpRelatedH: "相关",
+    tpDeadline: (name) => `截止日历:${name}`,
+    tpGuide: (title) => `指南:${title}`,
 
     // 找不到页面
     nfTitle: "找不到这个页面",
@@ -453,6 +545,31 @@ export const STR = {
     resultsFoot: "Numbers come from live data; official sites have the final say. For protocols with a guide, your address goes from your browser straight to their public APIs (which see your address and IP). We don't keep it.",
     badHash: "We couldn't read that address. It should start with 0x and be 42 characters long.",
     youAreHere: "You are here",
+    dueAria: "Deadline warnings",
+    dueTitle: (kind, where, date, { tokens = [], before = true } = {}) => {
+      const by = before ? "before" : "by", it = tokens.length > 1 ? "them" : "it", tk = tokens.join(", ");
+      if (tk) {
+        return (date && {
+          move: `You hold ${tk} on ${where}: move ${it} out ${by} ${date}`,
+          bridge: `You hold ${tk} on ${where}: bridge ${it} out ${by} ${date}`,
+          swap: `You hold ${tk} on ${where}: convert ${it} ${by} ${date}`,
+          redeem: `You hold ${tk} on ${where}: redeem ${it} ${by} ${date}`,
+          rewards: `You hold ${tk}: if you still have uncollected past rewards, collect them ${by} ${date}`,
+        }[kind]) || `You hold ${tk}: this project has an exit plan, check the official notice`;
+      }
+      return (date && {
+        move: `You still have assets on ${where}: move them out ${by} ${date}`,
+        swap: `You hold a token being migrated: convert it ${by} ${date}`,
+        redeem: `You hold a stablecoin being wound down: redeem it ${by} ${date}`,
+        rewards: `If you still have uncollected past rewards, collect them ${by} ${date}`,
+      }[kind]) || "This project has an exit plan: check the official notice";
+    },
+    dueToken: (sym, loan) => (loan ? `${sym} debt` : sym),
+    dueDate: (y, m, d, thisYear) => `${MON[m - 1]} ${d}${thisYear ? "" : `, ${y}`}`,
+    dueLeft: leftEn,
+    dueNoDate: "No deadline set",
+    dueNext: (date, x, note) => `Next on ${date}: ${note} (${x.day ? "today, UTC" : leftEn(x).replace(/^Less/, "less")})`,
+    dueCal: "See the deadline calendar",
 
     exitGuide: "Leave the guide",
     stuck: "Stuck?",
@@ -584,6 +701,55 @@ export const STR = {
     errHttp: (s) => `the API returned ${s}`,
     errTimeout: "the check timed out",
     errNetwork: "network error",
+
+    navDeadlines: "Exit deadlines", navTopics: "Topics", navCheck: "Checkup",
+    moreH: "A chain shutting down? A site going offline?",
+    moreDlT: "Exit deadlines",
+    moreDlD: "Chains shutting down, websites going offline, protocols that only allow withdrawals: sorted by deadline, with official links only.",
+    moreTpT: "Topics",
+    moreTpD: "The chain closed, the website is gone, the token is being replaced: how to still get your money out, one situation per page.",
+    lastChecked: (d) => `Last checked ${d}`,
+    shareX: "Share",
+    shareXAria: (name) => `Share on X: ${name}`,
+    dlTitle: "Exit deadlines: chain shutdowns, sites going offline, token swaps",
+    dlDesc: "Chains shutting down, websites going offline, protocols going withdraw-only, tokens being replaced: each has a deadline. Sorted by date, with who's affected, what to do, and official links only.",
+    dlH1: "Exit deadlines",
+    dlLead: "Chains shut down, websites go offline, protocols switch to withdrawals only. Each of these has a deadline, and after it your money may be stuck. Here they are by date, each with who's affected, what to do, and only the project's official links.",
+    dlJumpOpen: "still open", dlJumpNoDate: "no date yet", dlJumpPassed: "passed",
+    dlOfficialOnly: "Every entry links only to the project's official channels: its X account, blog, docs or governance forum. Fake migration sites and fake support agents multiply around shutdowns, so check the address after you open a link. Anyone who DMs you as \"support\" is a scammer.",
+    dlOpenH: "Coming up",
+    dlOpenSub: "Nearest deadline first. Dates follow the official wording; times are UTC where the source says UTC.",
+    dlNoDateH: "No date set yet",
+    dlNoDateSub: "Already winding down, but no deadline has been set. Sooner is safer.",
+    dlPassedH: "Deadline passed",
+    dlPassedSub: "Some projects still leave a way out after the deadline. Each entry says what you can still do.",
+    dlPassedShow: "Show them",
+    dlPassedHide: "Hide them",
+    dlLeft: leftEn,
+    dlNoDate: "No date yet",
+    dlDue: "Deadline",
+    dlAnyEvm: "Several EVM chains",
+    dlType: (k) => ({ "chain-shutdown": "Chain shutdown", "frontend-down": "Website going offline", "withdraw-only": "Withdraw-only", "token-migration": "Token swap", "bridge-route-end": "Bridge route ending", "stablecoin-redemption": "Stablecoin redemption", "rewards-deadline": "Rewards deadline", other: "Other" })[k],
+    dlWhen: "Key dates", dlWho: "Who's affected", dlTodo: "What to do", dlCaution: "Note",
+    dlSteps: "Step by step", dlStepPast: "passed",
+    dlOfficialH: "Official links",
+    dlAnnounced: (d) => `Announced ${d}`,
+    dlMoreH: "Keep going",
+    dlMoreCheck: "Paste a wallet address to check for money left on-chain, free",
+    dlMoreTopics: "Topics: the chain closed or the site is gone, now what?",
+    dlScope: "Included: events announced or taking effect since July 2026 where you have to move your money out yourself (withdraw, swap, close positions, remove liquidity). EVM chains only. This page is read-only and never connects to your wallet.",
+    tpTitle: "Topics: getting your money out after a chain or site shuts down",
+    tpDesc: "Chain shutdowns, websites going offline, token migrations: how to still get your money out. One situation per page, with official sources.",
+    tpH1: "Topics",
+    tpLead: "The chain closed, the website is gone, the token is being replaced: how to still get your money out. One situation per page, with official sources.",
+    tpEmpty: "Topics are on the way.",
+    tpSeeDl: "Chains and protocols shutting down, sorted by deadline:",
+    tpBack: "All topics",
+    tpToc: "On this page",
+    tpFaqH: "Common questions",
+    tpRelatedH: "Related",
+    tpDeadline: (name) => `Exit deadlines: ${name}`,
+    tpGuide: (title) => `Guide: ${title}`,
 
     nfTitle: "Page not found",
     nfBack: "Back to home",

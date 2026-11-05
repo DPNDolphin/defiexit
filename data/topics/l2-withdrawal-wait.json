@@ -1,0 +1,398 @@
+{
+  "slug": "l2-withdrawal-wait",
+  "checked": "2026-11-05",
+  "title": {
+    "zh": "从 L2 提回以太坊为什么要等？等完还要做什么？",
+    "en": "Withdrawing from an L2 to Ethereum: why the wait, and what to do when it ends"
+  },
+  "summary": {
+    "zh": "用官方桥从 L2 提回以太坊，要等这条链的结果在以太坊上确认：OP Mainnet 和 Arbitrum 大约 7 天，Base 现在是 5 天（部分提款 1 天），zkSync Era、Linea 这类 ZK 链一般几个小时。大多数链不会自动把钱打给你：OP Mainnet、Base 要先在以太坊上「证明」（Prove），等完再「完成」（Finalize）；Arbitrum、Linea、Scroll 等完以后，要回桥页面在以太坊上点 Claim。所以以太坊上要留一点 ETH 付手续费。",
+    "en": "When you move funds from an L2 back to Ethereum through an official bridge, you wait until the chain's result is confirmed on Ethereum: about 7 days for OP Mainnet and Arbitrum, now 5 days for Base (1 day for some withdrawals), and usually a few hours for ZK chains such as zkSync Era and Linea. Most chains do not send the money automatically: on OP Mainnet and Base you first Prove on Ethereum, wait, then Finalize; on Arbitrum, Linea and Scroll you go back to the bridge after the wait and Claim on Ethereum. So keep a little ETH on Ethereum for the fees."
+  },
+  "sections": [
+    {
+      "h": {
+        "zh": "为什么要等",
+        "en": "Why there is a wait"
+      },
+      "p": [
+        {
+          "zh": "L2 把交易结果交给以太坊确认。官方桥在以太坊上放钱之前，要先确定这个结果没错。",
+          "en": "An L2 hands its results to Ethereum for confirmation. Before the official bridge releases money on Ethereum, it has to be sure that result is correct."
+        },
+        {
+          "zh": "OP Mainnet、Base、Arbitrum 这类链，是先把结果发上去，再留一段时间让别人挑错，这段时间叫挑战期。zkSync Era、Linea、Scroll 这类 ZK 链，要等证明生成、在以太坊上验证；zkSync 还另加了一段安全延迟。",
+          "en": "Chains like OP Mainnet, Base and Arbitrum post their results first, then leave time for anyone to challenge a wrong one. That time is the challenge period. ZK chains such as zkSync Era, Linea and Scroll wait for a proof to be generated and checked on Ethereum, and zkSync adds a further security delay."
+        },
+        {
+          "zh": "这段等待是官方桥安全规则的一部分。OP 官方文档写明：这段等待无法绕过。",
+          "en": "The wait is part of the official bridge's security rules. The OP docs say plainly that it cannot be circumvented."
+        }
+      ]
+    },
+    {
+      "h": {
+        "zh": "各条链要等多久",
+        "en": "How long each chain takes"
+      },
+      "p": [
+        {
+          "zh": "以下按各链官方文档整理（查于 2026-11-05）。实际到账还要加上你自己操作每一步的时间。",
+          "en": "Based on each chain's official docs (checked 2026-11-05). Add the time you take to do each step yourself."
+        }
+      ],
+      "list": [
+        {
+          "zh": "OP Mainnet：挑战期 7 天。一共三步：在 OP Mainnet 上发起；等这一段结果提交到以太坊后，在以太坊上「证明」（Prove）；7 天后在以太坊上「完成」（Finalize）。",
+          "en": "OP Mainnet: a 7-day challenge period. Three steps: start on OP Mainnet; once that part of the chain has been posted to Ethereum, 'Prove' on Ethereum; after 7 days, 'Finalize' on Ethereum."
+        },
+        {
+          "zh": "Base：2026 年 6 月 25 日 Beryl 升级后，标准桥是 5 天；如果那份结果同时有 TEE 和 ZK 两种证明，只要 1 天。发起后一般还要先等约 20–60 分钟才能证明。步骤和 OP Mainnet 一样：发起、证明、完成。要等多久，以桥页面显示的为准。",
+          "en": "Base: since the Beryl upgrade on June 25, 2026, the standard bridge waits 5 days, or 1 day when that result is backed by both a TEE proof and a ZK proof. Before you can prove, there is usually a wait of about 20–60 minutes. The steps match OP Mainnet: start, prove, finalize. Go by the time the bridge shows you."
+        },
+        {
+          "zh": "Arbitrum One / Nova：官方说至少 7 天，桥页面的倒计时一般显示 7–8 天（挑战期是 45818 个以太坊区块，约 6.4 天，前后还有一些处理时间）。倒计时结束后，点桥页面右上角的头像，在 Transactions（交易记录）里点 Claim。",
+          "en": "Arbitrum One / Nova: at least 7 days per the official docs, and the bridge countdown usually shows 7–8 days (the challenge period is 45,818 Ethereum blocks, about 6.4 days, plus some processing before and after). When the countdown ends, open your profile at the top right of the bridge, go to Transactions, and press Claim."
+        },
+        {
+          "zh": "zkSync Era：官方文档写提款至少有 3 小时的安全延迟，网络忙时可能再多 1–2 小时。以太坊上的最后一步「完成提款」任何人都可以提交；主网上会不会自动替你完成，官方文档没写。如果你用的桥页面出现 Claim 按钮，就要你自己点。",
+          "en": "zkSync Era: the docs give a security delay of at least 3 hours, and 1–2 hours more when the network is busy. The last step on Ethereum ('finalize withdrawal') can be submitted by anyone; whether it is done for you on mainnet, the docs don't say. If the bridge you used shows a Claim button, you need to press it."
+        },
+        {
+          "zh": "Linea：ETH 和普通代币大约 2–12 小时。从 Linea 回以太坊一律要你在以太坊上手动 Claim（官方桥的交易记录里会标「Ready to claim」）。这个方向官方桥还收 0.001 ETH 的防攻击费。",
+          "en": "Linea: about 2–12 hours for ETH and regular tokens. Withdrawals from Linea to Ethereum always need a manual Claim on Ethereum (the official bridge's history marks them 'Ready to claim'). In this direction the official bridge also charges a 0.001 ETH anti-DDoS fee."
+        },
+        {
+          "zh": "Scroll：要等你这笔所在的批次在以太坊上完成确认，然后在以太坊上再发一笔「执行提款」交易（桥页面上的 Claim）。现行官方文档没写要等多久。",
+          "en": "Scroll: wait until the batch containing your transaction is finalized on Ethereum, then send one more 'Execute Withdrawal' transaction on Ethereum (the Claim button on the bridge). The current official docs don't say how long this takes."
+        },
+        {
+          "zh": "其他链：同样用 OP Stack 的链，时间不一定和 OP Mainnet 一样，Base 就已经改成 5 天。从 L3 提回以太坊要走两段，每段都要等；Arbitrum 官方文档说，按默认设置最慢大约两周。以那条链自己的官方文档为准。",
+          "en": "Other chains: chains built on the OP Stack don't necessarily match OP Mainnet; Base is already at 5 days. Withdrawing from an L3 to Ethereum takes two legs, each with its own wait, and the Arbitrum docs put the worst case with default settings at roughly two weeks. Check that chain's own docs."
+        }
+      ]
+    },
+    {
+      "h": {
+        "zh": "等完之后要做什么",
+        "en": "What to do when the wait is over"
+      },
+      "p": [
+        {
+          "zh": "多数官方桥在等待结束后，不会自动把钱打进你的钱包。Arbitrum 官方文档说：确认之后只是「可以领取」，要有人在以太坊上执行这一步，不会自动执行。Lisk 关链前也提醒过：提款没有 Claim 就不算完成。",
+          "en": "On most official bridges, the money does not land in your wallet by itself when the wait ends. The Arbitrum docs say confirmation only makes a withdrawal claimable: someone has to execute it on Ethereum, and nothing does it automatically. Before its chain closed, Lisk reminded users that a withdrawal isn't complete until it's claimed."
+        }
+      ],
+      "list": [
+        {
+          "zh": "回到你发起提款的那个桥页面，连接同一个钱包。",
+          "en": "Go back to the same bridge page where you started, and connect the same wallet."
+        },
+        {
+          "zh": "在交易记录里（History、Transactions 或 Activity）找到这一笔，按提示点 Prove，或者 Claim / Finalize。",
+          "en": "Find the withdrawal in its history (History, Transactions or Activity) and press Prove, or Claim / Finalize, as prompted."
+        },
+        {
+          "zh": "这一步是在以太坊上发交易，要付以太坊的 gas。OP 官方说，以太坊上的证明和完成这两笔，通常比在 L2 上发起那笔贵得多。",
+          "en": "This step sends a transaction on Ethereum, so you pay Ethereum gas. The OP docs note that the prove and finalize transactions on Ethereum usually cost much more than starting the withdrawal on the L2."
+        },
+        {
+          "zh": "用 Safe 这类合约钱包提款的：Arbitrum 官方说，这一笔可能不出现在桥的交易记录里；可以用 L2 上发起那笔的交易哈希，在桥的交易记录里搜出来再 Claim。",
+          "en": "If you withdrew from a smart contract wallet such as a Safe: the Arbitrum docs say it may not appear in the bridge's history, and you can search the history by the hash of the L2 transaction that started it, then Claim."
+        }
+      ]
+    },
+    {
+      "h": {
+        "zh": "比官方说的还久？先查这几处",
+        "en": "Taking longer than the docs say? Check these first"
+      },
+      "p": [
+        {
+          "zh": "先别重做，一项一项核对。",
+          "en": "Don't start over. Check these one by one."
+        }
+      ],
+      "list": [
+        {
+          "zh": "OP Mainnet、Base：等待期至少要从你做完「证明」那一刻算起，不是从发起那一刻。拖了几天才证明，就要从那时再等满。用来证明的那份结果如果被判无效，要重新证明，等待会重新计时。",
+          "en": "OP Mainnet and Base: the wait runs at least from your Prove transaction, not from when you started. If you proved a few days late, the full wait runs from then. If the result you proved against is ruled invalid, you have to prove again, and the clock restarts."
+        },
+        {
+          "zh": "Arbitrum：极少数情况下有人发起挑战，等待会延长；官方说在 BoLD 机制下，正常的提款最多再多等一个挑战期。",
+          "en": "Arbitrum: in rare cases someone opens a challenge and the wait gets longer; the docs say that under BoLD an honest withdrawal is delayed by at most one more challenge period."
+        },
+        {
+          "zh": "ZK 链：zkSync 官方说 3 小时不是保证，网络忙时会更久；Sophon 官方说时间会变，以官方提款页显示的状态为准。",
+          "en": "ZK chains: zkSync says 3 hours is not a guarantee and it can take longer when the network is busy; Sophon says the time varies and to follow the status on its official withdrawal page."
+        },
+        {
+          "zh": "钱到了，钱包里却看不到：zkSync 官方说，这类提款在 Etherscan 上通常显示在你地址页的「Internal Transactions（内部交易）」一栏，不在普通交易列表里。",
+          "en": "Arrived but not visible? zkSync says these withdrawals usually appear under 'Internal Transactions' on your Etherscan address page, not in the normal transaction list."
+        },
+        {
+          "zh": "Linea：超过 90 天没 Claim 的，官方桥页面不再显示，要按官方开发文档手动完成。",
+          "en": "Linea: withdrawals left unclaimed for more than 90 days no longer show in the official bridge app; you finish them manually using the official developer docs."
+        },
+        {
+          "zh": "都核对过还不对，只在项目的官方 Discord 或官方帮助中心提问，不要理主动找你的人。",
+          "en": "If it still doesn't add up, ask only in the project's official Discord or help center, and ignore anyone who contacts you first."
+        }
+      ]
+    },
+    {
+      "h": {
+        "zh": "不要做的事",
+        "en": "What not to do"
+      },
+      "p": [
+        {
+          "zh": "着急的时候最容易多花钱，或者被骗。",
+          "en": "Being in a hurry is when people overpay or get scammed."
+        }
+      ],
+      "list": [
+        {
+          "zh": "不要为了「快一点」再跨一次。已经发起的提款不能取消（Arbitrum 官方）；第三方快速桥是另一家的服务，不会缩短你已经发起的这笔官方提款（Base 官方）。再跨一次，只是又发出去一笔钱。",
+          "en": "Don't bridge again to 'speed it up'. A withdrawal you've started can't be cancelled (Arbitrum docs), and third-party fast bridges are separate services that don't shorten an official withdrawal already in progress (Base docs). Bridging again just sends another amount."
+        },
+        {
+          "zh": "不要付钱给说能「加速」「解锁」的人。等待期是协议规则，没有人能收费跳过。",
+          "en": "Don't pay anyone who offers to 'speed up' or 'unlock' it. The wait is a protocol rule, and no one can skip it for a fee."
+        },
+        {
+          "zh": "不要用搜索结果、私信或评论区里的链接操作。只用你当初用的官方桥，或官方账号自己帖子里给的链接。",
+          "en": "Don't act on links from search results, DMs or replies. Use only the official bridge you started on, or a link the official account posted itself."
+        },
+        {
+          "zh": "DeFiExit 网站只会请钱包共享地址，从不让你签名、批准或发交易；我们不会主动找你。",
+          "en": "DeFiExit only asks your wallet to share its address — it never asks you to sign, approve or send anything, and we never message first."
+        }
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": {
+        "zh": "我已经把 ETH 跨回以太坊了，页面却说要等 7 天，是不是卡住了？",
+        "en": "I already bridged my ETH back, but it says 7 days. Is it stuck?"
+      },
+      "a": {
+        "zh": "多半没卡住。用官方桥从 OP Mainnet 或 Arbitrum 提回以太坊，本来就要等大约 7 天；Base 现在是 5 天，部分提款 1 天。这段时间不能缩短。到时间后回到原来的桥页面，把最后一步（Finalize 或 Claim）做完，钱才会到；OP Mainnet 和 Base 中间还要先做一次 Prove。",
+        "en": "Most likely not. Withdrawing from OP Mainnet or Arbitrum to Ethereum through the official bridge normally takes about 7 days; Base is now 5 days, or 1 day for some withdrawals. That time can't be shortened. When it's up, go back to the same bridge and do the last step (Finalize or Claim); only then does the money arrive. On OP Mainnet and Base you also need to Prove first, in between."
+      }
+    },
+    {
+      "q": {
+        "zh": "我从 Sophon 提的钱一直没到账？",
+        "en": "My withdrawal from Sophon still hasn't arrived."
+      },
+      "a": {
+        "zh": "Sophon 官方文档说，走官方通道提回以太坊不是马上到：要等批次在以太坊上完成证明，然后回到 claim.sophon.com，用同一个钱包，在以太坊上提交最后一笔 Claim 交易。要等多久官方说会变，以页面状态为准。如果你在页面上选的是第三方路线，就按那条路线的状态查。Sophon 官方定的提款截止日是 2026 年 11 月 25 日，主网 11 月 30 日关停，别拖到最后。",
+        "en": "Sophon's docs say an official (canonical) withdrawal to Ethereum isn't instant: the batch must be proven on Ethereum, then you return to claim.sophon.com with the same wallet and submit a final Claim transaction on Ethereum. Sophon says the timing varies, so go by the status on that page. If you picked a third-party route there, check that route's status instead. Sophon's withdrawal deadline is November 25, 2026, and mainnet shuts down on November 30, so don't leave it to the end."
+      }
+    },
+    {
+      "q": {
+        "zh": "倒计时早就结束了，钱还是没到？",
+        "en": "The countdown ended days ago, and the money still isn't there."
+      },
+      "a": {
+        "zh": "多半是还差最后一步。Arbitrum 官方说，倒计时结束只是变成「可以领取」，要你在桥的交易记录里点 Claim，不会自动执行；Linea 回以太坊一律要手动 Claim；OP Mainnet 和 Base 要先 Prove、等满后再 Finalize。点之前，确认钱包在以太坊上有一点 ETH 付 gas。",
+        "en": "Usually the last step is still missing. Arbitrum says a finished countdown only makes the withdrawal claimable: you press Claim in the bridge's history, and nothing does it automatically. Linea withdrawals to Ethereum always need a manual Claim. On OP Mainnet and Base you Prove, wait out the period, then Finalize. Before you press it, make sure the wallet has a little ETH on Ethereum for gas."
+      }
+    },
+    {
+      "q": {
+        "zh": "有人说交点手续费就能帮我加快提款，可信吗？",
+        "en": "Someone says they can speed up my withdrawal for a small fee. Is that real?"
+      },
+      "a": {
+        "zh": "不可信。等待期是官方桥的协议规则，OP 官方文档写明无法绕过；Arbitrum 官方也说已经发起的提款不能取消。收钱「加速」「解锁」的都是骗局。也不要把助记词或私钥给任何人。",
+        "en": "No. The wait is a protocol rule of the official bridge: the OP docs say it cannot be circumvented, and Arbitrum says a withdrawal you've started can't be cancelled. Anyone charging to 'speed up' or 'unlock' it is running a scam. Never give anyone your seed phrase or private key either."
+      }
+    },
+    {
+      "q": {
+        "zh": "我从 L3 往外提，为什么说要两周左右？",
+        "en": "Why does my withdrawal from an L3 say about two weeks?"
+      },
+      "a": {
+        "zh": "L3 提回以太坊要走两段：先回到它下面的 L2，再从 L2 回以太坊，每段都有自己的等待期。Arbitrum 官方文档说，按默认设置最慢大约两周。也有项目自己另有安排：Horizen 2026 年 10 月 23 日的官方指南说，11 月 4 日前通过官方桥发起的 ETH 提款，会由官方替你完成，大约两周后在 Base 上到账。",
+        "en": "Going from an L3 to Ethereum takes two legs: first back to the L2 underneath it, then from that L2 to Ethereum, and each leg has its own wait. The Arbitrum docs put the worst case with default settings at roughly two weeks. Some projects have their own arrangements: Horizen's official guide of October 23, 2026 says ETH withdrawals started through its official bridge before November 4 are finalized for you and land on Base in about two weeks."
+      }
+    },
+    {
+      "q": {
+        "zh": "提款要在多久之内点 Claim？过期了钱会不会没了？",
+        "en": "How long do I have to press Claim? Can it expire?"
+      },
+      "a": {
+        "zh": "Arbitrum 官方说，确认后的提款可以一直放着等你执行；OP Mainnet 和 Base 的官方文档没写期限；Linea 超过 90 天的不再显示在官方桥页面，但还能按官方文档手动完成。例外是链要关停的时候：要按那条链的关停公告做。比如 Lisk 说，关链时还在途中的提款会直接记到以太坊上的目标地址；Blast 的官方取回站也包括没走完的提款。",
+        "en": "Arbitrum says a confirmed withdrawal can wait indefinitely for you to execute it. The OP Mainnet and Base docs don't mention a time limit. On Linea, withdrawals older than 90 days drop off the official bridge page but can still be completed manually per the docs. The exception is a chain that is shutting down: then follow its shutdown notice. For example, Lisk said withdrawals in progress at shutdown would be credited to their destination on Ethereum, and Blast's official recovery site also covers unfinished withdrawals."
+      }
+    }
+  ],
+  "related": [
+    "sophon-chain-shutdown",
+    "blast-l2-shutdown",
+    "chain-shutdown",
+    "scams-during-exits"
+  ],
+  "sources": [
+    {
+      "label": {
+        "zh": "OP 官方文档：OP Mainnet 的交易最终性（标准桥提款 7 天）",
+        "en": "OP docs: Transaction finality on OP Mainnet (7-day Standard Bridge withdrawals)"
+      },
+      "url": "https://docs.optimism.io/op-mainnet/network-information/transaction-finality"
+    },
+    {
+      "label": {
+        "zh": "OP 官方文档：提款流程（发起、证明、完成；重新证明会重新计时）",
+        "en": "OP docs: Withdrawal flow (initiate, prove, finalize; re-proving resets the timer)"
+      },
+      "url": "https://docs.optimism.io/op-stack/bridging/withdrawal-flow"
+    },
+    {
+      "label": {
+        "zh": "OP 官方文档：L1 与 L2 之间传消息（挑战期无法绕过、以太坊上两笔更贵）",
+        "en": "OP docs: Sending data between L1 and L2 (the wait cannot be circumvented; L1 steps cost more)"
+      },
+      "url": "https://docs.optimism.io/app-developers/guides/bridging/messaging"
+    },
+    {
+      "label": {
+        "zh": "Base 官方文档：提款（5 天或 1 天、20–60 分钟、快速桥不缩短官方提款）",
+        "en": "Base docs: Withdrawals (5 days or 1 day, 20–60 minutes, fast bridges don't shorten it)"
+      },
+      "url": "https://docs.base.org/specifications/base-protocol/bridging/withdrawals"
+    },
+    {
+      "label": {
+        "zh": "Base 官方文档：Beryl 升级·提款更快（7 天改为 5 天）",
+        "en": "Base docs: Beryl — Faster Withdrawals (7 days reduced to 5)"
+      },
+      "url": "https://docs.base.org/upgrades/beryl/reducing-canonical-withdrawal-delay"
+    },
+    {
+      "label": {
+        "zh": "Base 官方文档：升级时间表（Beryl 主网 2026-06-25 生效）",
+        "en": "Base docs: Upgrades (Beryl live on mainnet June 25, 2026)"
+      },
+      "url": "https://docs.base.org/upgrades/overview"
+    },
+    {
+      "label": {
+        "zh": "Arbitrum 官方文档：跨链桥快速入门（至少 7 天、倒计时 7–8 天、Claim）",
+        "en": "Arbitrum docs: Bridge quickstart (at least 7 days, 7–8 day countdown, Claim)"
+      },
+      "url": "https://docs.arbitrum.io/arbitrum-bridge/quickstart"
+    },
+    {
+      "label": {
+        "zh": "Arbitrum 官方文档：跨链桥常见问题（约 6.4 天、不能取消、合约钱包）",
+        "en": "Arbitrum docs: Bridge troubleshooting (about 6.4 days, no cancelling, smart contract wallets)"
+      },
+      "url": "https://docs.arbitrum.io/arbitrum-bridge/troubleshooting"
+    },
+    {
+      "label": {
+        "zh": "Arbitrum 官方文档：提款监控（Claim 不会自动执行、L3 两段约两周）",
+        "en": "Arbitrum docs: Monitor withdrawals (claims aren't automatic; L3 two legs, about two weeks)"
+      },
+      "url": "https://docs.arbitrum.io/arbitrum-bridge/withdrawal-monitoring"
+    },
+    {
+      "label": {
+        "zh": "zkSync 官方文档：提款延迟（至少 3 小时、Etherscan 内部交易）",
+        "en": "ZKsync docs: Withdrawal delay (3-hour minimum, Etherscan internal transactions)"
+      },
+      "url": "https://docs.zksync.io/zksync-protocol/security/withdrawal-delay"
+    },
+    {
+      "label": {
+        "zh": "zkSync 官方文档：资产跨链（以太坊上的最后一步任何人可提交）",
+        "en": "ZKsync docs: Bridging assets (anyone can finalize on L1)"
+      },
+      "url": "https://docs.zksync.io/zksync-protocol/rollup/bridging-assets"
+    },
+    {
+      "label": {
+        "zh": "zkSync 官方文档：最终性（证明约 1 小时、整体约 3 小时）",
+        "en": "ZKsync docs: Finality (proof about an hour, around 3 hours overall)"
+      },
+      "url": "https://docs.zksync.io/zksync-protocol/rollup/finality"
+    },
+    {
+      "label": {
+        "zh": "Linea 官方文档：跨链（2–12 小时、手动 Claim、0.001 ETH、90 天）",
+        "en": "Linea docs: Bridge tokens (2–12 hours, manual claim, 0.001 ETH fee, 90 days)"
+      },
+      "url": "https://docs.linea.build/network/how-to/bridge"
+    },
+    {
+      "label": {
+        "zh": "Linea 官方文档：交易最终性（ZK 证明在以太坊上验证）",
+        "en": "Linea docs: Transaction finality (ZK proofs verified on Ethereum)"
+      },
+      "url": "https://docs.linea.build/network/overview/transaction-finality"
+    },
+    {
+      "label": {
+        "zh": "Scroll 官方文档（GitHub 源文件）：技术概览（在以太坊上验证有效性证明）",
+        "en": "Scroll docs (GitHub source): Technology overview (validity proofs verified on Ethereum)"
+      },
+      "url": "https://github.com/scroll-tech/scroll-documentation/blob/develop/src/content/docs/en/technology/index.mdx"
+    },
+    {
+      "label": {
+        "zh": "Scroll 官方文档（GitHub 源文件）：Scroll Messenger，回以太坊要再发「执行提款」交易",
+        "en": "Scroll docs (GitHub source): The Scroll Messenger — L2 to L1 needs an Execute Withdrawal transaction"
+      },
+      "url": "https://github.com/scroll-tech/scroll-documentation/blob/develop/src/content/docs/en/developers/l1-and-l2-bridging/the-scroll-messenger.mdx"
+    },
+    {
+      "label": {
+        "zh": "Sophon 官方文档：官方提款的最终确认（时间会变、最后在以太坊上 Claim）",
+        "en": "Sophon docs: Canonical withdrawal finalization (timing varies; final claim on Ethereum)"
+      },
+      "url": "https://docs.sophon.xyz/discover/bridging/withdrawal-delay"
+    },
+    {
+      "label": {
+        "zh": "Sophon 官方 X：11 月 25 日提款截止、11 月 30 日关停（2026-10-19）",
+        "en": "Sophon on X: Nov 25 withdrawal deadline, Nov 30 shutdown (Oct 19, 2026)"
+      },
+      "url": "https://x.com/Sophon/status/2112253259561730145"
+    },
+    {
+      "label": {
+        "zh": "Lisk 官方 X：提款没有 Claim 就不算完成（2026-11-01）",
+        "en": "Lisk on X: a withdrawal isn't complete until it's claimed (Nov 1, 2026)"
+      },
+      "url": "https://x.com/Lisk/status/2116893926560833904"
+    },
+    {
+      "label": {
+        "zh": "Lisk 官方 X：关链时在途的提款会记到以太坊目标地址（2026-11-03）",
+        "en": "Lisk on X: in-progress withdrawals will be credited on Ethereum (Nov 3, 2026)"
+      },
+      "url": "https://x.com/Lisk/status/2117570140808106069"
+    },
+    {
+      "label": {
+        "zh": "Blast 官方取回站（含没走完的提款）",
+        "en": "Blast official recovery site (includes unfinished withdrawals)"
+      },
+      "url": "https://blast.io/"
+    },
+    {
+      "label": {
+        "zh": "Horizen 官方博客：Horizen 的变化（2026-10-23）",
+        "en": "Horizen blog: Changes for Horizen (Oct 23, 2026)"
+      },
+      "url": "https://blog.horizen.io/changes-for-horizen"
+    }
+  ]
+}

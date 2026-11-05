@@ -73,6 +73,8 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     origin: "请求来源不对,刷新页面再试", login: "登录过期了,请重新登录", busy: "刚刷新过,两分钟后再点", superseded: "同时有另一次刷新在跑,这次的结果没写进去,过一会儿再看", bad: "内容不合格,没存",
     nocode: "设置链接还没生成或已经过期,叫我重新发一个", code: "设置码不对", name: "用户名只能用字母、数字、汉字和 _ . -,最多 40 个", locked: "这条已经点过「已发 / 跳过」,先改回待发再改草稿",
     none: "这一条已经不在了,刷新一下", target: "这条没有目标帖子编号,不能发", draftbad: "草稿里有不许带的链接或不许用的词",
+    purged: "这条 30 天到了,原帖信息已经删了,不能再记", gone: "这条帖子按对方要求删过,不能再记",
+    changed: "这条刚被别处改过,页面刷新一下再改", more: "这条帖子还有记录没查完,再点「删除这条」并确认,接着往下查、往下删",
     badlink: "链接不对:要 x.com 上那一条的链接(帖子右下角「分享」→「复制链接」)",
   };
   const why = (j) => (WHY[j && (j.error || j.need)] || "出错了(" + ((j && (j.error || j.need)) || "未知") + "),再试一次") + (j && j.why ? ":" + j.why : "");
@@ -126,23 +128,35 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     return ok;
   }
 
-  // 删除:先点一下变成「确定删除?再点一次」,3 秒内再点才删(按对方要求删数据时用)
+  // 删除:先点一下变成「确定删除?再点一次」,旁边写清楚会删掉什么;5 秒内再点才删(按对方要求删数据时用)。
+  // 删的是这条帖子:服务器把它在待发、收件、问题记录里的几行一起删(同一条帖子的别的卡片也删,以后也不再收);
+  // 自己发的项目帖没有别人的帖子,只删这一张。删完重新读一遍,列表、计数、数据都照服务器的
+  const SCOPE_POST = "会删掉这条帖子在待发、收件、问题记录里的全部记录(同一条帖子的别的卡片也删),以后也不再收";
+  const SCOPE_CARD = "只删这一张自己发的帖子,以后不再收";
   function delButton(kind, id, msgEl) {
     const b = h("button", { class: "linkbtn warn", type: "button" }, "删除这条");
-    let armed = null;
+    let armed = null, scope = "";
+    const disarm = () => { armed = null; b.textContent = "删除这条"; if (msgEl.textContent === scope) msgEl.textContent = ""; };
     b.addEventListener("click", async () => {
       if (!armed) {
         b.textContent = "确定删除?再点一次";
-        armed = setTimeout(() => { armed = null; b.textContent = "删除这条"; }, 3000);
+        scope = kind === "outbox" && isPost(S.out.get(id)) ? SCOPE_CARD : SCOPE_POST;
+        msgEl.textContent = scope;
+        msgEl.classList.remove("bad");
+        armed = setTimeout(disarm, 5000);
         return;
       }
       clearTimeout(armed);
-      armed = null;
+      disarm();
       const { status, json } = await api("delete", { kind, id });
       if (status === 200 && json.ok) {
         (kind === "outbox" ? S.out : S.inn).delete(id);
         sync(kind === "outbox" ? "out" : "in");
         renderTop();
+        await load(); // 同一条帖子的别的卡片、收件,问题记录的数,服务器那边也删了
+      } else if (status === 409 && json.error === "more") {
+        await load(); // 还没查完(这张卡片还留着,查到的可能已经删了):重新读一遍,再点删除并确认接着查
+        note(msgEl, why(json), true);
       } else note(msgEl, "没删掉:" + why(json), true);
     });
     return b;
@@ -413,6 +427,7 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     S.auto = json.auto && typeof json.auto === "object" ? json.auto : {};
     S.outStats = json.outStats && typeof json.outStats === "object" ? json.outStats : {};
     S.hits = json.hits && typeof json.hits === "object" ? json.hits : {};
+    S.problems = json.problems && typeof json.problems === "object" ? json.problems : null; // 问题记录的数(最近 7 天、30 天)
     S.out = new Map((json.outbox || []).map((d) => [d.id, d]));
     S.inn = new Map((json.inbox || []).map((d) => [d.id, d]));
     sync("out");
@@ -618,6 +633,31 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     };
   }
 
+  // 大家最常问(问题记录,服务器只给数):最近 7 天、30 天每种问题几条(两边都没有的不列,「其他」放最后)、问得多的协议、我们回了几条
+  const PROBLEM = { "bridge-wait": "跨链 / L2 提款要等", "chain-shutdown": "链关停", migration: "换币迁移", "unstake-wait": "解押排队", "frontend-down": "官网打不开", "wallet-missing": "钱包看不到", "deadline-missed": "错过截止", scam: "遇到骗子", other: "其他" };
+  function problemPanel(p) {
+    if (!p || !p.d7 || !p.d30) return null;
+    const { d7, d30 } = p;
+    if (!d7.total && !d30.total) return h("div", { class: "panel" }, h("h3", null, "大家最常问"),
+      h("p", { class: "empty" }, "还没有记录。机器人找到的、官方公告底下的、我们帖子底下的,说自己钱卡住的帖子,我核过原帖以后按问题记在这里(只记数,不记账号),用来决定先写哪篇说明。"));
+    const n = (w, k) => (w.byType && typeof w.byType[k] === "number" ? w.byType[k] : 0);
+    const keys = [...new Set([...Object.keys(PROBLEM), ...Object.keys(d30.byType || {}), ...Object.keys(d7.byType || {})])]
+      .filter((k) => n(d30, k) || n(d7, k))
+      .sort((a, b) => (a === "other") - (b === "other") || n(d30, b) - n(d30, a) || n(d7, b) - n(d7, a));
+    const sum = (label, w) => h("div", { class: "li" },
+      h("span", { class: "k" }, label),
+      h("span", { class: "nm" }, w.total ? "我们回了 " + fmt(w.replied) + " 条 / 共 " + fmt(w.total) + " 条" : "还没有"),
+      // 协议名和条数之间是不换行的空格:手机上折行时数字不会掉到下一行
+      w.total && Array.isArray(w.byProtocol) && w.byProtocol.length ? h("span", { class: "sub" }, "问得多的协议:" + w.byProtocol.map((r) => r.protocol + "\u00a0" + fmt(r.n)).join(" · ")) : null);
+    return h("div", { class: "panel" },
+      h("h3", null, "大家最常问"),
+      h("div", { class: "list" }, sum("7 天", d7), sum("30 天", d30)),
+      h("div", { class: "tbl-wrap" }, h("table", null,
+        h("thead", null, h("tr", null, h("th", null, "问题"), h("th", { class: "num" }, "7 天"), h("th", { class: "num" }, "30 天"))),
+        h("tbody", null, ...keys.map((k) => h("tr", null, h("td", null, PROBLEM[k] || k), h("td", { class: "num" }, fmt(n(d7, k))), h("td", { class: "num" }, fmt(n(d30, k)))))))),
+      h("p", { class: "src" }, "机器人找到的、官方公告底下的、我们帖子底下的,一条帖子记一次,按发帖那天(北京时间)算;只有数,不带账号和链接。"));
+  }
+
   function protocolPanel(p) {
     const rows = Array.isArray(p && p.rows) ? p.rows : [];
     const max = Math.max(1, ...rows.map((r) => r.posts || 0));
@@ -738,7 +778,7 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
   }
   function renderData() {
     const D = S.docs;
-    const parts = [safe(goalPanel, D.goal_1215), safe(routePanel, D.funnel), safe(viewsPanel, D.x_posts), safe(minePanel, S.out), safe(leadsPanel, S.leads), safe(protocolPanel, D.protocols), safe(needsPanel, S.needs), safe(clocksPanel, D.clocks), safe(botPanel, D.bot), safe(autoPanel, S.auto)].filter(Boolean);
+    const parts = [safe(goalPanel, D.goal_1215), safe(routePanel, D.funnel), safe(viewsPanel, D.x_posts), safe(minePanel, S.out), safe(leadsPanel, S.leads), safe(problemPanel, S.problems), safe(protocolPanel, D.protocols), safe(needsPanel, S.needs), safe(clocksPanel, D.clocks), safe(botPanel, D.bot), safe(autoPanel, S.auto)].filter(Boolean);
     $("data-body").replaceChildren(...(parts.length ? parts : [h("p", { class: "empty" }, "还没有数据。我下次干活时送进来。")]));
   }
 

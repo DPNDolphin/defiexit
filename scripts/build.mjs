@@ -1,4 +1,5 @@
 // 静态站点生成:recipes/*/recipe.json(+ i18n/en.json)→ dist/,中文一套、英文一套(/en/)。零依赖,只用 Node 自带模块。
+// 另有两块:data/deadlines.json → 退出截止日历(/deadlines/);data/topics/<slug>.json → 专题(/topics/<slug>/)。
 // 用法:node scripts/build.mjs
 import { readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync, copyFileSync, existsSync, statSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -8,7 +9,10 @@ import { createHash } from "node:crypto";
 import { site } from "./site.mjs";
 import { zh as zhPunct } from "../src/js/lib/zh.js";
 import { makeT } from "../src/js/lib/i18n.js";
+import { upcoming, httpsHost, DUE_KINDS } from "../src/js/lib/due.js";
 import { svgString as ico } from "../src/js/lib/icons.js";
+import { ICON, FILE } from "../src/js/lib/chains.js";
+import { daysLeft, timeLeft, nextMilestone, urgency } from "../src/js/lib/deadline.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
@@ -21,7 +25,7 @@ const pre = (lang) => (lang === "en" ? "/en" : "");
 function version() {
   try {
     const git = (...args) => execFileSync("git", args, { cwd: ROOT, stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
-    return { commit: git("rev-parse", "--short", "HEAD"), dirty: git("status", "--porcelain", "--", "src", "recipes", "scripts", "static", "functions", "server", "admin", "wrangler.toml") !== "" };
+    return { commit: git("rev-parse", "--short", "HEAD"), dirty: git("status", "--porcelain", "--", "src", "recipes", "data", "scripts", "static", "functions", "server", "admin", "wrangler.toml") !== "" };
   } catch {
     return null;
   }
@@ -98,7 +102,7 @@ function langSwitch(lang, path, tx) {
 const themeBtn = (tx) => `<button class="iconbtn theme" type="button" data-theme-toggle aria-pressed="false" aria-label="${tx.attr("lightMode")}">${ico("sun", "i-sun")}${ico("moon", "i-moon")}</button>`;
 
 // 每种语言一套取文字的小工具:t 取原文,h 取成 HTML,attr 取成属性值
-function texts(lang) {
+export function texts(lang) {
   const t = makeT(lang);
   return { lang, t, h: (k, ...a) => rich(t(k, ...a), {}, lang), attr: (k, ...a) => plain(t(k, ...a), lang) };
 }
@@ -107,7 +111,8 @@ function page({ tx, kind, path, title, desc, body, script, header, noindex = fal
   const { lang } = tx;
   const url = (l) => `https://${site.domain}${pre(l)}${path}`;
   const alt = LANGS.map((l) => `<link rel="alternate" hreflang="${HTML_LANG[l]}" href="${esc(url(l))}">`).join("\n");
-  const tools = kind === "home" || kind === "404";
+  // 顶栏用 brandBar 的几页(里面已经有语言和深浅色),页脚就不再放一遍
+  const tools = ["home", "404", "deadlines", "topics", "topic"].includes(kind);
   return `<!doctype html>
 <html lang="${HTML_LANG[lang]}" data-page="${kind}">
 <head>
@@ -115,6 +120,12 @@ function page({ tx, kind, path, title, desc, body, script, header, noindex = fal
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="${esc(site.name)}">
+<meta property="og:title" content="${esc(title)}">
+${desc ? `<meta property="og:description" content="${esc(desc)}">\n` : ""}<meta property="og:url" content="${esc(url(lang))}">
+<meta property="og:locale" content="${lang === "en" ? "en_US" : "zh_CN"}">
+<meta name="twitter:card" content="summary">
 ${noindex ? '<meta name="robots" content="noindex">\n' : ""}<meta name="theme-color" content="#0A0F1E">
 <meta name="dx-contact" content="${esc(site.contact || "")}">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -143,10 +154,12 @@ ${alt}
 </html>`;
 }
 
-// 首页和 404 的顶栏:品牌、(电脑上)导航、语言、深浅色
+// 首页和 404 的顶栏:品牌、(电脑上)导航、语言、深浅色。截止日历、专题几页也用它:导航里首页上的三处页内跳转,在别的页换成「体检」回首页
 function brandBar(tx, path, nav = false) {
   const P = pre(tx.lang);
-  const links = nav ? `<nav class="links" aria-label="DeFiExit"><a href="#how">${tx.h("navHow")}</a><a href="#safety">${tx.h("navSafety")}</a><a href="#supported">${tx.h("navSupported")}</a><a href="${esc(site.github)}" rel="noopener">GitHub</a></nav>` : "";
+  const here = (p) => (p === path ? ' aria-current="page"' : "");
+  const onHome = path === "/" ? `<a href="#how">${tx.h("navHow")}</a><a href="#safety">${tx.h("navSafety")}</a><a href="#supported">${tx.h("navSupported")}</a>` : `<a href="${P}/">${tx.h("navCheck")}</a>`;
+  const links = nav ? `<nav class="links" aria-label="DeFiExit">${onHome}<a href="${P}/deadlines/"${here("/deadlines/")}>${tx.h("navDeadlines")}</a><a href="${P}/topics/"${here("/topics/")}>${tx.h("navTopics")}</a><a href="${esc(site.github)}" rel="noopener">GitHub</a></nav>` : "";
   return `<div class="wrap bar"><a class="brand" href="${P}/">${LOGO}<span><span class="name">${esc(site.name)}</span><span class="sub">${tx.h("brandSub")}</span></span></a>${links}<div class="tools">${langSwitch(tx.lang, path, tx)}${themeBtn(tx)}</div></div>`;
 }
 
@@ -159,6 +172,7 @@ function heroRoute(tx) {
 // ---------- 首页 ----------
 
 function home(tx, recipes) {
+  const P = pre(tx.lang);
   // 核对卡样子:拿第一份配方的第一张签名核对卡,前两项画成已勾
   const demoR = recipes.find((r) => r.steps.some((s) => s.check?.confirm));
   const demo = demoR?.steps.find((s) => s.check?.confirm).check;
@@ -236,13 +250,23 @@ ${demo ? `<section class="sec showcase" id="safety">
     <p class="sub">${tx.h("supMore")}</p>
   </div>
 </section>
+<section class="sec" id="more">
+  <div class="wrap">
+    <h2>${tx.h("moreH")}</h2>
+    <div class="more">
+      <a class="more-card" href="${P}/deadlines/">${ico("clock")}<span><b>${tx.h("moreDlT")}</b><span>${tx.h("moreDlD")}</span></span>${ico("arrowRight")}</a>
+      <a class="more-card" href="${P}/topics/">${ico("info")}<span><b>${tx.h("moreTpT")}</b><span>${tx.h("moreTpD")}</span></span>${ico("arrowRight")}</a>
+    </div>
+  </div>
+</section>
 <div class="wrap"><p class="banner">${ico("alert")}<span>${tx.h("banner")}</span></p></div>`,
   });
 }
 
 // ---------- 检查结果页 ----------
 
-function checkPage(tx, recipes) {
+// due:截止日历的事件(已经过 checkDeadlines 校验);now:按哪一天放「还没过的」(构建那天,和截止日历页同一个)
+function checkPage(tx, recipes, due = [], now = new Date()) {
   const P = pre(tx.lang);
   const list = recipes.map((r) => {
     const milestones = r.steps.filter((s) => s.milestone).map((s) => ({ label: punct(s.milestone, tx.lang), when: s.when || null }));
@@ -256,6 +280,7 @@ function checkPage(tx, recipes) {
     body: `
 <div class="wrap narrow">
   <h1 class="sr-only">${tx.h("checkTitle")}</h1>
+  <section class="dues" id="dueBox" aria-label="${tx.attr("dueAria")}" aria-live="polite" hidden></section>
   <section class="sum" id="sum" aria-live="polite">
     <span class="badge" id="sumBadge"><span class="spin" aria-hidden="true"></span>${tx.h("checking")}</span>
     <p class="sub" id="sumLine"></p>
@@ -265,6 +290,7 @@ function checkPage(tx, recipes) {
   <div id="cards" class="cards" aria-live="polite"></div>
   <p class="fine resfoot">${tx.h("resultsFoot")}</p>
   <ul id="recipes" hidden>${list}</ul>
+  ${dueList(tx.lang, due, now)}
   <dialog class="sheet" id="exitSheet" aria-labelledby="exitH">
     <div class="sheet-in">
       <span class="grip" aria-hidden="true"></span>
@@ -274,6 +300,27 @@ function checkPage(tx, recipes) {
   </dialog>
 </div>`,
   });
+}
+
+// ---------- 截止提醒(体检结果页最上面;怎么对、怎么显示见 src/js/lib/due.js) ----------
+
+// 数据是 data/deadlines.json(截止日历页用的同一份),只经 checkDeadlines 校验一次(写错了构建直接报错),这里不再另查。
+// 按页面语言各嵌一份(#due,浏览器拿去和查到的东西对):只放还没过的、写了怎么对的(matchBy 不是 null);**、` 这类标记去掉,页面上只放纯文字。
+// 按币对的只放核对过的合约(链 + 地址),不放符号:体检只按地址对(见 lib/due.js)
+export function dueList(lang, events, now = new Date()) {
+  const txt = (v) => (typeof v?.[lang] === "string" ? v[lang].replace(/\*\*|`/g, "").trim() : "");
+  const items = upcoming(events, now).filter((e) => e.matchBy).map((e) => {
+    const x = {
+      id: e.id, type: String(e.type || ""), deadline: e.deadline, deadlineAt: e.deadlineAt || null, chains: e.chains || [], protocol: String(e.protocol || ""),
+      matchBy: e.matchBy, chainKeys: e.chainKeys || [], protocolKeys: e.protocolKeys || [],
+      tokenContracts: (e.tokenContracts || []).map((c) => ({ chain: c.chain, address: c.address, symbol: c.symbol })), matchLoans: !!e.matchLoans, dueKind: e.dueKind || null,
+      milestones: (e.milestones || []).map((m) => ({ date: m.date, deadlineAt: m.deadlineAt || null, note: txt(m.note) })),
+      name: txt(e.name), note: txt(e.deadlineNote), todo: txt(e.todo), caution: txt(e.caution),
+      official: (e.official || []).map((o) => ({ label: txt(o.label), url: o.url })),
+    };
+    return `<li data-event="${esc(JSON.stringify(x))}"></li>`;
+  });
+  return `<ul id="due" hidden>${items.join("")}</ul>`;
 }
 
 // ---------- 指南页 ----------
@@ -511,6 +558,390 @@ function guide(tx, R, shot) {
   });
 }
 
+// ---------- 退出截止日历:data/deadlines.json → /deadlines/ ----------
+
+// 收的是:要在某个日子之前自己动手把钱撤出来的事(取款、换币、平仓、撤出流动性)。只收 EVM 链,只放官方链接
+export const DL_TYPES = ["chain-shutdown", "frontend-down", "withdraw-only", "token-migration", "bridge-route-end", "stablecoin-redemption", "rewards-deadline", "other"];
+// 页面标题、条目名字里不写这几个词(对外的规矩:「来领钱」式的标题最招骗子照抄)
+export const TITLE_BAN = /claim|recover|领取|找回/i;
+const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const CJK = /[　-〿一-鿿＀-￯]+/; // 报错时整段中文都写出来,和配方英文版的检查一样
+// 带时区的时间:2026-11-11T23:59:59-05:00、2026-11-23T00:00:00Z;写成什么日子,就是那个时区的那一天
+const isAt = (s) => typeof s === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?(Z|[+-]\d{2}:\d{2})$/.test(s) && !Number.isNaN(Date.parse(s));
+// 体检结果页怎么对上这一条(见 lib/due.js);null 是对不准、不提醒
+export const MATCH_BY = ["chain", "protocol", "token", null];
+// 按链、按币对的事件用到的链,一条一条登记:键 → 页面上能写的链名(去掉大小写、空格、符号以后要一模一样),是不是 EVM 链。
+// 卡片标题里的链名按位置从 chains 取,这里核对 chains 和 chainKeys 一一对得上(「Ethereum Classic」对不上 ethereum);
+// tokenContracts 的链只收登记成 EVM 的(地址是 0x 的才对得上),没登记的一律不收。新加的链先在这里登记
+export const CHAIN_REGISTRY = {
+  ethereum: { names: ["Ethereum"], evm: true },
+  bsc: { names: ["BNB Chain", "BNB Smart Chain"], evm: true },
+  arbitrum: { names: ["Arbitrum", "Arbitrum One"], evm: true },
+  optimism: { names: ["OP Mainnet", "Optimism"], evm: true },
+  base: { names: ["Base"], evm: true },
+  polygon: { names: ["Polygon"], evm: true },
+  avalanche: { names: ["Avalanche"], evm: true },
+  fantom: { names: ["Fantom"], evm: true },
+  linea: { names: ["Linea"], evm: true },
+  mantle: { names: ["Mantle"], evm: true },
+  opbnb: { names: ["opBNB"], evm: true },
+  filecoin: { names: ["Filecoin FEVM", "Filecoin"], evm: true },
+  peaq: { names: ["peaq"], evm: true },
+  vanar: { names: ["Vanar Chain"], evm: true },
+  sophon: { names: ["Sophon"], evm: true },
+  thundercore: { names: ["ThunderCore"], evm: true },
+  zetachain: { names: ["ZetaChain"], evm: true },
+  abstract: { names: ["Abstract"], evm: true },
+  neon: { names: ["Neon EVM"], evm: true },
+  silicon: { names: ["Silicon"], evm: true },
+  blast: { names: ["Blast"], evm: true },
+  harmony: { names: ["Harmony"], evm: true },
+  bouncebit: { names: ["BounceBit"], evm: true },
+  lisk: { names: ["Lisk"], evm: true },
+  mint: { names: ["Mint"], evm: true },
+  csc: { names: ["CoinEx Smart Chain"], evm: true },
+  superposition: { names: ["Superposition"], evm: true },
+  moonbeam: { names: ["Moonbeam"], evm: true },
+  moonriver: { names: ["Moonriver"], evm: true },
+  dfk: { names: ["DFK Chain"], evm: true },
+  stellar: { names: ["Stellar"], evm: false },
+  solana: { names: ["Solana"], evm: false },
+};
+const chainId = (s) => String(s).toLowerCase().replace(/[^a-z0-9]/g, "");
+const sameChain = (name, key) => !!CHAIN_REGISTRY[key]?.names.some((n) => chainId(n) === chainId(name));
+const isDate = (s) => {
+  if (typeof s !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const t = Date.parse(`${s}T00:00:00Z`);
+  return !Number.isNaN(t) && new Date(t).toISOString().slice(0, 10) === s; // 2026-02-30 这种不存在的日子也拦下
+};
+// 和体检结果页的提醒卡同一个判断(lib/due.js):只认 https://,网址里带用户名的也不认
+const isHttps = (u) => !!httpsHost(u);
+// 中英两套都要有;英文里不能混中文(和配方的英文版同一条规矩)
+const bilingual = (fail) => (v, k) => {
+  for (const l of LANGS) if (typeof v?.[l] !== "string" || !v[l].trim()) fail(`缺 ${k}.${l}`);
+  const cjk = v.en.match(CJK);
+  if (cjk) fail(`${k}.en 里有中文「${cjk[0]}」`);
+};
+// X 算字数:汉字等记 2,拉丁字母、常用标点记 1,网址一律 23。发帖页里的字超过 280,X 不让发
+const xLen = (s) => [...s].reduce((n, c) => {
+  const p = c.codePointAt(0);
+  return n + (p <= 0x10ff || (p >= 0x2000 && p <= 0x200d) || (p >= 0x2010 && p <= 0x201f) || (p >= 0x2032 && p <= 0x2037) ? 1 : 2);
+}, 0);
+const flat = (s, lang) => punct(String(s).replace(/\*\*|`/g, ""), lang);
+// zh() 只换挨着汉字的半角 : ? !;两边都是字母、数字的(「Aster:ApolloX」「官方 X:10 月」)会留成半角。
+// 中文里这种地方直接写全角「：」或者改写;代码里的、时间和比例(10:00、1:750)不算。找到了就回那一小段
+function halfPunct(s) {
+  const t = punct(s.replace(/`[^`]*`/g, (m) => " ".repeat(m.length)), "zh");
+  for (const m of t.matchAll(/[:?!]/g)) {
+    if (m[0] === ":" && /\d/.test(t[m.index - 1] || "") && /\d/.test(t[m.index + 1] || "")) continue;
+    return t.slice(Math.max(0, m.index - 8), m.index + 8);
+  }
+  return null;
+}
+// 「转给朋友」:打开 X 的发帖页,文字是这一条的一句话 + 本页网址(带 #这一条),用户自己点发帖。不用脚本
+export const shareHref = (text, url) => `https://x.com/intent/tweet?text=${encodeURIComponent(`${text}\n${url}`)}`;
+
+export function checkDeadlines(D, file = "data/deadlines.json") {
+  const top = (m) => { throw new Error(`${file}: ${m}`); };
+  if (!isDate(D?.checked)) top("checked(最后核对的日子)要写成 YYYY-MM-DD");
+  if (!Array.isArray(D.events) || !D.events.length) top("events 是空的");
+  const ids = new Set();
+  D.events.forEach((e, i) => {
+    const at = typeof e?.id === "string" && e.id ? e.id : `events[${i}]`;
+    const fail = (m) => top(`${at}: ${m}`);
+    const two = bilingual(fail);
+    if (!SLUG.test(e?.id || "")) fail("id 只能用小写字母、数字和 -(它也是页面上这一条的 #锚点)");
+    if (ids.has(e.id)) top(`id 重复:${e.id}`);
+    ids.add(e.id);
+    for (const k of ["name", "summary", "who", "todo", "deadlineNote"]) two(e[k], k);
+    if (e.caution !== undefined) two(e.caution, "caution");
+    if (TITLE_BAN.test(e.name.zh) || TITLE_BAN.test(e.name.en)) fail("名字里不写 claim / recover / 领取 / 找回");
+    if (typeof e.protocol !== "string" || !e.protocol.trim()) fail("缺 protocol");
+    if (!DL_TYPES.includes(e.type)) fail(`type 只能是 ${DL_TYPES.join(" / ")}`);
+    // deadline 是用户最后能动手的那一天(分几步截止的写最后一步,前面几步写进 milestones);写了时间的另写 deadlineAt
+    if (e.deadline !== null && !isDate(e.deadline)) fail("deadline 要写成 YYYY-MM-DD;官方没定日期写 null");
+    if (e.deadlineAt !== undefined && (e.deadline === null || !isAt(e.deadlineAt) || e.deadlineAt.slice(0, 10) !== e.deadline)) fail("deadlineAt 要写成带时区的时间(比如 2026-11-11T23:59:59-05:00),日子和 deadline 一样");
+    if (e.milestones !== undefined) {
+      if (!Array.isArray(e.milestones) || !e.milestones.length) fail("milestones 要是列表(不用就别写)");
+      e.milestones.forEach((m, j) => {
+        if (!isDate(m?.date)) fail(`milestones[${j}].date 要写成 YYYY-MM-DD`);
+        if (m.deadlineAt !== undefined && (!isAt(m.deadlineAt) || m.deadlineAt.slice(0, 10) !== m.date)) fail(`milestones[${j}].deadlineAt 要写成带时区的时间,日子和 date 一样`);
+        two(m.note, `milestones[${j}].note`);
+        if (j && m.date <= e.milestones[j - 1].date) fail("milestones 要按日子从早到晚排,不能重复");
+        if (e.deadline && m.date >= e.deadline) fail(`milestones[${j}] 要早于 deadline(deadline 写最后一步)`);
+      });
+    }
+    if (e.announced !== null && !isDate(e.announced)) fail("announced 要写成 YYYY-MM-DD;查不到写 null");
+    if (!isDate(e.checked)) fail("checked 要写成 YYYY-MM-DD");
+    if (!Array.isArray(e.chains) || !e.chains.length || e.chains.some((c) => typeof c !== "string" || !c.trim())) fail("chains 至少写一条链");
+    for (const k of ["chainKeys", "protocolKeys"]) if (!Array.isArray(e[k]) || e[k].some((x) => typeof x !== "string" || !SLUG.test(x))) fail(`${k} 是小写 slug 的列表(可以空)`);
+    // tokenKeys 只给按币对的(matchBy 是 token)写:受影响的币的符号(小写,比如 cake),下面 tokenContracts 的每一条标明是哪个;体检不按符号对
+    if (e.tokenKeys !== undefined && (!Array.isArray(e.tokenKeys) || !e.tokenKeys.length || e.tokenKeys.some((x) => typeof x !== "string" || !SLUG.test(x)))) fail("tokenKeys 是小写币符号的列表(比如 cake),不用就别写");
+    if (!e.chainKeys.length && !e.protocolKeys.length && !e.tokenKeys?.length) fail("chainKeys、protocolKeys、tokenKeys 至少写一个");
+    // 每一条都要写明体检怎么对(不写不行,免得漏想);写了哪种,对应的键就要有
+    if (!("matchBy" in e) || !MATCH_BY.includes(e.matchBy)) fail("matchBy 只能是 chain / protocol / token,对不准就写 null");
+    const need = { chain: "chainKeys", protocol: "protocolKeys", token: "tokenKeys" }[e.matchBy];
+    if (need && !e[need]?.length) fail(`matchBy 是 ${e.matchBy},要写 ${need}`);
+    if (e.tokenKeys !== undefined && e.matchBy !== "token") fail("tokenKeys 只在 matchBy 是 token 时写");
+    // 按币对的,体检只认「链 + 合约地址」(空投来的仿冒币常和真币同名):tokenContracts 每一条 { chain, token, address, source },
+    // chain 是 chainKeys 里的、token 是 tokenKeys 里的,address 小写,source 是写着这个地址的官方页面(项目自己的文档、网站、博客、治理论坛、GitHub)。
+    // 非 EVM 链(Stellar、Solana…)对不上 0x 地址,不写;一个地址都核对不了的,matchBy 写 null(不提醒,截止日历页照样列着)
+    if (e.tokenContracts !== undefined && e.matchBy !== "token") fail("tokenContracts 只在 matchBy 是 token 时写");
+    if (e.matchBy === "token") {
+      if (!Array.isArray(e.tokenContracts) || !e.tokenContracts.length) fail("matchBy 是 token,要写 tokenContracts(核对过的合约地址);一个都核对不了就把 matchBy 写成 null");
+      const seen = new Set();
+      e.tokenContracts.forEach((c, j) => {
+        if (!e.chainKeys.includes(c?.chain)) fail(`tokenContracts[${j}].chain 要是 chainKeys 里的一条`);
+        if (!CHAIN_REGISTRY[c.chain]?.evm) fail(`tokenContracts[${j}].chain:${c.chain} 没登记成 EVM 链(scripts/build.mjs 的 CHAIN_REGISTRY),对不上 0x 地址,不写`);
+        if (!e.tokenKeys.includes(c.token)) fail(`tokenContracts[${j}].token 要是 tokenKeys 里的一个`);
+        // 卡片标题里的币名用这里写的(核对过的),不用接口传来的符号:大小写照官方,和 token 只差大小写
+        if (typeof c.symbol !== "string" || c.symbol.toLowerCase() !== c.token) fail(`tokenContracts[${j}].symbol 要写币名(大小写照官方,比如 cmETH),和 token 只差大小写`);
+        if (typeof c.address !== "string" || !/^0x[0-9a-f]{40}$/.test(c.address)) fail(`tokenContracts[${j}].address 要写成小写的 0x 地址(0x 加 40 位)`);
+        // 占位的地址(0x000…0、原生币常用的 0xeee…e 这种一个字重复 40 次的)不是哪个币的合约
+        if (/^0x([0-9a-f])\1{39}$/.test(c.address)) fail(`tokenContracts[${j}].address 是占位地址,不是币的合约`);
+        if (!isHttps(c.source)) fail(`tokenContracts[${j}].source 要是 https:// 开头的官方页面`);
+        if (seen.has(`${c.chain} ${c.address}`)) fail(`tokenContracts[${j}] 重复了(同一条链、同一个地址)`);
+        seen.add(`${c.chain} ${c.address}`);
+      });
+    }
+    // 仓位里借来的币默认不算拿着(在 Aave 借了 STG 不用拿去换 ZRO);借了也要处理的(比如铸了 VAI 要还),写 matchLoans: true
+    if (e.matchLoans !== undefined && (e.matchLoans !== true || e.matchBy !== "token")) fail("matchLoans 只在 matchBy 是 token、借款也要提醒时写,写 true");
+    // 卡片标题按类型说要做什么,说得不对的自己写 dueKind(见 lib/due.js 的 titleKind)
+    if (e.dueKind !== undefined && !DUE_KINDS.includes(e.dueKind)) fail(`dueKind 只能是 ${DUE_KINDS.join(" / ")}`);
+    // 按链、按币对的,卡片标题里的链名按位置从 chains 取:chains 和 chainKeys 要一样多、一一对应(不然 Mantle 上的币会写成 Ethereum)
+    if (e.matchBy === "chain" || e.matchBy === "token") {
+      if (e.chains.length !== e.chainKeys.length) fail("chains 和 chainKeys 要一样多、一一对应");
+      e.chainKeys.forEach((k, j) => { if (!CHAIN_REGISTRY[k]) fail(`chainKeys[${j}]「${k}」还没登记(scripts/build.mjs 的 CHAIN_REGISTRY),先登记它能写的链名`); });
+      e.chains.forEach((c, j) => { if (!sameChain(c, e.chainKeys[j])) fail(`chains[${j}]「${c}」和 chainKeys[${j}]「${e.chainKeys[j]}」对不上(顺序要一样,链名照 CHAIN_REGISTRY 登记的写)`); });
+    }
+    if (!Array.isArray(e.official) || !e.official.length) fail("至少一个官方链接 official");
+    e.official.forEach((o, j) => {
+      two(o?.label, `official[${j}].label`);
+      if (!isHttps(o.url)) fail(`official[${j}].url 要是 https:// 开头的完整网址`);
+    });
+    // 发到 X 的那句话加上网址(23)和换行,不能超过 280
+    for (const l of LANGS) if (xLen(flat(e.summary[l], l)) + 24 > 280) fail(`summary.${l} 太长,转发到 X 会超过 280 字`);
+    const zhTexts = [...["name", "summary", "who", "todo", "deadlineNote", "caution"].filter((k) => e[k]).map((k) => [k, e[k].zh]), ...e.official.map((o, j) => [`official[${j}].label`, o.label.zh]), ...(e.milestones || []).map((m, j) => [`milestones[${j}].note`, m.note.zh])];
+    for (const [k, s] of zhTexts) {
+      const bad = halfPunct(s);
+      if (bad) fail(`${k}.zh 里「${bad}」的半角标点换不成全角(两边都不是汉字):直接写全角,或者改写`);
+    }
+  });
+  return D;
+}
+
+function loadDeadlines() {
+  return checkDeadlines(JSON.parse(readFileSync(join(ROOT, "data", "deadlines.json"), "utf8")));
+}
+
+// 链名旁边放链图标(和体检结果页同一套 static/chains/);没有图标的显示首字母。
+// 写的是 "EVM":不限哪条链(比如 Stargate V1 的池子在好几条链上),显示成「多条 EVM 链」,不放图标
+function chainChip(tx, name, key) {
+  if (name === "EVM") return `<li class="chip">${tx.h("dlAnyEvm")}</li>`;
+  const k = [ICON[name.toLowerCase()], ICON[key], key].find((x) => x && existsSync(join(ROOT, "static", "chains", FILE[x] || `${x}.svg`)));
+  const logo = k ? `<img class="clogo" src="/assets/chains/${FILE[k] || `${k}.svg`}" alt="" width="16" height="16" decoding="async">` : `<span class="clogo letter" aria-hidden="true">${esc(name.trim().charAt(0).toUpperCase())}</span>`;
+  return `<li class="chip">${logo}${esc(name)}</li>`;
+}
+
+function dlEntry(tx, e, today) {
+  const { lang } = tx;
+  const r = (v) => rich(v[lang], {}, lang);
+  // 倒数的字按 lib/deadline.js 的 timeLeft(只往少里说:48 小时以内写整小时,只写了日子的算到那一天 00:00 UTC、当天写「按 UTC 算今天是截止日」);
+  // 颜色和「还没到 / 已过」按 daysLeft(只写了日子的,那一天过完才算过)
+  const x = e.deadline ? timeLeft(e.deadline, today, e.deadlineAt) : null;
+  const n = e.deadline ? daysLeft(e.deadline, today, e.deadlineAt) : null;
+  const keys = e.chains.length === e.chainKeys.length ? e.chainKeys : [];
+  // 分几步截止的:每一步一行,过了的标「已过」,下一步加粗(deadlines.js 打开页面时按当天再标一遍)
+  const next = nextMilestone(e, today);
+  const steps = (e.milestones || []).map((m) => {
+    const k = daysLeft(m.date, today, m.deadlineAt);
+    return `<li data-deadline="${esc(m.date)}"${m.deadlineAt ? ` data-at="${esc(m.deadlineAt)}"` : ""}${m === next ? ' class="next"' : k < 0 ? ' class="done"' : ""}><time class="mono" datetime="${esc(m.deadlineAt || m.date)}">${esc(m.date)}</time> <span class="dl-step-left">${k < 0 ? tx.h("dlStepPast") : tx.h("dlLeft", timeLeft(m.date, today, m.deadlineAt))}</span> ${r(m.note)}</li>`;
+  }).join("");
+  const host = (u) => new URL(u).hostname.replace(/^www\./, "");
+  const official = e.official.map((o) => `<li><a href="${esc(o.url)}" rel="noopener nofollow"><span>${esc(punct(o.label[lang], lang))}</span><span class="mono">${esc(host(o.url))}</span></a></li>`).join("");
+  const url = `https://${site.domain}${pre(lang)}/deadlines/#${e.id}`;
+  return `<li><article class="dl" id="${esc(e.id)}" aria-labelledby="h-${esc(e.id)}"${e.deadline ? ` data-deadline="${esc(e.deadline)}"` : ""}${e.deadlineAt ? ` data-at="${esc(e.deadlineAt)}"` : ""}>
+  <h3 id="h-${esc(e.id)}">${r(e.name)}</h3>
+  <p class="dl-when"><span class="dl-left ${urgency(n)}">${ico("clock")}<span>${x === null ? tx.h("dlNoDate") : tx.h("dlLeft", x)}</span></span>${e.deadline ? `<span>${tx.h("dlDue")} <time class="mono" datetime="${esc(e.deadline)}">${esc(e.deadline)}</time></span>` : ""}<span class="dl-type">${tx.h("dlType", e.type)}</span></p>
+  <ul class="dl-chains">${e.chains.map((c, i) => chainChip(tx, c, keys[i])).join("")}</ul>
+  <p class="dl-sum">${r(e.summary)}</p>
+  <dl class="dl-rows">
+    <div><dt>${tx.h("dlWhen")}</dt><dd>${r(e.deadlineNote)}</dd></div>
+    ${steps ? `<div><dt>${tx.h("dlSteps")}</dt><dd><ol class="dl-steps">${steps}</ol></dd></div>` : ""}
+    <div><dt>${tx.h("dlWho")}</dt><dd>${r(e.who)}</dd></div>
+    <div><dt>${tx.h("dlTodo")}</dt><dd>${r(e.todo)}</dd></div>
+  </dl>
+  ${e.caution ? `<p class="tip">${ico("alert")}<span><b>${tx.h("dlCaution")}</b> ${r(e.caution)}</span></p>` : ""}
+  <div class="dl-off"><p>${tx.h("dlOfficialH")}</p><ul>${official}</ul></div>
+  <p class="dl-foot"><span>${e.announced ? `${tx.h("dlAnnounced", e.announced)} · ` : ""}${tx.h("lastChecked", e.checked)}</span><a class="xshare" href="${esc(shareHref(flat(e.summary[lang], lang), url))}" target="_blank" rel="noopener noreferrer" aria-label="${tx.attr("shareXAria", e.name[lang])}">${ico("share")}${tx.h("shareX")}</a></p>
+</article></li>`;
+}
+
+// today:按哪一天分「还没到 / 已过」、算还有几天(构建时是构建那天;页面打开时 deadlines.js 再按当天重算)
+export function deadlinesPage(tx, D, today = new Date()) {
+  const P = pre(tx.lang);
+  const left = (e) => daysLeft(e.deadline, today, e.deadlineAt);
+  const open = D.events.filter((e) => e.deadline && left(e) >= 0).sort((a, b) => a.deadline.localeCompare(b.deadline));
+  const passed = D.events.filter((e) => e.deadline && left(e) < 0).sort((a, b) => b.deadline.localeCompare(a.deadline));
+  // 没定日期的:宣布得晚的在前(查不到宣布日的放最后)
+  const none = D.events.filter((e) => !e.deadline).sort((a, b) => (b.announced || "").localeCompare(a.announced || ""));
+  const list = (es, id) => `<ol class="dl-list"${id ? ` id="${id}"` : ""}>${es.map((e) => dlEntry(tx, e, today)).join("\n")}</ol>`;
+  const count = (n, k) => `<span class="count"${k ? ` data-n="${k}"` : ""}>${n}</span>`;
+  return page({
+    tx, kind: "deadlines", path: "/deadlines/", script: "deadlines.js",
+    title: `${punct(tx.t("dlTitle"), tx.lang)} · ${site.name}`, desc: punct(tx.t("dlDesc"), tx.lang),
+    header: brandBar(tx, "/deadlines/", true),
+    body: `
+<div class="wrap narrow">
+  <section class="page-head">
+    <span class="badge"><span class="dot"></span>${tx.h("lastChecked", D.checked)}</span>
+    <h1 class="display">${tx.h("dlH1")}</h1>
+    <p class="lead">${tx.h("dlLead")}</p>
+    <ul class="dl-jump">
+      <li><a href="#open"><b data-n="open">${open.length}</b> ${tx.h("dlJumpOpen")}</a></li>
+      <li><a href="#nodate"><b>${none.length}</b> ${tx.h("dlJumpNoDate")}</a></li>
+      <li><a href="#passed"><b data-n="passed">${passed.length}</b> ${tx.h("dlJumpPassed")}</a></li>
+    </ul>
+    <p class="tip">${ico("alert")}<span>${tx.h("dlOfficialOnly")}</span></p>
+  </section>
+  <section class="dl-sec" id="open" aria-labelledby="openH">
+    <h2 id="openH">${tx.h("dlOpenH")} ${count(open.length, "open")}</h2>
+    <p class="sub">${tx.h("dlOpenSub")}</p>
+    ${list(open, "openList")}
+  </section>
+  <section class="dl-sec" id="nodate" aria-labelledby="nodateH">
+    <h2 id="nodateH">${tx.h("dlNoDateH")} ${count(none.length)}</h2>
+    <p class="sub">${tx.h("dlNoDateSub")}</p>
+    ${list(none)}
+  </section>
+  <section class="dl-sec" id="passed" aria-labelledby="passedH">
+    <h2 id="passedH">${tx.h("dlPassedH")} ${count(passed.length, "passed")}</h2>
+    <p class="sub">${tx.h("dlPassedSub")}</p>
+    <details class="dl-passed"><summary><span class="dl-show">${tx.h("dlPassedShow")}</span><span class="dl-hide">${tx.h("dlPassedHide")}</span></summary>${list(passed, "passedList")}</details>
+  </section>
+  <section class="dl-sec dl-more" aria-labelledby="moreH">
+    <h2 id="moreH">${tx.h("dlMoreH")}</h2>
+    <ul class="tp-links"><li><a href="${P}/">${tx.h("dlMoreCheck")}</a></li><li><a href="${P}/topics/">${tx.h("dlMoreTopics")}</a></li></ul>
+    <p class="fine">${tx.h("dlScope")}</p>
+  </section>
+</div>`,
+  });
+}
+
+// ---------- 专题:data/topics/<slug>.json → /topics/<slug>/ ----------
+
+// 一篇专题:slug、checked、title / summary(中英)、sections[{ h, p[], list[]? }]、faq[{ q, a }]?、related[]?、sources[{ label, url }]。
+// 正文支持 **粗体** 和 `代码`(网址写成代码,只给文字,不做成链接);依据才是链接。related 写编号:别的专题、截止日历里的一条、或一份指南
+export function checkTopic(T, file) {
+  const fail = (m) => { throw new Error(`${file}: ${m}`); };
+  const two = bilingual(fail);
+  if (!SLUG.test(T?.slug || "")) fail("slug 只能用小写字母、数字和 -");
+  if (!isDate(T.checked)) fail("checked 要写成 YYYY-MM-DD");
+  two(T.title, "title");
+  two(T.summary, "summary");
+  if (TITLE_BAN.test(T.title.zh) || TITLE_BAN.test(T.title.en)) fail("标题里不写 claim / recover / 领取 / 找回");
+  if (!Array.isArray(T.sections) || !T.sections.length) fail("sections 是空的");
+  T.sections.forEach((s, i) => {
+    two(s?.h, `sections[${i}].h`);
+    for (const k of ["p", "list"]) {
+      if (s[k] === undefined) continue;
+      if (!Array.isArray(s[k])) fail(`sections[${i}].${k} 要是列表`);
+      s[k].forEach((x, j) => two(x, `sections[${i}].${k}[${j}]`));
+    }
+    if (!s.p?.length && !s.list?.length) fail(`sections[${i}] 没有正文(p 或 list)`);
+  });
+  if (T.faq !== undefined) {
+    if (!Array.isArray(T.faq)) fail("faq 要是列表");
+    T.faq.forEach((x, i) => { two(x?.q, `faq[${i}].q`); two(x?.a, `faq[${i}].a`); });
+  }
+  if (T.related !== undefined && (!Array.isArray(T.related) || T.related.some((x) => typeof x !== "string" || !SLUG.test(x)))) fail("related 是编号的列表:专题的 slug、截止日历条目的 id、或指南的 id");
+  if (!Array.isArray(T.sources) || !T.sources.length) fail("至少一条依据 sources");
+  T.sources.forEach((s, i) => {
+    two(s?.label, `sources[${i}].label`);
+    if (!isHttps(s.url)) fail(`sources[${i}].url 要是 https:// 开头的完整网址`);
+  });
+  return T;
+}
+
+export function loadTopics(dir = join(ROOT, "data", "topics")) {
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir).filter((f) => f.endsWith(".json")).sort().map((f) => {
+    const T = checkTopic(JSON.parse(readFileSync(join(dir, f), "utf8")), `topics/${f}`);
+    if (`${T.slug}.json` !== f) throw new Error(`topics/${f}: 文件名要和 slug 一样(${T.slug}.json)`);
+    return T;
+  });
+}
+
+// 「相关」:先找专题,再找截止日历的条目,再找指南;哪个都对不上,构建报错
+function relatedLinks(tx, T, ctx) {
+  const P = pre(tx.lang), L = tx.lang;
+  return (T.related || []).map((id) => {
+    const t2 = ctx.topics.find((x) => x.slug === id && x !== T);
+    if (t2) return { href: `${P}/topics/${id}/`, text: t2.title[L] };
+    const e = ctx.events.find((x) => x.id === id);
+    if (e) return { href: `${P}/deadlines/#${id}`, text: tx.t("tpDeadline", e.name[L]) };
+    const R = ctx.recipes.find((x) => x.id === id);
+    if (R) return { href: `${P}/r/${id}/`, text: tx.t("tpGuide", R.title) };
+    throw new Error(`topics/${T.slug}.json: related 里的 ${id} 对不上任何专题、截止日历条目或指南`);
+  });
+}
+
+// ctx:{ topics, events, recipes(这种语言的) },用来把 related 里的编号换成链接
+export function topicPage(tx, T, ctx) {
+  const { lang } = tx;
+  const P = pre(lang);
+  const r = (v) => rich(v[lang], {}, lang);
+  const toc = T.sections.length >= 3 ? `<nav class="toc" aria-labelledby="tocH"><p id="tocH">${tx.h("tpToc")}</p><ol>${T.sections.map((s, i) => `<li><a href="#s${i + 1}">${r(s.h)}</a></li>`).join("")}</ol></nav>` : "";
+  const secs = T.sections.map((s, i) => `<section class="tp-sec" id="s${i + 1}" aria-labelledby="s${i + 1}h">
+    <h2 id="s${i + 1}h">${r(s.h)}</h2>
+    ${(s.p || []).map((p) => `<p>${r(p)}</p>`).join("")}${s.list?.length ? `<ul>${s.list.map((x) => `<li>${r(x)}</li>`).join("")}</ul>` : ""}
+  </section>`).join("\n  ");
+  const faq = T.faq?.length ? `<section class="tp-sec tp-faq" id="faq" aria-labelledby="faqH"><h2 id="faqH">${tx.h("tpFaqH")}</h2>${T.faq.map((x) => `<h3>${r(x.q)}</h3><p>${r(x.a)}</p>`).join("")}</section>` : "";
+  const rel = relatedLinks(tx, T, ctx);
+  const related = rel.length ? `<section class="tp-sec" aria-labelledby="relH"><h2 id="relH">${tx.h("tpRelatedH")}</h2><ul class="tp-links">${rel.map((x) => `<li><a href="${esc(x.href)}">${esc(punct(x.text, lang))}</a></li>`).join("")}</ul></section>` : "";
+  const sources = T.sources.map((s) => `<li><a href="${esc(s.url)}" rel="noopener nofollow">${esc(punct(s.label[lang], lang))}</a></li>`).join("");
+  const url = `https://${site.domain}${P}/topics/${T.slug}/`;
+  return page({
+    tx, kind: "topic", path: `/topics/${T.slug}/`, script: "site.js",
+    title: `${flat(T.title[lang], lang)} · ${site.name}`, desc: flat(T.summary[lang], lang),
+    header: brandBar(tx, `/topics/${T.slug}/`, true),
+    body: `
+<article class="wrap narrow topic">
+  <a class="back" href="${P}/topics/">${ico("arrowLeft")}${tx.h("tpBack")}</a>
+  <h1 class="display">${r(T.title)}</h1>
+  <p class="lead">${r(T.summary)}</p>
+  <p class="fine">${tx.h("lastChecked", T.checked)}</p>
+  ${toc}
+  ${secs}
+  ${faq}
+  ${related}
+  <section class="meta"><h2>${tx.h("sourcesH")}</h2><ul>${sources}</ul></section>
+  <p class="tp-share"><a class="xshare" href="${esc(shareHref(flat(T.title[lang], lang), url))}" target="_blank" rel="noopener noreferrer" aria-label="${tx.attr("shareXAria", T.title[lang])}">${ico("share")}${tx.h("shareX")}</a></p>
+</article>`,
+  });
+}
+
+export function topicsIndex(tx, topics) {
+  const P = pre(tx.lang), L = tx.lang;
+  // 最近核对过的在前
+  const list = [...topics].sort((a, b) => b.checked.localeCompare(a.checked) || a.slug.localeCompare(b.slug));
+  const items = list.map((T) => `<li><a href="${P}/topics/${T.slug}/"><b>${rich(T.title[L], {}, L)}</b><span>${rich(T.summary[L], {}, L)}</span><span class="fine">${tx.h("lastChecked", T.checked)}</span></a></li>`).join("");
+  return page({
+    tx, kind: "topics", path: "/topics/", script: "site.js",
+    title: `${punct(tx.t("tpTitle"), L)} · ${site.name}`, desc: punct(tx.t("tpDesc"), L),
+    header: brandBar(tx, "/topics/", true),
+    body: `
+<div class="wrap narrow">
+  <section class="page-head">
+    <h1 class="display">${tx.h("tpH1")}</h1>
+    <p class="lead">${tx.h("tpLead")}</p>
+  </section>
+  ${items ? `<ul class="tp-list">${items}</ul>` : `<p class="sub">${tx.h("tpEmpty")}</p>`}
+  <p class="sub tp-more">${tx.h("tpSeeDl")} <a href="${P}/deadlines/">${tx.h("dlH1")}</a></p>
+</div>`,
+  });
+}
+
 // ---------- 找不到页面(中英都放) ----------
 
 function notFound() {
@@ -704,6 +1135,8 @@ export function shotData(r) {
 
 export function build() {
   const recipes = loadRecipes();
+  const D = loadDeadlines();
+  const topics = loadTopics();
   const shots = new Map(recipes.map((r) => [r.zh.id, shotData(r)]));
   rmSync(DIST, { recursive: true, force: true });
   mkdirSync(join(DIST, "assets"), { recursive: true });
@@ -721,12 +1154,16 @@ export function build() {
     mkdirSync(dirname(f), { recursive: true });
     writeFileSync(f, html);
   };
+  const today = new Date();
   for (const lang of LANGS) {
     const tx = texts(lang);
     const rs = recipes.map((r) => r[lang]);
     write(`${pre(lang)}/index.html`, home(tx, rs));
-    write(`${pre(lang)}/check/index.html`, checkPage(tx, rs));
+    write(`${pre(lang)}/check/index.html`, checkPage(tx, rs, D.events, today));
     for (const R of rs) write(`${pre(lang)}/r/${R.id}/index.html`, guide(tx, R, shots.get(R.id)));
+    write(`${pre(lang)}/deadlines/index.html`, deadlinesPage(tx, D, today));
+    write(`${pre(lang)}/topics/index.html`, topicsIndex(tx, topics));
+    for (const T of topics) write(`${pre(lang)}/topics/${T.slug}/index.html`, topicPage(tx, T, { topics, events: D.events, recipes: rs }));
   }
   for (const r of recipes) copyDir(join(ROOT, "recipes", r.zh.id, "img"), join(DIST, "r", r.zh.id, "img"));
   for (const [id, s] of shots) if (s) write(`r/${id}/screens.json`, JSON.stringify(s));
@@ -737,11 +1174,12 @@ export function build() {
   const h = headers(site.connect);
   // 网页本身加 no-transform:Cloudflare 就不会往页面里插它的访问统计脚本,也不会改动页面内容
   // (官方文档:带 no-transform 的响应不做自动注入,也不压缩;网页只有几十 KB,不压缩也快)
-  const pages = ["/", "/en/", "/check/", "/en/check/", ...recipes.flatMap((r) => [`/r/${r.zh.id}/`, `/en/r/${r.zh.id}/`]), "/404.html"];
+  const pages = ["/", "/en/", "/check/", "/en/check/", ...recipes.flatMap((r) => [`/r/${r.zh.id}/`, `/en/r/${r.zh.id}/`]),
+    "/deadlines/", "/en/deadlines/", "/topics/", "/en/topics/", ...topics.flatMap((T) => [`/topics/${T.slug}/`, `/en/topics/${T.slug}/`]), "/404.html"];
   const noTransform = pages.map((p) => `${p}\n  Cache-Control: public, max-age=0, must-revalidate, no-transform`).join("\n");
   write("_headers", "/*\n" + Object.entries(h).map(([k, v]) => `  ${k}: ${v}`).join("\n") + "\n" + noTransform + "\n");
   write("robots.txt", "User-agent: *\nAllow: /\n");
-  console.log(`built ${recipes.length} recipe(s) × ${LANGS.length} languages → dist/`);
+  console.log(`built ${recipes.length} recipe(s), ${D.events.length} deadline(s), ${topics.length} topic(s) × ${LANGS.length} languages → dist/`);
 }
 
 // 直接运行时才构建(被 serve.mjs 引用时不构建)

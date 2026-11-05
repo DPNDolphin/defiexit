@@ -1,0 +1,310 @@
+{
+  "slug": "scams-during-exits",
+  "checked": "2026-11-05",
+  "title": {
+    "zh": "关停、迁移期间最常见的骗局",
+    "en": "The most common scams during shutdowns and migrations"
+  },
+  "summary": {
+    "zh": "最常见的是：主动私信你的「客服」，假的迁移、空投网站，让你「批准」或签名后转走代币，以及收费「追回」。一条规矩能挡住大部分：正规项目不会先私信你，不会要助记词或私钥，不会让你先转钱；链接只认官方账号自己发的帖子和官网。",
+    "en": "The usual ones are 'support' agents who message you first, fake migration or airdrop sites, 'approve' or signature requests that let someone take your tokens, and paid 'recovery' services. One rule stops most of them: real projects don't DM you first, never ask for your seed phrase or private keys, and never ask you to send money first — and the only links to trust are those posted by the official account itself and the official website."
+  },
+  "sections": [
+    {
+      "h": {
+        "zh": "为什么这时候骗子特别多",
+        "en": "Why scams spike at these moments"
+      },
+      "p": [
+        {
+          "zh": "关停和迁移有截止日，很多人着急，在公开场合发帖求助。以太坊官网说，冒充客服的人常在公开频道里找提问的人，再私信「帮忙」，骗你交出私钥或把钱转给他。",
+          "en": "Shutdowns and migrations come with deadlines, and many people ask for help in public in a hurry. ethereum.org says support scammers search public channels for people asking questions, then send a private message offering help, aiming to get your private keys or your funds."
+        },
+        {
+          "zh": "MetaMask 官方也把「用截止日制造时间压力」列为恶意批准请求的典型手法。越是快到截止日，越要慢一点。",
+          "en": "MetaMask likewise lists time pressure built around deadlines as a typical sign of a malicious approval request. The closer the deadline, the slower you should go."
+        }
+      ]
+    },
+    {
+      "h": {
+        "zh": "最常见的骗局",
+        "en": "The most common scams"
+      },
+      "p": [
+        {
+          "zh": "下面每一种，都有项目方或钱包官方公开提醒过。",
+          "en": "Each of these has been publicly flagged by a project or wallet provider."
+        }
+      ],
+      "list": [
+        {
+          "zh": "主动找你的「客服」：你在 X、Discord 或 Telegram 上一说问题，就有人私信自称官方客服，或在回复里贴「支持」链接。Horizen 官方说团队绝不会先私信你；MetaMask 官方说不会私信你提供支持、没有电话客服，也不会在 X 上联系你的工单。",
+          "en": "'Support' that finds you: you mention a problem on X, Discord or Telegram, and someone DMs you claiming to be official support, or replies with a 'help' link. Horizen says its team will never DM you first; MetaMask says it will never DM you offering support, has no phone support, and never contacts you about a support case on X."
+        },
+        {
+          "zh": "假的迁移、空投网站：网址和页面都很像官方。Sophon 官方提醒「只用 Sophon 官方链接，小心假迁移网站」；Abstract 官方提醒小心冒充、假迁移网站和自称代表 Abstract 的私信；Sophon 文档还说，不要点任何主动发来的领取、迁移或换币链接。",
+          "en": "Fake migration and airdrop sites that look like the real thing. Sophon warned: 'use only official Sophon links and be careful of fake migration sites.' Abstract warned about impersonation, fake migration sites and DMs claiming to represent it. Sophon's docs add: never follow an unsolicited claim, migration or token-swap link."
+        },
+        {
+          "zh": "「批准一下就能解锁 / 迁移」：批准（Approve）是允许某个网站或合约从你钱包里拿走某种代币；不花 gas 的签名（比如 Permit）也能起到批准的作用。MetaMask 官方提醒：点批准前先看清网站到底要什么，能限额就限额；为了领空投让你批准「全部 NFT」的，不要上当，接收东西本来不需要这种批准。",
+          "en": "'Approve to unlock / migrate': an approval lets a site or contract move a given token out of your wallet, and a gas-free signature such as a permit can do the same job. MetaMask's advice: check exactly what a site is requesting before you approve, and cap the amount where you can; if a site asks you to approve all your NFTs to receive an airdrop, don't fall for it, because you shouldn't need that kind of approval to receive anything."
+        },
+        {
+          "zh": "莫名其妙到账的代币或 NFT：钱包里突然多出一笔，上面写着去某个网站领取。MetaMask 官方说这是常见的空投骗局，那个网站多半是来骗助记词或骗你批准的，不要碰，把它隐藏起来。以太坊官网也说，这类网站会让你连接钱包、「批准」一笔交易，结果把资产交给骗子。",
+          "en": "Tokens or NFTs you never asked for, with a message sending you to a website to claim them. MetaMask calls this a common airdrop scam: the site is most likely after your seed phrase or an approval, so don't interact; hide it. ethereum.org adds that such sites ask you to connect your wallet and 'approve' a transaction that hands your assets to the scammer."
+        },
+        {
+          "zh": "收费「追回」：声称能帮你追回被骗或被困的钱，要先交费。美国 FBI 提醒：这类人会出现在社交媒体、评论区和搜索结果里，先收一笔钱，然后消失，或者交一份不完整、不准确的「追踪报告」再要更多钱；还有人冒充律师事务所或政府机构。私人公司无权发出扣押令，执法机构也不向受害者收调查费。",
+          "en": "Paid 'recovery': someone claims they can get back your stolen or stuck money, for a fee up front. The FBI warns these operators appear on social media, in comment sections and in search results; they take an initial payment and disappear, or hand over an incomplete or inaccurate 'tracing report' and ask for more. Some pose as law firms or government bodies. Private companies cannot issue seizure orders, and law enforcement doesn't charge victims to investigate."
+        }
+      ]
+    },
+    {
+      "h": {
+        "zh": "怎么核对一个链接",
+        "en": "How to check a link"
+      },
+      "p": [
+        {
+          "zh": "骗人的链接可以做得和官方一模一样，所以要看它从哪里来。",
+          "en": "A scam link can look identical to the real one, so judge it by where it came from."
+        }
+      ],
+      "list": [
+        {
+          "zh": "只从官方账号自己发的帖子里拿链接，或者从官网首页点进去。Abstract 官方的建议是：只用官方链接，再到 Discord 等其他官方渠道交叉核对。",
+          "en": "Take links only from posts by the official account itself, or click through from the official homepage. Abstract's advice: use only the official link and cross-check it on Discord and other official channels."
+        },
+        {
+          "zh": "核对账号本身：看 @ 后面的用户名是不是官网上列出的那一个，不要只看头像和名字。",
+          "en": "Check the account itself: make sure the @handle matches the one listed on the official website, rather than going by the picture and display name."
+        },
+        {
+          "zh": "不用搜索结果、广告、评论区和私信里的链接。FBI 提醒，骗人的「追回服务」就出现在评论区和搜索结果里。",
+          "en": "Don't use links from search results, ads, comment threads or DMs. The FBI notes that fake recovery services show up in comment sections and search results."
+        },
+        {
+          "zh": "在钱包弹窗里再核对一次：MetaMask 官方说，批准弹窗顶部会显示网站名称和网址，用来确认是不是你要用的那个网站。再看清这一步是转账、批准还是签名。",
+          "en": "Check again in the wallet pop-up: MetaMask says the approval prompt shows the site's name and web address at the top so you can confirm it's the site you meant to use. Then see whether the step is a transfer, an approval or a signature."
+        },
+        {
+          "zh": "看不懂弹窗在做什么，就不要确认，先到官方 Discord 问清楚。",
+          "en": "If you can't tell what the pop-up is doing, don't confirm it; ask in the official Discord first."
+        }
+      ]
+    },
+    {
+      "h": {
+        "zh": "正规项目不会做的事",
+        "en": "What legitimate projects don't do"
+      },
+      "p": [
+        {
+          "zh": "碰到下面任何一条，就可以停下了。",
+          "en": "If you run into any of these, you can stop right there."
+        }
+      ],
+      "list": [
+        {
+          "zh": "先私信你。（Horizen：团队绝不会先私信你；MetaMask：不会私信你提供支持。）",
+          "en": "DM you first. (Horizen: its team will never DM you first. MetaMask: it will never DM you offering support.)"
+        },
+        {
+          "zh": "要你的助记词、私钥或密码。以太坊官网说，没有任何正规服务、客服或网站会要这些；MetaMask 说，只有创建钱包和在新设备上恢复钱包时，才需要输入助记词。",
+          "en": "Ask for your seed phrase, private keys or password. ethereum.org says no legitimate service, support agent or website will ever ask for them; MetaMask says the only times you need to enter your seed phrase are when creating a wallet and when restoring one."
+        },
+        {
+          "zh": "让你先把钱转给他们。（Horizen：绝不会让你把钱转给我们。）",
+          "en": "Ask you to send them your funds. (Horizen: 'We will never ask you to send your funds to us.')"
+        },
+        {
+          "zh": "打电话给你，或者要远程控制你的电脑。（MetaMask 没有电话客服；以太坊官网：绝不让任何人远程访问你的电脑。）",
+          "en": "Call you, or ask for remote access to your computer. (MetaMask has no phone support. ethereum.org: never allow anyone remote access to your computer.)"
+        },
+        {
+          "zh": "收费「加速」「解锁」「追回」。",
+          "en": "Charge a fee to 'speed up', 'unlock' or 'recover' your funds."
+        },
+        {
+          "zh": "DeFiExit 网站只会请钱包共享地址，从不让你签名、批准或发交易；我们不会主动找你。",
+          "en": "DeFiExit only asks your wallet to share its address — it never asks you to sign, approve or send anything, and we never message first."
+        }
+      ]
+    },
+    {
+      "h": {
+        "zh": "已经点了、签了，怎么办",
+        "en": "If you already clicked or signed"
+      },
+      "p": [
+        {
+          "zh": "越快处理，越有可能少损失。",
+          "en": "The faster you act, the better your chance of limiting the damage."
+        }
+      ],
+      "list": [
+        {
+          "zh": "如果批准了可疑网站：MetaMask 官方说要尽快撤销这个批准（比如在 MetaMask Portfolio 里查看并撤销），趁钱还没被转走。钱已经被转走的，能做的就很少了。",
+          "en": "If you approved a suspicious site: MetaMask says to revoke the approval as quickly as you can (for example, review and revoke it in MetaMask Portfolio) before funds are taken. Once the wallet has been drained, there is little you can do."
+        },
+        {
+          "zh": "如果助记词或私钥泄露了，或者已经出现你没做过的转账：MetaMask 官方建议马上新建一个钱包，把剩下的钱转过去，旧钱包不再使用；怀疑有自动转走余额的脚本时，不要再往旧钱包里转 gas。",
+          "en": "If your seed phrase or private key leaked, or transactions you didn't make appear: MetaMask advises creating a new wallet right away, moving what's left into it and abandoning the old one; if you suspect a sweeper script, don't send more gas to the old wallet."
+        },
+        {
+          "zh": "链上交易撤不回来。保留交易记录，向当地警方报案；在美国可以向 FBI 的 IC3 报告。",
+          "en": "On-chain transactions can't be reversed. Keep the transaction records and report it to your local police; in the US, you can report to the FBI's IC3."
+        },
+        {
+          "zh": "之后会有人私信说能帮你追回，这正是 FBI 提醒的二次诈骗，不要给对方任何钱或个人信息。",
+          "en": "Expect people to DM you offering to get it back. That is the follow-up scam the FBI warns about; don't give them any money or personal information."
+        }
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": {
+        "zh": "有个「官方客服」私信我，说能帮我取出卡住的钱，是真的吗？",
+        "en": "An 'official support' account DMed me offering to get my stuck funds out. Is it real?"
+      },
+      "a": {
+        "zh": "几乎可以肯定是骗局。Horizen 官方明确说团队绝不会先私信你，MetaMask 官方也说不会私信你提供支持。不要回复，不要点链接，自己去官网列出的官方渠道提问，比如官方 Discord 的工单。",
+        "en": "Almost certainly a scam. Horizen states its team will never DM you first, and MetaMask says it will never DM you offering support. Don't reply or click anything; ask through the official channels listed on the project's website yourself, such as an official Discord ticket."
+      }
+    },
+    {
+      "q": {
+        "zh": "迁移页面让我连接钱包后签个名，能签吗？",
+        "en": "A migration page wants me to connect my wallet and sign something. Should I?"
+      },
+      "a": {
+        "zh": "先确认网址来自官方账号自己的帖子。再看钱包弹窗：是普通的提款或转账，还是「批准」或 Permit 签名。批准和 Permit 是允许别人动你的代币；真要批准，只批准给官方指南里写的那个合约、只批准要用的数量。看不懂弹窗内容就不要签，先到官方 Discord 问。",
+        "en": "First confirm the link came from a post by the official account itself. Then read the wallet pop-up: is it a plain withdrawal or transfer, or an 'approve' or permit signature? Approvals and permits let someone else move your tokens; if one is genuinely needed, approve only the contract named in the official guide, and only the amount you're using. If you can't understand the pop-up, don't sign; ask in the official Discord first."
+      }
+    },
+    {
+      "q": {
+        "zh": "钱包里多了一些我没买过的代币，上面写着去某个网站领取？",
+        "en": "Tokens I never bought showed up in my wallet, with a message to visit a website."
+      },
+      "a": {
+        "zh": "不要碰。MetaMask 官方说这是常见的空投骗局：去那个网站「领取」时，你签下的可能是让对方拿走你代币的批准，或者被引导输入助记词。不理它，把它隐藏起来就行。",
+        "en": "Leave it alone. MetaMask describes this as a common airdrop scam: when you go to 'claim', what you sign may be an approval that lets them take your tokens, or you may be led into typing your seed phrase. Ignore it and hide it."
+      }
+    },
+    {
+      "q": {
+        "zh": "有人说交手续费就能帮我追回被骗的钱？",
+        "en": "Someone says they can get back my stolen crypto for a fee."
+      },
+      "a": {
+        "zh": "FBI 专门提醒过：这类人先收一笔钱，然后消失，或者交一份不完整、不准确的「追踪报告」再要更多钱。私人公司无权发出扣押令，执法机构也不向受害者收调查费。不要给对方任何钱和个人信息。",
+        "en": "The FBI has warned about exactly this: they take an up-front fee and vanish, or produce an incomplete or inaccurate 'tracing report' and ask for more. Private companies can't issue seizure orders to recover cryptocurrency, and law enforcement doesn't charge victims to investigate. Don't give them money or personal information."
+      }
+    },
+    {
+      "q": {
+        "zh": "怎么确认一个链接是官方的？",
+        "en": "How can I tell whether a link is official?"
+      },
+      "a": {
+        "zh": "只认两处：官方账号自己发的帖子，和官网首页。Abstract 官方的建议是只用官方链接，再到 Discord 等其他官方渠道交叉核对。评论区、私信、搜索广告里的链接都不算，哪怕看起来一模一样。",
+        "en": "Trust only two places: posts by the official account itself, and the official homepage. Abstract's advice is to use only the official link and cross-check it on Discord and other official channels. Links in replies, DMs or search ads don't count, however identical they look."
+      }
+    }
+  ],
+  "related": [
+    "sophon-chain-shutdown",
+    "abstract-chain-shutdown",
+    "blast-l2-shutdown",
+    "chain-shutdown"
+  ],
+  "sources": [
+    {
+      "label": {
+        "zh": "Sophon 官方 X：只用官方链接，小心假迁移网站（2026-10-19）",
+        "en": "Sophon on X: use only official links, beware fake migration sites (Oct 19, 2026)"
+      },
+      "url": "https://x.com/Sophon/status/2112253264179998909"
+    },
+    {
+      "label": {
+        "zh": "Sophon 官方文档：提款常见问题（不要点主动发来的链接）",
+        "en": "Sophon docs: Withdrawal FAQs (never follow unsolicited links)"
+      },
+      "url": "https://docs.sophon.xyz/discover/bridging/bridging-faqs"
+    },
+    {
+      "label": {
+        "zh": "Abstract 官方 X 文章：Abstract is Winding Down（冒充、假迁移网站、私信，2026-10-06）",
+        "en": "Abstract on X: 'Abstract is Winding Down' (impersonation, fake migration sites, DMs; Oct 6, 2026)"
+      },
+      "url": "https://x.com/AbstractChain/status/2107554632675340420"
+    },
+    {
+      "label": {
+        "zh": "Horizen 官方博客：安全提醒（绝不先私信、不要私钥助记词、不让你转钱，2026-10-23）",
+        "en": "Horizen blog: security reminder (never DMs first, never asks for keys, never asks for funds; Oct 23, 2026)"
+      },
+      "url": "https://blog.horizen.io/changes-for-horizen"
+    },
+    {
+      "label": {
+        "zh": "MetaMask 帮助中心：基础安全提示（助记词、私钥）",
+        "en": "MetaMask Support: Basic security tips (seed phrase, private keys)"
+      },
+      "url": "https://support.metamask.io/stay-safe/safety-in-web3/basic-safety-and-security-tips-for-metamask/"
+    },
+    {
+      "label": {
+        "zh": "MetaMask 帮助中心：官方支持渠道（不私信、没有电话、不在 X 上联系）",
+        "en": "MetaMask Support: Official support channels (no DMs, no phone, no contact on X)"
+      },
+      "url": "https://support.metamask.io/stay-safe/safety-in-web3/what-are-metamasks-official-support-channels/"
+    },
+    {
+      "label": {
+        "zh": "MetaMask 帮助中心：什么是代币批准（Permit、恶意批准、撤销）",
+        "en": "MetaMask Support: What is a token approval? (permits, malicious approvals, revoking)"
+      },
+      "url": "https://support.metamask.io/stay-safe/safety-in-web3/what-is-a-token-approval/"
+    },
+    {
+      "label": {
+        "zh": "MetaMask 帮助中心：避开骗子、跑路和空投骗局",
+        "en": "MetaMask Support: Avoid scammers, rug pulls and airdrop scams"
+      },
+      "url": "https://support.metamask.io/stay-safe/safety-in-web3/scammers-and-phishers-rugpulls-and-airdrop-scams/"
+    },
+    {
+      "label": {
+        "zh": "MetaMask 帮助中心：被盗或被骗了怎么办",
+        "en": "MetaMask Support: I've been hacked or scammed"
+      },
+      "url": "https://support.metamask.io/stay-safe/protect-yourself/ive-been-hacked-scammed-unauthorized-transactions-on-my-account/"
+    },
+    {
+      "label": {
+        "zh": "以太坊官网：安全与防骗（客服骗局、空投骗局）",
+        "en": "ethereum.org: Security and scam prevention (support scams, airdrop scams)"
+      },
+      "url": "https://ethereum.org/security/"
+    },
+    {
+      "label": {
+        "zh": "FBI IC3 公告：声称能追回损失的公司增多（2023-08-11）",
+        "en": "FBI IC3 PSA: companies falsely claiming to recover lost crypto (Aug 11, 2023)"
+      },
+      "url": "https://www.ic3.gov/PSA/2023/psa230811"
+    },
+    {
+      "label": {
+        "zh": "FBI IC3 公告：假律师事务所冒充追回（2025-08-13）",
+        "en": "FBI IC3 PSA: fictitious law firms offering to recover funds (Aug 13, 2025)"
+      },
+      "url": "https://www.ic3.gov/PSA/2025/PSA250813"
+    }
+  ]
+}
