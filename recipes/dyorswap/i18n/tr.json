@@ -1,0 +1,265 @@
+{
+  "title": "DYORSwap likiditenizi cüzdanınıza çekin",
+  "short": "DYORSwap'tan çekin",
+  "verified": "Kasım 2026'da yazar bu rehberi OKX uygulamasındaki kendi hesabıyla izledi: kayma 1% iken çekim ilk denemede gerçekleşti; 1 imza ve 1 işlem yapıldı, tutarlar sayfayla uyuştu ve ücret 1 sentin altındaydı. Yönlendirici (router) sözleşmesinin kaynak kodu OKX blok gezgininde doğrulanmış. Cüzdan açılır pencerelerinin henüz resmi yok: içeriklerini kontrol kartlarıyla karşılaştırın",
+  "covers": "DYORSwap'ın X Layer ağındaki USDT/OKB havuzunda bulunan likidite (LP)",
+  "summary": "DYORSwap'ın USDT/OKB havuzuna likidite eklediyseniz kendiliğinden geri gelmez. Sitenin listesi çoğu zaman bunu göstermez (No liquidity found yazar) ve varsayılan ayarlarla çekim başarısız olur. Bu rehberi izleyerek havuzu bulun, kaymayı 1% yapın ve çekin; USDT ve OKB cüzdanınıza geri döner.",
+  "facts": [
+    ["İmza ve işlem", "1 imza (yalnızca çektiğiniz LP için) ve 1 işlem"],
+    ["Ücret", "$0.01 altında; cüzdanınızda X Layer ağındaki OKB'den ödenir"],
+    ["Süre", "Yaklaşık 5 dakika"],
+    ["Gerekenler", "Likiditeyi ekleyen hesapta açık OKX uygulaması ve ücret için X Layer ağında biraz OKB"]
+  ],
+  "chips": ["Yaklaşık 5 dakika", "1 imza + 1 işlem", "Ücret 1 sentin altında"],
+  "official": [{ "label": "DYORSwap havuz bulma sayfası" }],
+  "vars": { "addrShort": "kendi adresiniz", "got": "çekebileceğiniz miktar" },
+  "pro": [
+    "**Rota**: OKX uygulamasında üstte Web3 seçin → alttaki keşfet sekmesi → `https://dyorswap.finance/find/?chainId=196` adresini arama kutusuna yapıştırın → “üçüncü taraf web sitesi” sonucu → **Connect** → **OKX Wallet** → **Select a Token**, USDT seçin → **Manage this pool** → **dişli simgesi**, 1.0% seçin → USDT/OKB satırına dokunun → **Remove** → **Max** → **Enable** (imza) → **Remove** → **Confirm** (işlem).",
+    "**Tek imza**: DYOR LPs sözleşmesi 0x35c185563dFd328256A80Aafc23822200719cD25 üzerinde bir EIP-712 Permit. Spender, yönlendirici 0x1E690F24F704672e44255013C2cB22FC04c46036; tutar sınırsız değil, çektiğiniz LP kadar.",
+    "**Tek işlem**: yönlendiriciye `removeLiquidityETHWithPermit`, 0 OKB gönderilerek.",
+    "**Rakamlarınız**: {{got}}.",
+    "**Dikkat edilecekler**: bu USDT, X Layer ağının eski sürümü (USDT_Bridged) ve havuz sitenin varsayılan listesinde yok; bu yüzden Your Liquidity bölümünde No liquidity found yazar. Çekim önce protokolün ücret LP'sini basar; bu yüzden aslında sitenin tahmininden yaklaşık 0.5% daha az alırsınız. Bu, varsayılan kaymadan fazladır ve yönlendirici işlemi `INSUFFICIENT_A_AMOUNT` hatasıyla geri çevirir. Kaymanın 1% olması gerekmesinin nedeni bu. “Bridge” düğmesine dokunmayın."
+  ],
+  "done": {
+    "where": "cüzdanınızda, X Layer ağında",
+    "from": "DYORSwap yönlendirici sözleşmesi tarafından gönderildi",
+    "look": "Nereye bakmalı: OKX uygulamasında cüzdan ana ekranı → OKB veya USDT'yi açın → işlem geçmişi."
+  },
+  "screens": {
+    "nolist": {
+      "name": "Listede No liquidity found yazıyor",
+      "features": ["Başlık: Your Liquidity", "Ortada No liquidity found", "Altında bir “Find other LP tokens” düğmesi"],
+      "img": "dy-nolist-en.webp",
+      "do": "Paranız kaybolmadı: bu havuz sitenin varsayılan listesinde olmadığı için burada görünmüyor. **Find other LP tokens** düğmesine dokunun, sonra 2. adımdaki gibi USDT seçin.",
+      "images": [{ "src": "dy-nolist-en.webp", "caption": "① **Find other LP tokens** düğmesine dokunun" }]
+    },
+    "import": {
+      "name": "Import Pool sayfası",
+      "img": "dy-select-en.webp",
+      "features": ["Başlık: Import Pool", "İlk kutuda OKB, ikincisinde Select a Token yazıyor"],
+      "do": "Bu, 2. adımdaki sayfa. Henüz bağlanmadınız mı? Önce sağ üstteki **Connect** düğmesine dokunun. Bağlandınız mı? Sağ üstteki simgenin siyah-beyaz dama tahtası (X Layer) olduğunu kontrol edin, sonra **Select a Token** seçeneğine dokunup USDT seçin."
+    },
+    "settings": {
+      "name": "Alttaki Settings paneli",
+      "img": "dy-slip-en.webp",
+      "features": ["Aşağıdan Settings başlıklı bir panel açılır", "Slippage Tolerance altında 0.1%, 0.5% ve 1.0% düğmeleri var"],
+      "do": "Bu 3. adım: **1.0%** düğmesine dokunup maviye dönmesini sağlayın, sonra kapatmak için sağ üstteki **×** işaretine dokunun. Expert Mode anahtarını kapalı bırakın."
+    },
+    "remove-page": {
+      "name": "Remove USDT-OKB liquidity sayfası",
+      "img": "dy-max-en.webp",
+      "features": ["Başlık: Remove USDT-OKB liquidity", "Ortada büyük bir yüzde", "Altında dört düğme: 25%, 50%, 75%, Max"],
+      "do": "Bu 4. adım: **Max** düğmesine dokunun, en alta kaydırın, Slippage Tolerance değerinin 1% olduğunu kontrol edin, sonra **Enable** düğmesine dokunun."
+    },
+    "fail": {
+      "name": "Kırmızı bir mesaj: This transaction would fail",
+      "img": "dy-fail-en.webp",
+      "features": ["Üstte kırmızı bir Error çıkar", "This transaction would fail yazar"],
+      "do": "Paranız hareket etmedi. Büyük ihtimalle kayma hâlâ 0.5%: aslında sitenin tahmininden biraz daha az alırsınız, bu da kaymanın izin verdiğinden fazladır; bu yüzden işlem gerçekleşemez. Mesajı kapatmak için **×** işaretine dokunun, açılır pencereyi kapatın, listeye dönmek için çekim sayfasının sol üstündeki geri okuna dokunun, 3. adımdaki gibi 1% ayarlayın ve yeniden çekin (yeniden imzalamanız gerekir).",
+      "images": [{ "src": "dy-fail-en.webp", "caption": "✗ Kayma çok düşük: sarı çerçevede hâlâ 0.5% yazıyor" }]
+    },
+    "wrong-net": {
+      "name": "Bir açılır pencere: You are in wrong network",
+      "img": "dy-wrongnet-en.webp",
+      "features": ["Aşağıdan You are in wrong network başlıklı bir panel açılır", "Altında mavi bir düğme: Switch to X Layer mainnet"],
+      "do": "Cüzdanınız başka bir ağda. **Switch to X Layer mainnet** düğmesine dokunun, cüzdan sorarsa onaylayın. Havuzunuz yalnızca X Layer ağında görünür.",
+      "images": [{ "src": "dy-wrongnet-en.webp", "caption": "① **Switch to X Layer mainnet** düğmesine dokunun" }]
+    },
+    "chains": {
+      "name": "Alttaki ağ listesi",
+      "img": "dy-chains-en.webp",
+      "features": ["Aşağıdan, başlığı ağ değiştirmeyle ilgili bir panel açılır", "Aralarında X Layer mainnet de olan bir ağ adları listesi"],
+      "do": "**X Layer mainnet** seçin. Başka bir ağ seçmeyin, yeni bir ağ da eklemeyin.",
+      "images": [{ "src": "dy-chains-en.webp", "caption": "① **X Layer mainnet** seçin. Liste uzun; bulmak için parmağınızla yukarı kaydırın" }]
+    },
+    "sign-wrong": {
+      "name": "İmza DYOR LPs için değil ya da spender 0x1E690F24…FC04c46036 değil",
+      "do": "**Reject** (Reddet) düğmesine dokunun. Bu rehberde yalnızca bir imza var: sözleşme DYOR LPs 0x35c185563dFd328256A80Aafc23822200719cD25, spender ise yönlendirici 0x1E690F24F704672e44255013C2cB22FC04c46036. Başka bir token ya da adres için imza atmayın. Sayfayı kapatın ve 1. adımdaki gibi yeniden açın."
+    },
+    "wrong-to": {
+      "name": "Etkileşim adresi 0x1E690F24…FC04c46036 değil ya da sizden OKB veya USDT göndermeniz isteniyor",
+      "do": "**Reject** (Reddet) düğmesine dokunun. Bu çekim yalnızca 0x1E690F24F704672e44255013C2cB22FC04c46036 yönlendiricisine gider. Cüzdanınızdan çıkan tek şey LP'dir; siz USDT ve OKB alırsınız. Sayfayı kapatın ve 1. adımdaki gibi yeniden açın."
+    },
+    "domain": {
+      "name": "Adres çubuğunda dyorswap.finance yazmıyor",
+      "do": "Bu sayfayı hemen kapatın ve hiçbir şey imzalamayın. `https://dyorswap.finance/find/?chainId=196` adresini kendiniz yeniden yapıştırın; başkalarının gönderdiği bağlantılara dokunmayın."
+    },
+    "bridge": {
+      "name": "Bir köprü sayfası (bir “Send” düğmesi; Bridge, Deploy, Referral gibi sekmeler) ya da yeni bir ağ ekleme isteği",
+      "do": "“Send” düğmesine dokunmayın ve hiçbir şey imzalamayın. Çıkış yolu bu değil: likidite çekmek için köprü gerekmez. Sayfayı kapatın ve 1. adımdan yeniden açın. Hiçbir şey imzalamadığınız ya da onaylamadığınız sürece paranız hareket etmemiştir. Eylül 2026'da kullanıcılar DYORSwap'taki sahte bir köprü yüzünden para kaybetti."
+    }
+  },
+  "steps": {
+    "open": {
+      "title": "DYORSwap'ı OKX uygulamasında açın",
+      "items": [
+        "Önce kopyalamak için bu bağlantıya dokunun: `https://dyorswap.finance/find/?chainId=196`",
+        "Aşağıda bunun OKX uygulamasında nasıl yapıldığını görüyorsunuz; her dokunuş için bir resim. Uygulamayı Çince test ettik, bu yüzden resimleri Çince. Uygulamanız başka bir dildeyse her açıklamada anlatılan işi yapan düğmeyi arayın; bulamazsanız ya da gördüğünüz şey uymuyorsa durun."
+      ],
+      "images": [
+        "① Bunu OKX uygulamasının içinde mi okuyorsunuz? Bağlantı kopyalanınca sayfayı kapatmak için sol üstteki **×** işaretine dokunun, işiniz bitince geri gelin. Başka bir tarayıcıda mı okuyorsunuz? Doğrudan OKX uygulamasını açın",
+        "② Üstte **Web3** seçin ③ Alt çubuktaki ikinci simge olan keşfet sekmesine dokunun. Resimdeki tutarlar gizlendi",
+        "④ Üstteki arama kutusuna dokunun",
+        "⑤ Arama kutusuna basılı tutun, sonra **Paste** (Yapıştır) seçeneğine dokunun",
+        "⑥ Altında çıkan “üçüncü taraf web sitesi” sonucuna dokunun. Resmin gizlenen kısmı bizim kaydımızdaki başka bir bağlantı; sizinki tam olarak **https://dyorswap.finance/** ile başlamalı ve açıldıktan sonra adres çubuğunda tam olarak **dyorswap.finance** yazmalı, öncesinde ve sonrasında fazladan hiçbir şey olmamalı"
+      ],
+      "situations": {
+        "third-party": { "see": "Arama sonucunda bunun üçüncü taraf bir web sitesi olduğu yazıyor", "do": "Bu normal: cüzdan her web adresini böyle etiketler. Ardından gelen adrese bakın: tam olarak **https://dyorswap.finance/** ile başlamalı; finance kısmından hemen sonra eğik çizgi gelmeli, arada fazladan hiçbir şey olmamalı." },
+        "no-paste": { "see": "Arama kutusuna basılı tutunca “Paste” (Yapıştır) çıkmıyor", "do": "Bu sayfaya dönüp bağlantıyı kopyalamak için yeniden dokunun. iPhone'unuz yapıştırmaya izin verip vermeyeceğinizi sorarsa izin verin. Yine bir şey yok mu? `https://dyorswap.finance/find/?chainId=196` adresini elle yazın." },
+        "wrong-account": { "see": "Cüzdanda, likiditeyi ekleyen hesaptan farklı bir hesap seçili", "do": "Cüzdanın ana ekranına dönün, hesap adının yanındaki küçük üçgene dokunun, likiditeyi ekleyen hesaba geçin (bir OKX cüzdanında birkaç hesap olabilir) ve baştan başlayın. Yanlış hesapta havuzunuzu bulamazsınız." },
+        "other-wallet": { "see": "OKX uygulamasını kullanmıyorum ya da bilgisayardayım", "do": "Bu rehber OKX uygulaması için yazıldı; başka cüzdanları ya da tarayıcı eklentilerini kontrol etmedik. Web sayfaları aynı ama cüzdan pencereleri farklı görünür. Kontrol kartlarıyla uyuşmuyorlarsa imzalamayın: sağ üstteki “Takıldınız mı?” düğmesine dokunun ve raporu bize gönderin." }
+      }
+    },
+    "pool": {
+      "title": "Cüzdanınızı bağlayın ve havuzunuzu bulun",
+      "milestone": "Havuzu bul",
+      "note": "Bağlanmak ücretsizdir ve paranızı hareket ettiremez",
+      "items": [
+        "DYORSwap İngilizce ya da Çince görünebilir. Resimler İngilizce; dili değiştirmek için üstteki küre simgesine dokunun."
+      ],
+      "images": [
+        { "src": "dy-find-en.webp", "caption": "① Import Pool sayfası açılır. Sağ üstteki **Connect** düğmesine dokunun ✗ Yalnızca resimlerde çerçeveyle gösterilen yerlere dokunun. Alt çubuktaki “Bridge” düğmesine dokunmayın: çekim için gerekmez ve Eylül 2026'da kullanıcılar DYORSwap'taki sahte bir köprü yüzünden para kaybetti" },
+        { "src": "dy-wallets-en.webp", "caption": "② **OKX Wallet** seçeneğine dokunun. Cüzdan bağlanmak istediğinde dyorswap.finance yazdığını kontrol edip bağlanın" },
+        { "src": "dy-select-en.webp", "caption": "③ Bağlandıktan sonra önce sarı çerçeveyi kontrol edin: sağ üstteki simge siyah-beyaz dama tahtası olmalı; bu, X Layer demektir. Değilse aşağıdaki sık görülen durumlara bakın. Öyleyse **Select a Token** seçeneğine dokunun" },
+        { "src": "dy-tokens-en.webp", "caption": "④ Listede **USDT** satırına dokunun ✗ Altındaki USD₮0 satırına dokunmayın: o başka bir token ve bu havuz USDT kullanıyor. Resimdeki bakiyeler gizlendi" },
+        { "src": "dy-found-en.webp", "caption": "⑤ Bir USDT-OKB LP bloğu çıkar: bu sizin likiditeniz. **Manage this pool** seçeneğine dokunun. Resimdeki rakamlar gizlendi" }
+      ],
+      "situations": {
+        "connected": { "see": "“Connect” düğmesi yok, yalnızca bir cüzdan simgesi var", "do": "Zaten bağlısınız. Solundaki simgenin siyah-beyaz dama tahtası (X Layer) olduğunu kontrol edin, sonra **Select a Token** seçeneğine dokunun." },
+        "wrong-network": { "see": "You are in wrong network açılıyor ya da sağ üstteki simge dama tahtası değil", "do": "Cüzdanınız başka bir ağda, bu yüzden havuzunuz görünmez. **Switch to X Layer mainnet** düğmesine dokunun. Bir şey açılmazsa o simgeye dokunup ağ listesinden **X Layer mainnet** seçin." },
+        "switch-network": { "see": "Cüzdan ağ değiştirmenizi istiyor", "do": "**X Layer** ağına geçin. Bu bir geçiştir, yeni bir ağ değildir. Başka bir ağ eklemenizi isterse reddedin: DYORSwap'ta Eylül'de sahte bir zincir olayı yaşandı." },
+        "not-found": { "see": "USDT seçtikten sonra USDT-OKB LP bloğu çıkmıyor", "do": "Sağ üstteki simgenin dama tahtası (X Layer) olduğunu ve cüzdanda likiditeyi ekleyen hesabın seçili olduğunu kontrol edin; sayfaya zinciri okuması için birkaç saniye verin. Yine bir şey yok mu? Sağ üstteki “Takıldınız mı?” düğmesine dokunun: bu adresin LP'sini doğrudan zincir üzerinden kontrol ederiz." },
+        "wrong-token": { "see": "Yanlışlıkla USD₮0 seçtim", "do": "İkinci kutuya dokunun ve **USDT** seçin." },
+        "no-pool": { "see": "No pool found yazıyor, altında Create pool var", "do": "Yanlış token: bu çiftin havuzu yok. “Create pool” düğmesine dokunmayın. İkinci kutuya dokunun ve **USDT** seçin." },
+        "nolist": { "see": "Sayfada No liquidity found yazıyor", "do": "Paranız kaybolmadı: bu havuz sitenin varsayılan listesinde yok. **Find other LP tokens** düğmesine, sonra “Select a Token” seçeneğine dokunun ve USDT seçin." },
+        "bridge-page": { "see": "Bir köprü sayfasına düştüm: bir “Send” düğmesi ve Bridge, Deploy, Referral gibi sekmeler var", "do": "“Send” düğmesine dokunmayın ve hiçbir şey imzalamayın. Çıkış yolu bu değil. Sayfayı kapatın ve 1. adımdan yeniden açın. Hiçbir şey imzalamadığınız ya da onaylamadığınız sürece paranız hareket etmemiştir." }
+      }
+    },
+    "slippage": {
+      "title": "Kaymayı 1% yapın",
+      "milestone": "Kayma",
+      "note": "Bunu atlarsanız çekim sonra başarısız olur",
+      "items": [
+        "Bu havuzdan çekim yaptığınızda önce bir protokol ücreti hesaplanır; bu yüzden aslında sitenin tahmininden biraz daha az alırsınız. Varsayılan 0.5% kayma yetmez ve işlem başarısız olur; bu yüzden önce 1% yapın. Bu bir tahmin değil, zincir üstü bir simülasyonun sonucudur."
+      ],
+      "images": [
+        { "src": "dy-gear-en.webp", "caption": "① Your Liquidity sayfasına döndüğünüzde USDT/OKB artık listede. Sağ üstteki **dişli simgesine** dokunun. Resimdeki rakamlar gizlendi" },
+        { "src": "dy-slip-en.webp", "caption": "② **1.0%** düğmesine dokunup maviye dönmesini sağlayın ③ Kapatmak için sağ üstteki **×** işaretine dokunun" }
+      ],
+      "situations": {
+        "safe": { "see": "1% güvenli mi?", "do": "Kayma, sitenin tahmininden ne kadar daha azını kabul edeceğinizdir. 1% ayarında en fazla 1% daha azı kabul edilir; bu çekim yaklaşık 0.5% daha az verir. Daha kötüsü olursa işlem yalnızca başarısız olur ve paranız yerinde kalır." },
+        "expert": { "see": "Altta bir Expert Mode anahtarı var", "do": "Kapalı bırakın. Bu rehberde gerekmez." },
+        "no-gear": { "see": "Dişli simgesini bulamıyorum", "do": "Çekim sayfasında dişli simgesi yok. Çekim sayfasının sol üstündeki geri okuyla Your Liquidity sayfasına dönün." }
+      }
+    },
+    "enable": {
+      "title": "Max seçin ve imzalayın",
+      "milestone": "İmza",
+      "note": "İmza ücretsizdir ve yalnızca çektiğiniz LP'yi kapsar",
+      "grantsText": "İmzaladıktan sonra DYORSwap yönlendirici sözleşmesi likidite tokenlarınızı (LP) alabilir: sınırsız değil, tam olarak şimdi çektiğiniz miktar kadar. Kartı satır satır kontrol edin; bir şey uymuyorsa “Reject” (Reddet) düğmesine dokunun.",
+      "images": [
+        { "src": "dy-row-en.webp", "caption": "① Açmak için **USDT/OKB** satırına dokunun. Resimdeki rakamlar gizlendi" },
+        { "src": "dy-expand-en.webp", "caption": "② **Remove** düğmesine dokunun ✗ Bunun yerine “Add liquidity” düğmesine dokunmayın. Resimdeki rakamlar gizlendi" },
+        { "src": "dy-max-en.webp", "caption": "③ **Max** düğmesine dokunun: 0% değeri 100% olur" },
+        { "src": "dy-enable-en.webp", "caption": "④ En alta kaydırın ve önce sarı çerçeveyi kontrol edin: Slippage Tolerance değeri **1%** olmalı. Sonra **Enable** düğmesine dokunun. Cüzdanınız bir imza isteği gösterir: aşağıdaki kontrol kartıyla karşılaştırın. Resimdeki rakamlar gizlendi" }
+      ],
+      "check": {
+        "title": "Onaylamadan önce 3 şeyi kontrol edin",
+        "lead": "Bu, cüzdanınızdan gelen imza isteği. Bu pencerenin henüz resmi yok: içinde ne yazdığına bakın ve kontrol ettiğiniz her maddeye dokunun.",
+        "confirm": [
+          { "title": "Kaynak dyorswap.finance", "sub": "Açılır pencerede adı geçen site; öncesinde ve sonrasında fazladan hiçbir şey yok" },
+          { "title": "Sözleşme DYOR LPs: 0x35c18556…200719cD25", "sub": "Tam adres 0x35c185563dFd328256A80Aafc23822200719cD25. Bu sizin LP'niz; USDT ya da OKB değil. Büyük ya da küçük harf fark etmez; en azından baştaki 0x35c18556 ve sondaki 200719cD25 aynı olmalı" },
+          { "title": "Spender 0x1E690F24…FC04c46036", "sub": "Tam adres 0x1E690F24F704672e44255013C2cB22FC04c46036, DYORSwap yönlendirici sözleşmesi. En azından baştaki 0x1E690F24 ve sondaki FC04c46036 aynı olmalı" }
+        ],
+        "reject": [
+          "LP yerine USDT, OKB ya da başka bir token onaylanıyor",
+          "Spender 0x1E690F24…FC04c46036 ile uyuşmuyor",
+          "Tutarda unlimited (sınırsız) yazıyor",
+          "Kaynak dyorswap.finance değil",
+          "transfer yazıyor ya da sizden token göndermeniz isteniyor",
+          "Cüzdan kırmızı bir uyarı gösteriyor: yüksek risk ya da kötü amaçlı site"
+        ],
+        "normal": [
+          "İmzalamanın ücreti yoktur ve para hareket ettirmez",
+          "Tutar kısa, küçük bir sayıdır: LP birimleri çok küçüktür",
+          "Cüzdan yalnızca ilk ve son karakterleri gösteriyorsa onları karşılaştırın; yapabiliyorsanız tamamını görmek için ayrıntıları açın"
+        ]
+      },
+      "situations": {
+        "still-05": { "see": "Sarı çerçevede hâlâ 0.5% yazıyor", "do": "Henüz “Enable” düğmesine dokunmayın. Çekim sayfasının sol üstündeki geri okuyla listeye dönün, 3. adımdaki gibi 1% ayarlayın, sonra geri gelin." },
+        "approve-tx": { "see": "“Enable” imza yerine bir işlem açtı", "do": "“Reject” (Reddet) düğmesine dokunun. Bazı cüzdanlar bu tür imzayı yapamaz; o zaman site bunun yerine bir onay işlemi gönderir. Bu yolu kontrol etmedik. Sağ üstteki “Takıldınız mı?” düğmesine dokunun ve raporu bize gönderin." },
+        "rejected": { "see": "Yanlışlıkla “Reject” düğmesine dokundum", "do": "Paranız hareket etmedi. **Enable** düğmesine yeniden dokunun." },
+        "wrong-sign": { "see": "İmza başka bir tokenı ya da başka bir adresi onaylıyor", "do": "Hemen “Reject” (Reddet) düğmesine dokunun." }
+      }
+    },
+    "remove": {
+      "title": "Çekin",
+      "milestone": "Çekim",
+      "note": "Tek işlem bu",
+      "images": [
+        { "src": "dy-remove-en.webp", "caption": "① Soldaki düğme grileşir ve Enabled yazar. Sağdaki **Remove** düğmesine dokunun" },
+        { "src": "dy-confirm-en.webp", "caption": "② You will receive penceresi açılır. Sarı çerçevede **1%** yazmalı. **Confirm** düğmesine dokunun; cüzdanınız işlemi gösterir: aşağıdaki kontrol kartıyla karşılaştırın. Resimdeki rakamlar gizlendi" }
+      ],
+      "check": {
+        "title": "Onaylamadan önce 3 şeyi kontrol edin",
+        "lead": "Bu, cüzdanınızdaki işlem. Bu pencerenin henüz resmi yok: içinde ne yazdığına bakın ve kontrol ettiğiniz her maddeye dokunun.",
+        "confirm": [
+          { "title": "Kaynak dyorswap.finance, ağ X Layer", "sub": "Açılır pencerede adı geçen site ve ağ" },
+          { "title": "Etkileşim adresi yönlendirici 0x1E690F24…FC04c46036", "sub": "Tam adres 0x1E690F24F704672e44255013C2cB22FC04c46036. En azından baştaki 0x1E690F24 ve sondaki FC04c46036 aynı olmalı. Tek bir yanlış karakter varsa durun" },
+          { "title": "Yaklaşık {{got}} alırsınız; OKB ya da USDT göndermezsiniz", "sub": "Cüzdanınızdan yalnızca LP çıkar; 0 OKB gönderilmesi doğrudur. Alttaki ağ ücreti $0.01 altında" }
+        ],
+        "reject": [
+          "Sizden OKB, USDT ya da başka bir token göndermeniz isteniyor",
+          "Etkileşim adresi 0x1E690F24…FC04c46036 ile uyuşmuyor",
+          "Kaynak dyorswap.finance değil",
+          "Approve yazıyor",
+          "Cüzdan kırmızı bir uyarı gösteriyor: yüksek risk ya da kötü amaçlı site"
+        ],
+        "normal": [
+          "Sitenin söylediğinden yaklaşık 0.5% daha az alırsınız: bu normal; bu havuz önce bir ücret hesaplar ve sitenin tahmini bunu dışarıda bırakır",
+          "Cüzdan yalnızca ilk ve son karakterleri gösteriyorsa onları karşılaştırın; yapabiliyorsanız tamamını görmek için ayrıntıları açın",
+          "Sayfa dönüp Waiting For Confirmation yazıyor: cüzdanda onaylamanızı bekliyor",
+          "Onayladıktan sonra Face ID, parmak izi ya da şifreniz gerekir"
+        ]
+      },
+      "situations": {
+        "fail": { "see": "Kırmızı bir Error: This transaction would fail", "do": "Paranız hareket etmedi. Büyük ihtimalle kayma hâlâ 0.5%: × işaretine dokunun, çekim sayfasının sol üstündeki geri okuyla listeye dönün, 3. adımdaki gibi 1% ayarlayın ve yeniden çekin (yeniden imzalamanız gerekir). Zaten 1% mi? Sağ üstteki “Takıldınız mı?” düğmesine dokunun." },
+        "rejected": { "see": "Yanlışlıkla “Reject” düğmesine dokundum", "do": "Paranız hareket etmedi. **Confirm** düğmesine yeniden dokunun." },
+        "spinning": { "see": "Onayladım ve dönüp duruyor", "do": "Bir dakika bekleyin ve yeniden dokunmayın. Sonra sağ üstteki “Takıldınız mı?” düğmesine dokunun: zincirde son birkaç dakikadaki çekimleri kontrol ederiz." },
+        "low-gas": { "see": "Ücretin ya da bakiyenin yetmediğini söylüyor", "do": "Ücret için X Layer ağında biraz OKB gerekir ($0.01 altında). Önce bu adrese X Layer ağında biraz OKB gönderin (0.001 fazlasıyla yeter), sonra geri gelin." },
+        "wrong-to": { "see": "Etkileşim adresi 0x1E690F24…FC04c46036 değil", "do": "Hemen “Reject” (Reddet) düğmesine dokunun." },
+        "send-out": { "see": "Sizden OKB ya da USDT göndermeniz isteniyor", "do": "Hemen “Reject” (Reddet) düğmesine dokunun. Çekim, para aldığınız anlamına gelir; bu tokenları siz göndermezsiniz." }
+      }
+    },
+    "arrive": {
+      "title": "Ulaştığını kontrol edin",
+      "milestone": "Ulaştı",
+      "images": [
+        "① Cüzdanın ana ekranına dönünce (altta OKX simgesi) token sekmesine dokunun: OKB'niz arttı ve USDT'niz geri geldi. Resimdeki bakiyeler gizlendi",
+        "② Son olarak, o sıradaki son sekme olan onaylar sekmesine dokunun, DYORSwap için verilen USDT onayını (0x1E69…6036) bulun ve iptal edin. Bu onayı likidite eklerken vermiştiniz ve artık gerekmiyor. İptal küçük bir ücret tutar; paranız her iki durumda da güvende"
+      ],
+      "check": {
+        "title": "Ulaştığını kontrol edin",
+        "rows": [
+          ["Ne kadar sürer", "Onayladıktan birkaç saniye sonra"],
+          ["Nereye bakmalı", "OKX uygulamasında cüzdan ana ekranı → OKB ve USDT → işlem geçmişi"],
+          ["Ne görmelisiniz", "{{got}} kadar artış"],
+          ["Zincirde", "DYORSwap yönlendirici sözleşmesi 0x1E69…6036 adresinden gelir, kendi adresinize ulaşır"],
+          ["Ulaşmadıysa", "Sağ üstteki “Takıldınız mı?” düğmesine dokunun: zincirde son birkaç dakikadaki çekimleri kontrol ederiz"]
+        ],
+        "foot": "Ulaştığında işiniz biter. WOKB değil, OKB'nin kendisini alırsınız (X Layer ağının yerel tokenı)"
+      },
+      "situations": {
+        "not-wokb": { "see": "Bu OKB mi, WOKB mi?", "do": "WOKB değil, OKB'nin kendisi (X Layer ağının yerel tokenı)." },
+        "old-usdt": { "see": "Bu hangi USDT?", "do": "Bu, X Layer ağındaki eski USDT (USDT_Bridged); OKX bunu aşamalı olarak kullanımdan kaldırıyor. Yeni USDT0'a geçmek için OKX borsasına yatırıp yeniden çekin." },
+        "less": { "see": "Sitenin söylediğinden biraz az geldi", "do": "Bu normal: yaklaşık 0.5% daha az. Bu havuz önce bir ücret hesaplar ve sitenin tahmini bunu dışarıda bırakır." },
+        "no-approval": { "see": "Bu onayı bulamıyorum", "do": "Cüzdanın listesi her zaman eksiksiz değildir; yani bu, onayın kalktığını kanıtlamaz. Sağ üstteki “Takıldınız mı?” düğmesine dokunun: canlı kontrol zinciri okur ve onayın hâlâ geçerli olup olmadığını söyler. Kalkmışsa yapacak bir şey yok." }
+      }
+    }
+  },
+  "sources": [
+    "OKX blok gezgini · DYORSwap yönlendirici sözleşmesi (doğrulanmış kaynak kod)",
+    "OKX blok gezgini · USDT/OKB havuzu (DYOR LPs)",
+    "DYORSwap · havuz bulma sayfası"
+  ]
+}
