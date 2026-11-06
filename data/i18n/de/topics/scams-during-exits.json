@@ -1,0 +1,102 @@
+{
+  "title": "Die häufigsten Betrugsmaschen bei Abschaltungen und Migrationen",
+  "summary": "Die üblichen sind „Support“-Leute, die dir zuerst schreiben, gefälschte Migrations- oder Airdrop-Seiten, Freigabe- („Approve“) oder Signaturanfragen, mit denen jemand deine Token nehmen kann, und bezahlte „Rückhol“-Dienste. Eine Regel stoppt die meisten: Echte Projekte schreiben dir nicht zuerst per Direktnachricht, fragen nie nach deiner Seed-Phrase oder deinen privaten Schlüsseln und verlangen nie, dass du zuerst Geld schickst – und vertrauen kannst du nur Links, die der offizielle Account selbst gepostet hat, und der offiziellen Website.",
+  "sections": [
+    {
+      "h": "Warum Betrug gerade dann zunimmt",
+      "p": [
+        "Abschaltungen und Migrationen kommen mit Fristen, und viele bitten in Eile öffentlich um Hilfe. Laut ethereum.org durchsuchen Support-Betrüger öffentliche Kanäle nach Leuten, die Fragen stellen, und schicken ihnen dann eine private Nachricht mit einem Hilfsangebot – mit dem Ziel, an deine privaten Schlüssel oder dein Geld zu kommen.",
+        "Auch MetaMask nennt Zeitdruck rund um Fristen als typisches Zeichen einer bösartigen Freigabeanfrage. Je näher die Frist, desto langsamer solltest du vorgehen."
+      ],
+      "list": []
+    },
+    {
+      "h": "Die häufigsten Betrugsmaschen",
+      "p": [
+        "Vor jeder davon hat ein Projekt oder ein Wallet-Anbieter öffentlich gewarnt."
+      ],
+      "list": [
+        "„Support“, der dich findet: Du erwähnst ein Problem auf X, Discord oder Telegram, und jemand schreibt dir per Direktnachricht, er sei der offizielle Support, oder antwortet mit einem „Hilfe“-Link. Laut Horizen schreibt sein Team dir nie zuerst; laut MetaMask schreibt MetaMask dir nie per Direktnachricht, um Support anzubieten, hat keinen Telefon-Support und kontaktiert dich nie auf X zu einem Support-Fall.",
+        "Gefälschte Migrations- und Airdrop-Seiten, die wie die echten aussehen. Sophon warnte: „Nutze nur offizielle Sophon-Links und hüte dich vor gefälschten Migrationsseiten.“ Abstract warnte vor Identitätsbetrug, gefälschten Migrationsseiten und Direktnachrichten, die angeblich in seinem Namen kommen. Die Sophon-Doku ergänzt: Folge nie einem unaufgeforderten Link zum Abholen, zur Migration oder zum Token-Tausch.",
+        "„Freigeben zum Entsperren / Migrieren“: Eine Freigabe erlaubt einer Website oder einem Contract, einen bestimmten Token aus deiner Wallet zu bewegen, und eine gasfreie Signatur wie ein Permit kann dasselbe. Der Rat von MetaMask: Prüf genau, was eine Website verlangt, bevor du freigibst, und begrenze den Betrag, wo du kannst; wenn eine Website verlangt, dass du alle deine NFTs freigibst, um einen Airdrop zu bekommen, fall nicht darauf herein – um etwas zu empfangen, solltest du diese Art Freigabe nicht brauchen.",
+        "Token oder NFTs, die du nie angefordert hast, mit einer Nachricht, die dich auf eine Website schickt, um sie abzuholen. MetaMask nennt das einen häufigen Airdrop-Betrug: Die Website ist höchstwahrscheinlich hinter deiner Seed-Phrase oder einer Freigabe her, also interagiere nicht damit; blende sie aus. ethereum.org ergänzt, dass solche Websites dich bitten, deine Wallet zu verbinden und eine Transaktion „freizugeben“, die deine Assets an den Betrüger übergibt.",
+        "Bezahlte „Rückholung“: Jemand behauptet, er könne dein gestohlenes oder festsitzendes Geld zurückholen – gegen eine Gebühr vorab. Das FBI warnt, dass solche Anbieter in sozialen Medien, in Kommentarspalten und in Suchergebnissen auftauchen; sie kassieren eine erste Zahlung und verschwinden oder liefern einen unvollständigen oder falschen „Tracing-Bericht“ und verlangen mehr. Manche geben sich als Anwaltskanzleien oder Behörden aus. Private Firmen können keine Beschlagnahmeanordnungen erlassen, und Strafverfolgungsbehörden verlangen von Opfern kein Geld für Ermittlungen."
+      ]
+    },
+    {
+      "h": "So prüfst du einen Link",
+      "p": [
+        "Ein Betrugslink kann genauso aussehen wie der echte, beurteile ihn also danach, woher er kommt."
+      ],
+      "list": [
+        "Nimm Links nur aus Beiträgen des offiziellen Accounts selbst, oder klick dich von der offiziellen Startseite aus durch. Der Rat von Abstract: Nutze nur den offiziellen Link und gleiche ihn auf Discord und anderen offiziellen Kanälen ab.",
+        "Prüf den Account selbst: Achte darauf, dass das @Handle mit dem auf der offiziellen Website übereinstimmt, statt dich nach Bild und Anzeigenamen zu richten.",
+        "Nutze keine Links aus Suchergebnissen, Anzeigen, Kommentarspalten oder Direktnachrichten. Das FBI weist darauf hin, dass gefälschte Rückhol-Dienste in Kommentarspalten und Suchergebnissen auftauchen.",
+        "Prüf noch einmal im Wallet-Pop-up: Laut MetaMask zeigt die Freigabeanfrage oben Namen und Webadresse der Website, damit du bestätigen kannst, dass es die Website ist, die du nutzen wolltest. Sieh dann nach, ob der Schritt eine Überweisung, eine Freigabe oder eine Signatur ist.",
+        "Wenn du nicht erkennen kannst, was das Pop-up tut, bestätige es nicht; frag zuerst im offiziellen Discord nach."
+      ]
+    },
+    {
+      "h": "Was seriöse Projekte nicht tun",
+      "p": [
+        "Wenn dir eines davon begegnet, kannst du sofort aufhören."
+      ],
+      "list": [
+        "Dir zuerst eine Direktnachricht schreiben. (Horizen: Sein Team schreibt dir nie zuerst. MetaMask: Es schreibt dir nie per Direktnachricht, um Support anzubieten.)",
+        "Nach deiner Seed-Phrase, deinen privaten Schlüsseln oder deinem Passwort fragen. Laut ethereum.org wird kein seriöser Dienst, kein Support-Mitarbeiter und keine seriöse Website je danach fragen; laut MetaMask musst du deine Seed-Phrase nur beim Erstellen und beim Wiederherstellen einer Wallet eingeben.",
+        "Verlangen, dass du ihnen dein Geld schickst. (Horizen: „Wir werden dich nie bitten, uns dein Geld zu schicken.“)",
+        "Dich anrufen oder Fernzugriff auf deinen Computer verlangen. (MetaMask hat keinen Telefon-Support. ethereum.org: Erlaube niemals jemandem Fernzugriff auf deinen Computer.)",
+        "Eine Gebühr verlangen, um dein Geld zu „beschleunigen“, „freizuschalten“ oder „zurückzuholen“.",
+        "DeFiExit bittet deine Wallet nur, ihre Adresse zu teilen – es fordert dich nie auf, etwas zu signieren, freizugeben oder zu senden, und wir schreiben dir nie zuerst."
+      ]
+    },
+    {
+      "h": "Wenn du schon geklickt oder signiert hast",
+      "p": [
+        "Je schneller du handelst, desto größer die Chance, den Schaden zu begrenzen."
+      ],
+      "list": [
+        "Wenn du einer verdächtigen Website eine Freigabe gegeben hast: Laut MetaMask solltest du die Freigabe so schnell wie möglich widerrufen (zum Beispiel in MetaMask Portfolio prüfen und widerrufen), bevor Geld abgezogen wird. Ist die Wallet erst einmal leergeräumt, kannst du kaum noch etwas tun.",
+        "Wenn deine Seed-Phrase oder dein privater Schlüssel durchgesickert ist oder Transaktionen auftauchen, die du nicht gemacht hast: MetaMask rät, sofort eine neue Wallet anzulegen, den Rest dorthin zu verschieben und die alte aufzugeben; vermutest du ein Sweeper-Skript, schick kein weiteres Gas an die alte Wallet.",
+        "Transaktionen auf der Blockchain lassen sich nicht rückgängig machen. Bewahre die Transaktionsnachweise auf und erstatte Anzeige bei der Polizei; in den USA kannst du es dem IC3 des FBI melden.",
+        "Rechne damit, dass dir Leute per Direktnachricht anbieten, das Geld zurückzuholen. Das ist der Folgebetrug, vor dem das FBI warnt; gib ihnen weder Geld noch persönliche Daten."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Ein „offizieller Support“-Account hat mir per Direktnachricht angeboten, mein festsitzendes Geld rauszuholen. Ist das echt?",
+      "a": "Fast sicher ein Betrug. Horizen erklärt, sein Team schreibe dir nie zuerst, und MetaMask sagt, es schreibe dir nie per Direktnachricht, um Support anzubieten. Antworte nicht und klick auf nichts; frag selbst über die offiziellen Kanäle, die auf der Website des Projekts stehen, etwa ein Ticket im offiziellen Discord."
+    },
+    {
+      "q": "Eine Migrationsseite will, dass ich meine Wallet verbinde und etwas signiere. Soll ich das tun?",
+      "a": "Prüf zuerst, dass der Link aus einem Beitrag des offiziellen Accounts selbst stammt. Lies dann das Wallet-Pop-up: Ist es eine einfache Auszahlung oder Überweisung, oder eine Freigabe („Approve“) oder eine Permit-Signatur? Freigaben und Permits erlauben jemand anderem, deine Token zu bewegen; ist eine davon wirklich nötig, gib nur für den im offiziellen Leitfaden genannten Contract frei und nur den Betrag, den du nutzt. Wenn du das Pop-up nicht verstehst, signiere nicht; frag zuerst im offiziellen Discord nach."
+    },
+    {
+      "q": "In meiner Wallet sind Token aufgetaucht, die ich nie gekauft habe, mit einer Nachricht, eine Website zu besuchen.",
+      "a": "Lass die Finger davon. MetaMask beschreibt das als häufigen Airdrop-Betrug: Wenn du sie „abholen“ willst, ist das, was du signierst, womöglich eine Freigabe, mit der sie deine Token nehmen können, oder du wirst dazu gebracht, deine Seed-Phrase einzutippen. Ignorier sie und blende sie aus."
+    },
+    {
+      "q": "Jemand sagt, er könne meine gestohlenen Kryptowerte gegen eine Gebühr zurückholen.",
+      "a": "Genau davor hat das FBI gewarnt: Sie kassieren eine Gebühr vorab und verschwinden oder legen einen unvollständigen oder falschen „Tracing-Bericht“ vor und verlangen mehr. Private Firmen können keine Beschlagnahmeanordnungen erlassen, um Kryptowährungen zurückzuholen, und Strafverfolgungsbehörden verlangen von Opfern kein Geld für Ermittlungen. Gib ihnen weder Geld noch persönliche Daten."
+    },
+    {
+      "q": "Wie erkenne ich, ob ein Link offiziell ist?",
+      "a": "Vertrau nur zwei Stellen: Beiträgen des offiziellen Accounts selbst und der offiziellen Startseite. Abstract rät, nur den offiziellen Link zu nutzen und ihn auf Discord und anderen offiziellen Kanälen abzugleichen. Links in Antworten, Direktnachrichten oder Suchanzeigen zählen nicht, so identisch sie auch aussehen."
+    }
+  ],
+  "sources": [
+    "Sophon auf X: nur offizielle Links nutzen, Vorsicht vor gefälschten Migrationsseiten (19. Oktober 2026)",
+    "Sophon-Doku: FAQ zu Auszahlungen (nie unaufgeforderten Links folgen)",
+    "Abstract auf X: „Abstract is Winding Down“ (Identitätsbetrug, gefälschte Migrationsseiten, Direktnachrichten; 6. Oktober 2026)",
+    "Horizen-Blog: Sicherheitshinweis (schreibt nie zuerst, fragt nie nach Schlüsseln oder Geld; 23. Oktober 2026)",
+    "MetaMask-Support: „Basic security tips“ (Seed-Phrase, private Schlüssel)",
+    "MetaMask-Support: „Official support channels“ (keine Direktnachrichten, kein Telefon, kein Kontakt auf X)",
+    "MetaMask-Support: „What is a token approval?“ (Permits, bösartige Freigaben, Widerrufen)",
+    "MetaMask-Support: „Avoid scammers, rug pulls and airdrop scams“",
+    "MetaMask-Support: „I've been hacked or scammed“",
+    "ethereum.org: „Security and scam prevention“ (Support-Betrug, Airdrop-Betrug)",
+    "Öffentliche Warnung des FBI-IC3: Firmen, die fälschlich behaupten, verlorene Kryptowerte zurückzuholen (11. August 2023)",
+    "Öffentliche Warnung des FBI-IC3: fiktive Anwaltskanzleien, die anbieten, Geld zurückzuholen (13. August 2025)"
+  ]
+}
