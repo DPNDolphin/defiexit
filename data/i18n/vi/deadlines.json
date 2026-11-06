@@ -374,5 +374,172 @@
     "todo": "Số dư từ 10 BB trở lên đã tự động về; hãy kiểm tra cùng địa chỉ trên BNB Chain. Với số dư dưới 10 BB, hãy dùng địa chỉ gốc của bạn tại `portal.bouncebit.io`.",
     "caution": "Chuỗi dừng vì một vụ khai thác lỗ hổng, nên chỉ dùng các lối vào chính thức. BounceBit cho biết sẽ không bao giờ nhắn tin riêng cho bạn trước. Các bài đăng của BounceBit không nói điều gì xảy ra với các tài sản khác trên chuỗi, như BBTC.",
     "official": ["BounceBit trên X: đã hoàn tất phân phối (3/9)", "BounceBit trên X: số dư nhỏ (3/9)", "BounceBit trên X: lịch trình (31/8)"]
+  },
+  "aster-apollox-offline": {
+    "name": "Aster: trang web và API ApolloX ngừng hoạt động",
+    "summary": "Aster đang đóng trang web và API cũ của ApolloX, hoàn tất vào khoảng ngày 5/11. Nếu bạn vẫn còn số dư hoặc vị thế ở đó, hãy đóng vị thế và rút tiền ngay.",
+    "deadlineNote": "Từ 10:00 UTC ngày 3/11, Aster bắt đầu dừng các hợp đồng APX cũ và cho biết việc này mất khoảng 48 giờ, tức là kết thúc vào khoảng 10:00 UTC ngày 5/11. Trang web apollox.finance và API ngừng hoạt động cùng lúc.",
+    "who": "Những ai vẫn còn số dư hoặc vị thế đang mở trên ApolloX (`apollox.finance`).",
+    "todo": "Đóng các vị thế và rút về ví của chính bạn. Nếu gặp sự cố, Aster đề nghị liên hệ bộ phận hỗ trợ của họ trên Discord.",
+    "caution": "Aster chưa nói liệu sau khi hoàn tất việc dừng, các hợp đồng còn dùng trực tiếp được hay không.",
+    "official": ["Aster trên X: bài đăng về việc dừng hoạt động ngày 3/11"]
+  },
+  "lisk-chain-closed": {
+    "name": "Chuỗi Lisk đã đóng cửa",
+    "summary": "Chuỗi Lisk đã đóng cửa vào ngày 2/11. Các lệnh rút đang dở dang lúc đóng cửa được ghi có trên Ethereum; với tiền còn lại trên chuỗi, Lisk cho biết sẽ có một quy trình mở vào tháng 1/2027.",
+    "deadlineNote": "Ban đầu chuỗi dự kiến đóng vào ngày 31/10; ngày cuối thực tế là 2/11. Ngày 24/10 là ngày cuối cùng để bắt đầu chuyển qua cầu nối (cầu nối mất khoảng 8 ngày). Lisk cho biết một hợp đồng riêng cho tiền còn lại trên chuỗi sẽ có vào tháng 1/2027.",
+    "who": "Những ai vẫn còn tài sản trên Lisk lúc đóng cửa, hoặc có lệnh rút đang dở dang.",
+    "todo": "Lisk cho biết các lệnh rút đang dở dang lúc đóng cửa sẽ được ghi có thẳng vào địa chỉ đích trên Ethereum. Với tiền còn lại trên chuỗi, hãy chờ quy trình chính thức vào tháng 1/2027; hiện chưa cần làm gì.",
+    "caution": "Lisk cho biết sẽ không bao giờ liên hệ bạn để đề nghị giúp lấy lại tiền, và không bao giờ hỏi cụm từ khôi phục của bạn. Khoảng 5.2 triệu LSK trong hợp đồng phần thưởng staking (gồm cả phần thưởng đã kiếm được nhưng chưa nhận) sẽ bị hủy; LSK do người dùng tự stake thì không.",
+    "official": ["Blog Lisk: chuỗi Lisk đã đóng cửa", "Lisk trên X: quy trình tháng 1 (3/11)", "Lisk trên X: lời nhắc ngày cuối (1/11)", "Blog Lisk: giới thiệu Lisk mới"]
+  },
+  "stratex-vaults": {
+    "name": "Các vault StratEx (trên QuickSwap) đã đóng",
+    "summary": "Các vault của StratEx đã đóng, và StratEx cho biết đã gửi trả tiền cho tất cả những ai chưa rút vào ngày 3/11. Hãy kiểm tra ví xem tiền đã về chưa.",
+    "deadlineNote": "Việc rút thủ công đã dừng vào ngày 1/11. Ngày 3/11, StratEx cho biết đã gửi trả tiền cho tất cả những ai chưa rút.",
+    "who": "Những ai có tiền trong các vault StratEx và chưa rút trước ngày 1/11.",
+    "todo": "Kiểm tra ví của bạn xem khoản tiền được trả đã về chưa.",
+    "official": ["StratEx trên X: đã trả tiền (3/11)", "StratEx trên X: hạn chót rút tiền (21/10)", "StratEx trên X: thông báo cuối cùng (17/9)"]
+  },
+  "lista-cdp-winddown": {
+    "name": "Lista DAO: Lista CDP đã đóng, chuyển sang Lista Lending",
+    "summary": "Lista CDP đã đóng. Lista cho biết các vị thế trong những thị trường được hỗ trợ đã tự động chuyển sang Lista Lending, không cần làm gì. Hãy kiểm tra xem vị thế của bạn có nằm trong thị trường được hỗ trợ không.",
+    "deadlineNote": "Từ ngày 30/9 đến 31/10, có thể chuyển hoặc trả các vị thế. Ngày 1 và 2/11, Lista cho biết các vị thế trong những thị trường được hỗ trợ đã được tự động chuyển.",
+    "who": "Những ai có vị thế trong Lista CDP.",
+    "todo": "Ngày 2/11, Lista cho biết tất cả các thị trường được hỗ trợ đã tự động chuyển sang Lista Lending, không cần làm gì. Hãy kiểm tra vị thế của bạn có nằm trong thị trường được hỗ trợ không.",
+    "caution": "Lista chưa nói điều gì xảy ra với vị thế trong các thị trường không được hỗ trợ.",
+    "official": ["Blog Lista: cần làm gì trước khi CDP đóng", "Lista trên X: không cần làm gì (2/11)", "Lista trên X: đã hoàn tất chuyển đổi (1/11)", "Lista trên X: thông báo ngày 1/10"]
+  },
+  "kyan-exchange": {
+    "name": "Sàn Kyan (trước đây là Premia) đã đóng",
+    "summary": "Kyan (trước đây là Premia) đã ngừng hoạt động, và số dư phải được rút chậm nhất ngày 31/10. Nếu không rút được, Kyan đề nghị hỏi trên Discord của họ.",
+    "deadlineNote": "Thông báo ngày 19/10: rút số dư \"trước cuối tháng\", tức là chậm nhất ngày 31/10.",
+    "who": "Những ai còn số dư trên Kyan.",
+    "todo": "Nếu không rút được, hãy vào kênh #support trên Discord chính thức của Kyan, nơi đội ngũ xử lý thủ công.",
+    "official": ["Kyan trên X: bài đăng ngừng hoạt động ngày 19/10"]
+  },
+  "stargate-hydra-chains": {
+    "name": "Stargate v2 và Hydra ngừng hỗ trợ một loạt chuỗi ít hoạt động",
+    "summary": "Stargate v2 và Hydra đã ngừng hỗ trợ một loạt chuỗi ít hoạt động; nhóm cuối cùng dừng vào ngày 23/10.",
+    "deadlineNote": "Khoảng ngày 20/9, tài sản Hydra đã dừng trên một loạt chuỗi (gồm Sophon, Silicon, Arbitrum Nova, Degen và Superposition). Aurora, Taiko, LightLink và Gnosis dừng vào ngày 23/9, còn Gravity, Camp, GOAT và Metis vào ngày 23/10.",
+    "who": "Nhà cung cấp thanh khoản trong các pool Stargate trên những chuỗi này, và người nắm giữ USDC.e hoặc USDT của Hydra.",
+    "todo": "Trước mỗi hạn chót, nhà cung cấp thanh khoản (kể cả pool ETH) cần rút ra, và người nắm giữ USDC.e và USDT của Hydra cần chuyển qua cầu nối sang một pool Stargate để quy đổi.",
+    "caution": "Các bài đăng của Stargate không nói liệu tài sản Hydra còn quy đổi được sau hạn chót hay không.",
+    "official": ["Stargate trên X: lời nhắc ngày 25/9", "Stargate trên X: lời nhắc ngày 10/9", "Stargate trên X: thông báo ngày 21/8"]
+  },
+  "stargate-metis-pools": {
+    "name": "Stargate trên Metis: thanh khoản trong pool V1 và V2 phải rút trước ngày 23/10",
+    "summary": "Stargate ngừng hỗ trợ Metis vào ngày 23/10, và thanh khoản trong các pool V1 và V2 ở đó phải được rút trước đó. Metis cảnh báo phần còn lại có thể khó hoặc không thể rút qua giao diện thông thường.",
+    "deadlineNote": "Stargate ngừng hỗ trợ Metis Andromeda vào ngày 23/10, và DVN cùng Executor của LayerZero Labs ngừng phục vụ Metis vào ngày 30/10. Các pool bị ảnh hưởng: pool USDT, ETH và METIS trên Stargate V2, và pool USDT, METIS và MAI trên Stargate V1.",
+    "who": "Nhà cung cấp thanh khoản trong các pool Stargate V1 và V2 trên Metis, và những ai đã chuyển METIS, HERA, QI hoặc MTVT sang chuỗi khác qua LayerZero V1.",
+    "todo": "Trước hạn chót: hủy stake token LP nếu đã stake, rồi rút thanh khoản trong ứng dụng Stargate, và chuyển METIS, HERA, QI hoặc MTVT đã ra ngoài qua LayerZero V1 về lại Metis theo đúng tuyến đó. Nếu bạn đã lỡ hạn, Metis đề nghị liên hệ đội ngũ Metis.",
+    "caution": "Metis cho biết thanh khoản còn lại trong các pool Stargate trên Metis sau hạn chót có thể khó hoặc không thể rút qua giao diện Stargate thông thường. m.USDC, m.USDT, WETH và METIS do cầu nối chính thức (canonical) của Metis phát hành không bị ảnh hưởng.",
+    "official": ["Blog Metis: Stargate ngừng hoạt động và các thay đổi của LayerZero trên Metis Andromeda"]
+  },
+  "mint-blockchain-shutdown": {
+    "name": "Mint Blockchain đã đóng cửa",
+    "summary": "Mint Blockchain đã đóng cửa; hạn chót là ngày 20/10. Trang rút tiền chính thức chỉ hỗ trợ đưa ETH, WBTC, USDC và USDT về Ethereum.",
+    "deadlineNote": "Hạn chót là ngày 20/10.",
+    "who": "Những ai có tài sản trên chuỗi Mint.",
+    "todo": "Trang chính thức `mintchain.io/withdraw` chỉ hỗ trợ rút ETH, WBTC, USDC và USDT về Ethereum (thông báo của imToken cho biết các lệnh rút được xử lý hằng tuần và về sau khoảng 10 ngày).",
+    "caution": "Mint chưa nói liệu sau hạn chót còn làm được gì khác không.",
+    "official": ["Trang rút tiền của Mint"]
+  },
+  "coinex-csc-shutdown": {
+    "name": "CoinEx Smart Chain (CSC) và OneSwap đã đóng cửa",
+    "summary": "CoinEx đang ngừng hoạt động. Chuỗi CSC và OneSwap đã dừng vào ngày 29/9, và tiền trong tài khoản sàn phải được rút chậm nhất ngày 22/12.",
+    "deadlineNote": "CSC và OneSwap đã dừng vào ngày 29/9, và việc quy đổi qua cầu nối đóng cùng lúc. Việc rút tiền khỏi sàn CoinEx vẫn mở đến 10:00 UTC+8 ngày 22/12.",
+    "who": "Những ai có tài sản trên CSC hoặc OneSwap, và những ai còn tiền trong tài khoản sàn CoinEx.",
+    "todo": "Hạn chót trên chuỗi đã qua. Hãy rút tiền khỏi tài khoản sàn trước ngày 22/12. Sau đó, USDT được chuyển sang lưu ký riêng với phí lưu ký 5% mỗi tháng; để nhận lại, hãy gửi email đến support@coinex.com chậm nhất ngày 22/8/2028.",
+    "caution": "CoinEx cho biết đây là thông báo cuối cùng của họ, và mọi \"thông báo mới\" mang danh CoinEx sau thời điểm này đều là giả.",
+    "official": ["Thông báo của CoinEx"]
+  },
+  "awe-stpt-migration": {
+    "name": "AWE Network: đổi STPT sang AWE (chuyển sang Base)",
+    "summary": "Việc đổi STPT trên Ethereum lấy AWE trên Base đã đóng vào ngày 21/9, và AWE cho biết không thể đổi muộn.",
+    "deadlineNote": "Hạn chót là ngày 21/9. AWE cho biết khoảng 99% đã được chuyển đổi.",
+    "who": "Những ai vẫn còn nắm giữ STPT.",
+    "todo": "AWE cho biết không thể đổi muộn. Số token chưa được đổi sẽ được xử lý thế nào do một đề xuất quản trị cộng đồng quyết định.",
+    "official": ["Blog AWE: thời hạn chuyển đổi sắp đóng"]
+  },
+  "tether-alloy": {
+    "name": "Tether: Alloy by Tether và aUSD₮ đã ngừng hoạt động",
+    "summary": "Alloy by Tether và aUSD₮ đã ngừng hoạt động vào ngày 17/9. Trước đó, người dùng phải trả lại aUSD₮ và lấy lại tài sản thế chấp XAU₮.",
+    "deadlineNote": "Hạn chót là ngày 17/9.",
+    "who": "Những ai đã dùng XAU₮ làm tài sản thế chấp trên Alloy để đúc aUSD₮.",
+    "todo": "Trước hạn chót, người dùng phải trả lại aUSD₮ và lấy lại tài sản thế chấp XAU₮. Tether cho biết việc này không còn thực hiện được qua nền tảng nữa.",
+    "caution": "Tether chưa nói điều gì xảy ra với tài sản thế chấp sau hạn chót.",
+    "official": ["Thông báo của Tether"]
+  },
+  "trust-wallet-networks": {
+    "name": "Trust Wallet ngừng hỗ trợ 24 mạng",
+    "summary": "Từ ngày 15/9, Trust Wallet không còn hiển thị 24 mạng, nhưng tài sản vẫn nằm trên chuỗi. Với chuỗi EVM, bạn có thể tự thêm mạng đó dưới dạng mạng tùy chỉnh.",
+    "deadlineNote": "Ngày 15/9, các mạng này biến mất khỏi danh sách của ví; Trust Handle đã dừng trước đó, vào ngày 7/9.",
+    "who": "Người dùng Trust Wallet có tài sản trên các mạng này: 15 chuỗi EVM liệt kê ở trên và 9 chuỗi không phải EVM.",
+    "todo": "Tài sản của bạn vẫn nằm trên chuỗi. Với chuỗi EVM, hãy tự thêm mạng dưới dạng mạng tùy chỉnh bằng một RPC đã được xác minh. Với chuỗi không phải EVM, hãy nhập ví của bạn vào một ví khác có hỗ trợ chuỗi đó.",
+    "caution": "Chỉ dùng RPC từ tài liệu chính thức của chuỗi. Chỉ tự tay nhập cụm từ khôi phục bên trong một ứng dụng ví uy tín, không bao giờ nhập trên trang web.",
+    "official": ["Blog Trust Wallet"]
+  },
+  "vanar-vanry-migration": {
+    "name": "Vanar: VANRY chuyển sang Base",
+    "summary": "Thời hạn chuyển VANRY sang Base đã đóng vào ngày 10/9, và trang của Vanar cho biết sẽ không xử lý thêm lần chuyển đổi nào nữa.",
+    "deadlineNote": "Thời gian đổi kéo dài từ 13:00 UTC ngày 11/8 đến 13:00 UTC ngày 10/9. Các token vẫn đang trong quá trình hủy stake đã được airdrop trên Base vào ngày 11/9.",
+    "who": "Những ai nắm giữ VANRY trên Ethereum, Polygon hoặc Vanar Chain.",
+    "todo": "Trang của Vanar cho biết không có chuyển đổi nào sau khi thời hạn đóng. Nếu bạn đã bắt đầu hủy stake trước ngày 10/9 mà chưa nhận được token, hãy gửi email cho Vanar.",
+    "official": ["Trang đổi token của Vanar"]
+  },
+  "superposition-shutdown": {
+    "name": "Chuỗi Superposition đã đóng cửa, quay về Arbitrum One",
+    "summary": "Chuỗi Superposition đã đóng cửa vào ngày 8/9. Superposition cho biết tài sản còn lại trên chuỗi sau đó \"có thể không còn truy cập được\".",
+    "deadlineNote": "Chuỗi đã đóng cửa vào ngày 8/9.",
+    "who": "Những ai vẫn còn tài sản trên Superposition khi chuỗi đóng cửa.",
+    "todo": "Trước hạn chót, người dùng phải thoát khỏi Camelot và các vị thế khác, rồi chuyển về Arbitrum One qua cầu nối gốc của Arbitrum hoặc Relay.",
+    "caution": "Tính đến ngày 5/11, chưa có phương án dự phòng chính thức nào được công bố.",
+    "official": ["Superposition trên X: thông báo ngày 4/8"]
+  },
+  "arbitrum-nova-maintenance": {
+    "name": "Arbitrum Nova ở chế độ bảo trì (không đóng cửa)",
+    "summary": "Từ ngày 2/9, Arbitrum Nova ở chế độ bảo trì, không phải đóng cửa. Khuyến nghị là chuyển sang Arbitrum One qua cầu nối chính thức.",
+    "deadlineNote": "Thời gian chuyển đổi kéo dài từ ngày 4/6 đến ngày 2/9. Từ ngày 2/9, chuỗi chỉ còn được bảo trì, và việc truy cập RPC bị hạn chế hơn.",
+    "who": "Những ai có tài sản trên Arbitrum Nova, kể cả người nắm giữ MOON.",
+    "todo": "Chuyển sang Arbitrum One qua cầu nối chính thức Arbitrum Portal. Với số tiền lớn, hãy rút về Ethereum trước (có thời gian khiếu nại 7 ngày). MOON không có tuyến trực tiếp và phải về Ethereum trước.",
+    "caution": "Cầu nối chính thức vẫn hoạt động trong giai đoạn 3. Alchemy đã ngừng RPC cho Nova.",
+    "official": ["Diễn đàn Arbitrum: Câu hỏi thường gặp về Nova"]
+  },
+  "ton-old-bridge": {
+    "name": "Cầu nối TON cũ (bridge-v3.ton.org) đã đóng vĩnh viễn",
+    "summary": "Cầu nối TON cũ đã đóng vĩnh viễn vào ngày 1/9. Wrapped TON trên Ethereum và BSC, cùng jUSDT và jUSDC trên TON, cần được chuyển về qua cầu nối trước thời điểm đó.",
+    "deadlineNote": "Từ ngày 1/9, cầu nối cũ không còn xử lý bất kỳ giao dịch chuyển nào.",
+    "who": "Những ai nắm giữ Wrapped TON trên Ethereum hoặc BNB Chain, hoặc jUSDT, jUSDC và các token tương tự trên TON.",
+    "todo": "Trước hạn chót, Wrapped TON trên Ethereum và BSC phải được chuyển về TON qua cầu nối, còn jUSDT, jUSDC và các token tương tự trên TON thì chuyển về Ethereum.",
+    "caution": "Tính đến ngày 5/11, kênh chính thức chưa đăng phương án dự phòng nào.",
+    "official": ["Kênh Telegram chính thức TON Status"]
+  },
+  "dfk-chain-sunset": {
+    "name": "DeFi Kingdoms: DFK Chain ngừng hoạt động",
+    "summary": "DFK Chain được lên lịch ngừng hoạt động vào ngày 28/8 (đã qua). DeFi Kingdoms cho biết không thể chuyển đổi JEWEL hay các token không thuộc DFK như BTC, ETH, USDC và AVAX, nên người nắm giữ phải tự chuyển chúng ra qua cầu nối trước thời điểm đó.",
+    "deadlineNote": "Thông báo ngày 31/7, với ngày ngừng hoạt động được ấn định là 28/8.",
+    "who": "Những ai nắm giữ JEWEL, hoặc các token không thuộc DFK như BTC, ETH, USDC và AVAX, trên DFK Chain; nhà cung cấp thanh khoản ở đó; và người dùng ví thông minh.",
+    "todo": "Những gì DeFi Kingdoms yêu cầu: người dùng ví thông minh chuyển tài sản sang một ví thông thường trước khi chuyển qua cầu nối, và rút toàn bộ LP, kể cả pool gồm hai tài sản gốc của DFK. Lúc đó, đội ngũ cho biết JEWEL có thể chuyển qua cầu nối sang Avalanche C-Chain và việc chuyển đổi các tài sản gốc của DFK đang được chuẩn bị, chi tiết sẽ thông báo sau.",
+    "caution": "DeFi Kingdoms cho biết không thể chuyển đổi, đúc lại hay kiểm soát JEWEL hoặc các token không thuộc DFK. Thông báo ngày 31/7 không nói điều gì xảy ra với những token còn lại trên chuỗi sau ngày 28/8.",
+    "official": ["DeFi Kingdoms trên X: thông báo ngày 31/7", "DeFi Kingdoms trên X: những việc bạn cần làm"]
+  },
+  "moonbeam-glmr-base": {
+    "name": "Moonbeam: GLMR chuyển sang Base",
+    "summary": "Hạn chót chuyển GLMR sang Base đã qua vào ngày 31/7. Moonbeam đề nghị người nắm giữ rút tiền khỏi các giao thức trên chuỗi trước, rồi chuyển GLMR qua cầu nối sang Base theo tỷ lệ 1:1. Thông báo không nói điều gì xảy ra với GLMR chưa được chuyển.",
+    "deadlineNote": "Hạn chót là ngày 31/7 (không ghi giờ hay múi giờ). Moonbeam cho biết chuỗi vẫn tiếp tục chạy trong giai đoạn chuyển tiếp đến ngày 31/7, và khi chuỗi ngừng hoạt động, tiền còn lại trong các giao thức trên chuỗi \"có thể không còn truy cập được\". Thông báo không nói khi nào chuỗi dừng.",
+    "who": "Người nắm giữ GLMR trên Moonbeam và những ai có tiền trong các giao thức trên chuỗi đó (thanh khoản, cho vay, hợp đồng staking, v.v.). Với GLMR trên sàn, Moonbeam cho biết sàn sẽ tự động xử lý việc chuyển đổi.",
+    "todo": "Các bước là: rút tiền khỏi các giao thức trên chuỗi trước, rồi chuyển GLMR qua cầu nối sang Base theo tỷ lệ 1:1 trên trang chuyển đổi chính thức. Thông báo ngày 3/7 không nêu rõ việc chuyển đổi có còn khả dụng sau hạn chót hay không, cũng như token chưa được chuyển sẽ được xử lý thế nào.",
+    "caution": "Trang chuyển đổi chính thức là `migrate.portal.moonbeam.network`; thông báo ngày 3/7 không nói trang này còn dùng được sau hạn chót hay không. Hãy phớt lờ bất kỳ ai nhắn tin riêng đề nghị \"chuyển đổi muộn\".",
+    "official": ["Tin tức Moonbeam: \"Moonbeam Network Relaunches on Base\"", "Moonbeam trên X: thông báo ngày 3/7"]
+  },
+  "moonriver-movr-base": {
+    "name": "Moonriver: MOVR chuyển sang Base",
+    "summary": "Hạn chót chuyển MOVR sang Base đã qua vào ngày 31/7. Moonriver đề nghị người nắm giữ rút tiền khỏi các giao thức trên chuỗi trước, rồi chuyển MOVR qua cầu nối sang Base theo tỷ lệ 1:1 qua hai bước. Thông báo không nói điều gì xảy ra với MOVR chưa được chuyển.",
+    "deadlineNote": "Hạn chót là ngày 31/7 (không ghi giờ hay múi giờ). Moonriver cho biết khi chuỗi ngừng hoạt động, tiền còn lại trong các giao thức trên chuỗi \"có thể vĩnh viễn không truy cập được\". Thông báo không nói khi nào chuỗi dừng.",
+    "who": "Người nắm giữ MOVR trên Moonriver và những ai có tiền trong các giao thức trên chuỗi đó (thanh khoản, cho vay, hợp đồng staking, v.v.). Với MOVR trên sàn, Moonriver cho biết không cần làm gì; sàn sẽ tự động xử lý.",
+    "todo": "Các bước là: rút tiền khỏi các giao thức trên chuỗi trước, rồi chuyển qua cầu nối theo hai chặng trên trang chuyển đổi chính thức. MOVR đi từ Moonriver sang Moonbeam (dưới dạng xcMOVR), rồi cầu nối chuyển đổi biến nó thành MOVR trên Base, tỷ lệ 1:1, không mất phí. Thông báo ngày 7/7 không nói việc chuyển đổi có còn thực hiện được sau hạn chót hay không.",
+    "caution": "Trang chuyển đổi chính thức là `migrate.portal.moonbeam.network`, nơi cũng có thể xác minh các hợp đồng liên quan. Thông báo ngày 7/7 không nói cổng chuyển đổi còn dùng được sau hạn chót hay không. Hãy phớt lờ bất kỳ ai nhắn tin riêng đề nghị \"chuyển đổi muộn\".",
+    "official": ["Tin tức Moonbeam: \"MOVR is Migrating to Base\"", "Moonriver trên X: thông báo ngày 7/7"]
   }
 }
