@@ -441,5 +441,71 @@
     "official": [
       "Marinus sur X : annonce du 14 septembre"
     ]
+  },
+  "harmony-shutdown": {
+    "name": "Fermeture du mainnet d'Harmony, le ONE passe sur Ethereum",
+    "summary": "Le mainnet d'Harmony ferme et le ONE a été distribué par airdrop à la même adresse sur Ethereum d'après l'instantané du 10 septembre. Les anciens portefeuilles doivent signer pour confirmer, et l'explorateur de blocs ferme le 18 novembre.",
+    "deadlineNote": "L'instantané a été pris le 10 septembre à 14:00 UTC (date passée). Depuis le 2 octobre, le ONE ERC-20 est distribué par airdrop à la même adresse sur Ethereum. `explorer.harmony.one` ferme le 18 novembre (il s'agit des données de l'explorateur de blocs, pas d'une date limite pour les jetons).",
+    "who": "Toute personne qui détenait des ONE sur Harmony au moment de l'instantané, les utilisateurs d'anciens portefeuilles, et toute personne ayant besoin de données de l'explorateur de blocs antérieures à 2025.",
+    "todo": "Les soldes des portefeuilles ordinaires sont distribués automatiquement par airdrop à la même adresse sur Ethereum. Anciens portefeuilles : signez sur `migrate.country/confirm` (lien de la publication d'Harmony du 2 octobre). Si vous avez besoin de données de l'explorateur de blocs antérieures à 2025, exportez-les vous-même avant le 18 novembre.",
+    "caution": "Cela fait suite à une attaque par création frauduleuse de jetons (mint) en août 2026, et `bridge.harmony.one` est hors service depuis le 12 août. N'ouvrez `migrate.country` qu'à partir du lien des publications d'Harmony elles-mêmes. Harmony a indiqué que les fonds placés dans des multisigs, des pools de liquidité et des applications sur la blockchain devaient être retirés avant le 10 septembre (date passée).",
+    "official": [
+      "Harmony sur X : « Harmony to Migrate Its ONE Token »",
+      "Harmony sur X : airdrop (2 octobre)",
+      "Harmony sur X : fermeture de l'explorateur de blocs le 18 novembre"
+    ],
+    "milestones": [
+      "L'explorateur de blocs explorer.harmony.one ferme"
+    ]
+  },
+  "bouncebit-chain-retired": {
+    "name": "Chaîne BounceBit abandonnée, le BB réémis sur BNB Chain",
+    "summary": "Après une attaque, la chaîne BounceBit a été abandonnée et le BB réémis à 1:1 sur BNB Chain. Les soldes de 10 BB ou plus sont arrivés automatiquement ; les plus petits doivent être collectés sur le portail officiel.",
+    "deadlineNote": "À partir du 1er septembre à 06:00 UTC, le BB a été envoyé à 1:1 à la même adresse sur BNB Chain, d'après un instantané antérieur à l'attaque. Le 3 septembre, BounceBit a annoncé que la distribution était terminée. Aucune date limite n'a été donnée pour les soldes de moins de 10 BB.",
+    "who": "Toute personne qui détenait des BB sur la chaîne BounceBit au moment de l'instantané, en particulier avec un solde de moins de 10 BB.",
+    "todo": "Les soldes de 10 BB ou plus sont arrivés automatiquement ; vérifiez la même adresse sur BNB Chain. Pour moins de 10 BB, utilisez votre adresse d'origine sur `portal.bouncebit.io`.",
+    "caution": "La chaîne s'est arrêtée à cause d'une attaque : n'utilisez donc que les points d'entrée officiels. BounceBit indique qu'il ne vous écrira jamais en premier en privé. Ses publications ne disent pas ce qu'il advient des autres actifs de la chaîne, comme le BBTC.",
+    "official": [
+      "BounceBit sur X : distribution terminée (3 septembre)",
+      "BounceBit sur X : petits soldes (3 septembre)",
+      "BounceBit sur X : calendrier (31 août)"
+    ]
+  },
+  "stader-bnbx-redemption": {
+    "name": "Stader : les rachats de BNBx passent du contrat aux demandes par e-mail",
+    "summary": "Depuis le 29 octobre, le BNBx de Stader ne se rachète plus via le contrat, mais par demande e-mail selon le blog officiel de Stader : 1 BNBx = 1.1099 BNB, moins 0.2 BNBx de frais par demande, réglé chaque trimestre.",
+    "deadlineNote": "Le BNBx a été arrêté le 29 janvier et ne permet plus que le rachat depuis ; son taux est fixé à 1.1099 BNB par BNBx depuis mars. Le rachat instantané et gratuit via le contrat était possible avant le 29 octobre (date passée). Depuis le 29 octobre, le rachat se fait uniquement par demande par e-mail, avec un règlement trimestriel. L'annonce ne dit pas combien de temps les demandes restent ouvertes.",
+    "who": "Toute personne détenant encore du BNBx sur BNB Chain. Si le vôtre est dans un pool de DEX ou un protocole de prêt, Stader conseille de le retirer d'abord vers votre propre portefeuille.",
+    "todo": "Suivez uniquement les étapes de l'annonce publiée sur le blog officiel de Stader (`staderlabs.com/blog`) : envoyez depuis le portefeuille qui détient les BNBx, uniquement sur BNB Chain, puis envoyez la transaction par e-mail au format décrit dans l'article. Stader ne paie que le portefeuille qui a envoyé les jetons : n'envoyez donc pas depuis un compte de plateforme d'échange. Les frais sont fixes, 0.2 BNBx : ils pèsent donc davantage sur un petit solde.",
+    "caution": "Cette procédure (envoyer des jetons à une adresse, puis envoyer un e-mail) ressemble beaucoup aux arnaques courantes. Ne faites confiance qu'à l'adresse et à l'e-mail de l'article original du blog officiel de Stader ; cette page ne les recopie volontairement pas. Stader indique qu'il ne vous écrira jamais en privé, ne vous demandera jamais votre phrase de récupération ni vos clés privées, et ne vous demandera jamais d'envoyer un paiement. N'utilisez aucune adresse de demande fournie dans des messages privés, des groupes de discussion ou d'autres sites ; vérifiez-les sur le blog de Stader indiqué ci-dessous.",
+    "official": [
+      "Blog de Stader : « Redemptions change for NearX, BNBx and MaticX »",
+      "Stader sur X : publication du 28 octobre"
+    ]
+  },
+  "robin-markets-v1": {
+    "name": "Robin Markets : fermeture de la V1",
+    "summary": "Robin Markets arrête sa V1. Les points, la garantie de rendement et le bonus d'abondement ont cessé de s'accumuler le 3 novembre à 20:00 UTC. L'annonce indique que les retraits restent possibles, sans date limite de retrait.",
+    "deadlineNote": "Annoncé le 3 novembre. Les points, la garantie de rendement et le bonus d'abondement ont cessé de s'accumuler le 3 novembre à 20:00 UTC. Il n'y a pas de date limite de retrait : Robin indique que la prochaine version sera lancée « avant la fin de l'année », que la V1 reste en ligne jusque-là, et que les retraits fonctionneront encore ensuite.",
+    "who": "Toute personne ayant déposé des positions Polymarket dans Robin Markets V1 pour obtenir un rendement.",
+    "todo": "Les points, la garantie de rendement et le bonus d'abondement ont cessé de s'accumuler le 3 novembre à 20:00 UTC ; la documentation indique que tout ce qui a été accumulé avant est versé automatiquement lors de votre prochain retrait. Robin indique que toute personne ayant une position ouverte peut la retirer dès maintenant.",
+    "official": [
+      "Robin Markets sur X : annonce du 3 novembre",
+      "Documentation de Robin Markets : garantie de rendement et bonus d'abondement (terminés)",
+      "Documentation de Robin Markets : contrats déployés sur Polygon"
+    ]
+  },
+  "summerfi-winddown": {
+    "name": "Summer.fi : coffres Lazy Summer en retraits uniquement, un arrêt ordonné en discussion",
+    "summary": "Summer.fi ferme et les coffres Lazy Summer n'autorisent plus que les retraits ; vous pouvez encore retirer vous-même sur le site officiel. Une RFC communautaire du 5 novembre discute d'un arrêt ordonné ; transférer le reste vers Merkl n'est qu'une option.",
+    "deadlineNote": "Après l'attaque du 6 juillet, la fermeture de l'interface d'origine de l'application Summer.fi a été programmée pour le 31 août (le site ne propose plus qu'une page de sortie), et les coffres ont cessé d'accepter des dépôts pour ne plus autoriser que les retraits. Une RFC communautaire du 5 novembre liste des options pour un arrêt ordonné : prendre un instantané, tout retirer et le restituer via Merkl dans le même jeton sur la même chaîne ; annoncer une date limite pour que les utilisateurs retirent eux-mêmes, puis transférer le reste ; ou ne rien transférer du tout. Aucune date n'a été fixée.",
+    "who": "Toute personne ayant encore des dépôts dans les coffres Lazy Summer (Ethereum, Base, Arbitrum, Sonic, HyperEVM). La RFC indique qu'il restait environ $369 000 dans 16 coffres au 5 novembre.",
+    "todo": "Allez sur `summer.fi`, connectez votre portefeuille, puis consultez vos positions, sortez-en et collectez les récompenses en attente. Transférer les actifs pour qu'ils soient récupérables via Merkl est une option ; la méthode et une éventuelle date limite de retrait dépendront de décisions de gouvernance formelles ultérieures.",
+    "caution": "Cette RFC communautaire du 5 novembre comprend des sondages non contraignants et ne déplace pas de fonds par elle-même. Elle indique que les pertes liées à l'attaque du 6 juillet (coffres USDC sur Ethereum) et aux créances irrécouvrables ne seront pas entièrement couvertes. Vérifiez la page de sortie sur `summer.fi` ; ne vous connectez pas et ne signez pas simplement parce qu'un lien apparaît dans une publication du forum ou une proposition sur la blockchain.",
+    "official": [
+      "Site de Summer.fi : retraits uniquement",
+      "Forum de Lazy Summer : RFC sur un arrêt ordonné (5 novembre)",
+      "Forum de Lazy Summer : passage des coffres en retraits uniquement (29 juillet)"
+    ]
   }
 }
