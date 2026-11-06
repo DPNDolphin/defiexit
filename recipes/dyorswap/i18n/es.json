@@ -3,7 +3,7 @@
   "short": "Retirar de DYORSwap",
   "verified": "En noviembre de 2026 el autor siguió esta guía con su propia cuenta en la app de OKX: con el deslizamiento en 1%, el retiro salió al primer intento, con 1 firma y 1 transacción; los montos coincidieron con la página y la comisión fue de menos de 1 centavo. El código fuente del router está verificado en el explorador de OKX. Las ventanas de la billetera todavía no tienen imágenes: compara su contenido con las tarjetas de verificación",
   "covers": "Liquidez (LP) en el pool USDT/OKB de DYORSwap en X Layer",
-  "summary": "Si agregaste liquidez al pool USDT/OKB de DYORSwap, no va a volver sola. La lista del sitio muchas veces no la muestra (dice No liquidity found), y retirarla con la configuración predeterminada falla. Sigue esta guía para encontrar el pool, poner el deslizamiento en 1% y retirar, y tus USDT y OKB volverán a tu billetera.",
+  "summary": "Si agregaste liquidez al pool USDT/OKB de DYORSwap, no va a volver sola. La lista del sitio muchas veces no la muestra (dice No liquidity found), y retirarla con la configuración predeterminada falla. Sigue esta guía para encontrar el pool, poner el deslizamiento (slippage) en 1% y retirar, y tus USDT y OKB volverán a tu billetera.",
   "facts": [
     ["Firma y transacción", "1 firma (solo para el LP que retiras) y 1 transacción"],
     ["Comisión", "Menos de $0.01, que se paga con el OKB de tu billetera en X Layer"],
@@ -136,7 +136,7 @@
       }
     },
     "slippage": {
-      "title": "Pon el deslizamiento en 1%",
+      "title": "Pon el deslizamiento (slippage) en 1%",
       "milestone": "Deslizamiento",
       "note": "Si te saltas esto, el retiro fallará después",
       "items": [
@@ -147,7 +147,7 @@
         { "src": "dy-slip-en.webp", "caption": "② Toca **1.0%** para que se ponga azul ③ Toca **×** arriba a la derecha para cerrar" }
       ],
       "situations": {
-        "safe": { "see": "¿Es seguro el 1%?", "do": "El deslizamiento es cuánto menos que el estimado del sitio aceptas recibir. Con 1%, se acepta hasta un 1% menos; este retiro da aproximadamente un 0.5% menos. Si fuera peor, la transacción simplemente falla y tu dinero se queda donde está." },
+        "safe": { "see": "¿Es seguro el 1%?", "do": "El deslizamiento (slippage) es cuánto menos que el estimado del sitio aceptas recibir. Con 1%, se acepta hasta un 1% menos; este retiro da aproximadamente un 0.5% menos. Si fuera peor, la transacción simplemente falla y tu dinero se queda donde está." },
         "expert": { "see": "Hay un interruptor Expert Mode debajo", "do": "Déjalo desactivado. Esta guía no lo necesita." },
         "no-gear": { "see": "No encuentro el engranaje", "do": "La página de retiro no tiene engranaje. Vuelve a Your Liquidity con la flecha de volver, arriba a la izquierda de la página de retiro." }
       }

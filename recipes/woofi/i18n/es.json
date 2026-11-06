@@ -243,7 +243,7 @@
       "situations": {
         "no-woo": {"see": "No veo el WOO en la billetera", "do": "Algunas billeteras no muestran solas los tokens nuevos. Busca WOO (Arbitrum) en tu billetera, o agrégalo con la dirección del contrato `0xcafcd85d8ca7ad1e1c6f82f651fa15e33aefd07b`."},
         "eth-not-weth": {"see": "Lo que llegó es ETH, no WETH", "do": "Es normal: el contrato de retiro de bóvedas convierte el WETH en ETH nativo y te lo envía."},
-        "want-usdc": {"see": "Quiero cambiar el WOO por USDC", "do": "El WOO ya está en tu propia billetera, así que puedes usar el intercambio integrado de tu billetera. Esta guía no cubre los intercambios. Revisa la cotización y el deslizamiento antes de cambiar."}
+        "want-usdc": {"see": "Quiero cambiar el WOO por USDC", "do": "El WOO ya está en tu propia billetera, así que puedes usar el intercambio integrado de tu billetera. Esta guía no cubre los intercambios. Revisa la cotización y el deslizamiento (slippage) antes de cambiar."}
       }
     }
   },
