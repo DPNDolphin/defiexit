@@ -1,0 +1,404 @@
+{
+  "title": "Hyperliquid bakiyenizi cüzdanınıza çekin",
+  "short": "Hyperliquid'den cüzdanınıza",
+  "verified": "2026-10-27 tarihinde gerçek bir hesapta test edildi: bu rehber izlenerek ulaşan tutar, tahminle en fazla 0.01 USDC farkla uyuştu.",
+  "fieldTests": [
+    "Bu rehber izlenerek Binance cüzdanıyla çekim yapıldı; ulaşan tutar tahminle uyuştu. Yarı yolda bir “Account Type Update (Unified Account)” penceresi çıktı. Onaylandıktan sonra aktarıma gerek kalmadı; rehber artık bu durumu da kapsıyor."
+  ],
+  "covers": "Hesabınızdaki USDC ve artık ihraç edilmeyen USDH",
+  "summary": "Hyperliquid'de hâlâ USDC ya da artık ihraç edilmeyen bir stablecoin olan USDH mi duruyor? Önce USDH satıp USDC alın, sonra hepsini tek seferde Arbitrum ağındaki cüzdanınıza çekin.",
+  "movesBy": "Hyperliquid",
+  "facts": [
+    [
+      "İmzalar",
+      "2–3; hepsi yalnızca imza, gas yok"
+    ],
+    [
+      "Ücret",
+      "Çekilen tutardan 1 USDC düşülür"
+    ],
+    [
+      "Süre",
+      "Adımlar yaklaşık 10 dakika; çekim yaklaşık 5 dakikada ulaşır"
+    ],
+    [
+      "Gerekenler",
+      "Hiçbir şey. Arbitrum ağında ETH gerekmez"
+    ]
+  ],
+  "chips": [
+    "Yaklaşık 10 dakika",
+    "2–3 imza",
+    "Gas yok; çekim 1 USDC tutar"
+  ],
+  "support": {
+    "label": "Hyperliquid resmi destek",
+    "note": "Hyperliquid belgelerine göre destek yalnızca resmi Discord sunucusundaki open-ticket kanalında açılan bir ticket ya da resmi e-posta formu üzerinden verilir. Size özel mesaj atan her “destek” dolandırıcıdır."
+  },
+  "official": [
+    {
+      "label": "Hyperliquid resmi sitesi"
+    }
+  ],
+  "vars": {
+    "addrShort": "kendi adresiniz",
+    "usdhSell": "USDH miktarınız (2 ondalık basamak)",
+    "orderMin": "miktar × 0.995",
+    "spotAfter": "satıştan gelen tutar",
+    "withdrawAmt": "tüm bakiyeniz",
+    "arrive": "çekilen tutar eksi 1"
+  },
+  "pro": [
+    "**Rota**: USDH artık ihraç edilmiyor → spot piyasada {{floorPx}} veya daha iyi fiyatlı bir limit emirle USDC karşılığında satın → “Withdraw to Arbitrum”. 1 USDC ücret, yaklaşık 5 dakikada ulaşır.",
+    "**Hesap modu**: birleşik hesaplar (unified, yeni varsayılan) doğrudan çeker. Eski ayrı hesaplarda önce spot USDC'yi “Perps ⇄ Spot” ile Perps hesabına aktarın.",
+    "**Rakamlarınız**: {{usdhSell}} USDH satın, {{withdrawAmt}} USDC çekin, yaklaşık {{arrive}} USDC ulaşır.",
+    "**İmzalar**: 2–3 EIP-712 imzası, gas yok. İki şeyi kontrol edin: alan adı app.hyperliquid.xyz olmalı ve destination kendi {{addrShort}} olmalı.",
+    "**Dikkat edilecekler**: USDH aranınca USDHL de çıkar; doğrusunu seçin. Sağdaki emir defterine dokunmak fiyatınızın üzerine yazar."
+  ],
+  "done": {
+    "where": "cüzdanınızda, Arbitrum ağında",
+    "from": "Hyperliquid resmi köprüsü 0x2Df1…3dF7 adresinden gönderildi",
+    "look": "Nereye bakmalı: cüzdan uygulamanız → “Assets” (Varlıklar) → USDC → Arbitrum satırı."
+  },
+  "steps": {
+    "open": {
+      "title": "Resmi siteyi cüzdan uygulamanızda açın",
+      "items": [
+        "Cüzdan uygulamanızı açın (örneğin Binance uygulamasındaki “Wallet” (Cüzdan) sekmesi) ve bu parayı tutan cüzdanın seçili olduğundan emin olun.",
+        "`https://app.hyperliquid.xyz` adresini cüzdanın yerleşik DApp tarayıcısında açın. Başına https:// yazın; yoksa arama olarak algılanır.",
+        "Sayfa yüklenince adres çubuğunu kontrol edin: alan adı tam olarak **app.hyperliquid.xyz** olmalı. Tek bir fazla harf ya da eksik bir nokta, gerçek site olmadığı anlamına gelir.",
+        "✗ Sayfa bölgenizde kullanılamadığını söylüyorsa (restricted jurisdiction) burada durun. Bu rehber bölgesel kısıtlamaları aşmayı kapsamaz."
+      ],
+      "situations": {
+        "search-instead": {
+          "see": "Adresi yazınca arama sonuçları çıkıyor",
+          "do": "Tam adresi başında https:// ile yazın: `https://app.hyperliquid.xyz`."
+        },
+        "restricted": {
+          "see": "Sayfa bölgenizde kullanılamadığını söylüyor (restricted jurisdiction)",
+          "do": "Burada durun. Bu rehber bölgesel kısıtlamaları aşmayı kapsamaz."
+        },
+        "not-sure": {
+          "see": "Resmi site olduğundan emin değilsiniz",
+          "do": "Adres çubuğunu kontrol edin: alan adı tam olarak **app.hyperliquid.xyz** olmalı. Değilse sayfayı kapatın ve adresi kendiniz yazın. Birinin size gönderdiği bağlantıyı asla kullanmayın."
+        }
+      }
+    },
+    "connect": {
+      "title": "Cüzdanınızı bağlayın",
+      "note": "Yalnızca bağlanma. İmza yok, para hareket etmez",
+      "images": [
+        "① Sağ üst köşedeki **Connect** düğmesine dokunun",
+        "① **Default Wallet** seçin. Cüzdanınız bağlanmak ister: istek app.hyperliquid.xyz adresinden geliyorsa “Connect” (Bağlan) düğmesine dokunun",
+        "① Adresiniz sağ üstte görünür (burada bulanıklaştırıldı). {{addrShort}} olmalı ② Listeyi açmak için soldaki piyasa adına dokunun"
+      ],
+      "situations": {
+        "no-popup": {
+          "see": "“Connect” düğmesine dokundunuz ama cüzdanınız bağlanmak istemedi",
+          "do": "Sayfayı cüzdan uygulamanızın yerleşik DApp tarayıcısında açın (1. adım). Telefonun normal tarayıcısı cüzdanınıza ulaşamaz."
+        },
+        "wrong-address": {
+          "see": "Sağ üstteki adres, parayı tutan adres değil",
+          "do": "Cüzdan uygulamanızda doğru cüzdana geçin, sonra yeniden bağlanın. Adres uymuyorsa daha ileri gitmeyin."
+        },
+        "wrong-origin": {
+          "see": "Bağlantı isteği app.hyperliquid.xyz adresinden gelmiyor",
+          "do": "“Reject” (Reddet) düğmesine dokunun ve sayfayı kapatın. Resmi site olmayabilir."
+        }
+      }
+    },
+    "search": {
+      "title": "USDH piyasasını bulun",
+      "whenText": "Yalnızca elinizde USDH varsa gerekir (bu adımdan 6. adıma kadar)",
+      "images": [
+        "① Arama kutusuna USDH yazın ② **USDH/USDC** satırına dokunun (altında SPOT yazar) ✗ USDHL/USDC satırına dokunmayın: tek harf farkla başka bir coin"
+      ],
+      "situations": {
+        "two-results": {
+          "see": "Hem USDH hem USDHL çıkıyor",
+          "do": "SPOT işaretli olanı, yani **USDH/USDC** satırını seçin. USDHL başka bir coin; adları tek harf farklı."
+        },
+        "not-found": {
+          "see": "USDH çıkmıyor",
+          "do": "Yazımı kontrol edin (U-S-D-H). Yine bir şey yok mu? Arama kutusunun sağındaki **All** seçeneğine dokunup yeniden arayın."
+        }
+      }
+    },
+    "panel": {
+      "title": "Satış panelini açın ve limit emre geçin",
+      "images": [
+        "! Sarı çerçevedeki, Hyperliquid'in kendi duyurusu: USDH artık ihraç edilmiyor, bu yüzden bu piyasadaki alıcılar giderek azalacak. Ne kadar erken satarsanız o kadar iyi",
+        "① Alttaki **Trade** sekmesine dokunun",
+        "① Sol üstte **Market** yazısının yanındaki küçük oka dokunun",
+        "① **Limit** seçin (limit emir yalnızca sizin fiyatınızdan ya da daha iyisinden gerçekleşir)"
+      ],
+      "situations": {
+        "no-limit": {
+          "see": "Açılır listede “Limit” yok",
+          "do": "Sol üstte “Market” yazısının yanındaki küçük oka dokunun; yukarıdaki ekran görüntüsünde kırmızı çerçevenin olduğu yer."
+        }
+      }
+    },
+    "fill": {
+      "title": "Satış emrini doldurun",
+      "note": "Şimdi doldurun; işlem yapmayı bir sonraki adımda etkinleştireceksiniz",
+      "images": [
+        "① **Sell** seçeneğine dokunun ② Fiyat (Price): {{floorPx}} ③ Miktar (Amount): {{usdhSell}} (ekran görüntüsünde örnek rakamlar var) ④ “Order Value” değerine göz atın: yaklaşık {{orderMin}} USDC, alacağınız en düşük tutar ⑤ **Enable Trading** düğmesine dokunun"
+      ],
+      "items": [
+        "! Sağdaki yeşil rakamlar başkalarının alış emirleridir. Satışınız bunlarla eşleşir, genelde 0.995 seviyesinden daha iyi bir fiyata. **Bunlara dokunmayın**: birine dokunmak girdiğiniz fiyatın üzerine yazar."
+      ],
+      "situations": {
+        "value-off": {
+          "see": "“Order Value” buradaki rakamdan çok farklı",
+          "do": "Muhtemelen fiyat ya da miktar yanlış: fiyat {{floorPx}}, miktar {{usdhSell}}. Sağdaki yeşil rakamlara dokunduysanız fiyatınızın üzerine yazılmıştır; yeniden girin."
+        },
+        "not-enough": {
+          "see": "Bakiyenizin bu miktara yetmediğini söylüyor",
+          "do": "USDH bakiyenizin bir kısmı açık bir satış emrinde kilitli olabilir. Yukarıdaki canlı kontrol gerçekte ne kadar satabileceğinizi gösterir. Adresinizi eklemediyseniz önce yukarıda ekleyin."
+        },
+        "place-order": {
+          "see": "Düğmede zaten “Enable Trading” değil, “Place Order” yazıyor",
+          "do": "İşlem yapma daha önce etkinleştirilmiş. “İşlem yapmayı etkinleştirin” adımını atlayın ve doğrudan “Satış emrini verin” adımına geçin."
+        }
+      }
+    },
+    "enable": {
+      "title": "İşlem yapmayı etkinleştirin",
+      "note": "1. imza",
+      "grantsText": "İmzaladıktan sonra bu emir anahtarı, cüzdanınız açılmadan Hyperliquid'de sizin adınıza emir verebilir. Kartı satır satır kontrol edin; bir şey uymuyorsa “Reject” (Reddet) düğmesine dokunun.",
+      "images": [
+        "① **Stay Connected** kutusunu işaretlemeden bırakın ② **Establish Connection** düğmesine dokunun. Cüzdanınız imza ister: aşağıdaki kartla karşılaştırın"
+      ],
+      "check": {
+        "title": "İmzalamadan önce 3 şeyi kontrol edin",
+        "lead": "“Establish Connection” düğmesine dokunduktan sonra cüzdanınız bir imza isteği gösterir. Bu kartla karşılaştırın ve kontrol ettikçe her satırı işaretleyin.",
+        "skip": "İşlem yapma zaten etkin ve düğmede “Place Order” mı yazıyor? Bu adımı atlayın",
+        "confirm": [
+          {
+            "title": "İstek app.hyperliquid.xyz adresinden geliyor",
+            "sub": "Tek bir fazla harf ya da eksik bir nokta, başka bir site demektir"
+          },
+          {
+            "title": "ApproveAgent ve Mainnet yazıyor",
+            "sub": "Bu, yalnızca emir verebilen bir anahtar oluşturur. Hyperliquid belgelerine göre bu anahtar kimseye para gönderemez ve para çekemez"
+          },
+          {
+            "title": "Yalnızca imza: tutar yok, alıcı yok",
+            "sub": "Hiçbir şey harcanmaz, ücret alınmaz"
+          }
+        ],
+        "reject": [
+          "Sizden para göndermeniz isteniyor ya da bir tutar gösteriliyor",
+          "Permit ya da bir tokenı onaylamak (Approve) geçiyor",
+          "İstek app.hyperliquid.xyz adresinden gelmiyor"
+        ],
+        "normal": [
+          "agentAddress her seferinde değişen rastgele bir adrestir: sayfanın oluşturduğu geçici emir anahtarı",
+          "chainId 42161 ya da 56 görünebilir. İkisi de sorun değil; cüzdanınızın o anki ağına göre değişir",
+          "verifyingContract tamamen sıfırlardan oluşur. Bu da normal"
+        ]
+      },
+      "situations": {
+        "no-approve-agent": {
+          "see": "İmza isteğinde ApproveAgent geçmiyor",
+          "do": "“Reject” (Reddet) düğmesine dokunun. Kart uymuyorsa imzalamayın."
+        },
+        "no-change": {
+          "see": "İmzaladınız ama sayfada hiçbir şey değişmedi",
+          "do": "Birkaç saniye bekleyin. Düğmede hâlâ “Place Order” yazmıyorsa sayfayı yenileyin, cüzdanınızı yeniden bağlayın ve “Establish Connection” düğmesine tekrar dokunun. İkinci kez imzalamak normaldir."
+        },
+        "chain-id": {
+          "see": "İstekte chainId 42161 ya da 56 görünüyor",
+          "do": "Bu normal. Cüzdanınızın o anki ağına göre değişir ve hiçbir şeyi etkilemez."
+        }
+      }
+    },
+    "order": {
+      "title": "Satış emrini verin",
+      "note": "Bu adımda cüzdanınız açılmaz",
+      "milestone": "USDH satışı",
+      "movesText": "Hyperliquid'deki bu satış emrini, daha önce onayladığınız emir anahtarı imzalar; bu yüzden cüzdan penceresi açılmaz. DeFiExit paranıza asla dokunmaz.",
+      "items": [
+        "İmzaladıktan sonra sayfada “Established connection” yazar ve “Enable Trading” düğmesi **Place Order** olur.",
+        "Bir kez daha kontrol edin: Sell / fiyat {{floorPx}} / miktar {{usdhSell}} (silindiyse yeniden girin).",
+        "“Place Order” düğmesine dokunun. “Confirm Order” kutusu çıkarsa aynı üç şeyi kontrol edip onaylayın. Bunu sayfanın emir anahtarı imzalar, bu yüzden cüzdanınız sessiz kalır.",
+        "Emir gerçekleşince “Order filled” mesajını görmelisiniz. “Balances” altında USDH 0.01 altına düşer ve USDC yaklaşık {{spotAfter}} kadar artar. “Open Orders” boştur.",
+        "! Emir hâlâ “Open Orders” altında bekliyorsa en iyi alış fiyatı {{floorPx}} seviyesinin altına düşmüştür. Yeni bir emir vermeyin. Canlı kontrol için sağ üstteki “Takıldınız mı?” düğmesine dokunun."
+      ],
+      "situations": {
+        "resting": {
+          "see": "Emir öylece bekliyor, gerçekleşmiyor",
+          "do": "En iyi alış fiyatı şu an sizin fiyatınızın altında. Yeni bir emir vermeyin. Yukarıdaki canlı kontrol, bugünkü alış emirlerine göre seçeneklerinizi hesaplar."
+        },
+        "too-small": {
+          "see": "Emrin çok küçük olduğunu söylüyor",
+          "do": "Hyperliquid'de asgari bir emir büyüklüğü var (yaklaşık $10). USDH miktarınız bunun altındaysa satılamaz. Onu bırakın ve USDC'nizi çekmeye geçin."
+        },
+        "dust-left": {
+          "see": "Satıştan sonra “Balances” altında çok az USDH kaldı",
+          "do": "Miktarlar yalnızca iki ondalık basamağa kadar gider; bu yüzden 0.01 altında bir artık kalması normaldir. Çekimi etkilemez."
+        }
+      }
+    },
+    "transfer": {
+      "title": "Spot USDC'nizi perps hesabına aktarın",
+      "note": "2. imza",
+      "whenText": "Yalnızca eski ayrı hesaplar için; birleşik hesaplar bu adımı atlar",
+      "milestone": "Aktarım",
+      "items": [
+        "! Önce “Account” sayfasına bakın. Başlıkta **Unified Account Summary** yazıyorsa ve yalnızca “Deposit” / “Withdraw” düğmeleri varsa birleşik hesabınız var demektir: **bu adımı atlayın** ve doğrudan çekime geçin."
+      ],
+      "images": [
+        "! “Unified Account Summary” görüyorsanız birleşik hesaptır (örnek görsel; rakamları dikkate almayın)",
+        "Birleşik hesapta yalnızca “Deposit” / “Withdraw” vardır: “Withdraw” düğmesine dokunun ve sonraki adıma geçin",
+        "Ayrı hesaplarda iki satır görünür, Spot ve Perps: para iki ayrı hesapta",
+        "① Alttaki **Account** sekmesine dokunun ② **Perps ⇄ Spot** düğmesine dokunun",
+        "① Yönü çevirmek için ortadaki bu düğmeye dokunun",
+        "① Artık Spot → Perps yazdığından emin olun ② **MAX** düğmesine dokunun (ekran görüntüsü satıştan önce alındığı için 0.00 gösteriyor; sizinki yaklaşık {{spotAfter}} olmalı) ③ **Confirm** düğmesine dokunun. Cüzdanınız imza ister: kartla karşılaştırın"
+      ],
+      "check": {
+        "title": "İmzalamadan önce 3 şeyi kontrol edin",
+        "lead": "“Confirm” düğmesine dokunduktan sonra cüzdanınız bir imza isteği gösterir. Bu kartla karşılaştırın ve kontrol ettikçe her satırı işaretleyin.",
+        "skip": "Birleşik hesap mı (“Account” sayfasında “Perps ⇄ Spot” yok)? Bu adımı atlayın",
+        "confirm": [
+          {
+            "title": "İstek app.hyperliquid.xyz adresinden geliyor",
+            "sub": "Tek bir fazla harf ya da eksik bir nokta, başka bir site demektir"
+          },
+          {
+            "title": "SendAsset yazıyor ve destination kendi adresiniz {{addrShort}}",
+            "sub": "Büyük ya da küçük harf fark etmez. Sizin adresiniz değilse reddedin"
+          },
+          {
+            "title": "Spot hesabından perps hesabına, yaklaşık {{spotAfter}} USDC",
+            "sub": "sourceDex spot, destinationDex boş; token USDC:0x6d1e…e054"
+          }
+        ],
+        "reject": [
+          "destination kendi adresiniz değil",
+          "Permit ya da bir tokenı onaylamak (Approve) geçiyor",
+          "İstek app.hyperliquid.xyz adresinden gelmiyor"
+        ],
+        "normal": [
+          "Yalnızca imzadır, ücret yoktur"
+        ]
+      },
+      "situations": {
+        "no-button": {
+          "see": "“Account” sayfasında “Perps ⇄ Spot” yok",
+          "do": "Başlıkta “Unified Account Summary” yazıyorsa birleşik hesaptır. Aktarım gerekmez; doğrudan çekime geçin."
+        },
+        "max-zero": {
+          "see": "“MAX” 0.00 gösteriyor",
+          "do": "Önce yönün Spot → Perps olduğundan emin olun (ortadaki düğme yönü çevirir). Hâlâ 0 ise spot hesabında USDC kalmamıştır; doğrudan çekime geçin."
+        },
+        "wrong-destination": {
+          "see": "İmza isteğinde sizin adresiniz olmayan bir destination görünüyor",
+          "do": "Hemen “Reject” (Reddet) düğmesine dokunun."
+        }
+      }
+    },
+    "withdraw": {
+      "title": "Arbitrum ağına çekin",
+      "note": "Son imza",
+      "milestone": "Çekim",
+      "images": [
+        "! Hyperliquid'e göre 1 USDC ücret çekilen tutardan düşülür ① Varlığı USDC, ağı Arbitrum olarak bırakın ② **MAX** düğmesine dokunun: yaklaşık {{withdrawAmt}} olmalı (ekran görüntüsünde farklı bir rakam var) ③ **Withdraw to Arbitrum** düğmesine dokunun. Cüzdanınız imza ister: kartla karşılaştırın"
+      ],
+      "check": {
+        "title": "İmzalamadan önce 3 şeyi kontrol edin",
+        "lead": "“Withdraw to Arbitrum” düğmesine dokunduktan sonra cüzdanınız bir imza isteği gösterir. Bu kartla karşılaştırın ve kontrol ettikçe her satırı işaretleyin.",
+        "confirm": [
+          {
+            "title": "İstek app.hyperliquid.xyz adresinden geliyor",
+            "sub": "Tek bir fazla harf ya da eksik bir nokta, başka bir site demektir"
+          },
+          {
+            "title": "Withdraw yazıyor ve destination kendi adresiniz {{addrShort}}",
+            "sub": "Sizin adresiniz değilse reddedin"
+          },
+          {
+            "title": "amount yaklaşık {{withdrawAmt}}",
+            "sub": "Ulaşacak tutar = bu rakam eksi 1 USDC ücret"
+          }
+        ],
+        "reject": [
+          "destination kendi adresiniz değil",
+          "Permit ya da bir tokenı onaylamak (Approve) geçiyor",
+          "İstek app.hyperliquid.xyz adresinden gelmiyor"
+        ],
+        "normal": [
+          "Yalnızca imzadır, gas yoktur: Arbitrum işlemini sizin yerinize Hyperliquid gönderir",
+          "time 13 haneli bir sayıdır. Bir zaman damgasıdır"
+        ]
+      },
+      "situations": {
+        "less-than-expected": {
+          "see": "“MAX” buradaki rakamdan az gösteriyor",
+          "do": "Açık emirler ve pozisyonlar bakiyenizin bir kısmını bağlar. Yukarıdaki canlı kontrol, paranızın her parçasının nerede olduğunu listeler."
+        },
+        "cannot-click": {
+          "see": "“Withdraw” düğmesi tepki vermiyor",
+          "do": "Çekilen tutar 1 USDC ücretten fazla olmalı. Daha küçük tutarlar çekilemez."
+        },
+        "wrong-destination": {
+          "see": "İmza isteğinde sizin adresiniz olmayan bir destination görünüyor",
+          "do": "Hemen “Reject” (Reddet) düğmesine dokunun."
+        }
+      }
+    },
+    "arrive": {
+      "title": "Ulaştığını kontrol edin",
+      "milestone": "Ulaştı",
+      "check": {
+        "title": "Varış kontrolü",
+        "rows": [
+          [
+            "Ne kadar sürer",
+            "Hyperliquid'e göre 5 dakika içinde"
+          ],
+          [
+            "Nereye bakmalı",
+            "Cüzdan uygulamanız → “Assets” (Varlıklar) → USDC → Arbitrum satırı"
+          ],
+          [
+            "Ne görmelisiniz",
+            "Yaklaşık {{arrive}} USDC artış"
+          ],
+          [
+            "Zincir üstündeki kayıt",
+            "0x2Df1…3dF7 adresinden (Hyperliquid resmi köprüsü) adresinize, Arbitrum'un yerel USDC'si (0xaf88…5831) olarak gönderilir"
+          ],
+          [
+            "Ulaşmadı mı?",
+            "30 dakika geçtiyse yeniden çekim yapmayın. Ekran görüntüsü alıp bize sorun"
+          ]
+        ],
+        "foot": "Ulaştığında işiniz biter"
+      },
+      "situations": {
+        "not-in-wallet": {
+          "see": "Cüzdanınızda USDC'yi göremiyorsunuz",
+          "do": "**Arbitrum** ağındaki USDC'ye baktığınızdan emin olun. Yukarıdaki canlı kontrol bu çekimi doğrudan Arbitrum ağında arar."
+        },
+        "one-less": {
+          "see": "Çektiğinizden 1 eksik ulaştı",
+          "do": "Bu, 1 USDC çekim ücreti. Normal."
+        },
+        "late": {
+          "see": "30 dakikadan fazla geçti ve hiçbir şey ulaşmadı",
+          "do": "Yeniden çekim yapmayın. Yukarıdaki canlı kontrole bakın. Varışı bulamıyorsa ya da bir şey uymuyorsa ekran görüntüleriyle Hyperliquid resmi desteğine başvurun (aşağıda)."
+        }
+      }
+    }
+  },
+  "sources": [
+    "Hyperliquid belgeleri · İşlem yapmaya nasıl başlanır",
+    "Hyperliquid belgeleri · Köprü / USDC",
+    "Hyperliquid belgeleri · Hesap soyutlama modları",
+    "Hyperliquid belgeleri · Nonce'lar ve API cüzdanları",
+    "Bridge duyurusu · USDH hakkında bir güncelleme",
+    "Hyperliquid belgeleri · Destek"
+  ]
+}

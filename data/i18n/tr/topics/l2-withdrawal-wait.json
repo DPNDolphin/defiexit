@@ -1,0 +1,118 @@
+{
+  "title": "L2'den Ethereum'a çekim: neden beklenir ve bekleme bitince ne yapılır",
+  "summary": "Bir L2'den resmi köprüyle Ethereum'a para geri taşıdığınızda, ağın sonucunun Ethereum'da onaylanmasını beklersiniz: OP Mainnet ve Arbitrum için yaklaşık 7 gün, Base için artık 5 gün (bazı çekimlerde 1 gün), zkSync Era ve Linea gibi ZK ağları için genelde birkaç saat. Çoğu ağ parayı kendiliğinden göndermez: OP Mainnet ve Base'de önce Ethereum'da Prove yapar, bekler, sonra Finalize yaparsınız; Arbitrum, Linea ve Scroll'da bekleme bittikten sonra köprüye dönüp Ethereum'da Claim yaparsınız. Bu yüzden ücretler için Ethereum'da biraz ETH bulundurun.",
+  "sections": [
+    {
+      "h": "Neden bekleme var",
+      "p": [
+        "Bir L2, sonuçlarını onay için Ethereum'a teslim eder. Resmi köprü Ethereum'da parayı serbest bırakmadan önce bu sonucun doğru olduğundan emin olmak zorundadır.",
+        "OP Mainnet, Base ve Arbitrum gibi ağlar sonuçlarını önce yayımlar, sonra yanlış bir sonuca herkesin itiraz edebilmesi için süre tanır. Bu süreye itiraz süresi (challenge period) denir. zkSync Era, Linea ve Scroll gibi ZK ağları ise bir kanıtın üretilip Ethereum'da doğrulanmasını bekler; zkSync buna ek bir güvenlik gecikmesi de ekler.",
+        "Bekleme, resmi köprünün güvenlik kurallarının bir parçasıdır. OP belgeleri bunun aşılamayacağını açıkça söylüyor."
+      ],
+      "list": []
+    },
+    {
+      "h": "Her ağda ne kadar sürer",
+      "p": [
+        "Her ağın resmi belgelerine göre (2026-11-05 tarihinde kontrol edildi). Her adımı yapmak için sizin harcayacağınız süreyi de ekleyin."
+      ],
+      "list": [
+        "OP Mainnet: 7 günlük itiraz süresi. Üç adım: OP Mainnet'te başlatın; zincirin o kısmı Ethereum'a yayımlanınca Ethereum'da “Prove” yapın; 7 gün sonra Ethereum'da “Finalize” yapın.",
+        "Base: 25 Haziran 2026'daki Beryl yükseltmesinden beri standart köprü 5 gün bekler; o sonuç hem bir TEE kanıtıyla hem bir ZK kanıtıyla desteklenmişse 1 gün. Prove yapabilmeden önce genelde yaklaşık 20–60 dakikalık bir bekleme olur. Adımlar OP Mainnet ile aynı: başlat, kanıtla (prove), tamamla (finalize). Köprünün size gösterdiği süreye göre hareket edin.",
+        "Arbitrum One / Nova: resmi belgelere göre en az 7 gün; köprüdeki geri sayım genelde 7–8 gün gösterir (itiraz süresi 45,818 Ethereum bloğu, yaklaşık 6.4 gün; buna öncesinde ve sonrasında biraz işlem süresi eklenir). Geri sayım bitince köprünün sağ üstündeki profilinizi açın, Transactions bölümüne gidin ve Claim düğmesine basın.",
+        "zkSync Era: belgeler en az 3 saatlik bir güvenlik gecikmesi veriyor; ağ yoğunsa 1–2 saat daha. Ethereum'daki son adımı (“finalize withdrawal”) herkes gönderebilir; ana ağda bunun sizin yerinize yapılıp yapılmadığını belgeler söylemiyor. Kullandığınız köprüde bir Claim düğmesi görünüyorsa ona basmanız gerekir.",
+        "Linea: ETH ve normal tokenlar için yaklaşık 2–12 saat. Linea'dan Ethereum'a çekimler her zaman Ethereum'da elle Claim gerektirir (resmi köprünün geçmişinde “Ready to claim” olarak işaretlenir). Bu yönde resmi köprü ayrıca 0.001 ETH'lik bir DDoS önleme ücreti alır.",
+        "Scroll: işleminizin bulunduğu paket Ethereum'da kesinleşene kadar bekleyin, sonra Ethereum'da bir “Execute Withdrawal” işlemi daha gönderin (köprüdeki Claim düğmesi). Mevcut resmi belgeler bunun ne kadar sürdüğünü söylemiyor.",
+        "Diğer ağlar: OP Stack üzerine kurulu ağlar OP Mainnet ile aynı olmak zorunda değil; Base zaten 5 güne indi. Bir L3'ten Ethereum'a çekim iki ayaklıdır ve her ayağın kendi beklemesi vardır; Arbitrum belgeleri varsayılan ayarlarla en kötü durumu kabaca iki hafta olarak veriyor. O ağın kendi belgelerine bakın."
+      ]
+    },
+    {
+      "h": "Bekleme bitince ne yapmalı",
+      "p": [
+        "Çoğu resmi köprüde bekleme bittiğinde para kendiliğinden cüzdanınıza düşmez. Arbitrum belgelerine göre onay, çekimi yalnızca talep edilebilir hâle getirir: birinin bunu Ethereum'da yürütmesi gerekir ve bunu otomatik olarak yapan bir şey yoktur. Lisk de ağı kapanmadan önce kullanıcılara, bir çekimin talep edilene (claim) kadar tamamlanmış sayılmadığını hatırlattı."
+      ],
+      "list": [
+        "Başladığınız köprü sayfasına geri dönün ve aynı cüzdanı bağlayın.",
+        "Çekimi geçmişte (History, Transactions ya da Activity) bulun ve köprü ne istiyorsa Prove ya da Claim / Finalize düğmesine basın.",
+        "Bu adım Ethereum'da bir işlem gönderir, yani Ethereum gas ücreti ödersiniz. OP belgeleri, Ethereum'daki prove ve finalize işlemlerinin genelde L2'de çekimi başlatmaktan çok daha pahalı olduğunu belirtiyor.",
+        "Safe gibi bir akıllı sözleşme cüzdanından çektiyseniz: Arbitrum belgelerine göre çekim köprünün geçmişinde görünmeyebilir; geçmişte, çekimi başlatan L2 işleminin hash'iyle arayıp ardından Claim yapabilirsiniz."
+      ]
+    },
+    {
+      "h": "Belgelerde yazandan uzun mu sürüyor? Önce bunları kontrol edin",
+      "p": [
+        "Baştan başlamayın. Bunları tek tek kontrol edin."
+      ],
+      "list": [
+        "OP Mainnet ve Base: bekleme, çekimi başlattığınız andan değil, en erken Prove işleminizden itibaren işler. Prove'u birkaç gün geç yaptıysanız tam bekleme o andan başlar. Prove ettiğiniz sonuç geçersiz sayılırsa yeniden Prove yapmanız gerekir ve süre baştan başlar.",
+        "Arbitrum: nadir durumlarda biri itiraz başlatır ve bekleme uzar; belgeler, BoLD altında dürüst bir çekimin en fazla bir itiraz süresi daha gecikeceğini söylüyor.",
+        "ZK ağları: zkSync, 3 saatin garanti olmadığını ve ağ yoğunken daha uzun sürebileceğini söylüyor; Sophon sürenin değişken olduğunu ve resmi çekim sayfasındaki durumu takip etmeyi söylüyor.",
+        "Ulaştı ama görünmüyor mu? zkSync'e göre bu çekimler genelde Etherscan'daki adres sayfanızda normal işlem listesinde değil, “Internal Transactions” altında görünür.",
+        "Linea: 90 günden uzun süre talep edilmeyen çekimler resmi köprü uygulamasında artık görünmez; bunları resmi geliştirici belgelerine göre elle tamamlarsınız.",
+        "Hâlâ tutmuyorsa yalnızca projenin resmi Discord sunucusunda ya da yardım merkezinde sorun; size ilk ulaşan kimseyi dikkate almayın."
+      ]
+    },
+    {
+      "h": "Ne yapmamalı",
+      "p": [
+        "İnsanlar acele ettiklerinde fazla öder ya da dolandırılır."
+      ],
+      "list": [
+        "“Hızlandırmak” için yeniden köprü işlemi yapmayın. Başlatılmış bir çekim iptal edilemez (Arbitrum belgeleri) ve üçüncü taraf hızlı köprüler, devam eden resmi bir çekimi kısaltmayan ayrı hizmetlerdir (Base belgeleri). Yeniden köprülemek yalnızca bir miktar daha gönderir.",
+        "Çekimi “hızlandırmayı” ya da “kilidini açmayı” teklif eden kimseye para ödemeyin. Bekleme bir protokol kuralıdır ve kimse ücret karşılığında onu atlatamaz.",
+        "Arama sonuçlarından, özel mesajlardan ya da yanıtlardan gelen bağlantılarla işlem yapmayın. Yalnızca başladığınız resmi köprüyü ya da resmi hesabın kendisinin paylaştığı bir bağlantıyı kullanın.",
+        "DeFiExit cüzdanınızdan yalnızca adresini paylaşmasını ister; sizden asla bir şey imzalamanızı, onaylamanızı veya göndermenizi istemez ve size asla ilk mesajı biz atmayız."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "ETH'mi zaten geri köprüledim ama 7 gün yazıyor. Takıldı mı?",
+      "a": "Büyük ihtimalle hayır. OP Mainnet ya da Arbitrum'dan resmi köprüyle Ethereum'a çekim normalde yaklaşık 7 gün sürer; Base'de artık 5 gün, bazı çekimlerde 1 gün. Bu süre kısaltılamaz. Süre dolunca aynı köprüye dönün ve son adımı yapın (Finalize ya da Claim); para ancak o zaman ulaşır. OP Mainnet ve Base'de ayrıca bunun öncesinde, arada Prove yapmanız gerekir."
+    },
+    {
+      "q": "Sophon'dan çekimim hâlâ ulaşmadı.",
+      "a": "Sophon belgelerine göre Ethereum'a resmi (canonical) çekim anında olmaz: paketin Ethereum'da kanıtlanması gerekir, sonra aynı cüzdanla claim.sophon.com adresine dönüp Ethereum'da son bir Claim işlemi gönderirsiniz. Sophon sürenin değişken olduğunu söylüyor; bu yüzden o sayfadaki duruma göre hareket edin. Orada üçüncü taraf bir rota seçtiyseniz bunun yerine o rotanın durumunu kontrol edin. Sophon'un çekim son tarihi 25 Kasım 2026, ana ağ ise 30 Kasım'da kapanıyor; son ana bırakmayın."
+    },
+    {
+      "q": "Geri sayım günler önce bitti ama para hâlâ yok.",
+      "a": "Genelde son adım hâlâ yapılmamıştır. Arbitrum, biten bir geri sayımın çekimi yalnızca talep edilebilir hâle getirdiğini söylüyor: köprünün geçmişinde Claim düğmesine sizin basmanız gerekir, bunu otomatik yapan bir şey yoktur. Linea'dan Ethereum'a çekimler her zaman elle Claim gerektirir. OP Mainnet ve Base'de Prove yapar, süreyi bekler, sonra Finalize yaparsınız. Basmadan önce cüzdanda gas için Ethereum'da biraz ETH olduğundan emin olun."
+    },
+    {
+      "q": "Biri çekimimi küçük bir ücret karşılığında hızlandırabileceğini söylüyor. Bu gerçek mi?",
+      "a": "Hayır. Bekleme, resmi köprünün bir protokol kuralıdır: OP belgeleri bunun aşılamayacağını, Arbitrum ise başlatılmış bir çekimin iptal edilemeyeceğini söylüyor. “Hızlandırmak” ya da “kilidini açmak” için para isteyen herkes dolandırıcıdır. Kurtarma ifadenizi ya da özel anahtarınızı da asla kimseye vermeyin."
+    },
+    {
+      "q": "L3'ten çekimim neden yaklaşık iki hafta gösteriyor?",
+      "a": "L3'ten Ethereum'a gitmek iki ayaklıdır: önce altındaki L2'ye dönülür, sonra o L2'den Ethereum'a geçilir ve her ayağın kendi beklemesi vardır. Arbitrum belgeleri varsayılan ayarlarla en kötü durumu kabaca iki hafta olarak veriyor. Bazı projelerin kendi düzenlemeleri var: Horizen'in 23 Ekim 2026 tarihli resmi rehberi, 4 Kasım'dan önce resmi köprüsüyle başlatılan ETH çekimlerinin sizin yerinize tamamlanacağını ve yaklaşık iki hafta içinde Base ağına ulaşacağını söylüyor."
+    },
+    {
+      "q": "Claim düğmesine basmak için ne kadar vaktim var? Süresi dolabilir mi?",
+      "a": "Arbitrum, onaylanmış bir çekimin yürütülmesini süresiz bekleyebileceğini söylüyor. OP Mainnet ve Base belgeleri bir süre sınırından söz etmiyor. Linea'da 90 günden eski çekimler resmi köprü sayfasından düşer, ama belgelere göre hâlâ elle tamamlanabilir. İstisna, kapanmakta olan bir ağdır: o durumda ağın kapanış duyurusuna uyun. Örneğin Lisk, kapanış anında süren çekimlerin Ethereum'daki hedef adreslerine yatırılacağını söyledi; Blast'ın resmi kurtarma sitesi de tamamlanmamış çekimleri kapsıyor."
+    }
+  ],
+  "sources": [
+    "OP belgeleri: OP Mainnet'te işlem kesinliği (Standard Bridge ile 7 günlük çekimler)",
+    "OP belgeleri: Çekim akışı (initiate, prove, finalize; yeniden prove süreyi sıfırlar)",
+    "OP belgeleri: L1 ile L2 arasında veri gönderme (bekleme aşılamaz; L1 adımları daha pahalı)",
+    "Base belgeleri: Çekimler (5 gün ya da 1 gün, 20–60 dakika, hızlı köprüler süreyi kısaltmaz)",
+    "Base belgeleri: Beryl — Faster Withdrawals (7 gün 5 güne indi)",
+    "Base belgeleri: Yükseltmeler (Beryl 25 Haziran 2026'dan beri ana ağda)",
+    "Arbitrum belgeleri: Köprü hızlı başlangıç (en az 7 gün, 7–8 günlük geri sayım, Claim)",
+    "Arbitrum belgeleri: Köprü sorun giderme (yaklaşık 6.4 gün, iptal yok, akıllı sözleşme cüzdanları)",
+    "Arbitrum belgeleri: Çekimleri izleme (Claim otomatik değil; L3'ten iki ayak, yaklaşık iki hafta)",
+    "ZKsync belgeleri: Çekim gecikmesi (en az 3 saat, Etherscan iç işlemleri)",
+    "ZKsync belgeleri: Varlık köprüleme (L1'de tamamlama işlemini herkes yapabilir)",
+    "ZKsync belgeleri: Kesinlik (kanıt yaklaşık bir saat, toplamda yaklaşık 3 saat)",
+    "Linea belgeleri: Token köprüleme (2–12 saat, elle Claim, 0.001 ETH ücret, 90 gün)",
+    "Linea belgeleri: İşlem kesinliği (ZK kanıtları Ethereum'da doğrulanır)",
+    "Scroll belgeleri (GitHub kaynağı): Teknolojiye genel bakış (geçerlilik kanıtları Ethereum'da doğrulanır)",
+    "Scroll belgeleri (GitHub kaynağı): The Scroll Messenger — L2'den L1'e geçiş bir Execute Withdrawal işlemi gerektirir",
+    "Sophon belgeleri: Kanonik çekimin tamamlanması (süre değişken; son Claim Ethereum'da)",
+    "Sophon, X'te: 25 Kasım çekim son tarihi, 30 Kasım kapanış (19 Ekim 2026)",
+    "Lisk, X'te: bir çekim talep edilene kadar tamamlanmış sayılmaz (1 Kasım 2026)",
+    "Lisk, X'te: süren çekimler Ethereum'da yatırılacak (3 Kasım 2026)",
+    "Blast resmi kurtarma sitesi (tamamlanmamış çekimler dahil)",
+    "Horizen blogu: Changes for Horizen (23 Ekim 2026)"
+  ]
+}
