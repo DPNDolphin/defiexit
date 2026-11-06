@@ -8,7 +8,8 @@ const jour = (d) => (d === 1 ? "1er" : `${d}`);
 // En français, 0 et 1 prennent le singulier
 const pl = (n, one, many) => (n < 2 ? one : many);
 const liste = (a) => (a.length < 2 ? a.join("") : `${a.slice(0, -1).join(", ")} et ${a[a.length - 1]}`);
-const maj = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+// Majuscule en début de titre, seulement sur « vos » / « votre » (venus de dueToken) : un symbole comme cmETH garde sa casse
+const maj = (s) => s.replace(/^vo(s|tre)\b/, (w) => `V${w.slice(1)}`);
 // Compte à rebours : x vient de timeLeft (lib/deadline.js). Jour de la date limite (UTC) : pas d'heures ; moins de 48 h : heures entières ; passé : « Date limite passée »
 const leftFr = ({ days, hours, day }) => (day ? `Date limite aujourd'hui (UTC) : ${jour(md(day)[1])} ${MOIS[md(day)[0] - 1]}` : hours != null ? (hours > 1 ? `Il reste ${hours} heures` : hours === 1 ? "Il reste 1 heure" : "Il reste moins d'1 heure") : days >= 0 ? `Il reste ${days} ${pl(days, "jour", "jours")}` : "Date limite passée");
 
