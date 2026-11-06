@@ -256,7 +256,7 @@
     ]
   },
   "derive-chain-rewards": {
-    "name": "Derive Chain mise à la retraite : passage à Derive V3, date limite des récompenses le 1er février 2027",
+    "name": "Derive Chain abandonnée : passage à Derive V3, date limite des récompenses le 1er février 2027",
     "summary": "Derive Chain est passée à Derive V3, avec des fonds conservés sur Ethereum. Les récompenses de trading et de staking encore en attente doivent être collectées sur Optimism avant le 1er février 2027.",
     "deadlineNote": "Instantané le 6 octobre à 18:00 UTC ; la V3 a été lancée le 8 octobre. Les récompenses de trading et de staking encore en attente se collectent depuis un contrat sur Optimism jusqu'au 1er février 2027 ; ensuite, la fondation les reprend.",
     "who": "Toute personne ayant fait du trading ou du staking sur Derive Chain (anciennement Lyra).",
@@ -326,7 +326,7 @@
     "summary": "Balancer cesse ses activités. Les pools n'autorisent plus que les retraits ; les pools v3 restants suivront le 30 novembre. Selon Balancer, les retraits restent ouverts, mais fournisseurs de liquidité et stakers doivent retirer eux-mêmes leurs fonds.",
     "deadlineNote": "Depuis le 30 octobre, les pools qui peuvent être mis en pause n'autorisent plus que les retraits, et le programme de bug bounty a pris fin. Les pools v3 que des partenaires ont demandé à conserver restent ouverts jusqu'au 30 novembre ; à cette date, le Vault v3 est mis en pause et les pools v3 restants passent en retraits uniquement. Balancer indique que les retraits restent ouverts, sans date de fin. Ensuite, une page de retrait simplifiée reste en ligne jusqu'à l'expiration des blocages veBAL et jusqu'à ce que deux tours de distribution de la trésorerie aient eu lieu (le premier fin mai 2027). Les pools qui ne peuvent pas être mis en pause continuent de fonctionner, avec des frais de protocole fixés à 0.",
     "who": "Les fournisseurs de liquidité des pools Balancer, toute personne ayant des fonds stakés dans des gauges, et toute personne ayant des parts de buffer v3 ou d'anciennes récompenses de minage v2. Le rappel de Balancer du 23 octobre indique avoir trouvé plus de $500 000 dans d'anciennes positions appartenant à des utilisateurs extérieurs.",
-    "todo": "Allez sur `legacy.balancer.fi` pour retirer votre liquidité et sortir vos fonds du staking des gauges. Vérifiez aussi si vous avez des parts de buffer v3 et d'anciennes récompenses de minage v2, que les outils de suivi de portefeuille comme DeBank n'affichent pas.",
+    "todo": "Allez sur `legacy.balancer.fi` pour retirer votre liquidité et retirer vos fonds du staking des gauges. Vérifiez aussi si vous avez des parts de buffer v3 et d'anciennes récompenses de minage v2, que les outils de suivi de portefeuille comme DeBank n'affichent pas.",
     "caution": "Balancer indique que les contrats sont non dépositaires : les retraits ne dépendent donc pas de l'équipe.",
     "official": [
       "Forum de Balancer : proposition d'arrêt BIP-928",
@@ -339,8 +339,8 @@
   },
   "compound-scroll-usdc": {
     "name": "Compound III : clôture du marché USDC sur Scroll",
-    "summary": "Compound prévoit de clôturer le marché USDC retiré sur Scroll. Une fois la mesure adoptée, les prêts restants pourront être liquidés : les emprunteurs devraient donc rembourser et reprendre leur garantie rapidement.",
-    "deadlineNote": "Ce marché a été retiré plus tôt cette année. Une proposition publiée sur le forum le 4 novembre indique que la proposition sur la blockchain n'a pas encore été soumise et qu'il n'y a pas encore de date. Une fois celle-ci adoptée, tous les prêts restants pourront être liquidés.",
+    "summary": "Compound prévoit de clôturer le marché USDC abandonné sur Scroll. Une fois la mesure adoptée, les prêts restants pourront être liquidés : les emprunteurs devraient donc rembourser et reprendre leur garantie rapidement.",
+    "deadlineNote": "Ce marché a été abandonné plus tôt cette année. Une proposition publiée sur le forum le 4 novembre indique que la proposition sur la blockchain n'a pas encore été soumise et qu'il n'y a pas encore de date. Une fois celle-ci adoptée, tous les prêts restants pourront être liquidés.",
     "who": "Toute personne ayant emprunté au marché USDC de Compound III sur Scroll, ou y ayant fourni de l'USDC. La proposition compte 1 959 comptes emprunteurs, tous de petite taille.",
     "todo": "Emprunteurs : remboursez vite votre USDC et reprenez votre garantie en WETH ou en wstETH. Prêteurs : retirez votre USDC.",
     "caution": "La proposition rappelle que Scroll a annoncé quitter le modèle de L2 public et conseille aux utilisateurs de fermer toutes leurs positions DeFi (voir l'entrée Scroll sur cette page).",
@@ -349,14 +349,97 @@
     ]
   },
   "parasail-stpeaq": {
-    "name": "Parasail : pool de staking stPEAQ retiré, passage en retraits uniquement",
-    "summary": "Le pool de staking stPEAQ de Parasail a été retiré après une attaque. Parasail indique que la fondation peaq couvre la perte pour que chaque utilisateur puisse tout retirer. Attendez la date de retrait officielle.",
+    "name": "Parasail : pool de staking stPEAQ abandonné, passage en retraits uniquement",
+    "summary": "Le pool de staking stPEAQ de Parasail a été abandonné après une attaque. Parasail indique que la fondation peaq couvre la perte pour que chaque utilisateur puisse tout retirer. Attendez la date de retrait officielle.",
     "deadlineNote": "Parasail n'a pas encore fixé de date pour l'ouverture du mode retraits uniquement.",
     "who": "Toute personne détenant des stPEAQ.",
     "todo": "Attendez que Parasail annonce l'ouverture du mode retraits uniquement et le lien de retrait, puis retirez vos PEAQ.",
     "caution": "Ce pool a été attaqué : Parasail indique que 1 096 424.06 PEAQ ont été volés. Ne faites confiance qu'aux liens des canaux officiels.",
     "official": [
       "Parasail sur X : point sur stPEAQ du 4 novembre"
+    ]
+  },
+  "scroll-transition": {
+    "name": "Scroll passe à un réseau permissionné, le SCR sur le mainnet d'Ethereum (proposition)",
+    "summary": "Scroll a proposé de devenir un réseau permissionné. Les positions DeFi doivent être fermées ou traitées avant le changement : vérifiez d'abord vos avoirs sur la page officielle.",
+    "deadlineNote": "La proposition a été publiée sur le forum le 3 novembre et doit encore être votée par la DAO. Scroll indique que la mise à niveau du réseau est prévue pour « la fin de l'année », sans date précise pour l'instant.",
+    "who": "Toute personne ayant des actifs sur Scroll, en particulier des positions DeFi comme des prêts ou de la liquidité, et les détenteurs de SCR.",
+    "todo": "Vérifiez vos avoirs sur `positions.scroll.io`, et fermez ou traitez vos positions DeFi avant le changement. Le pont officiel reste ouvert, et Scroll indique qu'il fonctionnera encore après la mise à niveau.",
+    "caution": "La proposition n'a pas encore été votée. Scroll indique que l'offre totale et la tokenomics du SCR ne changeront pas. Aave et Compound ferment déjà leurs marchés sur Scroll.",
+    "official": [
+      "Forum de Scroll : proposition de transition",
+      "Scroll sur X : page des avoirs (2 novembre)",
+      "Scroll sur X : proposition publiée (3 novembre)"
+    ]
+  },
+  "compound-deprecated-markets": {
+    "name": "Compound III : marchés abandonnés sur Ethereum, Linea, Ronin, Mantle, Unichain et Polygon",
+    "summary": "Compound III a abandonné une série de marchés : plus de nouveaux emprunts et plus de rendement sur les dépôts. Retirez vos dépôts, et les emprunteurs doivent rembourser pour reprendre leur garantie.",
+    "deadlineNote": "Il n'y a pas de date limite stricte. Le 2 septembre, l'abandon du marché wstETH sur Ethereum a été proposé ; le 25 septembre, les facteurs de garantie pour l'emprunt des marchés abandonnés sur cinq chaînes ont été mis à zéro ; le 30 octobre, l'abandon du marché WBTC sur Ethereum a été proposé. Les retraits du marché USDC sur Linea sont suspendus depuis le 18 septembre, et ceux du marché USDe sur Mantle depuis le 16 octobre.",
+    "who": "Toute personne ayant des dépôts ou des prêts dans ces marchés abandonnés. Les propositions comptent 93 prêteurs restants dans le marché wstETH sur Ethereum et 37 dans le marché WBTC.",
+    "todo": "Retirez les dépôts restants dans les marchés abandonnés ; les emprunteurs doivent rembourser et reprendre leur garantie. Les retraits des marchés USDC sur Linea et USDe sur Mantle sont suspendus pour l'instant : retirez dès qu'ils reprennent.",
+    "caution": "La suspension sur Linea est due à un « problème potentiel » et sera levée une fois celui-ci corrigé ; celle sur Mantle sert à exécuter une proposition de retrait des réserves.",
+    "official": [
+      "Forum de Compound : abandon du marché wstETH sur Ethereum",
+      "Forum de Compound : facteurs de garantie à zéro sur les marchés abandonnés",
+      "Forum de Compound : suspension du marché USDC sur Linea",
+      "Forum de Compound : suspension du marché USDe sur Mantle",
+      "Forum de Compound : abandon du marché WBTC sur Ethereum"
+    ]
+  },
+  "diva-staking-shutdown": {
+    "name": "Fermeture de Diva Staking (sans lancement du mainnet)",
+    "summary": "Diva Staking ferme sans avoir lancé son mainnet. Les pré-dépôts dans ses coffres Enzyme peuvent être retirés dès maintenant ; Diva indique qu'il n'y a « plus rien à attendre ».",
+    "deadlineNote": "Annoncé le 28 octobre, sans date limite.",
+    "who": "Toute personne ayant fait un pré-dépôt dans les Early Staker Vaults de Diva sur Enzyme.",
+    "todo": "Retirez votre pré-dépôt des Early Staker Vaults sur Enzyme.",
+    "official": [
+      "Diva sur X : annonce du 28 octobre"
+    ]
+  },
+  "aero-merger": {
+    "name": "Aerodrome et Velodrome fusionnent en Aero",
+    "summary": "Aerodrome et Velodrome ont fusionné en Aero. Les anciens pools ne versent plus de récompenses : déplacez votre liquidité vers les nouveaux pools, et mettez à niveau vous-même vos jetons et vos blocages sur la page officielle de mise à niveau.",
+    "deadlineNote": "Le xVELO hors d'OP Mainnet et d'Ink devait être ramené sur OP via le pont au plus tard le 15 octobre, et les veNFT devaient être retirés de Relay et d'autres coffres au plus tard le 20 octobre. Le 22 octobre à 00:00 UTC, les récompenses des anciens pools se sont arrêtées et la page de mise à niveau a ouvert. Aero indique qu'il n'y a pas de date limite pour la mise à niveau.",
+    "who": "Les détenteurs d'AERO, de VELO, de veAERO ou de veVELO, et les fournisseurs de liquidité des anciens pools.",
+    "todo": "Faites la mise à niveau sur la page dédiée de `aerodrome.finance` ou `velodrome.finance` : l'AERO se convertit à 1:1 et le VELO à 1:0.044 en nouvel AERO, et le veAERO ou le veVELO deviennent du sAERO. Avant la mise à niveau, collectez vos récompenses et vos rebases, et retirez vos votes. Les anciens pools ne versent pas de récompenses : déplacez votre liquidité vers les nouveaux pools.",
+    "caution": "La mise à niveau est irréversible, et les récompenses non collectées avant la mise à niveau sont perdues. Aero indique que les anciennes interfaces « pourraient fermer plus tard ».",
+    "official": [
+      "Centre de mise à niveau d'Aero",
+      "Article d'Aero : le jour du lancement"
+    ]
+  },
+  "venus-vai-lisusd": {
+    "name": "Venus : abandon progressif du VAI, marchés lisUSD et TRX retirés de la liste",
+    "summary": "Venus abandonne progressivement le VAI et retire de la liste les marchés lisUSD et TRX. Le VAI placé dans le coffre peut être retiré à tout moment ; les emprunteurs doivent se préparer à rembourser.",
+    "deadlineNote": "Tout est parti de l'arrêt du flux de prix du VAI par Chainlink. Il n'y a pas de date limite stricte : la VIP-662 est entrée en vigueur le 21 septembre (le coffre VAI a cessé de verser des récompenses en XVS), et la VIP-663 le 28 septembre (TRX et lisUSD sont passés à la phase suivante). Venus indique que les étapes suivantes seront annoncées séparément.",
+    "who": "Toute personne ayant du VAI dans le coffre VAI, toute personne ayant créé (minté) du VAI, et toute personne ayant des dépôts ou des prêts dans les marchés lisUSD ou TRX.",
+    "todo": "Le VAI dans le coffre peut être retiré à tout moment, et les XVS déjà gagnés peuvent encore être collectés. Si vous avez créé du VAI, préparez-vous à rembourser. Retirez vos dépôts de lisUSD, et remboursez vos prêts en lisUSD avant la hausse des taux de la phase trois.",
+    "official": [
+      "Communauté Venus : proposition sur le VAI",
+      "Communauté Venus : retrait de la liste du marché lisUSD",
+      "Communauté Venus : rapport de septembre"
+    ]
+  },
+  "aave-v3-deprecation": {
+    "name": "Aave V3 : six déploiements abandonnés, actifs peu utilisés retirés de la liste",
+    "summary": "Aave V3 abandonne six déploiements : Sonic, Scroll, zkSync Era, Metis, Soneium et Aptos. Retirez vos dépôts rapidement, et les emprunteurs doivent rembourser avant la baisse des seuils de liquidation.",
+    "deadlineNote": "Il n'y a pas de date limite stricte. Les marchés sont gelés avec un facteur de réserve de 99%, si bien que presque tous les intérêts vont à la trésorerie. Aave indique qu'il pourrait encore augmenter les taux et abaisser progressivement les seuils de liquidation.",
+    "who": "Toute personne ayant des dépôts ou des prêts sur ces six déploiements, et toute personne détenant les actifs retirés de la liste sur d'autres déploiements.",
+    "todo": "Retirez rapidement vos dépôts de ces six déploiements. Emprunteurs : remboursez et reprenez votre garantie pour ne pas être liquidés quand les seuils baisseront.",
+    "official": [
+      "Forum de gouvernance d'Aave : abandon des actifs peu adoptés (ARFC)"
+    ]
+  },
+  "marinus-harmony": {
+    "name": "Marinus : marchés sur Harmony abandonnés, retraits uniquement",
+    "summary": "Marinus a abandonné ses marchés sur Harmony : les dépôts ne peuvent plus qu'être retirés, ou retirés du staking, et la chaîne Harmony elle-même ferme.",
+    "deadlineNote": "Depuis le 14 septembre, vous ne pouvez plus que retirer vos fonds et les retirer du staking. Il n'y a pas de date limite.",
+    "who": "Toute personne ayant déposé des fonds ou fait du staking chez Marinus sur Harmony.",
+    "todo": "Retirez ce que vous avez placé chez Marinus sur Harmony, y compris ce qui est en staking.",
+    "caution": "La chaîne Harmony elle-même ferme ; voir l'entrée Harmony sur cette page.",
+    "official": [
+      "Marinus sur X : annonce du 14 septembre"
     ]
   }
 }
