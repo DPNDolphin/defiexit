@@ -507,5 +507,223 @@
       "Lazy Summer forumu: düzenli kapanış RFC'si (5 Kasım)",
       "Lazy Summer forumu: kasalar yalnızca çekime geçiyor (29 Temmuz)"
     ]
+  },
+  "aster-apollox-offline": {
+    "name": "Aster: ApolloX web sitesi ve API'si kapanıyor",
+    "summary": "Aster, eski ApolloX web sitesini ve API'sini kapatıyor; işlem 5 Kasım civarında tamamlanıyor. Orada hâlâ bakiyeniz ya da pozisyonunuz varsa şimdi kapatıp çekin.",
+    "deadlineNote": "Aster 3 Kasım 10:00 UTC'den itibaren eski APX sözleşmelerini kapatmaya başladı ve bunun yaklaşık 48 saat süreceğini söyledi; yani 5 Kasım 10:00 UTC civarında bitiyor. apollox.finance web sitesi ve API de bununla birlikte kapanıyor.",
+    "who": "ApolloX'ta (`apollox.finance`) hâlâ bakiyesi ya da açık pozisyonu olan herkes.",
+    "todo": "Pozisyonlarınızı kapatın ve kendi cüzdanınıza çekin. Bir sorun çıkarsa Aster, Discord'daki desteğine başvurmanızı söylüyor.",
+    "caution": "Aster, kapanış tamamlandıktan sonra sözleşmelerin doğrudan kullanılıp kullanılamayacağını söylemedi.",
+    "official": [
+      "Aster, X'te: 3 Kasım kapanış paylaşımı"
+    ]
+  },
+  "lisk-chain-closed": {
+    "name": "Lisk ağı kapandı",
+    "summary": "Lisk ağı 2 Kasım'da kapandı. Kapanış anında süren çekimler Ethereum'da hesaba geçiyor; ağda kalan para için Lisk, Ocak 2027'de bir süreç açılacağını söylüyor.",
+    "deadlineNote": "Ağın önce 31 Ekim'de kapanması planlanmıştı; fiilî son gün 2 Kasım oldu. Köprü işlemi başlatmak için son gün 24 Ekim'di (köprü yaklaşık 8 gün sürüyor). Lisk, ağda kalan para için özel bir sözleşmenin Ocak 2027'de geleceğini söylüyor.",
+    "who": "Kapanış anında Lisk üzerinde hâlâ varlığı ya da süren bir çekimi olan herkes.",
+    "todo": "Lisk, kapanış anında süren çekimlerin doğrudan Ethereum'daki hedef adrese yatırılacağını söylüyor. Ağda kalan para için Ocak 2027'deki resmi süreci bekleyin; şimdilik yapacak bir şey yok.",
+    "caution": "Lisk, parayı geri almanıza yardım etmeyi teklif ederek sizinle asla iletişime geçmeyeceğini ve kurtarma ifadenizi asla istemeyeceğini söylüyor. Staking ödül sözleşmesindeki yaklaşık 5.2 milyon LSK (kazanılmış ama henüz alınmamış ödüller dahil) yakılacak; kullanıcıların kendilerinin stake ettiği LSK yakılmayacak.",
+    "official": [
+      "Lisk blogu: Lisk ağı kapandı",
+      "Lisk, X'te: Ocak süreci (3 Kasım)",
+      "Lisk, X'te: son gün hatırlatması (1 Kasım)",
+      "Lisk blogu: yeni Lisk'le tanışın"
+    ]
+  },
+  "stratex-vaults": {
+    "name": "StratEx kasaları (QuickSwap üzerinde) kapandı",
+    "summary": "StratEx kasaları kapandı; StratEx, 3 Kasım'da çekim yapmamış herkese parasını geri gönderdiğini söylüyor. Ulaşıp ulaşmadığını görmek için cüzdanınızı kontrol edin.",
+    "deadlineNote": "Elle çekimler 1 Kasım'da durdu. 3 Kasım'da StratEx, çekim yapmamış herkese parayı geri gönderdiğini söyledi.",
+    "who": "StratEx kasalarında parası olup 1 Kasım'dan önce çekmemiş herkes.",
+    "todo": "Geri gönderilen paranın cüzdanınıza ulaşıp ulaşmadığını kontrol edin.",
+    "official": [
+      "StratEx, X'te: para iade edildi (3 Kasım)",
+      "StratEx, X'te: çekim son tarihi (21 Ekim)",
+      "StratEx, X'te: son duyuru (17 Eylül)"
+    ]
+  },
+  "lista-cdp-winddown": {
+    "name": "Lista DAO: Lista CDP kapandı, Lista Lending'e taşındı",
+    "summary": "Lista CDP kapandı. Lista, desteklenen piyasalardaki pozisyonların Lista Lending'e otomatik taşındığını, yapacak bir şey olmadığını söylüyor. Pozisyonunuzun desteklenen bir piyasada olup olmadığını kontrol edin.",
+    "deadlineNote": "Pozisyonlar 30 Eylül'den 31 Ekim'e kadar taşınabiliyor ya da geri ödenebiliyordu. 1 ve 2 Kasım'da Lista, desteklenen piyasalardaki pozisyonların otomatik taşındığını söyledi.",
+    "who": "Lista CDP'de pozisyonu olan herkes.",
+    "todo": "2 Kasım'da Lista, desteklenen tüm piyasaların Lista Lending'e otomatik taşındığını, yapacak bir şey olmadığını söyledi. Pozisyonunuzun desteklenen bir piyasada olduğunu kontrol edin.",
+    "caution": "Lista, desteklenmeyen piyasalardaki pozisyonlara ne olacağını söylemedi.",
+    "official": [
+      "Lista blogu: CDP kapanmadan önce yapılacaklar",
+      "Lista, X'te: işlem gerekmiyor (2 Kasım)",
+      "Lista, X'te: geçiş tamamlandı (1 Kasım)",
+      "Lista, X'te: 1 Ekim duyurusu"
+    ]
+  },
+  "kyan-exchange": {
+    "name": "Kyan borsası (eski adıyla Premia) kapandı",
+    "summary": "Kyan (eski adıyla Premia) faaliyetlerine son verdi ve bakiyelerin 31 Ekim'e kadar çekilmesi gerekiyordu. Çekemiyorsanız Kyan, Discord sunucusunda sormanızı söylüyor.",
+    "deadlineNote": "19 Ekim'de duyuruldu: bakiyeleri “ay sonuna kadar”, yani 31 Ekim'e kadar çekin.",
+    "who": "Kyan'da bakiyesi kalan herkes.",
+    "todo": "Çekemiyorsanız Kyan'ın resmi Discord sunucusundaki #support kanalına gidin; ekip bunu elle hallediyor.",
+    "official": [
+      "Kyan, X'te: 19 Ekim kapanış paylaşımı"
+    ]
+  },
+  "stargate-hydra-chains": {
+    "name": "Stargate v2 ve Hydra az etkinlikli bir grup ağı bırakıyor",
+    "summary": "Stargate v2 ve Hydra, az etkinlikli bir grup ağı bıraktı; son grup 23 Ekim'de durdu.",
+    "deadlineNote": "20 Eylül civarında Hydra varlıkları bir grup ağda durdu (Sophon, Silicon, Arbitrum Nova, Degen ve Superposition dahil). Aurora, Taiko, LightLink ve Gnosis 23 Eylül'de, Gravity, Camp, GOAT ve Metis ise 23 Ekim'de durdu.",
+    "who": "Bu ağlardaki Stargate havuzlarında likidite sağlayanlar ve Hydra USDC.e ya da USDT tutanlar.",
+    "todo": "Her son tarihten önce likidite sağlayıcılarının (ETH havuzları dahil) çekmesi, Hydra USDC.e ve USDT sahiplerinin de bozdurmak için köprüyle bir Stargate havuzuna aktarması gerekiyordu.",
+    "caution": "Stargate'in paylaşımları, son tarihten sonra Hydra varlıklarının hâlâ bozdurulup bozdurulamayacağını söylemiyor.",
+    "official": [
+      "Stargate, X'te: 25 Eylül hatırlatması",
+      "Stargate, X'te: 10 Eylül hatırlatması",
+      "Stargate, X'te: 21 Ağustos duyurusu"
+    ]
+  },
+  "stargate-metis-pools": {
+    "name": "Metis üzerinde Stargate: V1 ve V2 havuzlarındaki likiditenin 23 Ekim'e kadar çekilmesi gerekiyordu",
+    "summary": "Stargate'in Metis desteği 23 Ekim'de sona erdi ve oradaki V1 ve V2 havuzlarındaki likiditenin önceden çekilmesi gerekiyordu. Metis, kalanların normal arayüzden çekilmesinin zor ya da imkânsız olabileceği konusunda uyarıyor.",
+    "deadlineNote": "Stargate'in Metis Andromeda desteği 23 Ekim'de sona erdi; LayerZero Labs'in DVN ve Executor hizmetleri de 30 Ekim'de Metis'e hizmet vermeyi bıraktı. Etkilenen havuzlar: Stargate V2'deki USDT, ETH ve METIS havuzları ile Stargate V1'deki USDT, METIS ve MAI havuzları.",
+    "who": "Metis üzerindeki Stargate V1 ve V2 havuzlarında likidite sağlayanlar ve METIS, HERA, QI ya da MTVT'yi LayerZero V1 üzerinden başka bir ağa köprülemiş herkes.",
+    "todo": "Son tarihten önce: stake edildiyse LP tokenlarını stake'ten çıkarın, sonra Stargate uygulamasında likiditeyi çekin ve LayerZero V1 üzerinden çıkan METIS, HERA, QI ya da MTVT'yi aynı yolla Metis'e geri köprüleyin. Kaçırdıysanız Metis, Metis ekibiyle iletişime geçmenizi söylüyor.",
+    "caution": "Metis, son tarihten sonra Metis üzerindeki Stargate havuzlarında kalan likiditenin normal Stargate arayüzünden çekilmesinin zor ya da imkânsız olabileceğini söylüyor. Metis'in resmi (canonical) köprüsünün çıkardığı m.USDC, m.USDT, WETH ve METIS etkilenmiyor.",
+    "official": [
+      "Metis blogu: Metis Andromeda'da Stargate'in kapanışı ve LayerZero değişiklikleri"
+    ]
+  },
+  "mint-blockchain-shutdown": {
+    "name": "Mint Blockchain kapandı",
+    "summary": "Mint Blockchain kapandı; son tarih 20 Ekim'di. Resmi çekim sayfası yalnızca ETH, WBTC, USDC ve USDT'yi Ethereum'a geri taşıyor.",
+    "deadlineNote": "Son tarih 20 Ekim'di.",
+    "who": "Mint ağında varlığı olan herkes.",
+    "todo": "Resmi sayfa `mintchain.io/withdraw` yalnızca ETH, WBTC, USDC ve USDT'nin Ethereum'a çekilmesini destekliyor (imToken'ın duyurusuna göre çekimler haftada bir işleniyor ve yaklaşık 10 günde ulaşıyor).",
+    "caution": "Mint, son tarihten sonra başka bir şeyin mümkün olup olmadığını söylemedi.",
+    "official": [
+      "Mint çekim sayfası"
+    ]
+  },
+  "coinex-csc-shutdown": {
+    "name": "CoinEx Smart Chain (CSC) ve OneSwap kapandı",
+    "summary": "CoinEx faaliyetlerini sonlandırıyor. CSC ağı ve OneSwap 29 Eylül'de durdu; borsa hesaplarındaki paranın da en geç 22 Aralık'a kadar çekilmesi gerekiyor.",
+    "deadlineNote": "CSC ve OneSwap 29 Eylül'de durdu ve köprü bozdurmaları da aynı anda kapandı. CoinEx borsasından çekimler 22 Aralık 10:00 UTC+8'e kadar açık kalıyor.",
+    "who": "CSC ya da OneSwap üzerinde varlığı olan ve CoinEx borsa hesabında parası kalan herkes.",
+    "todo": "Zincir üstü son tarih geçti. Borsa hesabınızdaki parayı 22 Aralık'tan önce çekin. Sonrasında USDT, aylık 5% saklama ücretiyle ayrı bir saklamaya taşınır; geri almak için 22 Ağustos 2028'e kadar support@coinex.com adresine e-posta gönderin.",
+    "caution": "CoinEx bunun son duyurusu olduğunu ve bundan sonra kendi adına yapılan her “yeni duyurunun” sahte olduğunu söylüyor.",
+    "official": [
+      "CoinEx duyurusu"
+    ]
+  },
+  "awe-stpt-migration": {
+    "name": "AWE Network: STPT'den AWE'ye (Base'e taşınıyor)",
+    "summary": "Ethereum'daki STPT'yi Base'deki AWE'ye çevirme işlemi 21 Eylül'de kapandı ve AWE geç takasların mümkün olmadığını söylüyor.",
+    "deadlineNote": "Son tarih 21 Eylül'dü. AWE, toplamın yaklaşık 99% kadarının taşındığını söylüyor.",
+    "who": "Hâlâ STPT tutan herkes.",
+    "todo": "AWE geç takasların mümkün olmadığını söylüyor. Takas edilmeyen tokenlara ne olacağına bir topluluk yönetişim teklifiyle karar verilecek.",
+    "official": [
+      "AWE blogu: geçiş dönemi kapanıyor"
+    ]
+  },
+  "tether-alloy": {
+    "name": "Tether: Alloy by Tether ve aUSD₮ kapandı",
+    "summary": "Alloy by Tether ve aUSD₮ 17 Eylül'de kapandı. Kullanıcıların bundan önce aUSD₮'yi iade edip XAU₮ teminatlarını geri alması gerekiyordu.",
+    "deadlineNote": "Son tarih 17 Eylül'dü.",
+    "who": "aUSD₮ basmak için Alloy'da XAU₮'yi teminat olarak kullanmış herkes.",
+    "todo": "Son tarihten önce kullanıcıların aUSD₮'yi iade edip XAU₮ teminatlarını geri alması gerekiyordu. Tether bunun artık platform üzerinden yapılamayacağını söylüyor.",
+    "caution": "Tether, son tarihten sonra teminata ne olacağını söylemedi.",
+    "official": [
+      "Tether duyurusu"
+    ]
+  },
+  "trust-wallet-networks": {
+    "name": "Trust Wallet 24 ağı kaldırıyor",
+    "summary": "15 Eylül'den beri Trust Wallet 24 ağı göstermiyor, ancak varlıklar hâlâ zincirde. EVM ağlarını kendiniz özel ağ olarak ekleyebilirsiniz.",
+    "deadlineNote": "15 Eylül'de bu ağlar cüzdanın listesinden kalktı; Trust Handle ise daha önce, 7 Eylül'de durdu.",
+    "who": "Bu ağlarda varlığı olan Trust Wallet kullanıcıları: yukarıda listelenen 15 EVM ağı ve 9 EVM dışı ağ.",
+    "todo": "Varlıklarınız hâlâ zincirde. EVM ağlarını doğrulanmış bir RPC ile kendiniz özel ağ olarak ekleyin. EVM dışı ağlar için cüzdanınızı o ağı destekleyen başka bir cüzdana aktarın.",
+    "caution": "Yalnızca ağın resmi belgelerindeki RPC'yi kullanın. Kurtarma ifadesini yalnızca kendiniz, güvenilir bir cüzdan uygulamasının içine girin; asla bir web sitesine girmeyin.",
+    "official": [
+      "Trust Wallet blogu"
+    ]
+  },
+  "vanar-vanry-migration": {
+    "name": "Vanar: VANRY, Base'e taşınıyor",
+    "summary": "VANRY'yi Base'e taşıma dönemi 10 Eylül'de kapandı ve Vanar'ın sayfası artık geçiş işlenmeyeceğini söylüyor.",
+    "deadlineNote": "Takas dönemi 11 Ağustos 13:00 UTC ile 10 Eylül 13:00 UTC arasındaydı. Hâlâ stake'ten çıkarılmakta olan tokenlar 11 Eylül'de Base ağında airdrop ile gönderildi.",
+    "who": "Ethereum, Polygon ya da Vanar Chain üzerinde VANRY tutan herkes.",
+    "todo": "Vanar'ın sayfası, dönem kapandıktan sonra geçiş yapılmadığını söylüyor. 10 Eylül'den önce stake'ten çıkarmaya başladıysanız ve tokenlarınızı almadıysanız Vanar'a e-posta gönderin.",
+    "official": [
+      "Vanar takas sayfası"
+    ]
+  },
+  "superposition-shutdown": {
+    "name": "Superposition ağı kapandı, Arbitrum One'a geri dönüş",
+    "summary": "Superposition ağı 8 Eylül'de kapandı. Superposition, sonrasında ağda kalan varlıkların “artık erişilemez olabileceğini” söylemişti.",
+    "deadlineNote": "Ağ 8 Eylül'de kapandı.",
+    "who": "Kapandığında Superposition üzerinde hâlâ varlığı olan herkes.",
+    "todo": "Son tarihten önce kullanıcıların Camelot ve diğer pozisyonlardan çıkması, sonra Arbitrum yerel köprüsü ya da Relay ile Arbitrum One'a geri köprülemesi gerekiyordu.",
+    "caution": "5 Kasım itibarıyla resmi bir yedek yol duyurulmadı.",
+    "official": [
+      "Superposition, X'te: 4 Ağustos duyurusu"
+    ]
+  },
+  "arbitrum-nova-maintenance": {
+    "name": "Arbitrum Nova bakım modunda (kapanmadı)",
+    "summary": "2 Eylül'den beri Arbitrum Nova kapanmış değil, bakım modunda. Önerilen, resmi köprüyle Arbitrum One'a geçmek.",
+    "deadlineNote": "Geçiş dönemi 4 Haziran'dan 2 Eylül'e kadar sürdü. 2 Eylül'den beri ağ yalnızca bakım modunda ve RPC erişimi daha kısıtlı.",
+    "who": "MOON sahipleri dahil, Arbitrum Nova üzerinde varlığı olan herkes.",
+    "todo": "Resmi Arbitrum Portal köprüsüyle Arbitrum One'a geçin. Büyük tutarlar için önce Ethereum'a çekin (7 günlük bir itiraz süresi var). MOON'un doğrudan rotası yok; önce Ethereum'a gitmesi gerekiyor.",
+    "caution": "Resmi köprü 3. aşamada da çalışmaya devam ediyor. Alchemy, Nova RPC'sini kapattı.",
+    "official": [
+      "Arbitrum forumu: Nova SSS"
+    ]
+  },
+  "ton-old-bridge": {
+    "name": "Eski TON köprüsü (bridge-v3.ton.org) kalıcı olarak kapandı",
+    "summary": "Eski TON köprüsü 1 Eylül'de kalıcı olarak kapandı. Ethereum ve BSC'deki Wrapped TON ile TON üzerindeki jUSDT ve jUSDC'nin bundan önce geri köprülenmesi gerekiyordu.",
+    "deadlineNote": "1 Eylül'den beri eski köprü hiçbir transferi işlemiyor.",
+    "who": "Ethereum ya da BNB Chain üzerinde Wrapped TON veya TON üzerinde jUSDT, jUSDC ve benzeri tokenları tutan herkes.",
+    "todo": "Son tarihten önce Ethereum ve BSC'deki Wrapped TON'un TON'a, TON üzerindeki jUSDT, jUSDC ve benzeri tokenların da Ethereum'a geri köprülenmesi gerekiyordu.",
+    "caution": "5 Kasım itibarıyla resmi kanal herhangi bir yedek yol paylaşmadı.",
+    "official": [
+      "TON Status resmi Telegram kanalı"
+    ]
+  },
+  "dfk-chain-sunset": {
+    "name": "DeFi Kingdoms: DFK Chain kapanışı",
+    "summary": "DFK Chain'in kapanışı 28 Ağustos'a ayarlanmıştı (geçti). DeFi Kingdoms, JEWEL ile BTC, ETH, USDC ve AVAX gibi DFK dışı tokenları taşıyamayacağını söyledi; sahiplerin bunları o tarihten önce kendileri köprüyle çıkarması gerekiyordu.",
+    "deadlineNote": "31 Temmuz'da duyuruldu; kapanış 28 Ağustos'a ayarlanmıştı.",
+    "who": "DFK Chain üzerinde JEWEL ya da BTC, ETH, USDC ve AVAX gibi DFK dışı tokenlar tutan herkes, oradaki likidite sağlayıcıları ve akıllı cüzdan kullananlar.",
+    "todo": "DeFi Kingdoms'un istediği: akıllı cüzdan kullananların köprülemeden önce varlıklarını standart bir cüzdana taşıması ve iki DFK yerel varlığından oluşan havuzlar dahil tüm LP'leri bozması. Ekip o sırada JEWEL tokenının Avalanche C-Chain'e köprülenebileceğini ve DFK yerel varlıklarının geçişinin hazırlandığını, ayrıntıların sonra geleceğini söylemişti.",
+    "caution": "DeFi Kingdoms, JEWEL tokenını ya da DFK dışı tokenları taşıyamayacağını, yeniden basamayacağını ya da kontrol edemeyeceğini söyledi. 31 Temmuz duyurusu, 28 Ağustos'tan sonra ağda kalanlara ne olacağını söylemiyor.",
+    "official": [
+      "DeFi Kingdoms, X'te: 31 Temmuz duyurusu",
+      "DeFi Kingdoms, X'te: yapmanız gerekenler"
+    ]
+  },
+  "moonbeam-glmr-base": {
+    "name": "Moonbeam: GLMR, Base'e taşınıyor",
+    "summary": "GLMR tokenlarını Base'e taşıma son tarihi 31 Temmuz'da geçti. Moonbeam önce ağdaki protokollerden paranın çekilmesini, sonra tokenların 1:1 oranla Base'e köprülenmesini istedi. Köprülenmeyen tokenlara ne olacağı duyuruda yazmıyor.",
+    "deadlineNote": "Son tarih 31 Temmuz'du (saat ya da saat dilimi verilmedi). Moonbeam, ağın 31 Temmuz'a kadar geçiş dönemi boyunca çalışmaya devam edeceğini ve ağ kapandıktan sonra zincir üstü protokollerde kalan paranın “erişilemez hâle gelebileceğini” söyledi. Duyuru, ağın ne zaman duracağını söylemiyor.",
+    "who": "Moonbeam üzerindeki GLMR sahipleri ve o ağdaki protokollerde (likidite, borç verme, staking sözleşmeleri vb.) parası olan herkes. Borsadaki GLMR için Moonbeam, geçişi borsanın otomatik olarak yaptığını söylüyor.",
+    "todo": "Adımlar şöyleydi: önce ağdaki protokollerden parayı çekmek, sonra resmi geçiş sayfasında GLMR tokenlarını 1:1 oranla Base'e köprülemek. 3 Temmuz duyurusu, son tarihten sonra geçişin hâlâ mümkün olup olmadığını ya da köprülenmeyen tokenlara ne olacağını belirtmiyor.",
+    "caution": "Resmi geçiş sayfası `migrate.portal.moonbeam.network`; 3 Temmuz duyurusu, son tarihten sonra bu sayfanın kullanılabilir olup olmadığını söylemiyor. Size özel mesaj atıp “geç geçiş” teklif eden herkesi dikkate almayın.",
+    "official": [
+      "Moonbeam haberleri: “Moonbeam Network Relaunches on Base”",
+      "Moonbeam, X'te: 3 Temmuz duyurusu"
+    ]
+  },
+  "moonriver-movr-base": {
+    "name": "Moonriver: MOVR, Base'e taşınıyor",
+    "summary": "MOVR tokenlarını Base'e taşıma son tarihi 31 Temmuz'da geçti. Moonriver önce ağdaki protokollerden paranın çekilmesini, sonra tokenların iki adımda 1:1 oranla Base'e köprülenmesini istedi. Köprülenmeyen tokenlara ne olacağı duyuruda yazmıyor.",
+    "deadlineNote": "Son tarih 31 Temmuz'du (saat ya da saat dilimi verilmedi). Moonriver, ağ kapandıktan sonra zincir üstü protokollerde kalan paranın “kalıcı olarak erişilemez hâle gelebileceğini” söyledi. Duyuru, ağın ne zaman duracağını söylemiyor.",
+    "who": "Moonriver üzerindeki MOVR sahipleri ve o ağdaki protokollerde (likidite, borç verme, staking sözleşmeleri vb.) parası olan herkes. Borsadaki MOVR için Moonriver yapacak bir şey olmadığını, borsanın bunu otomatik olarak hallettiğini söylüyor.",
+    "todo": "Adımlar şöyleydi: önce ağdaki protokollerden parayı çekmek, sonra resmi geçiş sayfasında iki adımda köprülemek. MOVR, Moonriver'dan Moonbeam'e (xcMOVR olarak) geçer, ardından geçiş köprüsü onu 1:1 oranla ve ücretsiz olarak Base üzerinde MOVR tokenına dönüştürür. 7 Temmuz duyurusu, son tarihten sonra geçişin hâlâ mümkün olup olmadığını söylemiyor.",
+    "caution": "Resmi geçiş sayfası `migrate.portal.moonbeam.network`; ilgili sözleşmeler de orada doğrulanabilir. 7 Temmuz duyurusu, son tarihten sonra geçiş portalının kullanılabilir olup olmadığını söylemiyor. Size özel mesaj atıp “geç geçiş” teklif eden herkesi dikkate almayın.",
+    "official": [
+      "Moonbeam haberleri: “MOVR is Migrating to Base”",
+      "Moonriver, X'te: 7 Temmuz duyurusu"
+    ]
   }
 }
