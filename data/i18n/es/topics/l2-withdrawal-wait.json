@@ -1,0 +1,118 @@
+{
+  "title": "Retirar de una L2 a Ethereum: por qué hay que esperar y qué hacer cuando termina la espera",
+  "summary": "Cuando pasas fondos de una L2 a Ethereum por un puente oficial, esperas hasta que el resultado de la cadena se confirme en Ethereum: unos 7 días en OP Mainnet y Arbitrum, ahora 5 días en Base (1 día para algunos retiros) y normalmente unas pocas horas en cadenas ZK como zkSync Era y Linea. La mayoría de las cadenas no envían el dinero automáticamente: en OP Mainnet y Base primero haces Prove en Ethereum, esperas y luego haces Finalize; en Arbitrum, Linea y Scroll vuelves al puente después de la espera y haces Claim en Ethereum. Así que deja un poco de ETH en Ethereum para las comisiones.",
+  "sections": [
+    {
+      "h": "Por qué hay que esperar",
+      "p": [
+        "Una L2 entrega sus resultados a Ethereum para que los confirme. Antes de que el puente oficial libere el dinero en Ethereum, tiene que estar seguro de que ese resultado es correcto.",
+        "Cadenas como OP Mainnet, Base y Arbitrum publican primero sus resultados y luego dejan un tiempo para que cualquiera impugne uno incorrecto. Ese tiempo es el período de impugnación (challenge period). Las cadenas ZK como zkSync Era, Linea y Scroll esperan a que se genere una prueba y se verifique en Ethereum, y zkSync añade un retraso de seguridad adicional.",
+        "La espera forma parte de las reglas de seguridad del puente oficial. La documentación de OP dice claramente que no se puede eludir."
+      ],
+      "list": []
+    },
+    {
+      "h": "Cuánto tarda cada cadena",
+      "p": [
+        "Según la documentación oficial de cada cadena (revisada el 2026-11-05). Súmale el tiempo que tardes tú en hacer cada paso."
+      ],
+      "list": [
+        "OP Mainnet: un período de impugnación de 7 días. Tres pasos: empiezas en OP Mainnet; cuando esa parte de la cadena se haya publicado en Ethereum, haces “Prove” en Ethereum; después de 7 días, haces “Finalize” en Ethereum.",
+        "Base: desde la actualización Beryl del 25 de junio de 2026, el puente estándar espera 5 días, o 1 día cuando ese resultado está respaldado tanto por una prueba TEE como por una prueba ZK. Antes de poder hacer Prove suele haber una espera de unos 20–60 minutos. Los pasos son los mismos que en OP Mainnet: empezar, Prove y Finalize. Guíate por el tiempo que te muestre el puente.",
+        "Arbitrum One / Nova: al menos 7 días según la documentación oficial, y la cuenta atrás del puente suele mostrar 7–8 días (el período de impugnación es de 45,818 bloques de Ethereum, unos 6.4 días, más algo de procesamiento antes y después). Cuando termine la cuenta atrás, abre tu perfil arriba a la derecha del puente, ve a Transactions y toca Claim.",
+        "zkSync Era: la documentación indica un retraso de seguridad de al menos 3 horas, y 1–2 horas más cuando la red está congestionada. El último paso en Ethereum (“finalize withdrawal”) puede enviarlo cualquiera; la documentación no dice si en mainnet lo hacen por ti. Si el puente que usaste muestra un botón Claim, tienes que tocarlo.",
+        "Linea: unas 2–12 horas para ETH y tokens normales. Los retiros de Linea a Ethereum siempre necesitan un Claim manual en Ethereum (el historial del puente oficial los marca como “Ready to claim”). En esta dirección, el puente oficial también cobra una comisión anti-DDoS de 0.001 ETH.",
+        "Scroll: espera a que el lote que contiene tu transacción se finalice en Ethereum y luego envía una transacción más en Ethereum, “Execute Withdrawal” (el botón Claim del puente). La documentación oficial actual no dice cuánto tarda.",
+        "Otras cadenas: las cadenas construidas con OP Stack no necesariamente funcionan igual que OP Mainnet; Base ya está en 5 días. Retirar de una L3 a Ethereum lleva dos tramos, cada uno con su propia espera, y la documentación de Arbitrum estima el peor caso con la configuración predeterminada en unas dos semanas. Consulta la documentación de esa cadena."
+      ]
+    },
+    {
+      "h": "Qué hacer cuando termina la espera",
+      "p": [
+        "En la mayoría de los puentes oficiales, el dinero no llega solo a tu billetera cuando termina la espera. La documentación de Arbitrum dice que la confirmación solo hace que un retiro se pueda reclamar: alguien tiene que ejecutarlo en Ethereum, y nada lo hace automáticamente. Antes de que cerrara su cadena, Lisk recordó a los usuarios que un retiro no está completo hasta que se reclama."
+      ],
+      "list": [
+        "Vuelve a la misma página del puente donde empezaste y conecta la misma billetera.",
+        "Busca el retiro en su historial (History, Transactions o Activity) y toca Prove, o Claim / Finalize, según te lo indique.",
+        "Este paso envía una transacción en Ethereum, así que pagas gas de Ethereum. La documentación de OP señala que las transacciones de Prove y Finalize en Ethereum suelen costar mucho más que iniciar el retiro en la L2.",
+        "Si retiraste desde una billetera de contrato inteligente como una Safe: la documentación de Arbitrum dice que puede que no aparezca en el historial del puente, y que puedes buscar en el historial por el hash de la transacción de la L2 que lo inició y luego hacer Claim."
+      ]
+    },
+    {
+      "h": "¿Tarda más de lo que dice la documentación? Revisa esto primero",
+      "p": [
+        "No vuelvas a empezar. Revisa estos puntos uno por uno."
+      ],
+      "list": [
+        "OP Mainnet y Base: la espera cuenta como mínimo desde tu transacción de Prove, no desde que empezaste. Si hiciste Prove unos días tarde, la espera completa cuenta desde entonces. Si el resultado contra el que hiciste Prove se declara inválido, tienes que volver a hacer Prove y el reloj vuelve a empezar.",
+        "Arbitrum: en casos raros alguien abre una impugnación y la espera se alarga; la documentación dice que con BoLD un retiro honesto se retrasa como máximo un período de impugnación más.",
+        "Cadenas ZK: zkSync dice que las 3 horas no son una garantía y que puede tardar más cuando la red está congestionada; Sophon dice que el tiempo varía y que sigas el estado en su página oficial de retiros.",
+        "¿Llegó pero no lo ves? zkSync dice que estos retiros suelen aparecer en “Internal Transactions” en la página de tu dirección en Etherscan, no en la lista normal de transacciones.",
+        "Linea: los retiros que llevan más de 90 días sin reclamar ya no aparecen en la app del puente oficial; se terminan a mano siguiendo la documentación oficial para desarrolladores.",
+        "Si sigue sin cuadrar, pregunta solo en el Discord oficial o en el centro de ayuda del proyecto, e ignora a cualquiera que te contacte primero."
+      ]
+    },
+    {
+      "h": "Qué no hacer",
+      "p": [
+        "Cuando hay prisa es cuando la gente paga de más o cae en estafas."
+      ],
+      "list": [
+        "No vuelvas a usar el puente para “acelerarlo”. Un retiro ya iniciado no se puede cancelar (documentación de Arbitrum), y los puentes rápidos de terceros son servicios aparte que no acortan un retiro oficial que ya está en curso (documentación de Base). Volver a usar el puente solo envía otra cantidad.",
+        "No le pagues a nadie que se ofrezca a “acelerarlo” o “desbloquearlo”. La espera es una regla del protocolo, y nadie puede saltársela a cambio de una comisión.",
+        "No actúes con enlaces de resultados de búsqueda, mensajes privados o respuestas. Usa solo el puente oficial donde empezaste, o un enlace que haya publicado la propia cuenta oficial.",
+        "DeFiExit solo le pide a tu billetera que comparta su dirección: nunca te pide firmar, aprobar ni enviar nada, y nunca escribimos primero."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Ya pasé mi ETH de vuelta por el puente, pero dice 7 días. ¿Está atascado?",
+      "a": "Lo más probable es que no. Retirar de OP Mainnet o de Arbitrum a Ethereum por el puente oficial normalmente tarda unos 7 días; Base ahora tarda 5 días, o 1 día para algunos retiros. Ese tiempo no se puede acortar. Cuando se cumpla, vuelve al mismo puente y haz el último paso (Finalize o Claim); solo entonces llega el dinero. En OP Mainnet y Base también tienes que hacer Prove antes, en el medio."
+    },
+    {
+      "q": "Mi retiro desde Sophon todavía no llegó.",
+      "a": "La documentación de Sophon dice que un retiro oficial (canónico) a Ethereum no es instantáneo: el lote tiene que probarse en Ethereum, y luego vuelves a claim.sophon.com con la misma billetera y envías una transacción final de Claim en Ethereum. Sophon dice que el tiempo varía, así que guíate por el estado que muestra esa página. Si ahí elegiste una ruta de terceros, revisa el estado de esa ruta. La fecha límite de retiro de Sophon es el 25 de noviembre de 2026, y la mainnet cierra el 30 de noviembre, así que no lo dejes para el final."
+    },
+    {
+      "q": "La cuenta atrás terminó hace días y el dinero todavía no está.",
+      "a": "Normalmente falta el último paso. Arbitrum dice que una cuenta atrás terminada solo hace que el retiro se pueda reclamar: tienes que tocar Claim en el historial del puente, y nada lo hace automáticamente. Los retiros de Linea a Ethereum siempre necesitan un Claim manual. En OP Mainnet y Base haces Prove, esperas a que pase el período y luego haces Finalize. Antes de tocarlo, asegúrate de que la billetera tenga un poco de ETH en Ethereum para el gas."
+    },
+    {
+      "q": "Alguien dice que puede acelerar mi retiro por una pequeña comisión. ¿Es real?",
+      "a": "No. La espera es una regla del protocolo del puente oficial: la documentación de OP dice que no se puede eludir, y Arbitrum dice que un retiro ya iniciado no se puede cancelar. Cualquiera que cobre por “acelerarlo” o “desbloquearlo” está estafando. Tampoco le des nunca a nadie tu frase semilla ni tu clave privada."
+    },
+    {
+      "q": "¿Por qué mi retiro desde una L3 dice unas dos semanas?",
+      "a": "Pasar de una L3 a Ethereum lleva dos tramos: primero de vuelta a la L2 que está debajo y luego de esa L2 a Ethereum, y cada tramo tiene su propia espera. La documentación de Arbitrum estima el peor caso con la configuración predeterminada en unas dos semanas. Algunos proyectos tienen sus propias medidas: la guía oficial de Horizen del 23 de octubre de 2026 dice que los retiros de ETH iniciados por su puente oficial antes del 4 de noviembre se finalizan por ti y llegan a Base en unas dos semanas."
+    },
+    {
+      "q": "¿Cuánto tiempo tengo para tocar Claim? ¿Puede vencer?",
+      "a": "Arbitrum dice que un retiro confirmado puede esperar indefinidamente a que lo ejecutes. La documentación de OP Mainnet y de Base no menciona ningún límite de tiempo. En Linea, los retiros de más de 90 días desaparecen de la página del puente oficial, pero todavía se pueden completar a mano según la documentación. La excepción es una cadena que está cerrando: en ese caso sigue su aviso de cierre. Por ejemplo, Lisk dijo que los retiros en curso en el momento del cierre se acreditarían en su destino en Ethereum, y el sitio oficial de recuperación de Blast también cubre los retiros sin terminar."
+    }
+  ],
+  "sources": [
+    "Documentación de OP: finalidad de las transacciones en OP Mainnet (retiros del Standard Bridge en 7 días)",
+    "Documentación de OP: flujo de retiro (iniciar, Prove, Finalize; volver a hacer Prove reinicia el temporizador)",
+    "Documentación de OP: enviar datos entre L1 y L2 (la espera no se puede eludir; los pasos en L1 cuestan más)",
+    "Documentación de Base: retiros (5 días o 1 día, 20–60 minutos, los puentes rápidos no la acortan)",
+    "Documentación de Base: Beryl, retiros más rápidos (de 7 días a 5)",
+    "Documentación de Base: actualizaciones (Beryl activo en mainnet el 25 de junio de 2026)",
+    "Documentación de Arbitrum: guía rápida del puente (al menos 7 días, cuenta atrás de 7–8 días, Claim)",
+    "Documentación de Arbitrum: solución de problemas del puente (unos 6.4 días, sin cancelación, billeteras de contrato inteligente)",
+    "Documentación de Arbitrum: seguimiento de retiros (los reclamos no son automáticos; L3 en dos tramos, unas dos semanas)",
+    "Documentación de ZKsync: retraso de los retiros (mínimo de 3 horas, transacciones internas en Etherscan)",
+    "Documentación de ZKsync: pasar activos por el puente (cualquiera puede finalizar en L1)",
+    "Documentación de ZKsync: finalidad (prueba en aproximadamente una hora, unas 3 horas en total)",
+    "Documentación de Linea: pasar tokens por el puente (2–12 horas, Claim manual, comisión de 0.001 ETH, 90 días)",
+    "Documentación de Linea: finalidad de las transacciones (pruebas ZK verificadas en Ethereum)",
+    "Documentación de Scroll (fuente en GitHub): resumen de la tecnología (pruebas de validez verificadas en Ethereum)",
+    "Documentación de Scroll (fuente en GitHub): The Scroll Messenger; de L2 a L1 hace falta una transacción Execute Withdrawal",
+    "Documentación de Sophon: finalización de los retiros canónicos (el tiempo varía; Claim final en Ethereum)",
+    "Sophon en X: fecha límite de retiro el 25 de noviembre, cierre el 30 de noviembre (19 de octubre de 2026)",
+    "Lisk en X: un retiro no está completo hasta que se reclama (1 de noviembre de 2026)",
+    "Lisk en X: los retiros en curso se acreditarán en Ethereum (3 de noviembre de 2026)",
+    "Sitio oficial de recuperación de Blast (incluye retiros sin terminar)",
+    "Blog de Horizen: cambios en Horizen (23 de octubre de 2026)"
+  ]
+}

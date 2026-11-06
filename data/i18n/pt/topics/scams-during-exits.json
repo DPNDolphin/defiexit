@@ -1,0 +1,102 @@
+{
+  "title": "Os golpes mais comuns durante encerramentos e migrações",
+  "summary": "Os mais comuns são os atendentes de “suporte” que mandam mensagem primeiro, sites falsos de migração ou de airdrop, pedidos de “aprovação” ou de assinatura que deixam alguém levar os seus tokens e serviços pagos de “recuperação”. Uma regra barra a maioria: projetos de verdade não mandam mensagem privada primeiro, nunca pedem a sua frase-semente nem as suas chaves privadas e nunca pedem que você envie dinheiro antes; e os únicos links confiáveis são os publicados pela própria conta oficial e pelo site oficial.",
+  "sections": [
+    {
+      "h": "Por que os golpes disparam nesses momentos",
+      "p": [
+        "Encerramentos e migrações vêm com prazos, e muita gente pede ajuda em público, com pressa. O ethereum.org diz que golpistas de suporte procuram em canais públicos pessoas fazendo perguntas e depois mandam uma mensagem privada oferecendo ajuda, com o objetivo de conseguir as chaves privadas ou os fundos delas.",
+        "A MetaMask também aponta a pressão de tempo montada em torno de prazos como um sinal típico de um pedido de aprovação malicioso. Quanto mais perto do prazo, mais devagar você deve ir."
+      ],
+      "list": []
+    },
+    {
+      "h": "Os golpes mais comuns",
+      "p": [
+        "Cada um destes já foi apontado publicamente por um projeto ou por um provedor de carteiras."
+      ],
+      "list": [
+        "O “suporte” que encontra você: você comenta um problema no X, no Discord ou no Telegram, e alguém manda mensagem privada dizendo ser o suporte oficial, ou responde com um link de “ajuda”. A Horizen diz que a equipe dela nunca vai mandar mensagem privada primeiro; a MetaMask diz que nunca vai mandar mensagem privada oferecendo suporte, que não tem suporte por telefone e que nunca entra em contato pelo X sobre um caso de suporte.",
+        "Sites falsos de migração e de airdrop que parecem os verdadeiros. A Sophon alertou: “use só links oficiais da Sophon e tome cuidado com sites falsos de migração”. A Abstract alertou sobre falsificação de identidade, sites falsos de migração e mensagens privadas que dizem representá-la. A documentação da Sophon acrescenta: nunca siga um link de claim, migração ou troca de tokens que você não pediu.",
+        "“Aprove para desbloquear / migrar”: uma aprovação permite que um site ou um contrato tire um determinado token da sua carteira, e uma assinatura sem gas, como um permit, pode fazer o mesmo. O conselho da MetaMask: confira exatamente o que um site está pedindo antes de aprovar e limite o valor quando puder; se um site pedir que você aprove todos os seus NFTs para receber um airdrop, não caia, porque você não deveria precisar desse tipo de aprovação para receber nada.",
+        "Tokens ou NFTs que você nunca pediu, com uma mensagem mandando você a um site para coletá-los. A MetaMask chama isso de golpe de airdrop comum: o mais provável é que o site esteja atrás da sua frase-semente ou de uma aprovação, então não interaja; oculte o item. O ethereum.org acrescenta que esses sites pedem que você conecte a sua carteira e “aprove” uma transação que entrega os seus ativos ao golpista.",
+        "“Recuperação” paga: alguém diz que consegue recuperar o seu dinheiro roubado ou preso, cobrando adiantado. O FBI alerta que esses operadores aparecem em redes sociais, em seções de comentários e em resultados de busca; eles pegam um pagamento inicial e somem, ou entregam um “relatório de rastreamento” incompleto ou impreciso e pedem mais. Alguns se passam por escritórios de advocacia ou órgãos do governo. Empresas privadas não podem emitir ordens de apreensão, e as autoridades policiais não cobram das vítimas para investigar."
+      ]
+    },
+    {
+      "h": "Como conferir um link",
+      "p": [
+        "Um link de golpe pode parecer idêntico ao verdadeiro, então julgue pela origem."
+      ],
+      "list": [
+        "Pegue links só de posts da própria conta oficial, ou entre a partir da página inicial oficial. O conselho da Abstract: use só o link oficial e confira no Discord e em outros canais oficiais.",
+        "Confira a própria conta: veja se o @usuário bate com o que aparece no site oficial, em vez de se guiar pela foto e pelo nome de exibição.",
+        "Não use links de resultados de busca, anúncios, threads de comentários nem mensagens privadas. O FBI observa que serviços falsos de recuperação aparecem em seções de comentários e em resultados de busca.",
+        "Confira de novo no pop-up da carteira: a MetaMask diz que o pedido de aprovação mostra no topo o nome e o endereço do site para você confirmar que é o site que queria usar. Depois veja se o passo é uma transferência, uma aprovação ou uma assinatura.",
+        "Se você não entender o que o pop-up está fazendo, não confirme; pergunte primeiro no Discord oficial."
+      ]
+    },
+    {
+      "h": "O que projetos legítimos não fazem",
+      "p": [
+        "Se você se deparar com qualquer uma destas coisas, pode parar ali mesmo."
+      ],
+      "list": [
+        "Mandar mensagem privada para você primeiro. (Horizen: a equipe dela nunca vai mandar mensagem primeiro. MetaMask: nunca vai mandar mensagem privada oferecendo suporte.)",
+        "Pedir a sua frase-semente, as suas chaves privadas ou a sua senha. O ethereum.org diz que nenhum serviço, atendente de suporte ou site legítimo vai pedir isso; a MetaMask diz que as únicas vezes em que você precisa digitar a sua frase-semente são ao criar uma carteira e ao restaurá-la.",
+        "Pedir que você envie os seus fundos para eles. (Horizen: “Nunca vamos pedir que você nos envie os seus fundos”.)",
+        "Ligar para você ou pedir acesso remoto ao seu computador. (A MetaMask não tem suporte por telefone. ethereum.org: nunca permita que ninguém acesse o seu computador remotamente.)",
+        "Cobrar uma taxa para “acelerar”, “desbloquear” ou “recuperar” os seus fundos.",
+        "DeFiExit só pede que a sua carteira compartilhe o endereço: nunca pede para você assinar, aprovar ou enviar nada, e nunca mandamos mensagem primeiro."
+      ]
+    },
+    {
+      "h": "Se você já clicou ou assinou",
+      "p": [
+        "Quanto mais rápido você agir, maior a chance de limitar o prejuízo."
+      ],
+      "list": [
+        "Se você aprovou um site suspeito: a MetaMask diz para revogar a aprovação o quanto antes (por exemplo, revise e revogue no MetaMask Portfolio), antes que os fundos sejam levados. Depois que a carteira é esvaziada, há pouco a fazer.",
+        "Se a sua frase-semente ou chave privada vazou, ou se aparecerem transações que você não fez: a MetaMask recomenda criar uma carteira nova na hora, passar para ela o que restou e abandonar a antiga; se você suspeitar de um script “sweeper”, não envie mais gas para a carteira antiga.",
+        "Transações na blockchain não podem ser revertidas. Guarde os registros das transações e registre uma ocorrência na polícia do seu país; nos Estados Unidos, você pode denunciar ao IC3 do FBI.",
+        "Espere que pessoas mandem mensagem privada oferecendo recuperar o dinheiro. Esse é o golpe seguinte sobre o qual o FBI alerta; não dê dinheiro nem dados pessoais para elas."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Uma conta de “suporte oficial” me mandou mensagem privada oferecendo tirar os meus fundos presos. É verdade?",
+      "a": "Quase com certeza é golpe. A Horizen afirma que a equipe dela nunca vai mandar mensagem primeiro, e a MetaMask diz que nunca vai mandar mensagem privada oferecendo suporte. Não responda nem clique em nada; pergunte por conta própria pelos canais oficiais listados no site do projeto, como um ticket no Discord oficial."
+    },
+    {
+      "q": "Uma página de migração quer que eu conecte a minha carteira e assine algo. Devo fazer isso?",
+      "a": "Primeiro confirme que o link veio de um post da própria conta oficial. Depois leia o pop-up da carteira: é um saque ou uma transferência simples, ou é uma assinatura de “aprovação” ou de permit? Aprovações e permits deixam outra pessoa mover os seus tokens; se uma for realmente necessária, aprove só o contrato indicado no guia oficial, e só o valor que você vai usar. Se não entender o pop-up, não assine; pergunte primeiro no Discord oficial."
+    },
+    {
+      "q": "Apareceram na minha carteira tokens que nunca comprei, com uma mensagem para visitar um site.",
+      "a": "Não mexa. A MetaMask descreve isso como um golpe de airdrop comum: quando você vai “coletar”, o que você assina pode ser uma aprovação que deixa eles levarem os seus tokens, ou você pode ser levado a digitar a sua frase-semente. Ignore e oculte."
+    },
+    {
+      "q": "Alguém diz que consegue recuperar as minhas criptomoedas roubadas em troca de uma taxa.",
+      "a": "O FBI alertou exatamente sobre isso: eles cobram uma taxa adiantada e somem, ou apresentam um “relatório de rastreamento” incompleto ou impreciso e pedem mais. Empresas privadas não podem emitir ordens de apreensão para recuperar criptomoedas, e as autoridades policiais não cobram das vítimas para investigar. Não dê dinheiro nem dados pessoais para eles."
+    },
+    {
+      "q": "Como sei se um link é oficial?",
+      "a": "Confie só em dois lugares: posts da própria conta oficial e a página inicial oficial. O conselho da Abstract é usar só o link oficial e conferir no Discord e em outros canais oficiais. Links em respostas, mensagens privadas ou anúncios de busca não contam, por mais idênticos que pareçam."
+    }
+  ],
+  "sources": [
+    "Sophon no X: use só links oficiais, cuidado com sites falsos de migração (19 de outubro de 2026)",
+    "Documentação da Sophon: perguntas frequentes sobre saques (nunca siga links que você não pediu)",
+    "Abstract no X: “Abstract is Winding Down” (falsificação de identidade, sites falsos de migração, mensagens privadas; 6 de outubro de 2026)",
+    "Blog da Horizen: lembrete de segurança (nunca manda mensagem primeiro, nunca pede chaves, nunca pede fundos; 23 de outubro de 2026)",
+    "Suporte da MetaMask: dicas básicas de segurança (frase-semente, chaves privadas)",
+    "Suporte da MetaMask: canais oficiais de suporte (sem mensagem privada, sem telefone, sem contato pelo X)",
+    "Suporte da MetaMask: o que é uma aprovação de token? (permits, aprovações maliciosas, revogação)",
+    "Suporte da MetaMask: evite golpistas, rug pulls e golpes de airdrop",
+    "Suporte da MetaMask: fui hackeado ou vítima de golpe",
+    "ethereum.org: segurança e prevenção de golpes (golpes de suporte, golpes de airdrop)",
+    "Alerta do IC3 do FBI: empresas que alegam falsamente recuperar criptomoedas perdidas (11 de agosto de 2023)",
+    "Alerta do IC3 do FBI: escritórios de advocacia fictícios que oferecem recuperar fundos (13 de agosto de 2025)"
+  ]
+}

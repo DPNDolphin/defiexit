@@ -1,0 +1,118 @@
+{
+  "title": "Sacar de uma L2 para a Ethereum: por que a espera e o que fazer quando ela termina",
+  "summary": "Quando você leva fundos de uma L2 de volta para a Ethereum por uma ponte oficial, você espera até o resultado da rede ser confirmado na Ethereum: cerca de 7 dias na OP Mainnet e na Arbitrum, agora 5 dias na Base (1 dia para alguns saques) e normalmente algumas horas em redes ZK como zkSync Era e Linea. A maioria das redes não envia o dinheiro automaticamente: na OP Mainnet e na Base você primeiro faz Prove na Ethereum, espera e depois faz Finalize; na Arbitrum, na Linea e na Scroll você volta à ponte depois da espera e faz Claim na Ethereum. Por isso, deixe um pouco de ETH na Ethereum para as taxas.",
+  "sections": [
+    {
+      "h": "Por que existe uma espera",
+      "p": [
+        "Uma L2 entrega os resultados dela para a Ethereum confirmar. Antes de a ponte oficial liberar o dinheiro na Ethereum, ela precisa ter certeza de que esse resultado está correto.",
+        "Redes como OP Mainnet, Base e Arbitrum publicam os resultados primeiro e depois deixam um tempo para qualquer pessoa contestar um resultado errado. Esse tempo é o período de contestação (challenge period). Redes ZK como zkSync Era, Linea e Scroll esperam uma prova ser gerada e verificada na Ethereum, e a zkSync acrescenta mais um atraso de segurança.",
+        "A espera faz parte das regras de segurança da ponte oficial. A documentação da OP diz claramente que ela não pode ser contornada."
+      ],
+      "list": []
+    },
+    {
+      "h": "Quanto tempo cada rede leva",
+      "p": [
+        "Com base na documentação oficial de cada rede (conferida em 2026-11-05). Some o tempo que você leva para fazer cada passo."
+      ],
+      "list": [
+        "OP Mainnet: um período de contestação de 7 dias. Três passos: você começa na OP Mainnet; quando essa parte da rede tiver sido publicada na Ethereum, faz “Prove” na Ethereum; depois de 7 dias, faz “Finalize” na Ethereum.",
+        "Base: desde a atualização Beryl de 25 de junho de 2026, a ponte padrão espera 5 dias, ou 1 dia quando esse resultado tem o apoio de uma prova TEE e de uma prova ZK. Antes de poder fazer Prove, normalmente há uma espera de cerca de 20–60 minutos. Os passos são os mesmos da OP Mainnet: começar, Prove e Finalize. Siga o tempo que a ponte mostrar para você.",
+        "Arbitrum One / Nova: pelo menos 7 dias segundo a documentação oficial, e a contagem regressiva da ponte costuma mostrar 7–8 dias (o período de contestação é de 45,818 blocos da Ethereum, cerca de 6.4 dias, mais algum processamento antes e depois). Quando a contagem terminar, abra o seu perfil no canto superior direito da ponte, vá em Transactions e toque em Claim.",
+        "zkSync Era: a documentação indica um atraso de segurança de pelo menos 3 horas, e mais 1–2 horas quando a rede está congestionada. O último passo na Ethereum (“finalize withdrawal”) pode ser enviado por qualquer pessoa; se na mainnet isso é feito em seu nome, a documentação não diz. Se a ponte que você usou mostrar um botão Claim, você precisa tocar nele.",
+        "Linea: cerca de 2–12 horas para ETH e tokens comuns. Saques da Linea para a Ethereum sempre precisam de um Claim manual na Ethereum (o histórico da ponte oficial marca esses saques como “Ready to claim”). Nessa direção, a ponte oficial também cobra uma taxa anti-DDoS de 0.001 ETH.",
+        "Scroll: espere o lote que contém a sua transação ser finalizado na Ethereum e depois envie mais uma transação na Ethereum, “Execute Withdrawal” (o botão Claim da ponte). A documentação oficial atual não diz quanto tempo isso leva.",
+        "Outras redes: redes construídas com a OP Stack não necessariamente funcionam como a OP Mainnet; a Base já está em 5 dias. Sacar de uma L3 para a Ethereum leva duas etapas, cada uma com a sua própria espera, e a documentação da Arbitrum estima o pior caso, com as configurações padrão, em cerca de duas semanas. Consulte a documentação da própria rede."
+      ]
+    },
+    {
+      "h": "O que fazer quando a espera termina",
+      "p": [
+        "Na maioria das pontes oficiais, o dinheiro não cai sozinho na sua carteira quando a espera termina. A documentação da Arbitrum diz que a confirmação só torna o saque disponível para claim: alguém precisa executá-lo na Ethereum, e nada faz isso automaticamente. Antes de a rede dela fechar, a Lisk lembrou os usuários de que um saque não está completo até ser feito o claim."
+      ],
+      "list": [
+        "Volte à mesma página da ponte onde você começou e conecte a mesma carteira.",
+        "Encontre o saque no histórico (History, Transactions ou Activity) e toque em Prove, ou Claim / Finalize, conforme indicado.",
+        "Este passo envia uma transação na Ethereum, então você paga gas da Ethereum. A documentação da OP observa que as transações de Prove e Finalize na Ethereum costumam custar muito mais do que iniciar o saque na L2.",
+        "Se você sacou de uma carteira de contrato inteligente, como uma Safe: a documentação da Arbitrum diz que o saque pode não aparecer no histórico da ponte, e que você pode buscar no histórico pelo hash da transação na L2 que o iniciou e depois fazer o Claim."
+      ]
+    },
+    {
+      "h": "Está demorando mais do que a documentação diz? Confira isto primeiro",
+      "p": [
+        "Não comece de novo. Confira estes pontos um por um."
+      ],
+      "list": [
+        "OP Mainnet e Base: a espera conta no mínimo a partir da sua transação de Prove, não de quando você começou. Se você fez o Prove alguns dias depois, a espera inteira conta a partir dali. Se o resultado contra o qual você fez o Prove for considerado inválido, você precisa fazer o Prove de novo, e o relógio recomeça.",
+        "Arbitrum: em casos raros alguém abre uma contestação e a espera fica mais longa; a documentação diz que, com o BoLD, um saque honesto atrasa no máximo mais um período de contestação.",
+        "Redes ZK: a zkSync diz que as 3 horas não são garantia e que pode demorar mais quando a rede está congestionada; a Sophon diz que o tempo varia e que você deve acompanhar o status na página oficial de saques dela.",
+        "Chegou mas não aparece? A zkSync diz que esses saques costumam aparecer em “Internal Transactions” na página do seu endereço no Etherscan, não na lista normal de transações.",
+        "Linea: saques sem claim há mais de 90 dias deixam de aparecer no app da ponte oficial; você os conclui manualmente seguindo a documentação oficial para desenvolvedores.",
+        "Se ainda assim não fizer sentido, pergunte só no Discord oficial ou na central de ajuda do projeto, e ignore qualquer pessoa que entre em contato com você primeiro."
+      ]
+    },
+    {
+      "h": "O que não fazer",
+      "p": [
+        "É na pressa que as pessoas pagam a mais ou caem em golpes."
+      ],
+      "list": [
+        "Não use a ponte de novo para “acelerar”. Um saque já iniciado não pode ser cancelado (documentação da Arbitrum), e as pontes rápidas de terceiros são serviços separados que não encurtam um saque oficial que já está em andamento (documentação da Base). Usar a ponte de novo só envia outro valor.",
+        "Não pague ninguém que se ofereça para “acelerar” ou “desbloquear” o saque. A espera é uma regra do protocolo, e ninguém pode pulá-la em troca de uma taxa.",
+        "Não aja com links de resultados de busca, mensagens privadas ou respostas. Use só a ponte oficial onde você começou, ou um link que a própria conta oficial publicou.",
+        "DeFiExit só pede que a sua carteira compartilhe o endereço: nunca pede para você assinar, aprovar ou enviar nada, e nunca mandamos mensagem primeiro."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Já mandei o meu ETH de volta pela ponte, mas diz 7 dias. Travou?",
+      "a": "Muito provavelmente não. Sacar da OP Mainnet ou da Arbitrum para a Ethereum pela ponte oficial normalmente leva cerca de 7 dias; a Base agora leva 5 dias, ou 1 dia para alguns saques. Esse tempo não pode ser encurtado. Quando ele acabar, volte à mesma ponte e faça o último passo (Finalize ou Claim); só então o dinheiro chega. Na OP Mainnet e na Base você também precisa fazer o Prove antes, no meio do caminho."
+    },
+    {
+      "q": "O meu saque da Sophon ainda não chegou.",
+      "a": "A documentação da Sophon diz que um saque oficial (canônico) para a Ethereum não é instantâneo: o lote precisa ser provado na Ethereum, e depois você volta a claim.sophon.com usando a mesma carteira e envia uma transação final de Claim na Ethereum. A Sophon diz que o tempo varia, então siga o status que aparece nessa página. Se você escolheu uma rota de terceiros ali, confira o status dessa rota. O prazo de saque da Sophon é 25 de novembro de 2026, e a mainnet encerra em 30 de novembro, então não deixe para o fim."
+    },
+    {
+      "q": "A contagem regressiva terminou há dias e o dinheiro ainda não está lá.",
+      "a": "Normalmente falta o último passo. A Arbitrum diz que uma contagem terminada só torna o saque disponível para claim: você toca em Claim no histórico da ponte, e nada faz isso automaticamente. Saques da Linea para a Ethereum sempre precisam de um Claim manual. Na OP Mainnet e na Base você faz o Prove, espera o período e depois faz o Finalize. Antes de tocar, confira se a carteira tem um pouco de ETH na Ethereum para o gas."
+    },
+    {
+      "q": "Alguém diz que pode acelerar o meu saque por uma pequena taxa. É verdade?",
+      "a": "Não. A espera é uma regra do protocolo da ponte oficial: a documentação da OP diz que ela não pode ser contornada, e a Arbitrum diz que um saque já iniciado não pode ser cancelado. Quem cobra para “acelerar” ou “desbloquear” está aplicando um golpe. Também nunca dê a sua frase-semente ou a sua chave privada para ninguém."
+    },
+    {
+      "q": "Por que o meu saque de uma L3 diz cerca de duas semanas?",
+      "a": "Ir de uma L3 para a Ethereum leva duas etapas: primeiro de volta para a L2 que fica embaixo dela e depois dessa L2 para a Ethereum, e cada etapa tem a sua própria espera. A documentação da Arbitrum estima o pior caso, com as configurações padrão, em cerca de duas semanas. Alguns projetos têm medidas próprias: o guia oficial da Horizen de 23 de outubro de 2026 diz que os saques de ETH iniciados pela ponte oficial dela antes de 4 de novembro são finalizados em seu nome e chegam na Base em cerca de duas semanas."
+    },
+    {
+      "q": "Quanto tempo tenho para tocar em Claim? Pode expirar?",
+      "a": "A Arbitrum diz que um saque confirmado pode esperar indefinidamente até você executá-lo. A documentação da OP Mainnet e da Base não menciona nenhum prazo. Na Linea, saques com mais de 90 dias somem da página da ponte oficial, mas ainda podem ser concluídos manualmente segundo a documentação. A exceção é uma rede que está fechando: nesse caso, siga o aviso de encerramento dela. Por exemplo, a Lisk disse que os saques em andamento no momento do encerramento seriam creditados no destino na Ethereum, e o site oficial de recuperação da Blast também cobre saques não concluídos."
+    }
+  ],
+  "sources": [
+    "Documentação da OP: finalidade das transações na OP Mainnet (saques do Standard Bridge em 7 dias)",
+    "Documentação da OP: fluxo de saque (iniciar, Prove, Finalize; fazer o Prove de novo reinicia o cronômetro)",
+    "Documentação da OP: envio de dados entre L1 e L2 (a espera não pode ser contornada; os passos na L1 custam mais)",
+    "Documentação da Base: saques (5 dias ou 1 dia, 20–60 minutos, pontes rápidas não encurtam)",
+    "Documentação da Base: Beryl, saques mais rápidos (de 7 dias para 5)",
+    "Documentação da Base: atualizações (Beryl ativa na mainnet em 25 de junho de 2026)",
+    "Documentação da Arbitrum: guia rápido da ponte (pelo menos 7 dias, contagem regressiva de 7–8 dias, Claim)",
+    "Documentação da Arbitrum: solução de problemas da ponte (cerca de 6.4 dias, sem cancelamento, carteiras de contrato inteligente)",
+    "Documentação da Arbitrum: acompanhamento de saques (o claim não é automático; L3 em duas etapas, cerca de duas semanas)",
+    "Documentação da ZKsync: atraso dos saques (mínimo de 3 horas, transações internas no Etherscan)",
+    "Documentação da ZKsync: passar ativos pela ponte (qualquer pessoa pode finalizar na L1)",
+    "Documentação da ZKsync: finalidade (prova em cerca de uma hora, cerca de 3 horas no total)",
+    "Documentação da Linea: passar tokens pela ponte (2–12 horas, Claim manual, taxa de 0.001 ETH, 90 dias)",
+    "Documentação da Linea: finalidade das transações (provas ZK verificadas na Ethereum)",
+    "Documentação da Scroll (fonte no GitHub): visão geral da tecnologia (provas de validade verificadas na Ethereum)",
+    "Documentação da Scroll (fonte no GitHub): The Scroll Messenger; da L2 para a L1 é preciso uma transação Execute Withdrawal",
+    "Documentação da Sophon: finalização dos saques canônicos (o tempo varia; Claim final na Ethereum)",
+    "Sophon no X: prazo de saque em 25 de novembro, encerramento em 30 de novembro (19 de outubro de 2026)",
+    "Lisk no X: um saque não está completo até ser feito o claim (1º de novembro de 2026)",
+    "Lisk no X: os saques em andamento serão creditados na Ethereum (3 de novembro de 2026)",
+    "Site oficial de recuperação da Blast (inclui saques não concluídos)",
+    "Blog da Horizen: mudanças na Horizen (23 de outubro de 2026)"
+  ]
+}

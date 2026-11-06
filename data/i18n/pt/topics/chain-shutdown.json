@@ -1,0 +1,107 @@
+{
+  "title": "Uma rede vai fechar: como eu tiro o meu dinheiro?",
+  "summary": "Primeiro encontre o “último dia para sacar” oficial: muitas vezes ele vem antes da data de encerramento. Depois siga a ordem: saia das suas posições nos apps dessa rede e colete as recompensas, tire o dinheiro pela ponte usando a rota que o guia oficial indica e deixe um pouco de gas nos dois lados. Depois de um prazo, alguns projetos abrem um caminho oficial de recuperação e outros dizem que os fundos ficam inacessíveis, então não conte com uma segunda chance.",
+  "sections": [
+    {
+      "h": "Passo 1: acerte as datas",
+      "p": [
+        "Os avisos de encerramento costumam trazer duas datas: o último dia em que você pode sacar e o dia em que a rede realmente para. Aja pela primeira e não espere o último dia. Confie só nas datas da conta e do site oficiais, não no que os outros contam."
+      ],
+      "list": [
+        "Sophon: 25 de novembro é o prazo final para sacar; depois disso, a infraestrutura principal e os sites relacionados começam a ser desligados, antes do encerramento definitivo da mainnet em 30 de novembro. Nas palavras da Sophon: “25 de novembro é a data para agir, não 30 de novembro”.",
+        "Abstract: a rede encerra em 15 de dezembro de 2026, e os fundos que não tiverem saído pela ponte até lá ficarão inacessíveis.",
+        "Horizen L3: o corte da ponte (4 de novembro, 13:00 UTC) foi marcado um dia antes do desligamento definitivo, para que o snapshot ficasse limpo e nada estivesse em trânsito quando a rede parasse."
+      ]
+    },
+    {
+      "h": "Passo 2: saia das posições e colete as recompensas antes de usar a ponte",
+      "p": [
+        "O dinheiro que está em staking, farms, pools de liquidez ou empréstimos não faz parte do saldo da sua carteira. Primeiro traga de volta para a sua carteira no app original; só então você pode passar pela ponte."
+      ],
+      "list": [
+        "Horizen: primeiro retire o seu stake na página de staking, depois colete as recompensas e então passe pela ponte para a Base.",
+        "Sophon: além de sacar SOPH, ETH, USDC e outros ativos, colete as recompensas pendentes de staking ou de Guardian, e saque o que ainda estiver na Sophon Farm.",
+        "Algumas posições já são tratadas em seu nome, então não mexa nelas por conta própria: a Sophon diz que os Guardian NFTs, o vSOPH e o SOPH em staking vão para a Ethereum automaticamente. Leia o guia oficial inteiro antes de agir."
+      ]
+    },
+    {
+      "h": "Passo 3: use a rota que o guia oficial indica e deixe gas nos dois lados",
+      "p": [
+        "O guia oficial costuma detalhar a rota, quanto gas deixar e quais tokens ficam fora do plano oficial."
+      ],
+      "list": [
+        "Use só as pontes ou páginas de migração que o guia oficial lista. Por exemplo, a Abstract indicou o seu Migration Hub (migrate.abs.xyz) e a sua ponte nativa (native-bridge.abs.xyz, que segundo ela tem cerca de 3 horas de atraso); a Sophon aponta para claim.sophon.com.",
+        "Voltar para a Ethereum por uma ponte nativa oficial normalmente envolve uma espera, e a maioria das redes precisa de mais um Claim na Ethereum. Veja “Sacar de uma L2 para a Ethereum” para os detalhes.",
+        "Deixe gas: deixe um pouco da moeda nativa na rede que está fechando para as taxas, e um pouco de ETH na Ethereum para o último passo. A Horizen orientou quem estava sem gas a depositar uma quantia mínima de ETH a partir da Base pela ponte nativa, só o mínimo que a ponte permite.",
+        "Tokens emitidos por terceiros podem ficar fora do plano oficial: a Horizen disse que o USDC.e é operado pela Stargate, não pela Horizen, por isso não estava coberto pela devolução da DAO e os usuários tinham que tirá-lo pela ponte por conta própria.",
+        "Carteiras de contrato inteligente e multisig: confira se o projeto tem um caminho ou um contato separado. O site de recuperação da Blast deixa o dono de uma Safe ou de outra carteira inteligente fazer o claim por ela; a Horizen pediu aos usuários de carteiras de contrato inteligente que mandassem e-mail para o endereço oficial de segurança dela antes do prazo."
+      ]
+    },
+    {
+      "h": "Depois do prazo: ainda tem saída?",
+      "p": [
+        "Depende do projeto. Estas são medidas que os próprios projetos anunciaram (conferido em 2026-11-05); elas não valem para outras redes."
+      ],
+      "list": [
+        "Blast: a L2 foi encerrada em 4 de novembro de 2026. O site oficial de recuperação, blast.io, fica aberto por 12 meses, com data final de suporte em 4 de novembro de 2027. Para ETH, WETH e USDB que estavam na Blast, além de saques que nunca terminaram, o claim é feito na mainnet da Ethereum. Os usuários da Blast Mobile são orientados a importar a frase-semente dessa carteira num app de carteira como MetaMask ou Rabby e conectá-la; digite uma frase-semente só num app de carteira, nunca num site.",
+        "Lisk: a Lisk Chain foi encerrada em 2 de novembro de 2026, e o portal e a ponte dela estão fechados. A Lisk diz que está criando um contrato inteligente dedicado e planeja um processo manual de solicitação em janeiro de 2027, com detalhes a serem divulgados; os saques em andamento no momento do encerramento serão creditados no endereço de destino na Ethereum. O LSK na Ethereum ou em exchanges não é afetado.",
+        "Horizen L3: um snapshot foi tirado em 4 de novembro às 13:00 UTC. Depois de uma revisão pública do snapshot por uma semana, a Horizen DAO vai enviar o ZEN restante (incluindo recompensas de staking não coletadas) e os saldos de ETH acima de 0.001 ETH para o mesmo endereço na Base, o que é esperado para a segunda metade de novembro. ETH abaixo de 0.001 não é devolvido, e o USDC.e não está coberto.",
+        "Outros projetos dizem claramente que perder o prazo significa perder o acesso: a Abstract diz que os fundos que não saírem pela ponte até a data ficarão inacessíveis, e a Sophon diz que os ativos deixados depois do prazo correm o risco de ficar inacessíveis para sempre.",
+        "Qualquer solução oficial é anunciada na conta e no site oficiais. Se alguém mandar mensagem privada sobre um “canal de recuperação”, trate como golpe."
+      ]
+    },
+    {
+      "h": "Os golpes que aparecem nos encerramentos",
+      "p": [
+        "Quanto mais perto do prazo, mais golpistas. Os próprios projetos já alertaram publicamente sobre cada um destes."
+      ],
+      "list": [
+        "Sites falsos de migração: a Sophon alertou os usuários para “usar só links oficiais da Sophon e tomar cuidado com sites falsos de migração”; a Abstract alertou sobre falsificação de identidade, sites falsos de migração e mensagens privadas que dizem representar a Abstract.",
+        "Mensagens privadas de “suporte”: a Horizen diz que a equipe dela nunca vai mandar mensagem privada para você primeiro, nunca vai pedir chaves privadas nem frases-semente e nunca vai pedir que você envie fundos para eles.",
+        "“Aprove para desbloquear”: uma aprovação permite que outra pessoa tire um token da sua carteira. A MetaMask aponta a pressão de tempo montada em torno de prazos como um sinal típico de um pedido de aprovação malicioso.",
+        "DeFiExit só pede que a sua carteira compartilhe o endereço: nunca pede para você assinar, aprovar ou enviar nada, e nunca mandamos mensagem primeiro."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Preciso mover os tokens da minha carteira fria?",
+      "a": "Depende de em qual rede os tokens estão, não do tipo de carteira. Uma carteira fria só guarda as suas chaves; só os ativos que estão na rede que vai fechar precisam sair. Por exemplo, a Lisk disse que o LSK na Ethereum ou em exchanges não foi afetado pelo encerramento da rede dela, e a Sophon diz que o SOPH é nativo da Ethereum, então só a parte que está na Sophon Chain precisa ser sacada. Confira na sua carteira ou num explorador de blocos em qual rede o saldo está."
+    },
+    {
+      "q": "O prazo já passou. Perdi o meu dinheiro?",
+      "a": "Não necessariamente, mas não conte com isso. Procure no site oficial e na conta do X da rede se há medidas para depois do encerramento: a Blast abriu um site oficial de recuperação por 12 meses, a Lisk planeja um processo de solicitação em janeiro de 2027, e a Horizen DAO está devolvendo saldos na Base. Outros projetos dizem que perder o prazo significa perder o acesso. Nunca confie num “canal de recuperação” que o próprio projeto não tenha anunciado."
+    },
+    {
+      "q": "Preciso “verificar a minha carteira” ou pagar uma taxa antes de migrar?",
+      "a": "Pagar alguém antes: não. A Horizen diz que a equipe dela nunca vai pedir que você envie fundos para eles; o único custo é o gas que a sua própria carteira paga para enviar uma transação. “Verificar a sua carteira”: a MetaMask diz que mensagens urgentes pedindo que você siga um link para “verificar” a sua conta são um golpe comum. Se o guia oficial realmente pedir que você assine uma confirmação, faça isso só na página indicada no post oficial, e leia com atenção o pop-up da carteira."
+    },
+    {
+      "q": "Não tenho gas na rede que vai fechar, então não consigo tirar o dinheiro pela ponte.",
+      "a": "Primeiro veja o guia oficial. Algumas redes param os depósitos durante o encerramento: a Sophon desativou novos depósitos em 25 de junho de 2026, enquanto a Horizen manteve abertos os depósitos de ETH vindos da Base só para que os usuários pudessem pagar o gas, e recomendou depositar o mínimo. Se o guia não cobrir isso, pergunte no Discord oficial, não para alguém que se ofereça no privado para “pagar o seu gas”."
+    },
+    {
+      "q": "Já comecei na ponte oficial. Por que ainda não chegou?",
+      "a": "As pontes nativas oficiais de volta para a Ethereum envolvem uma espera, e a maioria também precisa de mais um Claim seu na Ethereum. A Abstract, por exemplo, diz que a ponte nativa dela tem cerca de 3 horas de atraso, enquanto a OP Mainnet costuma levar 7 dias. Veja “Sacar de uma L2 para a Ethereum” para os detalhes."
+    }
+  ],
+  "sources": [
+    "Sophon no X: cronograma do encerramento 1/4, encerramento da mainnet em 30 de novembro (19 de outubro de 2026)",
+    "Sophon no X: 2/4, prazo de saque em 25 de novembro (19 de outubro de 2026)",
+    "Sophon no X: 3/4, saques, recompensas e ativos da Farm (19 de outubro de 2026)",
+    "Sophon no X: 4/4, use só links oficiais, cuidado com sites falsos de migração (19 de outubro de 2026)",
+    "Sophon no X: lembrete de 2 de novembro (o próprio SOPH continua existindo)",
+    "Documentação da Sophon: guia de migração da rede (posições movidas automaticamente, depósitos desativados desde 25 de junho)",
+    "Abstract no X: “Abstract is Winding Down” (6 de outubro de 2026)",
+    "Blog da Horizen: mudanças na Horizen (encerramento da L3, devolução da DAO, lembrete de segurança; 23 de outubro de 2026)",
+    "Horizen no X: a ponte fecha em 4 de novembro às 13:00 UTC (4 de novembro de 2026)",
+    "Blast no X: a L2 foi encerrada; site de recuperação aberto por 12 meses (4 de novembro de 2026)",
+    "Site oficial de recuperação da Blast (ETH, WETH, USDB; Blast Mobile; Safe)",
+    "Blog da Lisk: a Lisk Chain foi encerrada",
+    "Suporte da Lisk: solicitações da Lisk Chain (processo manual de solicitação em janeiro de 2027)",
+    "Lisk no X: contrato dedicado; saques em andamento creditados na Ethereum (3 de novembro de 2026)",
+    "Documentação da OP: saques do Standard Bridge em 7 dias na OP Mainnet",
+    "Suporte da MetaMask: o que é uma aprovação de token? (sinais de uma aprovação maliciosa)",
+    "Suporte da MetaMask: canais oficiais de suporte (mensagens de golpe do tipo “verifique a sua conta”)"
+  ]
+}
