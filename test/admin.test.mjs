@@ -127,7 +127,7 @@ async function desk(state, status = 200) {
     const c = find($("reach-cards"), (e) => e.getAttribute("data-id") === id) || find($("reach-done-cards"), (e) => e.getAttribute("data-id") === id);
     if (!c) return null;
     const byId = (x) => find(c, (e) => e.getAttribute("id") === x);
-    return { el: c, go: find(c, (e) => e.tagName === "A" && e.classList.contains("primary")), btn: (text) => find(c, (e) => e.tagName === "BUTTON" && e.textContent === text),
+    return { el: c, go: find(c, (e) => e.tagName === "A" && e.classList.contains("primary")), app: find(c, (e) => e.tagName === "A" && e.classList.contains("mailapp")), btn: (text) => find(c, (e) => e.tagName === "BUTTON" && e.textContent === text),
       fold: find(c, (e) => e.tagName === "DETAILS"), saved: find(c, (e) => e.classList.contains("saved")), said: find(c, (e) => e.classList.contains("result")), tip: find(c, (e) => e.classList.contains("count")),
       note: byId("echo-note-" + id), link: byId("echo-url-" + id), form: find(c, (e) => e.classList.contains("echo")) };
   };
@@ -364,33 +364,46 @@ test("宣传:按渠道分组(媒体投稿、项目团队、安全清单、技术
   const list = d.rcard("o-list-1");
   assert.deepEqual([list.fold.open, find(list.fold, (e) => e.tagName === "SUMMARY").textContent], [false, "正文(共 401 字,点开看全文)"]);
   assert.equal(d.rcard("o-hn-1").fold.open, false);
-  // 写邮件:同一个窗口里打开邮件程序;换行写成 \r\n
+  // 写邮件:主按钮新标签打开网页版 Gmail 的写信窗口(换行写成 \n),一直提醒发件人选项目邮箱;
+  // 旁边的小链接是 mailto(换行写成 \r\n),同一个窗口里打开电脑上的邮件程序
   const e = d.rcard("o-mail-1");
-  assert.equal(e.go.href, "mailto:team@sophon.example?subject=Corrections%20welcome&body=" + encodeURIComponent("Hi team,\r\nSee https://defiexit.com/deadlines/ ."));
-  assert.deepEqual([e.go.getAttribute("target"), e.go.textContent, e.tip.hidden], [null, "写邮件,字已填好 ↗", true]);
+  assert.equal(e.go.href, "https://mail.google.com/mail/?view=cm&fs=1&to=team%40sophon.example&su=Corrections%20welcome&body=" + encodeURIComponent("Hi team,\nSee https://defiexit.com/deadlines/ ."));
+  assert.deepEqual([e.go.getAttribute("target"), e.go.textContent, e.tip.hidden, e.tip.textContent], ["_blank", "用 Gmail 写,字已填好 ↗", false, "Gmail 打开后,「发件人」选 hello@defiexit.com 再发。"]);
+  assert.equal(e.app.href, "mailto:team@sophon.example?subject=Corrections%20welcome&body=" + encodeURIComponent("Hi team,\r\nSee https://defiexit.com/deadlines/ ."));
+  assert.deepEqual([e.app.hidden, e.app.getAttribute("target")], [false, null]);
   assert.deepEqual([e.btn("复制收件人").hidden, e.btn("复制标题").hidden, chipsOf(e)], [false, false, ["项目团队", "英文"]]);
   // 发过的在下面:主按钮收起来,能记回音
   const s = d.rcard("o-sent-1");
   assert.ok(find(d.$("reach-done-cards"), (x) => x.getAttribute("data-id") === "o-sent-1"));
-  assert.deepEqual([s.go.hidden, s.btn("有回音").hidden, s.btn("改回待发").hidden], [true, false, false]);
+  assert.deepEqual([s.go.hidden, s.app.hidden, s.btn("有回音").hidden, s.btn("改回待发").hidden], [true, true, false, false]);
 });
 
-test("写邮件:整条链接超过 1800 字就不放正文(点「写邮件」时先把正文复制好),再长连邮件标题也不放;复制正文、标题、收件人;剪贴板用不了就说一声", async () => {
+test("写邮件:邮件程序的链接超过 1800 字就不放正文(点的时候先把正文复制好),再长连邮件标题也不放;Gmail 的写信链接到 8000 字才这样,提示里说;复制正文、标题、收件人;剪贴板用不了就说一声", async () => {
   const got = clipboard();
-  const fits = "a".repeat(1700), long = "中".repeat(200);
-  const d = await desk({ ...base([]), outreach: [rc("o-fit", { ...EMAIL, body: fits }), rc("o-long", { ...EMAIL, body: long }), rc("o-huge", { ...EMAIL, subject: "标".repeat(200), body: long })] });
+  const fits = "a".repeat(1700), long = "中".repeat(200), huge = "中".repeat(900);
+  const d = await desk({ ...base([]), outreach: [rc("o-fit", { ...EMAIL, body: fits }), rc("o-long", { ...EMAIL, body: long }), rc("o-huge", { ...EMAIL, subject: "标".repeat(200), body: long }),
+    rc("o-giant", { ...EMAIL, body: huge }), rc("o-gsub", { ...EMAIL, subject: "标".repeat(1000), body: long })] });
   const fit = d.rcard("o-fit");
-  assert.ok(fit.go.href.length <= 1800 && fit.go.href.endsWith("&body=" + fits), fit.go.href.length);
+  assert.ok(fit.app.href.length <= 1800 && fit.app.href.endsWith("&body=" + fits), fit.app.href.length);
+  // 邮件程序的链接放不下正文,Gmail 的放得下:主按钮照常填好,小链接点的时候先复制正文
   const L = d.rcard("o-long");
-  assert.deepEqual([L.go.href, L.go.textContent, L.tip.hidden], ["mailto:team@sophon.example?subject=Corrections%20welcome", "写邮件,正文先复制好 ↗", false]);
-  assert.match(L.tip.textContent, /^正文太长,放不进邮件链接/);
-  await L.go.fire("click");
+  assert.deepEqual([L.app.href, L.go.textContent, L.go.href.endsWith("&body=" + encodeURIComponent(long))], ["mailto:team@sophon.example?subject=Corrections%20welcome", "用 Gmail 写,字已填好 ↗", true]);
+  await L.app.fire("click");
   await tick();
   assert.deepEqual([got, L.saved.textContent], [[long], "正文已复制:邮件窗口打开后,长按粘贴进正文"]);
   assert.deepEqual(d.calls.filter(([p]) => p === "outreach"), [], "打开邮件不算发了");
-  const H = d.rcard("o-huge");
-  assert.equal(H.go.href, "mailto:team@sophon.example");
-  assert.match(H.tip.textContent, /^邮件标题和正文太长.*先点「复制标题」/);
+  assert.equal(d.rcard("o-huge").app.href, "mailto:team@sophon.example");
+  // Gmail 的也放不下正文(900 个汉字编码后超过 8000):点「用 Gmail 写」先复制正文
+  const G = d.rcard("o-giant");
+  assert.deepEqual([G.go.href.includes("&body="), G.go.textContent, G.tip.hidden], [false, "用 Gmail 写,正文先复制好 ↗", false]);
+  assert.match(G.tip.textContent, /^正文太长,放不进写信链接.*hello@defiexit\.com/);
+  await G.go.fire("click");
+  await tick();
+  assert.equal(got.at(-1), huge);
+  // 邮件标题也放不下:先复制标题
+  const S = d.rcard("o-gsub");
+  assert.equal(S.go.href, "https://mail.google.com/mail/?view=cm&fs=1&to=team%40sophon.example");
+  assert.match(S.tip.textContent, /^邮件标题和正文太长.*先点「复制标题」/);
   for (const [text, want] of [["复制收件人", "team@sophon.example"], ["复制标题", "Corrections welcome"], ["复制正文", long]]) {
     await L.btn(text).fire("click");
     await tick();
@@ -451,7 +464,7 @@ test("宣传卡片的收件邮箱 180 天到了删掉以后:卡片上写明是�
   assert.ok(old.el.textContent.includes("收件人点过「已发 / 跳过」满 180 天,邮箱已删"), old.el.textContent);
   assert.deepEqual([old.btn("复制收件人").hidden, old.go.hidden], [true, true]);
   const back = d.rcard("o-back");
-  assert.deepEqual([back.go.hidden, back.go.href, back.el.textContent.includes("写邮件")], [true, "", false], "没有收件人:不出写邮件的按钮");
+  assert.deepEqual([back.go.hidden, back.go.href, back.app.hidden, back.el.textContent.includes("写邮件"), back.el.textContent.includes("Gmail")], [true, "", true, false, false], "没有收件人:不出写邮件的按钮");
 });
 
 test("宣传卡片里有坏掉的字符(以前收进来的):写邮件的链接照样编得出来(换成替换符);哪张卡片画的时候出错,只坏那一张,后面的卡片和顶上的数照常", async () => {
@@ -459,14 +472,14 @@ test("宣传卡片里有坏掉的字符(以前收进来的):写邮件的链接�
   const HI = String.fromCharCode(0xd800);
   const d = await desk({ ...base([]), outreach: [rc("o-bad-1", { ...EMAIL, body: "hello" + HI }), rc("o-ok-1"), rc("o-ok-2", EMAIL)] });
   assert.ok(d.rcard("o-bad-1").go.href.endsWith("&body=hello%EF%BF%BD"), d.rcard("o-bad-1").go.href);
-  assert.deepEqual([d.rcard("o-ok-1").go.textContent, d.rcard("o-ok-2").go.href.startsWith("mailto:"), d.$("n-reach").textContent], ["打开投稿页 ↗", true, "3"]);
+  assert.deepEqual([d.rcard("o-ok-1").go.textContent, d.rcard("o-ok-2").go.href.startsWith("https://mail.google.com/"), d.$("n-reach").textContent], ["打开投稿页 ↗", true, "3"]);
   // 编链接当场出错(模拟别的毛病):只坏这一张,后面照常
   const real = globalThis.encodeURIComponent;
   globalThis.encodeURIComponent = (s) => { if (String(s).includes("BOOM")) throw new URIError("URI malformed"); return real(s); };
   try {
     const d2 = await desk({ ...base([]), outreach: [rc("o-a", { ...EMAIL, body: "BOOM" }), rc("o-b"), rc("o-c", EMAIL)] });
     assert.equal(d2.rcard("o-a").el.classList.contains("broken"), true);
-    assert.deepEqual([d2.rcard("o-b").go.textContent, d2.rcard("o-c").go.href.startsWith("mailto:"), d2.$("n-reach").textContent], ["打开投稿页 ↗", true, "3"]);
+    assert.deepEqual([d2.rcard("o-b").go.textContent, d2.rcard("o-c").go.href.startsWith("https://mail.google.com/"), d2.$("n-reach").textContent], ["打开投稿页 ↗", true, "3"]);
   } finally {
     globalThis.encodeURIComponent = real;
   }

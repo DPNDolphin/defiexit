@@ -422,8 +422,9 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
 
   // ---------- 宣传卡片 ----------
   // 我写好的四种稿子,老板自己发:媒体投稿、给项目团队的邮件、安全清单的提交(PR 或 issue)、技术社区的帖子。没有发帖节奏的限制(那只管 X 上的回复)。
-  // 带收件邮箱的点「写邮件」:收件人、邮件标题、正文填进 mailto 链接;链接太长(超过 MAILTO_MAX,有的邮件程序打不开)就不放正文,
-  // 点的时候先把正文复制好。别的点「打开投稿页」,新标签打开。打开不算发了:发出去以后点「已发」,有回音了记一句话和一个链接
+  // 带收件邮箱的点「用 Gmail 写」:收件人、邮件标题、正文填进网页版 Gmail 的写信窗口(很多电脑没设默认的邮件程序,mailto 点了
+  // 没反应,老板 11-06 就是这样);旁边留一个「用电脑上的邮件程序写」(mailto)。链接太长就不放正文,点的时候先把正文复制好。
+  // 别的点「打开投稿页」,新标签打开。打开不算发了:发出去以后点「已发」,有回音了记一句话和一个链接
   const CHANNEL = { media: "媒体投稿", project: "项目团队", list: "安全清单", community: "技术社区" };
   const GROUPS = [...Object.keys(CHANNEL), "other"]; // 按这个顺序分组;不认识的渠道放最后「其他」
   const LANGS = { zh: "中文", en: "英文", ja: "日文", ko: "韩文", es: "西班牙文", fr: "法文", de: "德文", ru: "俄文", pt: "葡萄牙文", vi: "越南文", tr: "土耳其文", id: "印尼文" };
@@ -439,6 +440,16 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     if (full.length <= MAILTO_MAX) return { href: full, cut: [] };
     const noBody = link([["subject", m.subject]]);
     return noBody.length <= MAILTO_MAX ? { href: noBody, cut: ["body"] } : { href: link([]), cut: ["subject", "body"] };
+  }
+  // 网页版 Gmail 的写信窗口:to / su / body 填好(换行写成 \n)。网址太长 Gmail 也打不开,超过 GMAIL_MAX 一样先不放正文、再不放标题
+  const GMAIL_MAX = 8000;
+  function gmailOf(m) {
+    if (!MAIL.test(String(m.to || ""))) return null;
+    const link = (parts) => "https://mail.google.com/mail/?" + [["view", "cm"], ["fs", "1"], ["to", m.to], ...parts].filter(([, v]) => v).map(([k, v]) => k + "=" + enc(String(v).replace(/\r\n?/g, "\n"))).join("&");
+    const full = link([["su", m.subject], ["body", m.body]]);
+    if (full.length <= GMAIL_MAX) return { href: full, cut: [] };
+    const noBody = link([["su", m.subject]]);
+    return noBody.length <= GMAIL_MAX ? { href: noBody, cut: ["body"] } : { href: link([]), cut: ["subject", "body"] };
   }
   // 剪贴板用不了的时候:选中那段字(请他长按复制);浏览器不支持就回 false
   const pick = (box) => { try { const r = document.createRange(); r.selectNodeContents(box); const s = window.getSelection(); s.removeAllRanges(); s.addRange(r); return true; } catch (_) { return false; } };
@@ -458,6 +469,7 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     const cBody = btn("复制正文"), cTitle = btn("复制标题", true), cSubj = btn("复制邮件标题", true), cTo = btn("复制收件人", true);
     const tip = h("p", { class: "count", hidden: true });
     const go = h("a", { class: "btn primary wide", rel: "noopener noreferrer" });
+    const app = h("a", { class: "linkbtn mailapp", hidden: true }, "用电脑上的邮件程序写");
     const sent = btn("已发"), skip = btn("跳过"), back = btn("改回待发", true);
     const status = h("span", { class: "pill" });
     // 回音:点「已发」以后才有;一句话加一个链接(可不填),两样都空着点「记下」就是清掉
@@ -469,7 +481,7 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     const form = h("div", { class: "echo", hidden: true }, h("div", { class: "label" }, "回音(两样都空着点「记下」就是清掉)"), eNote, eLink, h("div", { class: "row" }, eKeep, eDrop));
     const saved = h("span", { class: "saved", "aria-live": "polite" });
     const el = h("article", { class: "card", "data-id": id }, head, chips, kv, subjWrap, titleWrap, fold,
-      h("div", { class: "row" }, cBody, cTitle, cSubj, cTo), tip, go,
+      h("div", { class: "row" }, cBody, cTitle, cSubj, cTo), tip, go, app,
       h("div", { class: "row" }, sent, skip, back, h("span", { class: "grow" }), status),
       said, echoRow, form, h("div", { class: "row" }, saved, h("span", { class: "grow" }), delButton("outreach", id, saved)));
     const m = () => (el._d && el._d.mine) || {};
@@ -483,6 +495,7 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     cTo.addEventListener("click", () => copyOut(m().to, "收件人已复制", toDd));
     // 正文放不进邮件链接:点「写邮件」的同时先复制好正文(不拦着链接打开邮件程序)
     go.addEventListener("click", () => { if (el._mail && el._mail.cut.includes("body")) copyOut(m().body, "正文已复制:邮件窗口打开后,长按粘贴进正文", body); });
+    app.addEventListener("click", () => { if (el._app && el._app.cut.includes("body")) copyOut(m().body, "正文已复制:邮件窗口打开后,长按粘贴进正文", body); });
     const decide = async (st) => {
       const was = isPend(el._d);
       if ((await save("outreach", id, { status: st }, saved)) && was) note($("reach-msg"), "点了「" + st + "」,这条挪到下面的「发过的」了");
@@ -509,7 +522,8 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
       el._d = d;
       const mm = d.mine || {}, st = d.status || "待发", pend = st === "待发";
       const url = webHref(mm.url);
-      el._mail = mailtoOf(mm);
+      el._mail = gmailOf(mm);
+      el._app = mailtoOf(mm);
       fill(head, h("span", { class: "who" }, mm.target || "?"), url ? h("span", null, hostName(url)) : null, el._mail ? h("span", null, "写邮件") : null);
       chips.replaceChildren(...[CHANNEL[mm.channel] || mm.channel, langName(mm.lang)].filter(Boolean).map((x) => h("span", { class: "chip" }, x)));
       whyDd.textContent = mm.why || "";
@@ -533,17 +547,22 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
       // 主按钮:带收件邮箱的写邮件,别的打开投稿页;点过「已发 / 跳过」的收起来(免得同一份发两次)
       if (el._mail) {
         go.href = el._mail.href;
-        go.removeAttribute("target");
-        go.textContent = el._mail.cut.length ? "写邮件,正文先复制好 ↗" : "写邮件,字已填好 ↗";
+        go.setAttribute("target", "_blank");
+        go.textContent = el._mail.cut.length ? "用 Gmail 写,正文先复制好 ↗" : "用 Gmail 写,字已填好 ↗";
       } else if (url) {
         go.href = url;
         go.setAttribute("target", "_blank");
         go.textContent = "打开投稿页 ↗";
       } else go.removeAttribute("href");
       go.hidden = !pend || !(el._mail || url);
-      tip.textContent = !el._mail || !el._mail.cut.length ? ""
-        : el._mail.cut.includes("subject") ? "邮件标题和正文太长,放不进邮件链接(有的邮件程序会打不开):先点「" + (mm.title ? "复制邮件标题" : "复制标题") + "」贴进邮件标题,再点「写邮件」(正文会先复制好),粘贴进正文。"
-          : "正文太长,放不进邮件链接(有的邮件程序会打不开):点「写邮件」时先把正文复制好,邮件窗口打开后长按粘贴进正文。";
+      if (el._app) app.href = el._app.href; else app.removeAttribute("href");
+      app.hidden = !pend || !el._app;
+      // 写邮件的卡片一直提醒一句发件人:Gmail 默认用自己的地址,要在写信窗口的「发件人」里换成项目邮箱
+      const from = "Gmail 打开后,「发件人」选 hello@defiexit.com 再发。";
+      tip.textContent = !el._mail ? ""
+        : el._mail.cut.includes("subject") ? "邮件标题和正文太长,放不进写信链接:先点「" + (mm.title ? "复制邮件标题" : "复制标题") + "」贴进邮件标题,再点「用 Gmail 写」(正文会先复制好),粘贴进正文。" + from
+          : el._mail.cut.length ? "正文太长,放不进写信链接:点「用 Gmail 写」时先把正文复制好,写信窗口打开后粘贴进正文。" + from
+            : from;
       tip.hidden = !pend || !tip.textContent;
       status.className = "pill " + (OUT_STATUS[st] || "mute");
       status.textContent = st + (!pend && d.decided_at ? " · " + mdhm(d.decided_at) : "");
