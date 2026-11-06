@@ -74,7 +74,7 @@
       "note": "Giao dịch duy nhất",
       "milestone": "Hủy stake",
       "images": [
-        "① Cuộn lên đến phần chi tiết staking (dòng đã stake là số bạn đã khóa, khoảng {{got}}) và nhấn nút hủy stake bên dưới",
+        "① Cuộn xuống đến phần chi tiết staking (dòng đã stake là số bạn đã khóa, khoảng {{got}}) và nhấn nút hủy stake bên dưới",
         "② Trang xác nhận hủy stake mở ra. Trước tiên hãy đối chiếu với thẻ bên dưới, và chỉ khi cả ba khung vàng đều khớp mới nhấn nút xác nhận màu xanh lá. Phần bị che trong hình là địa chỉ của chính bạn"
       ],
       "check": {

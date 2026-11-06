@@ -52,7 +52,7 @@
     "**Rota**: USDH artık ihraç edilmiyor → spot piyasada {{floorPx}} veya daha iyi fiyatlı bir limit emirle USDC karşılığında satın → “Withdraw to Arbitrum”. 1 USDC ücret, yaklaşık 5 dakikada ulaşır.",
     "**Hesap modu**: birleşik hesaplar (unified, yeni varsayılan) doğrudan çeker. Eski ayrı hesaplarda önce spot USDC'yi “Perps ⇄ Spot” ile Perps hesabına aktarın.",
     "**Rakamlarınız**: {{usdhSell}} USDH satın, {{withdrawAmt}} USDC çekin, yaklaşık {{arrive}} USDC ulaşır.",
-    "**İmzalar**: 2–3 EIP-712 imzası, gas yok. İki şeyi kontrol edin: alan adı app.hyperliquid.xyz olmalı ve destination kendi {{addrShort}} olmalı.",
+    "**İmzalar**: 2–3 EIP-712 imzası, gas yok. İki şeyi kontrol edin: alan adı app.hyperliquid.xyz olmalı ve destination {{addrShort}} olmalı.",
     "**Dikkat edilecekler**: USDH aranınca USDHL de çıkar; doğrusunu seçin. Sağdaki emir defterine dokunmak fiyatınızın üzerine yazar."
   ],
   "done": {
@@ -267,7 +267,7 @@
             "sub": "Tek bir fazla harf ya da eksik bir nokta, başka bir site demektir"
           },
           {
-            "title": "SendAsset yazıyor ve destination kendi adresiniz {{addrShort}}",
+            "title": "SendAsset yazıyor ve destination {{addrShort}}",
             "sub": "Büyük ya da küçük harf fark etmez. Sizin adresiniz değilse reddedin"
           },
           {
@@ -315,7 +315,7 @@
             "sub": "Tek bir fazla harf ya da eksik bir nokta, başka bir site demektir"
           },
           {
-            "title": "Withdraw yazıyor ve destination kendi adresiniz {{addrShort}}",
+            "title": "Withdraw yazıyor ve destination {{addrShort}}",
             "sub": "Sizin adresiniz değilse reddedin"
           },
           {

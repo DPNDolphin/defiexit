@@ -475,7 +475,7 @@
     "name": "Trust Wallet berhenti mendukung 24 jaringan",
     "summary": "Sejak 15 September, Trust Wallet tidak lagi menampilkan 24 jaringan, tetapi asetnya tetap ada on-chain. Untuk chain EVM, Anda bisa menambahkan jaringannya sendiri sebagai jaringan kustom.",
     "deadlineNote": "Pada 15 September, jaringan-jaringan ini hilang dari daftar dompet; Trust Handle berhenti lebih dulu, pada 7 September.",
-    "who": "Pengguna Trust Wallet yang punya aset di jaringan-jaringan ini: 15 chain EVM yang tercantum di atas dan 9 chain non-EVM.",
+    "who": "Pengguna Trust Wallet yang punya aset di jaringan-jaringan ini: 15 chain EVM yang tercantum di atas dan 9 chain non-EVM (daftarnya ada di blog Trust Wallet).",
     "todo": "Aset Anda tetap ada on-chain. Untuk chain EVM, tambahkan sendiri jaringannya sebagai jaringan kustom dengan RPC yang terverifikasi. Untuk chain non-EVM, impor dompet Anda ke dompet lain yang mendukung chain tersebut.",
     "caution": "Gunakan hanya RPC dari dokumentasi resmi chain itu. Masukkan frasa pemulihan hanya di dalam aplikasi dompet tepercaya oleh Anda sendiri, jangan pernah di situs web.",
     "official": ["Blog Trust Wallet"]

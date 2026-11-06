@@ -32,7 +32,7 @@
     "**Rota**: o USDH não é mais emitido → venda no spot por USDC com uma ordem limitada a {{floorPx}} ou melhor → “Withdraw” para a Arbitrum. Taxa de 1 USDC; chega em uns 5 minutos.",
     "**Modo da conta**: contas unificadas (o novo padrão) sacam direto. Contas separadas, mais antigas, primeiro passam o USDC do spot para Perps com “Perps ⇄ Spot”.",
     "**Seus números**: venda {{usdhSell}} USDH, saque {{withdrawAmt}} USDC; chegam cerca de {{arrive}} USDC.",
-    "**Assinaturas**: 2–3 assinaturas EIP-712, sem gas. Confira duas coisas: o domínio é app.hyperliquid.xyz, e destination é o seu próprio endereço {{addrShort}}.",
+    "**Assinaturas**: 2–3 assinaturas EIP-712, sem gas. Confira duas coisas: o domínio é app.hyperliquid.xyz, e destination é {{addrShort}}.",
     "**Armadilhas**: ao buscar USDH também aparece USDHL, então escolha o certo. Tocar no livro de ofertas à direita substitui o seu preço."
   ],
   "done": {
@@ -176,7 +176,7 @@
         "skip": "Conta unificada (sem Perps ⇄ Spot na página Account)? Pule este passo",
         "confirm": [
           {"title": "O pedido vem de app.hyperliquid.xyz", "sub": "Uma letra a mais ou um ponto a menos faz dele outro site"},
-          {"title": "Diz SendAsset, e destination é o seu próprio endereço {{addrShort}}", "sub": "Maiúsculas e minúsculas não importam. Se não for o seu endereço, rejeite"},
+          {"title": "Diz SendAsset, e destination é {{addrShort}}", "sub": "Maiúsculas e minúsculas não importam. Se não for o seu endereço, rejeite"},
           {"title": "Do spot para perps, cerca de {{spotAfter}} USDC", "sub": "sourceDex é spot e destinationDex está vazio; o token é USDC:0x6d1e…e054"}
         ],
         "reject": ["destination não é o seu próprio endereço", "Menciona Permit, ou aprovar (Approve) um token", "Não vem de app.hyperliquid.xyz"],
@@ -200,7 +200,7 @@
         "lead": "Depois de tocar em Withdraw to Arbitrum, a sua carteira mostra um pedido de assinatura. Compare com este cartão e marque cada linha conforme for conferindo.",
         "confirm": [
           {"title": "O pedido vem de app.hyperliquid.xyz", "sub": "Uma letra a mais ou um ponto a menos faz dele outro site"},
-          {"title": "Diz Withdraw, e destination é o seu próprio endereço {{addrShort}}", "sub": "Se não for o seu endereço, rejeite"},
+          {"title": "Diz Withdraw, e destination é {{addrShort}}", "sub": "Se não for o seu endereço, rejeite"},
           {"title": "amount é cerca de {{withdrawAmt}}", "sub": "O que chega = este número menos a taxa de 1 USDC"}
         ],
         "reject": ["destination não é o seu próprio endereço", "Menciona Permit, ou aprovar (Approve) um token", "Não vem de app.hyperliquid.xyz"],

@@ -74,7 +74,7 @@
       "note": "Die einzige Transaktion",
       "milestone": "Unstaking",
       "images": [
-        "① Wisch nach oben bis zu den Staking-Details (die Zeile mit dem gestakten Betrag ist das, was du gesperrt hast, etwa {{got}}) und tippe darunter auf den Unstake-Button",
+        "① Scroll nach unten bis zu den Staking-Details (die Zeile mit dem gestakten Betrag ist das, was du gesperrt hast, etwa {{got}}) und tippe darunter auf den Unstake-Button",
         "② Die Unstake-Bestätigung öffnet sich. Vergleiche sie zuerst mit der Karte unten, und erst wenn alle drei gelben Kästen passen, tippe auf den grünen Bestätigungs-Button. Der verdeckte Teil im Bild ist deine eigene Adresse"
       ],
       "check": {

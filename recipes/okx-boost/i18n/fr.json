@@ -74,7 +74,7 @@
       "note": "La seule transaction",
       "milestone": "Sortie du staking",
       "images": [
-        "① Balayez l'écran vers le haut jusqu'aux détails du staking (la ligne du montant en staking correspond à ce que vous avez bloqué, environ {{got}}) et touchez le bouton de retrait du staking juste en dessous",
+        "① Faites défiler vers le bas jusqu'aux détails du staking (la ligne du montant en staking correspond à ce que vous avez bloqué, environ {{got}}) et touchez le bouton de retrait du staking juste en dessous",
         "② La confirmation du retrait du staking s'ouvre. Comparez-la d'abord avec la fiche ci-dessous, et ne touchez le bouton vert de confirmation que lorsque les trois cadres jaunes correspondent tous. La partie masquée de l'image est votre propre adresse"
       ],
       "check": {

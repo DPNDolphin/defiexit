@@ -641,7 +641,7 @@
     "name": "Trust Wallet 24 ağı kaldırıyor",
     "summary": "15 Eylül'den beri Trust Wallet 24 ağı göstermiyor, ancak varlıklar hâlâ zincirde. EVM ağlarını kendiniz özel ağ olarak ekleyebilirsiniz.",
     "deadlineNote": "15 Eylül'de bu ağlar cüzdanın listesinden kalktı; Trust Handle ise daha önce, 7 Eylül'de durdu.",
-    "who": "Bu ağlarda varlığı olan Trust Wallet kullanıcıları: yukarıda listelenen 15 EVM ağı ve 9 EVM dışı ağ.",
+    "who": "Bu ağlarda varlığı olan Trust Wallet kullanıcıları: yukarıda listelenen 15 EVM ağı ve 9 EVM dışı ağ (listesi Trust Wallet'ın blogunda).",
     "todo": "Varlıklarınız hâlâ zincirde. EVM ağlarını doğrulanmış bir RPC ile kendiniz özel ağ olarak ekleyin. EVM dışı ağlar için cüzdanınızı o ağı destekleyen başka bir cüzdana aktarın.",
     "caution": "Yalnızca ağın resmi belgelerindeki RPC'yi kullanın. Kurtarma ifadesini yalnızca kendiniz, güvenilir bir cüzdan uygulamasının içine girin; asla bir web sitesine girmeyin.",
     "official": [

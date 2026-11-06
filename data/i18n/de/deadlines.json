@@ -641,7 +641,7 @@
     "name": "Trust Wallet entfernt 24 Netzwerke",
     "summary": "Seit dem 15. September zeigt Trust Wallet 24 Netzwerke nicht mehr an, aber die Assets liegen weiterhin auf der Chain. Bei EVM-Chains kannst du das Netzwerk selbst als benutzerdefiniertes Netzwerk hinzufügen.",
     "deadlineNote": "Am 15. September verschwanden diese Netzwerke aus der Liste der Wallet; Trust Handle wurde schon vorher eingestellt, am 7. September.",
-    "who": "Nutzer von Trust Wallet mit Assets auf diesen Netzwerken: die 15 oben aufgeführten EVM-Chains und 9 Nicht-EVM-Chains.",
+    "who": "Nutzer von Trust Wallet mit Assets auf diesen Netzwerken: die 15 oben aufgeführten EVM-Chains und 9 Nicht-EVM-Chains (die Liste steht im Blog von Trust Wallet).",
     "todo": "Deine Assets liegen weiterhin auf der Chain. Bei EVM-Chains füg das Netzwerk selbst als benutzerdefiniertes Netzwerk mit einem verifizierten RPC hinzu. Bei Nicht-EVM-Chains importier deine Wallet in eine andere Wallet, die diese Chain unterstützt.",
     "caution": "Nutze nur einen RPC aus der offiziellen Doku der Chain. Gib eine Seed-Phrase nur selbst in einer seriösen Wallet-App ein, niemals auf einer Website.",
     "official": [

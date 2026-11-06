@@ -32,7 +32,7 @@
     "**Parcours** : l'USDH n'est plus émis → vendez-le en spot contre de l'USDC avec un ordre limite à {{floorPx}} ou mieux → « Withdraw to Arbitrum ». Frais de 1 USDC, arrivée en 5 minutes environ.",
     "**Mode de compte** : les comptes unifiés (le nouveau mode par défaut) retirent directement. Les anciens comptes séparés transfèrent d'abord l'USDC spot vers « Perps » avec « Perps ⇄ Spot ».",
     "**Vos chiffres** : vendez {{usdhSell}} USDH, retirez {{withdrawAmt}} USDC ; environ {{arrive}} USDC arrivent.",
-    "**Signatures** : 2–3 signatures EIP-712, sans gas. Vérifiez deux choses : le domaine est app.hyperliquid.xyz, et destination est votre propre {{addrShort}}.",
+    "**Signatures** : 2–3 signatures EIP-712, sans gas. Vérifiez deux choses : le domaine est app.hyperliquid.xyz, et destination est {{addrShort}}.",
     "**Pièges** : chercher USDH affiche aussi USDHL, alors choisissez le bon. Toucher le carnet d'ordres à droite remplace votre prix."
   ],
   "done": {
@@ -176,7 +176,7 @@
         "skip": "Compte unifié (pas de « Perps ⇄ Spot » sur la page « Account ») ? Sautez cette étape",
         "confirm": [
           {"title": "La demande vient de app.hyperliquid.xyz", "sub": "Une lettre en trop ou un point manquant, et c'est un autre site"},
-          {"title": "On y lit SendAsset, et destination est votre propre adresse {{addrShort}}", "sub": "Majuscules ou minuscules, peu importe. Si ce n'est pas votre adresse, refusez"},
+          {"title": "On y lit SendAsset, et destination est {{addrShort}}", "sub": "Majuscules ou minuscules, peu importe. Si ce n'est pas votre adresse, refusez"},
           {"title": "Du spot vers les perps, environ {{spotAfter}} USDC", "sub": "sourceDex vaut spot et destinationDex est vide ; le jeton est USDC:0x6d1e…e054"}
         ],
         "reject": ["destination n'est pas votre propre adresse", "Elle mentionne Permit, ou l'autorisation (Approve) d'un jeton", "Elle ne vient pas de app.hyperliquid.xyz"],
@@ -200,7 +200,7 @@
         "lead": "Une fois que vous avez touché « Withdraw to Arbitrum », votre portefeuille affiche une demande de signature. Comparez-la avec cette fiche et cochez chaque ligne au fur et à mesure.",
         "confirm": [
           {"title": "La demande vient de app.hyperliquid.xyz", "sub": "Une lettre en trop ou un point manquant, et c'est un autre site"},
-          {"title": "On y lit Withdraw, et destination est votre propre adresse {{addrShort}}", "sub": "Si ce n'est pas votre adresse, refusez"},
+          {"title": "On y lit Withdraw, et destination est {{addrShort}}", "sub": "Si ce n'est pas votre adresse, refusez"},
           {"title": "amount vaut environ {{withdrawAmt}}", "sub": "Ce qui arrive = ce nombre moins les frais de 1 USDC"}
         ],
         "reject": ["destination n'est pas votre propre adresse", "Elle mentionne Permit, ou l'autorisation (Approve) d'un jeton", "Elle ne vient pas de app.hyperliquid.xyz"],

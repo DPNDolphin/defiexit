@@ -641,7 +641,7 @@
     "name": "Trust Wallet abandonne 24 réseaux",
     "summary": "Depuis le 15 septembre, Trust Wallet n'affiche plus 24 réseaux, mais les actifs sont toujours sur la blockchain. Pour les chaînes EVM, vous pouvez ajouter vous-même le réseau comme réseau personnalisé.",
     "deadlineNote": "Le 15 septembre, ces réseaux ont disparu de la liste du portefeuille ; Trust Handle s'était arrêté avant, le 7 septembre.",
-    "who": "Les utilisateurs de Trust Wallet ayant des actifs sur ces réseaux : les 15 chaînes EVM listées ci-dessus et 9 chaînes non EVM.",
+    "who": "Les utilisateurs de Trust Wallet ayant des actifs sur ces réseaux : les 15 chaînes EVM listées ci-dessus et 9 chaînes non EVM (le blog de Trust Wallet en donne la liste).",
     "todo": "Vos actifs sont toujours sur la blockchain. Pour les chaînes EVM, ajoutez vous-même le réseau comme réseau personnalisé avec un RPC vérifié. Pour les chaînes non EVM, importez votre portefeuille dans un autre portefeuille qui prend en charge cette chaîne.",
     "caution": "N'utilisez qu'un RPC provenant de la documentation officielle de la chaîne. Ne saisissez une phrase de récupération que vous-même, dans une application de portefeuille réputée, et jamais sur un site web.",
     "official": [

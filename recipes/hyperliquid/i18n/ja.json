@@ -176,7 +176,7 @@
         "skip": "統合アカウント（AccountのページにPerps ⇄ Spotがない）？このステップは飛ばしてください",
         "confirm": [
           {"title": "リクエストはapp.hyperliquid.xyzから来ている", "sub": "文字が一つ多い、または点が抜けていれば別のサイトです"},
-          {"title": "SendAssetと書かれ、destinationがご自身のアドレス{{addrShort}}", "sub": "大文字・小文字の違いは問題ありません。ご自身のアドレスでなければ拒否してください"},
+          {"title": "SendAssetと書かれ、destinationが{{addrShort}}", "sub": "大文字・小文字の違いは問題ありません。ご自身のアドレスでなければ拒否してください"},
           {"title": "現物（spot）からperpsへ、約{{spotAfter}} USDC", "sub": "sourceDexはspot、destinationDexは空欄で、トークンはUSDC:0x6d1e…e054です"}
         ],
         "reject": ["destinationがご自身のアドレスではない", "Permitが出てくる、またはトークンの承認（Approve）を求めている", "app.hyperliquid.xyzから来ていない"],
@@ -200,7 +200,7 @@
         "lead": "「Withdraw to Arbitrum」を押すと、ウォレットに署名のリクエストが表示されます。このカードと見比べ、確認した行に一つずつチェックを入れてください。",
         "confirm": [
           {"title": "リクエストはapp.hyperliquid.xyzから来ている", "sub": "文字が一つ多い、または点が抜けていれば別のサイトです"},
-          {"title": "Withdrawと書かれ、destinationがご自身のアドレス{{addrShort}}", "sub": "ご自身のアドレスでなければ拒否してください"},
+          {"title": "Withdrawと書かれ、destinationが{{addrShort}}", "sub": "ご自身のアドレスでなければ拒否してください"},
           {"title": "amountが約{{withdrawAmt}}", "sub": "着金額 = この数字から手数料1 USDCを引いた額"}
         ],
         "reject": ["destinationがご自身のアドレスではない", "Permitが出てくる、またはトークンの承認（Approve）を求めている", "app.hyperliquid.xyzから来ていない"],

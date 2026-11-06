@@ -32,7 +32,7 @@
     "**Route**: USDH is no longer issued → sell it on spot for USDC with a limit order at {{floorPx}} or better → Withdraw to Arbitrum. 1 USDC fee, lands in about 5 minutes.",
     "**Account mode**: unified accounts (the new default) withdraw directly. Older separate accounts first move spot USDC to Perps with Perps ⇄ Spot.",
     "**Your numbers**: sell {{usdhSell}} USDH, withdraw {{withdrawAmt}} USDC, about {{arrive}} USDC arrives.",
-    "**Signatures**: 2–3 EIP-712 signatures, no gas. Check two things: the domain is app.hyperliquid.xyz, and destination is your own {{addrShort}}.",
+    "**Signatures**: 2–3 EIP-712 signatures, no gas. Check two things: the domain is app.hyperliquid.xyz, and destination is {{addrShort}}.",
     "**Gotchas**: searching USDH also shows USDHL, so pick the right one. Tapping the order book on the right overwrites your price."
   ],
   "done": {
@@ -176,7 +176,7 @@
         "skip": "Unified account (no Perps ⇄ Spot on the Account page)? Skip this step",
         "confirm": [
           {"title": "The request comes from app.hyperliquid.xyz", "sub": "One extra letter or a missing dot makes it a different site"},
-          {"title": "It says SendAsset, and destination is your own address {{addrShort}}", "sub": "Upper or lower case doesn't matter. If it isn't your address, reject it"},
+          {"title": "It says SendAsset, and destination is {{addrShort}}", "sub": "Upper or lower case doesn't matter. If it isn't your address, reject it"},
           {"title": "From spot to perps, about {{spotAfter}} USDC", "sub": "sourceDex is spot and destinationDex is empty; the token is USDC:0x6d1e…e054"}
         ],
         "reject": ["destination isn't your own address", "It mentions Permit, or approving (Approve) a token", "It doesn't come from app.hyperliquid.xyz"],
@@ -200,7 +200,7 @@
         "lead": "After you tap Withdraw to Arbitrum, your wallet shows a signature request. Compare it with this card and tick each line as you check it.",
         "confirm": [
           {"title": "The request comes from app.hyperliquid.xyz", "sub": "One extra letter or a missing dot makes it a different site"},
-          {"title": "It says Withdraw, and destination is your own address {{addrShort}}", "sub": "If it isn't your address, reject it"},
+          {"title": "It says Withdraw, and destination is {{addrShort}}", "sub": "If it isn't your address, reject it"},
           {"title": "amount is about {{withdrawAmt}}", "sub": "What arrives = this number minus the 1 USDC fee"}
         ],
         "reject": ["destination isn't your own address", "It mentions Permit, or approving (Approve) a token", "It doesn't come from app.hyperliquid.xyz"],

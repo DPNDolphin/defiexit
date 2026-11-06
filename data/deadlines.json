@@ -1155,7 +1155,7 @@
       "type": "other",
       "deadline": "2026-09-15",
       "deadlineNote": {"zh": "9 月 15 日这些网络从钱包列表里消失;Trust Handle 9 月 7 日先停。", "en": "On Sep 15 these networks disappeared from the wallet's list; Trust Handle stopped first, on Sep 7."},
-      "who": {"zh": "在这些网络上有资产、用 Trust Wallet 的人:15 条 EVM 链(上面列的)和 9 条非 EVM 链。", "en": "Trust Wallet users with assets on these networks: the 15 EVM chains listed above and 9 non-EVM chains."},
+      "who": {"zh": "在这些网络上有资产、用 Trust Wallet 的人:15 条 EVM 链(上面列的)和 9 条非 EVM 链(名单在 Trust Wallet 官方博客里)。", "en": "Trust Wallet users with assets on these networks: the 15 EVM chains listed above and 9 non-EVM chains (Trust Wallet's blog post names them)."},
       "todo": {"zh": "资产还在链上:EVM 链用核实过的 RPC 自己加成自定义网络;非 EVM 链把钱包导进支持这条链的别的钱包。", "en": "Your assets are still on-chain. For EVM chains, add the network yourself as a custom network using a verified RPC. For non-EVM chains, import your wallet into another wallet that supports that chain."},
       "caution": {"zh": "RPC 只用那条链官方文档里给的。助记词只在正规钱包 App 里自己导入,绝不填进任何网页。", "en": "Only use an RPC from the chain's official docs. Only ever enter a seed phrase inside a reputable wallet app yourself, never on a website."},
       "official": [

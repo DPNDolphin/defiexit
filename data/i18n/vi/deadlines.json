@@ -475,7 +475,7 @@
     "name": "Trust Wallet ngừng hỗ trợ 24 mạng",
     "summary": "Từ ngày 15/9, Trust Wallet không còn hiển thị 24 mạng, nhưng tài sản vẫn nằm trên chuỗi. Với chuỗi EVM, bạn có thể tự thêm mạng đó dưới dạng mạng tùy chỉnh.",
     "deadlineNote": "Ngày 15/9, các mạng này biến mất khỏi danh sách của ví; Trust Handle đã dừng trước đó, vào ngày 7/9.",
-    "who": "Người dùng Trust Wallet có tài sản trên các mạng này: 15 chuỗi EVM liệt kê ở trên và 9 chuỗi không phải EVM.",
+    "who": "Người dùng Trust Wallet có tài sản trên các mạng này: 15 chuỗi EVM liệt kê ở trên và 9 chuỗi không phải EVM (danh sách có trong blog của Trust Wallet).",
     "todo": "Tài sản của bạn vẫn nằm trên chuỗi. Với chuỗi EVM, hãy tự thêm mạng dưới dạng mạng tùy chỉnh bằng một RPC đã được xác minh. Với chuỗi không phải EVM, hãy nhập ví của bạn vào một ví khác có hỗ trợ chuỗi đó.",
     "caution": "Chỉ dùng RPC từ tài liệu chính thức của chuỗi. Chỉ tự tay nhập cụm từ khôi phục bên trong một ứng dụng ví uy tín, không bao giờ nhập trên trang web.",
     "official": ["Blog Trust Wallet"]

@@ -32,7 +32,7 @@
     "**Route**: USDH wird nicht mehr ausgegeben → im Spot per Limit-Order zu {{floorPx}} oder besser gegen USDC verkaufen → „Withdraw to Arbitrum“. 1 USDC Gebühr, kommt nach etwa 5 Minuten an.",
     "**Kontomodus**: Vereinheitlichte Konten (der neue Standard) heben direkt ab. Ältere getrennte Konten verschieben zuerst Spot-USDC mit „Perps ⇄ Spot“ zu „Perps“.",
     "**Deine Zahlen**: {{usdhSell}} USDH verkaufen, {{withdrawAmt}} USDC abheben, etwa {{arrive}} USDC kommen an.",
-    "**Signaturen**: 2–3 EIP-712-Signaturen, kein Gas. Prüf zwei Dinge: Die Domain ist app.hyperliquid.xyz, und destination ist deine eigene {{addrShort}}.",
+    "**Signaturen**: 2–3 EIP-712-Signaturen, kein Gas. Prüf zwei Dinge: Die Domain ist app.hyperliquid.xyz, und destination ist {{addrShort}}.",
     "**Stolperfallen**: Die Suche nach USDH zeigt auch USDHL, also wähl das richtige. Ein Tippen ins Orderbuch rechts überschreibt deinen Preis."
   ],
   "done": {
@@ -176,7 +176,7 @@
         "skip": "Vereinheitlichtes Konto (kein „Perps ⇄ Spot“ auf der Seite „Account“)? Überspring diesen Schritt",
         "confirm": [
           {"title": "Die Anfrage kommt von app.hyperliquid.xyz", "sub": "Ein Buchstabe zu viel oder ein fehlender Punkt – und es ist eine andere Website"},
-          {"title": "Dort steht SendAsset, und destination ist deine eigene Adresse {{addrShort}}", "sub": "Groß- oder Kleinschreibung spielt keine Rolle. Ist es nicht deine Adresse, lehne ab"},
+          {"title": "Dort steht SendAsset, und destination ist {{addrShort}}", "sub": "Groß- oder Kleinschreibung spielt keine Rolle. Ist es nicht deine Adresse, lehne ab"},
           {"title": "Von Spot zu Perps, etwa {{spotAfter}} USDC", "sub": "sourceDex ist spot und destinationDex ist leer; der Token ist USDC:0x6d1e…e054"}
         ],
         "reject": ["destination ist nicht deine eigene Adresse", "Sie erwähnt Permit oder die Freigabe (Approve) eines Tokens", "Sie kommt nicht von app.hyperliquid.xyz"],
@@ -200,7 +200,7 @@
         "lead": "Nachdem du auf „Withdraw to Arbitrum“ getippt hast, zeigt deine Wallet eine Signaturanfrage. Vergleiche sie mit dieser Karte und hake jede Zeile ab, sobald du sie geprüft hast.",
         "confirm": [
           {"title": "Die Anfrage kommt von app.hyperliquid.xyz", "sub": "Ein Buchstabe zu viel oder ein fehlender Punkt – und es ist eine andere Website"},
-          {"title": "Dort steht Withdraw, und destination ist deine eigene Adresse {{addrShort}}", "sub": "Ist es nicht deine Adresse, lehne ab"},
+          {"title": "Dort steht Withdraw, und destination ist {{addrShort}}", "sub": "Ist es nicht deine Adresse, lehne ab"},
           {"title": "amount ist etwa {{withdrawAmt}}", "sub": "Was ankommt = diese Zahl minus 1 USDC Gebühr"}
         ],
         "reject": ["destination ist nicht deine eigene Adresse", "Sie erwähnt Permit oder die Freigabe (Approve) eines Tokens", "Sie kommt nicht von app.hyperliquid.xyz"],

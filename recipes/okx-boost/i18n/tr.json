@@ -74,7 +74,7 @@
       "note": "Tek işlem",
       "milestone": "Stake'ten çıkarma",
       "images": [
-        "① Parmağınızı yukarı kaydırarak staking ayrıntıları bölümüne gelin (staked satırı kilitlediğiniz miktardır, yaklaşık {{got}}) ve altındaki stake'ten çıkarma düğmesine dokunun",
+        "① Aşağı kaydırarak staking ayrıntıları bölümüne gelin (staked satırı kilitlediğiniz miktardır, yaklaşık {{got}}) ve altındaki stake'ten çıkarma düğmesine dokunun",
         "② Stake'ten çıkarma onayı açılır. Önce aşağıdaki kartla karşılaştırın; sarı çerçevedeki üç yerin hepsi uyuyorsa yeşil onay düğmesine dokunun. Resimde gizlenen kısım kendi adresinizdir"
       ],
       "check": {

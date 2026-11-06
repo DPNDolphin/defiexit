@@ -74,7 +74,7 @@
       "note": "The only transaction",
       "milestone": "Unstake",
       "images": [
-        "① Scroll up to the staking details (the staked line is what you locked, about {{got}}) and tap the unstake button below it",
+        "① Scroll down to the staking details (the staked line is what you locked, about {{got}}) and tap the unstake button below it",
         "② The unstake confirmation opens. Check it against the card below first, and only when the three yellow boxes all match, tap the green confirm button. The hidden part of the picture is your own address"
       ],
       "check": {

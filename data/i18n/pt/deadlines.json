@@ -641,7 +641,7 @@
     "name": "Trust Wallet deixa de mostrar 24 redes",
     "summary": "Desde 15 de setembro, a Trust Wallet não mostra mais 24 redes, mas os ativos continuam na blockchain. Nas redes EVM, você pode adicionar a rede por conta própria como rede personalizada.",
     "deadlineNote": "Em 15 de setembro essas redes sumiram da lista da carteira; o Trust Handle parou antes, em 7 de setembro.",
-    "who": "Usuários da Trust Wallet com ativos nessas redes: as 15 redes EVM listadas acima e 9 redes não EVM.",
+    "who": "Usuários da Trust Wallet com ativos nessas redes: as 15 redes EVM listadas acima e 9 redes não EVM (o blog da Trust Wallet diz quais são).",
     "todo": "Os seus ativos continuam na blockchain. Nas redes EVM, adicione a rede por conta própria como rede personalizada usando um RPC verificado. Nas redes não EVM, importe a sua carteira em outra carteira que suporte essa rede.",
     "caution": "Use só um RPC da documentação oficial da rede. Digite uma frase-semente só por conta própria e só dentro de um app de carteira confiável, nunca num site.",
     "official": [

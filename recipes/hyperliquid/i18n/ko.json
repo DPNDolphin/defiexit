@@ -176,7 +176,7 @@
         "skip": "통합 계정인가요(Account 페이지에 Perps ⇄ Spot이 없음)? 이 단계는 건너뛰세요",
         "confirm": [
           {"title": "요청이 app.hyperliquid.xyz에서 왔어요", "sub": "글자가 하나 더 있거나 점이 빠졌다면 다른 사이트예요"},
-          {"title": "SendAsset이 적혀 있고, destination이 내 주소({{addrShort}})와 같아요", "sub": "대소문자는 상관없어요. 내 주소가 아니면 거절하세요"},
+          {"title": "SendAsset이 적혀 있고, destination이 {{addrShort}} 맞아요", "sub": "대소문자는 상관없어요. 내 주소가 아니면 거절하세요"},
           {"title": "현물(spot)에서 perps로, 약 {{spotAfter}} USDC", "sub": "sourceDex는 spot, destinationDex는 비어 있고, 토큰은 USDC:0x6d1e…e054예요"}
         ],
         "reject": ["destination이 내 주소가 아니에요", "Permit이 나오거나, 토큰 승인(Approve)을 요청해요", "app.hyperliquid.xyz에서 온 요청이 아니에요"],
@@ -200,7 +200,7 @@
         "lead": "‘Withdraw to Arbitrum’을 누르면 지갑에 서명 요청이 떠요. 이 카드와 비교하며, 확인한 줄을 하나씩 체크하세요.",
         "confirm": [
           {"title": "요청이 app.hyperliquid.xyz에서 왔어요", "sub": "글자가 하나 더 있거나 점이 빠졌다면 다른 사이트예요"},
-          {"title": "Withdraw가 적혀 있고, destination이 내 주소({{addrShort}})와 같아요", "sub": "내 주소가 아니면 거절하세요"},
+          {"title": "Withdraw가 적혀 있고, destination이 {{addrShort}} 맞아요", "sub": "내 주소가 아니면 거절하세요"},
           {"title": "amount가 약 {{withdrawAmt}} 정도예요", "sub": "들어오는 금액 = 이 숫자에서 수수료 1 USDC를 뺀 금액"}
         ],
         "reject": ["destination이 내 주소가 아니에요", "Permit이 나오거나, 토큰 승인(Approve)을 요청해요", "app.hyperliquid.xyz에서 온 요청이 아니에요"],

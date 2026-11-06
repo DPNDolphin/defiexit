@@ -74,7 +74,7 @@
       "note": "La única transacción",
       "milestone": "Retirar del staking",
       "images": [
-        "① Desplázate hasta los detalles del staking (la línea de lo que está en staking es lo que bloqueaste, aproximadamente {{got}}) y toca el botón para retirar del staking que está debajo",
+        "① Desplázate hacia abajo hasta los detalles del staking (la línea de lo que está en staking es lo que bloqueaste, aproximadamente {{got}}) y toca el botón para retirar del staking que está debajo",
         "② Se abre la confirmación para retirar del staking. Primero compárala con la tarjeta de abajo, y solo cuando coincidan los tres recuadros amarillos, toca el botón verde de confirmar. La parte oculta de la imagen es tu propia dirección"
       ],
       "check": {

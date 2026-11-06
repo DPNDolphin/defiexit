@@ -74,7 +74,7 @@
       "note": "Satu-satunya transaksi",
       "milestone": "Unstake",
       "images": [
-        "① Gulir ke atas sampai detail staking (baris staked adalah yang Anda kunci, sekitar {{got}}) lalu ketuk tombol unstake di bawahnya",
+        "① Gulir ke bawah sampai detail staking (baris staked adalah yang Anda kunci, sekitar {{got}}) lalu ketuk tombol unstake di bawahnya",
         "② Konfirmasi unstake terbuka. Cocokkan dulu dengan kartu di bawah, dan hanya setelah ketiga kotak kuning cocok, ketuk tombol konfirmasi hijau. Bagian yang disembunyikan di gambar adalah alamat Anda sendiri"
       ],
       "check": {
