@@ -11,6 +11,7 @@ import { detectors } from "./detectors/index.js";
 import { isEvmAddress, shortAddr, floorTo } from "./lib/net.js";
 import { el, icon, rowsTable, setText, copy, toast } from "./lib/ui.js";
 import { makeT, pageLang, prefix, errText } from "./lib/i18n.js";
+import { locale, listSep } from "./lib/langs.js";
 import { chainLogo, chainKey, gasSym, mergeDefi, EXTRA } from "./lib/chains.js";
 import { HOW } from "./lib/xlayer.text.js";
 import { countCheckup } from "./lib/count.js";
@@ -23,8 +24,10 @@ const recipes = [...document.querySelectorAll("#recipes li")].map((li) => ({
   chips: JSON.parse(li.dataset.chips || "[]"),
   zerion: JSON.parse(li.dataset.zerion || "null"),
 }));
-const usd = (x) => floorTo(x, 2).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const qty = (x) => (x >= 1000 ? Math.round(x).toLocaleString("en-US") : x.toLocaleString("en-US", { maximumSignificantDigits: 6 }));
+// 数字按页面语言的写法(中文、英文都是 1,234.56;德文是 1.234,56);要复制、要填进官网的数不在这里格式化
+const LOC = locale(lang);
+const usd = (x) => floorTo(x, 2).toLocaleString(LOC, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const qty = (x) => (x >= 1000 ? Math.round(x).toLocaleString(LOC) : x.toLocaleString(LOC, { maximumSignificantDigits: 6 }));
 const $ = (id) => document.getElementById(id);
 const badge = $("sumBadge"), line = $("sumLine"), big = $("sumBig"), note = $("sumNote"), cards = $("cards");
 const sheet = $("exitSheet"), sheetH = $("exitH"), sheetBody = $("exitBody");
@@ -95,11 +98,13 @@ const itemRows = (g) => g.items.map((x) => ({
   value: x.usd === null ? `${qty(x.qty)} ${x.sym}` : `$${usd(x.usd)}`,
 }));
 
-// 我们自己核对过取法、还没做成一步一图的仓位(X Layer 的 OKX Boost、DYORSwap):弹层里给专门的取法
-const when = (sec) => new Date(sec * 1000).toLocaleString(lang === "en" ? "en-US" : "zh-CN", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false });
-const howOf = (g) => g.how && HOW[lang]?.[g.how]?.({
+// 我们自己核对过取法、还没做成一步一图的仓位(X Layer 的 OKX Boost、DYORSwap):弹层里给专门的取法。
+// 取法只有中英两套,别的语言用英文那套(日期照样按页面语言写)
+const how = HOW[lang] || HOW.en;
+const when = (sec) => new Date(sec * 1000).toLocaleString(LOC, { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false });
+const howOf = (g) => g.how && how[g.how]?.({
   ready: g.ready, date: g.end ? when(g.end) : "",
-  got: g.items.map((x) => `${qty(x.qty)} ${x.sym === "WOKB" ? "OKB" : x.sym}`).join(lang === "en" ? " + " : " 和 "),
+  got: g.items.map((x) => `${qty(x.qty)} ${x.sym === "WOKB" ? "OKB" : x.sym}`).join(how === HOW.zh ? " 和 " : " + "),
 });
 
 // 项目仓位(Zerion 查到的,或者我们自己在 X Layer 上查到的)
@@ -208,7 +213,7 @@ function paint() {
   if (assets.state === "busy" || assets.state === "error") nodes.push(failRow(t("assetsH"), t(assets.state === "busy" ? "assetsBusy" : "assetsFail"), "assets"));
   if (done && !nDefi && !dust.length && !wallets.length && !partial) {
     // 什么都没查到。查了全部资产的,照实说查了多少;没接全部资产(off)才叫用户自己去 DeBank 看
-    const list = recipes.map((r) => r.protocol).join(lang === "en" ? ", " : "、");
+    const list = recipes.map((r) => r.protocol).join(listSep(lang));
     nodes.push(el("section", { class: "nothing" },
       el("h2", {}, assets.state === "empty" ? t("nothingAllH") : t("nothingH", recipes.length)),
       el("p", { class: "sub" }, assets.state === "empty" ? t("nothingAllP") : t("nothingP", list)),
@@ -292,7 +297,7 @@ function exitHow(g, h) {
     steps(h.steps.map((s) => (typeof s === "string" ? s : el("div", {}, s.text, copyRow(s.copy))))),
     h.after ? el("p", { class: "tip" }, icon("info"), el("span", {}, h.after)) : null,
     ...tail(),
-    el("p", { class: "fine" }, HOW[lang].foot),
+    el("p", { class: "fine" }, how.foot),
   ];
 }
 

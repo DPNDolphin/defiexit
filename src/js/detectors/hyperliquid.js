@@ -18,7 +18,7 @@ const SPLIT = ["default"];                             // 分开账户:现货、
 const UNIFIED = ["unifiedAccount", "portfolioMargin"]; // 统一账户:余额都在现货那本账里
 const MIN = 60000, DAY = 86400000;
 
-const text = (lang) => TEXT[lang] || TEXT.zh;
+const text = (lang) => TEXT[lang] || TEXT.en; // 只有中英两套:别的语言用英文那套
 const info = (body) => postJSON(API, body);
 const num = (x) => Number(x || 0);
 // 接口返回的数字字符串要显示给用户、甚至让用户照着填进官网:只认纯数字,别的一律不用

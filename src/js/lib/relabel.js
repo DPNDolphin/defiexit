@@ -3,8 +3,10 @@
 import { zh } from "./zh.js";
 import { daysLeft, timeLeft, urgency } from "./deadline.js";
 
-export function relabel(doc, t, now = new Date()) {
+export function relabel(doc, t, now = new Date(), lang = t.lang) {
   const openList = doc.getElementById("openList"), passedList = doc.getElementById("passedList");
+  // 中文页面才换全角标点(和构建时一样);别的语言照原样
+  const fix = (s) => (lang === "zh" ? zh(s) : s);
   let n = 0;
   const put = (node, k, v) => { if (node && node[k] !== v) { node[k] = v; n++; } };
   // 「还没到 / 已过」和颜色按 daysLeft(只写了日子的,那一天过完才算过);字按 timeLeft(只往少里说)
@@ -12,7 +14,7 @@ export function relabel(doc, t, now = new Date()) {
     const at = a.dataset.at || null, k = daysLeft(a.dataset.deadline, now, at);
     const pill = a.querySelector(".dl-left");
     put(pill, "className", `dl-left ${urgency(k)}`);
-    put(pill?.querySelector("span"), "textContent", zh(t("dlLeft", timeLeft(a.dataset.deadline, now, at))));
+    put(pill?.querySelector("span"), "textContent", fix(t("dlLeft", timeLeft(a.dataset.deadline, now, at))));
     // 「已过」那一段最近过的在最上面;「还没到」那一段是日子早的在前,按页面顺序一条条放到最上面,顺序正好对
     if (k < 0 && openList?.contains(a)) { passedList?.prepend(a.closest("li")); n++; }
   }
@@ -23,7 +25,7 @@ export function relabel(doc, t, now = new Date()) {
       const at = li.dataset.at || null, k = daysLeft(li.dataset.deadline, now, at);
       put(li, "className", k < 0 ? "done" : first ? "next" : "");
       if (k >= 0) first = false;
-      put(li.querySelector(".dl-step-left"), "textContent", zh(k < 0 ? t("dlStepPast") : t("dlLeft", timeLeft(li.dataset.deadline, now, at))));
+      put(li.querySelector(".dl-step-left"), "textContent", fix(k < 0 ? t("dlStepPast") : t("dlLeft", timeLeft(li.dataset.deadline, now, at))));
     }
   }
   for (const [key, list] of [["open", openList], ["passed", passedList]]) {

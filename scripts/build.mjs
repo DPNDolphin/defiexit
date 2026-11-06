@@ -1,6 +1,6 @@
-// 静态站点生成:recipes/*/recipe.json(+ i18n/en.json)→ dist/,中文一套、英文一套(/en/)。零依赖,只用 Node 自带模块。
-// 另有两块:data/deadlines.json → 退出截止日历(/deadlines/);data/topics/<slug>.json → 专题(/topics/<slug>/)。
-// 用法:node scripts/build.mjs
+// 静态站点生成:recipes/*/recipe.json(+ i18n/en.json)→ dist/,中文一套、英文一套(/en/),别的语言各一套(/<编号>/,见 src/js/lib/langs.js)。
+// 零依赖,只用 Node 自带模块。另有两块:data/deadlines.json → 退出截止日历(/deadlines/);data/topics/<slug>.json → 专题(/topics/<slug>/)。
+// 别的语言的译文怎么放、怎么核对,见 scripts/i18n.mjs。用法:node scripts/build.mjs
 import { readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync, copyFileSync, existsSync, statSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -8,7 +8,9 @@ import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { site } from "./site.mjs";
 import { zh as zhPunct } from "../src/js/lib/zh.js";
-import { makeT } from "../src/js/lib/i18n.js";
+import { makeT, hasText } from "../src/js/lib/i18n.js";
+import { BASE, langInfo, listSep } from "../src/js/lib/langs.js";
+import { loadUI, readDataOverlays, applyDeadlines, applyTopic, checkRecipeOverlay, recipeLeftover, recipeLangs, readRecipeOverlay } from "./i18n.mjs";
 import { upcoming, httpsHost, DUE_KINDS } from "../src/js/lib/due.js";
 import { svgString as ico } from "../src/js/lib/icons.js";
 import { ICON, FILE } from "../src/js/lib/chains.js";
@@ -16,9 +18,11 @@ import { daysLeft, timeLeft, nextMilestone, urgency } from "../src/js/lib/deadli
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
-const LANGS = ["zh", "en"];
-const HTML_LANG = { zh: "zh-CN", en: "en" };
-const pre = (lang) => (lang === "en" ? "/en" : "");
+// 要出页面的语言:中英两套,加上 src/js/lib/i18n/<编号>.js 在的(读的时候就逐条核对过,写错了这里直接报错)。
+// SITE 是这一次构建出的语言,页面上的语言菜单、hreflang 都按它;build({ langs }) 可以换一套(测试用)
+const DEFAULT_LANGS = await loadUI(ROOT);
+let SITE = DEFAULT_LANGS;
+const pre = (lang) => langInfo(lang).prefix;
 
 // 版本号:页脚显示构建时的提交,谁都能去 GitHub 核对线上跑的是哪一版。会进网站的那几个目录有没提交的改动,就标出来,不冒充干净版本
 // (只看这几个目录和文件:Cloudflare 构建时会在根目录自己生成 package-lock.json,不影响网站内容)
@@ -95,9 +99,16 @@ function webpSize(file) {
 
 const LOGO = `<svg class="logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="8" fill="currentColor"/><path d="M17 8h7v16h-7" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"/><path d="M7 16h12M15 12l4 4-4 4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-function langSwitch(lang, path, tx) {
-  const links = LANGS.map((l) => `<a href="${pre(l)}${path}" hreflang="${HTML_LANG[l]}" lang="${HTML_LANG[l]}" data-lang="${l}"${l === lang ? ' aria-current="page"' : ""}>${l === "zh" ? "中文" : "EN"}</a>`).join("");
-  return `<nav class="langs" aria-label="${tx.attr("langNav")}">${links}</nav>`;
+// 语言菜单:<details> 做的下拉(CSP 不许内联脚本;不靠脚本也能开关,键盘能用),列出这次出了页面的每一种语言,写本族语的名字,
+// 当前的那种标出来。按钮上只写短名(中文、EN、ES、日本語),读屏读全名;展开以后宽度不超过屏幕(样式见 site.css)
+export function langSwitch(lang, path, tx) {
+  const cur = langInfo(lang);
+  const items = SITE.map((l) => {
+    const L = langInfo(l), on = l === lang;
+    return `<li><a href="${L.prefix}${path}" hreflang="${L.html}" lang="${L.html}" data-lang="${l}"${on ? ' aria-current="page"' : ""}><span>${esc(L.label)}</span>${on ? ico("check") : ""}</a></li>`;
+  }).join("");
+  const label = cur.short === cur.label ? `<span class="lm-cur">${esc(cur.label)}</span>` : `<span class="lm-cur" aria-hidden="true">${esc(cur.short)}</span><span class="sr-only">${esc(cur.label)}</span>`;
+  return `<nav class="langs" aria-label="${tx.attr("langNav")}"><details class="lang-menu"><summary>${ico("globe")}${label}${ico("chevron", "lm-chev")}</summary><ul class="lm-list">${items}</ul></details></nav>`;
 }
 const themeBtn = (tx) => `<button class="iconbtn theme" type="button" data-theme-toggle aria-pressed="false" aria-label="${tx.attr("lightMode")}">${ico("sun", "i-sun")}${ico("moon", "i-moon")}</button>`;
 
@@ -109,12 +120,16 @@ export function texts(lang) {
 
 function page({ tx, kind, path, title, desc, body, script, header, noindex = false }) {
   const { lang } = tx;
+  const L = langInfo(lang);
   const url = (l) => `https://${site.domain}${pre(l)}${path}`;
-  const alt = LANGS.map((l) => `<link rel="alternate" hreflang="${HTML_LANG[l]}" href="${esc(url(l))}">`).join("\n");
+  // 这次出了的每一种语言都写一条 hreflang;找不到对应语言的读者(x-default)给英文版
+  const alt = SITE.map((l) => `<link rel="alternate" hreflang="${langInfo(l).html}" href="${esc(url(l))}">`).join("\n");
   // 顶栏用 brandBar 的几页(里面已经有语言和深浅色),页脚就不再放一遍
   const tools = ["home", "404", "deadlines", "topics", "topic"].includes(kind);
+  // 中英以外的语言:先跑构建时生成的 /assets/js/lang/<编号>.js,把这种语言的界面文字装进 i18n.js,再跑页面的主脚本(模块脚本按先后执行)
+  const ui = BASE.includes(lang) ? "" : `<script type="module" src="/assets/js/lang/${lang}.js"></script>\n`;
   return `<!doctype html>
-<html lang="${HTML_LANG[lang]}" data-page="${kind}">
+<html lang="${L.html}" data-page="${kind}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -124,19 +139,19 @@ function page({ tx, kind, path, title, desc, body, script, header, noindex = fal
 <meta property="og:site_name" content="${esc(site.name)}">
 <meta property="og:title" content="${esc(title)}">
 ${desc ? `<meta property="og:description" content="${esc(desc)}">\n` : ""}<meta property="og:url" content="${esc(url(lang))}">
-<meta property="og:locale" content="${lang === "en" ? "en_US" : "zh_CN"}">
+<meta property="og:locale" content="${L.og}">
 <meta name="twitter:card" content="summary">
 ${noindex ? '<meta name="robots" content="noindex">\n' : ""}<meta name="theme-color" content="#0A0F1E">
 <meta name="dx-contact" content="${esc(site.contact || "")}">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="canonical" href="${esc(url(lang))}">
 ${alt}
-<link rel="alternate" hreflang="x-default" href="${esc(url("zh"))}">
+<link rel="alternate" hreflang="x-default" href="${esc(url("en"))}">
 <link rel="preload" href="/assets/fonts/atkinson-next.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/barlow-sc-800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site.css">
 <script src="/assets/js/boot.js"></script>
-<script type="module" src="/assets/js/${script}"></script>
+${ui}<script type="module" src="/assets/js/${script}"></script>
 </head>
 <body class="p-${kind}">
 <a class="skip" href="#main">${tx.h("skip")}</a>
@@ -198,7 +213,7 @@ function home(tx, recipes) {
       <p class="err" id="addrErr" role="alert" hidden></p>
       <button class="btn primary block" type="submit">${tx.h("checkFree")}${ico("arrowRight")}</button>
       <p class="hint" id="addrHint">${tx.h("addrHint")}</p>
-      <p class="hint">${tx.h("scopeNow", recipes.map((r) => r.protocol).join(tx.lang === "en" ? ", " : "、"))}</p>
+      <p class="hint">${tx.h("scopeNow", recipes.map((r) => r.protocol).join(listSep(tx.lang)))}</p>
     </form>
     <ul class="feats">
       <li>${ico("eye")}<span>${tx.h("feat1")}</span></li>
@@ -504,6 +519,8 @@ function guide(tx, R, shot) {
   // 实测记录:哪天、用什么钱包、卡在哪、指南怎么补的。不写金额和地址
   const tests = R.fieldTests?.length ? `<section class="tests"><h2>${tx.h("testsH")}</h2><ul>${R.fieldTests.map((t) => `<li>${ico("check")}<span><b class="mono">${esc(t.date)}</b> ${r(t.text)}</span></li>`).join("")}</ul></section>` : "";
   const sources = R.sources.map((s) => `<li><a href="${esc(s.url)}" rel="noopener nofollow">${esc(s.label)}</a></li>`).join("");
+  // 这种语言还没有这份指南的译文:页面照英文版出(R.fallback),标题下面说一句;这句本身没翻的也是英文,标上 lang
+  const enNote = R.fallback ? `<p class="lang-note"${hasText(lang, "guideInEn") ? "" : ' lang="en"'}>${ico("info")}<span>${tx.h("guideInEn")}</span></p>` : "";
   return page({
     tx, kind: "guide", path: `/r/${R.id}/`, script: "guide.js",
     title: `${R.title} · ${site.name}`, desc: R.summary.replace(/\*\*/g, ""),
@@ -516,7 +533,7 @@ function guide(tx, R, shot) {
     <p class="route-marks" id="routeMarks" hidden><span data-mark="moves"><span class="tag-moves">${ico("alert")}${tx.h("movesTag")}</span><span></span></span><span data-mark="grants"><span class="tag-grants">${ico("key")}${tx.h("grantsTag")}</span><span></span></span></p>
   </div>
   <section class="intro" id="intro">
-    <h1 class="display">${esc(punct(R.title, lang))}</h1>
+    <h1 class="display">${esc(punct(R.title, lang))}</h1>${enNote}
     <p class="lead">${r(R.summary)}</p>
     <dl class="facts">${facts}</dl>
     ${tests}
@@ -616,9 +633,9 @@ const isDate = (s) => {
 };
 // 和体检结果页的提醒卡同一个判断(lib/due.js):只认 https://,网址里带用户名的也不认
 const isHttps = (u) => !!httpsHost(u);
-// 中英两套都要有;英文里不能混中文(和配方的英文版同一条规矩)
+// 中英两套都要有;英文里不能混中文(和配方的英文版同一条规矩)。别的语言的译文另外放、另外核对(见 scripts/i18n.mjs)
 const bilingual = (fail) => (v, k) => {
-  for (const l of LANGS) if (typeof v?.[l] !== "string" || !v[l].trim()) fail(`缺 ${k}.${l}`);
+  for (const l of BASE) if (typeof v?.[l] !== "string" || !v[l].trim()) fail(`缺 ${k}.${l}`);
   const cjk = v.en.match(CJK);
   if (cjk) fail(`${k}.en 里有中文「${cjk[0]}」`);
 };
@@ -720,7 +737,7 @@ export function checkDeadlines(D, file = "data/deadlines.json") {
       if (!isHttps(o.url)) fail(`official[${j}].url 要是 https:// 开头的完整网址`);
     });
     // 发到 X 的那句话加上网址(23)和换行,不能超过 280
-    for (const l of LANGS) if (xLen(flat(e.summary[l], l)) + 24 > 280) fail(`summary.${l} 太长,转发到 X 会超过 280 字`);
+    for (const l of BASE) if (xLen(flat(e.summary[l], l)) + 24 > 280) fail(`summary.${l} 太长,转发到 X 会超过 280 字`);
     const zhTexts = [...["name", "summary", "who", "todo", "deadlineNote", "caution"].filter((k) => e[k]).map((k) => [k, e[k].zh]), ...e.official.map((o, j) => [`official[${j}].label`, o.label.zh]), ...(e.milestones || []).map((m, j) => [`milestones[${j}].note`, m.note.zh])];
     for (const [k, s] of zhTexts) {
       const bad = halfPunct(s);
@@ -942,15 +959,19 @@ export function topicsIndex(tx, topics) {
   });
 }
 
-// ---------- 找不到页面(中英都放) ----------
+// ---------- 找不到页面(中英都放;别的语言翻了这两句的,每种一行回各自的首页) ----------
 
 function notFound() {
   const zh = texts("zh"), en = texts("en");
+  const more = SITE.filter((l) => !BASE.includes(l) && hasText(l, "nfTitle") && hasText(l, "nfBack")).map((l) => {
+    const x = texts(l), L = langInfo(l);
+    return `<li lang="${L.html}">${x.h("nfTitle")} · <a href="${L.prefix}/">${x.h("nfBack")}</a></li>`;
+  }).join("");
   return page({
     tx: zh, kind: "404", path: "/", script: "site.js", noindex: true,
     title: `${zh.t("nfTitle")} · ${site.name}`, desc: "",
     header: brandBar(zh, "/"),
-    body: `<section class="wrap narrow nf"><h1 class="display">${zh.h("nfTitle")}</h1><p lang="en">${en.h("nfTitle")}</p><p><a class="btn primary" href="/">${zh.h("nfBack")}</a> <a class="btn" href="/en/" lang="en">${en.h("nfBack")}</a></p></section>`,
+    body: `<section class="wrap narrow nf"><h1 class="display">${zh.h("nfTitle")}</h1><p lang="en">${en.h("nfTitle")}</p><p><a class="btn primary" href="/">${zh.h("nfBack")}</a> <a class="btn" href="/en/" lang="en">${en.h("nfBack")}</a></p>${more ? `<ul class="nf-langs">${more}</ul>` : ""}</section>`,
   });
 }
 
@@ -984,8 +1005,9 @@ function copyDir(src, dst) {
   }
 }
 
-// 英文版:按 i18n/en.json 换掉每一处给人看的文字。缺一条、条数对不上、还混着汉字,都直接报错
-export function localize(r, o, file) {
+// 英文版:按 i18n/en.json 换掉每一处给人看的文字。缺一条、条数对不上、还混着汉字,都直接报错。
+// 别的语言(i18n/<编号>.json,和 en.json 一样的结构)也走这一套,lang 换成那种语言:最后查的「还剩中文」按语言来(日文可以有汉字,见 scripts/i18n.mjs)
+export function localize(r, o, file, lang = "en") {
   const need = (v, path) => {
     if (typeof v !== "string" || !v.trim()) throw new Error(`${file}: 缺 ${path}`);
     return v;
@@ -1055,12 +1077,18 @@ export function localize(r, o, file) {
       return S;
     });
   }
-  const cjk = JSON.stringify(L).match(/[　-〿一-鿿＀-￯]+/);
-  if (cjk) throw new Error(`${file}: 英文版里还有中文「${cjk[0]}」`);
+  if (lang === "en") {
+    const cjk = JSON.stringify(L).match(/[　-〿一-鿿＀-￯]+/);
+    if (cjk) throw new Error(`${file}: 英文版里还有中文「${cjk[0]}」`);
+  } else {
+    const cjk = recipeLeftover(lang, L, r);
+    if (cjk) throw new Error(`${file}: 译文里还有中文「${cjk}」`);
+  }
   return L;
 }
 
-function loadRecipes() {
+// i18nRoot:别的语言的译文 recipes/<id>/i18n/<编号>.json 从哪一层读(默认就是仓库根目录;配方本身、en.json、图片总是读仓库里的)
+function loadRecipes(i18nRoot = ROOT) {
   const dir = join(ROOT, "recipes");
   return readdirSync(dir).filter((d) => existsSync(join(dir, d, "recipe.json"))).map((d) => {
     const r = JSON.parse(readFileSync(join(dir, d, "recipe.json"), "utf8"));
@@ -1105,8 +1133,15 @@ function loadRecipes() {
     }
     const enFile = join(dir, d, "i18n", "en.json");
     if (!existsSync(enFile)) throw new Error(`${d}: 缺英文版 i18n/en.json`);
-    const out = { zh: r, en: localize(r, JSON.parse(readFileSync(enFile, "utf8")), `${d}/i18n/en.json`) };
-    // 中英两套用到的每一张图都要在(英文版可以换成英文界面的截图)
+    const enJson = JSON.parse(readFileSync(enFile, "utf8"));
+    const out = { zh: r, en: localize(r, enJson, `${d}/i18n/en.json`) };
+    // 别的语言:i18n/<编号>.json 在的,先和 en.json 逐条核对(结构、条数一样,不能改的都留着),再照英文版的办法换;
+    // 不在的,出那种语言的页面时用英文版(build 里标 fallback,页面上说一句)
+    for (const code of recipeLangs(i18nRoot, d)) {
+      const file = `recipes/${d}/i18n/${code}.json`;
+      out[code] = localize(r, checkRecipeOverlay(code, readRecipeOverlay(i18nRoot, d, code), enJson, file), file, code);
+    }
+    // 每种语言用到的每一张图都要在(英文版可以换成英文界面的截图)
     for (const L of Object.values(out)) {
       const srcs = [...L.steps.flatMap((s) => [...(s.images || []), ...(s.detour?.images || [])]), ...(L.screens || []).flatMap((x) => x.images || [])].map((im) => im.src);
       for (const s of L.steps) if (s.detour) srcs.push(s.detour.thumb);
@@ -1133,31 +1168,60 @@ export function shotData(r) {
   return { v: createHash("sha256").update(JSON.stringify(body)).digest("hex").slice(0, 12), ...body };
 }
 
-export function build() {
-  const recipes = loadRecipes();
-  const D = loadDeadlines();
-  const topics = loadTopics();
+// out:产物放哪(默认 dist/);i18nRoot:别的语言的译文从哪一层读(默认仓库根目录;测试用 test/fixtures 下面照仓库排的一套);
+// langs:出哪几种语言(默认中英,加上 src/js/lib/i18n/ 下面界面文字在的;别的根目录的界面文字要先用 scripts/i18n.mjs 的 loadUI 装好)
+export function build({ out = DIST, i18nRoot = ROOT, langs = DEFAULT_LANGS } = {}) {
+  for (const l of langs) if (!langInfo(l)) throw new Error(`build: ${l} 不是登记过的语言(见 src/js/lib/langs.js)`);
+  const prev = SITE;
+  SITE = langs;
+  try {
+    buildAll(out, i18nRoot, langs);
+  } finally {
+    SITE = prev;
+  }
+}
+
+function buildAll(OUT, i18nRoot, langs) {
+  const recipes = loadRecipes(i18nRoot);
+  const D0 = loadDeadlines();
+  const topics0 = loadTopics();
+  // 别的语言的截止日历、专题译文:在的都核对一遍(还没出页面的语言也核对);要出页面的语言合进数据,没翻的地方用英文
+  const overlays = readDataOverlays(i18nRoot, D0, topics0, { xLen, flat, ban: TITLE_BAN });
+  const D = structuredClone(D0), topics = structuredClone(topics0);
+  for (const l of langs) {
+    if (BASE.includes(l)) continue;
+    applyDeadlines(D, l, overlays[l]?.deadlines || {});
+    for (const T of topics) applyTopic(T, l, overlays[l]?.topics[T.slug] || {});
+  }
   const shots = new Map(recipes.map((r) => [r.zh.id, shotData(r)]));
-  rmSync(DIST, { recursive: true, force: true });
-  mkdirSync(join(DIST, "assets"), { recursive: true });
-  copyDir(join(ROOT, "src"), join(DIST, "assets"));
-  copyDir(join(ROOT, "static", "fonts"), join(DIST, "assets", "fonts"));
-  copyDir(join(ROOT, "static", "chains"), join(DIST, "assets", "chains"));
-  copyFileSync(join(ROOT, "static", "favicon.svg"), join(DIST, "favicon.svg"));
+  rmSync(OUT, { recursive: true, force: true });
+  mkdirSync(join(OUT, "assets"), { recursive: true });
+  copyDir(join(ROOT, "src"), join(OUT, "assets"));
+  copyDir(join(ROOT, "static", "fonts"), join(OUT, "assets", "fonts"));
+  copyDir(join(ROOT, "static", "chains"), join(OUT, "assets", "chains"));
+  copyFileSync(join(ROOT, "static", "favicon.svg"), join(OUT, "favicon.svg"));
   // 运营台(只在 admin 主机上由 functions/admin 发出去;字体和图标也放在 /admin/ 下,不依赖主站路径)
-  copyDir(join(ROOT, "admin"), join(DIST, "admin"));
-  mkdirSync(join(DIST, "admin", "fonts"), { recursive: true });
-  for (const f of ["atkinson-next.woff2", "atkinson-mono.woff2", "barlow-sc-800.woff2"]) copyFileSync(join(ROOT, "static", "fonts", f), join(DIST, "admin", "fonts", f));
-  copyFileSync(join(ROOT, "static", "favicon.svg"), join(DIST, "admin", "favicon.svg"));
+  copyDir(join(ROOT, "admin"), join(OUT, "admin"));
+  mkdirSync(join(OUT, "admin", "fonts"), { recursive: true });
+  for (const f of ["atkinson-next.woff2", "atkinson-mono.woff2", "barlow-sc-800.woff2"]) copyFileSync(join(ROOT, "static", "fonts", f), join(OUT, "admin", "fonts", f));
+  copyFileSync(join(ROOT, "static", "favicon.svg"), join(OUT, "admin", "favicon.svg"));
   const write = (rel, html) => {
-    const f = join(DIST, rel);
+    const f = join(OUT, rel);
     mkdirSync(dirname(f), { recursive: true });
     writeFileSync(f, html);
   };
+  // 中英以外的语言:界面文字拷进网站(译文不在仓库根目录时,上面拷 src/ 时没有它),再生成一小段先把它装进 i18n.js 的脚本,
+  // 页面上排在主脚本前面(见 page)。浏览器里没装上(文件没加载成)就整套用英文
+  for (const l of langs) {
+    if (BASE.includes(l)) continue;
+    write(`assets/js/lib/i18n/${l}.js`, readFileSync(join(i18nRoot, "src", "js", "lib", "i18n", `${l}.js`)));
+    write(`assets/js/lang/${l}.js`, `// 构建时生成(scripts/build.mjs):先把这种语言的界面文字装进 i18n.js,页面上排在后面的主脚本用到时就有了\nimport ui from "../lib/i18n/${l}.js";\nimport { addUI } from "../lib/i18n.js";\n\naddUI(${JSON.stringify(l)}, ui);\n`);
+  }
   const today = new Date();
-  for (const lang of LANGS) {
+  for (const lang of langs) {
     const tx = texts(lang);
-    const rs = recipes.map((r) => r[lang]);
+    // 这种语言还没有译文的指南:用英文版,页面上说一句(见 guide 的 enNote)
+    const rs = recipes.map((r) => r[lang] || { ...r.en, fallback: true });
     write(`${pre(lang)}/index.html`, home(tx, rs));
     write(`${pre(lang)}/check/index.html`, checkPage(tx, rs, D.events, today));
     for (const R of rs) write(`${pre(lang)}/r/${R.id}/index.html`, guide(tx, R, shots.get(R.id)));
@@ -1165,7 +1229,7 @@ export function build() {
     write(`${pre(lang)}/topics/index.html`, topicsIndex(tx, topics));
     for (const T of topics) write(`${pre(lang)}/topics/${T.slug}/index.html`, topicPage(tx, T, { topics, events: D.events, recipes: rs }));
   }
-  for (const r of recipes) copyDir(join(ROOT, "recipes", r.zh.id, "img"), join(DIST, "r", r.zh.id, "img"));
+  for (const r of recipes) copyDir(join(ROOT, "recipes", r.zh.id, "img"), join(OUT, "r", r.zh.id, "img"));
   for (const [id, s] of shots) if (s) write(`r/${id}/screens.json`, JSON.stringify(s));
   // 只有 /api/* 和运营台(/admin)走 Pages Functions;网页、图片、图鉴数据都是静态文件,不占函数的调用次数。
   // /admin 必须经函数:函数先看主机名,不是 admin 主机就 404,所以 defiexit.com/admin/ 打不开
@@ -1173,13 +1237,14 @@ export function build() {
   write("404.html", notFound());
   const h = headers(site.connect);
   // 网页本身加 no-transform:Cloudflare 就不会往页面里插它的访问统计脚本,也不会改动页面内容
-  // (官方文档:带 no-transform 的响应不做自动注入,也不压缩;网页只有几十 KB,不压缩也快)
-  const pages = ["/", "/en/", "/check/", "/en/check/", ...recipes.flatMap((r) => [`/r/${r.zh.id}/`, `/en/r/${r.zh.id}/`]),
-    "/deadlines/", "/en/deadlines/", "/topics/", "/en/topics/", ...topics.flatMap((T) => [`/topics/${T.slug}/`, `/en/topics/${T.slug}/`]), "/404.html"];
+  // (官方文档:带 no-transform 的响应不做自动注入,也不压缩;网页只有几十 KB,不压缩也快)。每一种语言的每一页都算
+  const each = (p) => langs.map((l) => `${pre(l)}${p}`);
+  const pages = [...each("/"), ...each("/check/"), ...recipes.flatMap((r) => each(`/r/${r.zh.id}/`)),
+    ...each("/deadlines/"), ...each("/topics/"), ...topics.flatMap((T) => each(`/topics/${T.slug}/`)), "/404.html"];
   const noTransform = pages.map((p) => `${p}\n  Cache-Control: public, max-age=0, must-revalidate, no-transform`).join("\n");
   write("_headers", "/*\n" + Object.entries(h).map(([k, v]) => `  ${k}: ${v}`).join("\n") + "\n" + noTransform + "\n");
   write("robots.txt", "User-agent: *\nAllow: /\n");
-  console.log(`built ${recipes.length} recipe(s), ${D.events.length} deadline(s), ${topics.length} topic(s) × ${LANGS.length} languages → dist/`);
+  console.log(`built ${recipes.length} recipe(s), ${D.events.length} deadline(s), ${topics.length} topic(s) × ${langs.length} languages (${langs.join(", ")}) → ${OUT === DIST ? "dist" : OUT}/`);
 }
 
 // 直接运行时才构建(被 serve.mjs 引用时不构建)

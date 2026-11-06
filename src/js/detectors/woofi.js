@@ -54,7 +54,7 @@ const STALE = 2 * 86400;      // 喂价两天没更新就不用它报美元
 const LOG_SPAN = 30000;       // 公共节点一次 eth_getLogs 最多查 3 万个区块(约 2 小时)
 const LOG_WINDOWS = 2;        // 查两段,约 4 小时
 
-const text = (lang) => TEXT[lang] || TEXT.zh;
+const text = (lang) => TEXT[lang] || TEXT.en; // 只有中英两套:别的语言用英文那套
 const arg = (a) => a.slice(2).toLowerCase().padStart(64, "0");
 
 // 一次请求发多条查询(JSON-RPC 批量),按 id 对回去;任何一条出错都整体报错,不拿半截数据去算

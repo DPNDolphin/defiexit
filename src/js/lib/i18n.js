@@ -1,6 +1,8 @@
-// 界面文字,中英两套。构建脚本(拼静态页面)和浏览器(动态内容)共用这一份。
+// 界面文字:中英两套写在这里,别的语言各一个文件 src/js/lib/i18n/<编号>.js(键和英文一样,见 lib/langs.js)。
+// 构建脚本(拼静态页面)和浏览器(动态内容)共用这一份。
 // 中文照常写半角标点,显示前由 zh() 统一换成全角。英文按英文习惯写,不逐字对译。
-// 两套的键必须一一对应(测试会查);缺键直接报错,不悄悄退回另一种语言。
+// 中英两套的键必须一一对应(测试会查);中英缺键直接报错,不悄悄退回另一种语言。别的语言缺的键退回英文。
+import { BASE, langInfo, langOf, prefixOf } from "./langs.js";
 
 // 中文句子里嵌进一个词:词的头尾是英文就和汉字空一格,是汉字就不空(「由 Hyperliquid 执行」「由 WOOFi 的合约执行」)
 const embed = (w) => `${/^[一-鿿]/.test(w) ? "" : " "}${w}${/[一-鿿]$/.test(w) ? "" : " "}`;
@@ -245,6 +247,8 @@ export const STR = {
     stuckHint: "卡住了就点右上角「遇到问题」:实时查你账户的情况,告诉你实际做到了哪一步。",
     proToggle: "老司机版:一张卡看完",
     lastVerified: (d, v) => `最后核验:${d}。${v}`,
+    // 别的语言还没有这份指南的译文时,页面照英文版出,最上面说一句(中文页面用不到,和英文对齐键)
+    guideInEn: "这份指南还没有译成这种语言,下面是英文版。",
     sourcesH: "依据",
     checkArrival: "查到账",
     finish: "完成",
@@ -610,6 +614,7 @@ export const STR = {
     stuckHint: "Stuck? Tap \"Stuck?\" in the top-right. We check your account live and show you which step you're really at.",
     proToggle: "Know the drill? Everything on one card",
     lastVerified: (d, v) => `Last verified: ${d}. ${v}`,
+    guideInEn: "This guide hasn't been translated into this language yet, so it's shown in English.",
     sourcesH: "Sources",
     checkArrival: "Check arrival",
     finish: "Done",
@@ -756,19 +761,31 @@ export const STR = {
   },
 };
 
+// 别的语言的界面文字:构建脚本读到 src/js/lib/i18n/<编号>.js 时装进来;浏览器里由构建时生成的 /assets/js/lang/<编号>.js
+// 在页面的主脚本之前装好(两个都是模块脚本,按页面里的先后执行)。没装上(文件没加载成)就整套用英文
+const UI = {};
+export function addUI(code, dict) {
+  if (BASE.includes(code) || !langInfo(code)) throw new Error(`addUI: ${code} 不是登记过的新语言(见 lib/langs.js)`);
+  UI[code] = dict;
+}
+// 这种语言自己有没有这一条(没有就是退回英文的)
+export const hasText = (lang, key) => Object.prototype.hasOwnProperty.call(STR[lang] || UI[lang] || {}, key);
+
 export function makeT(lang) {
-  const d = STR[lang];
+  const d = STR[lang] || (langInfo(lang) ? { ...STR.en, ...UI[lang] } : null);
   if (!d) throw new Error(`unknown language: ${lang}`);
-  return (key, ...args) => {
+  const t = (key, ...args) => {
     const v = d[key];
     if (v === undefined) throw new Error(`missing text: ${lang}.${key}`);
     return typeof v === "function" ? v(...args) : v;
   };
+  t.lang = lang; // relabel.js 这类只拿到 t 的,按它决定要不要换中文标点
+  return t;
 }
 
-// 只在浏览器里用
-export const pageLang = () => (document.documentElement.lang.startsWith("en") ? "en" : "zh");
-export const prefix = (lang) => (lang === "en" ? "/en" : "");
+// 只在浏览器里用:页面是哪种语言(按 <html lang>,见 lib/langs.js)、这种语言的网址前缀
+export const pageLang = () => langOf(document.documentElement.lang);
+export const prefix = (lang) => prefixOf(lang);
 
 // 网络错误按代码翻译;检测器自己抛的错已经是对应语言
 export function errText(t, err) {

@@ -4,9 +4,8 @@
 import "./site.js";
 import { detectors, diagnosers } from "./detectors/index.js";
 import { isEvmAddress, shortAddr, floorTo } from "./lib/net.js";
-import { el, icon, route, rowsTable, toast, copy, contact, setText } from "./lib/ui.js";
+import { el, icon, route, rowsTable, toast, copy, contact, setText, punct } from "./lib/ui.js";
 import { makeT, pageLang, prefix, errText } from "./lib/i18n.js";
-import { zh } from "./lib/zh.js";
 import { setupShot } from "./shot.js";
 import { mountWalletRead } from "./lib/wallet.js";
 
@@ -79,7 +78,7 @@ function drawRoute(vs, i) {
   const marks = marksOf(vs);
   const r = route(vs.length, i, false, marks);
   r.id = "route";
-  r.setAttribute("aria-label", zh(t("routeAriaStep", i + 1, vs.length)));
+  r.setAttribute("aria-label", punct(t("routeAriaStep", i + 1, vs.length)));
   $("route").replaceWith(r);
   setText($("routePos"), t("stepOf", i + 1, vs.length));
   setText($("routeLeft"), vs[i].dataset.note || t("stepsLeft", vs.length - 1 - i));
@@ -389,7 +388,7 @@ if (lost) {
 }
 
 function addrForm() {
-  const input = el("input", { class: "input mono", spellcheck: "false", autocapitalize: "off", autocomplete: "off", placeholder: zh(t("addrPlaceholder")), "aria-label": zh(t("addrLabel")) });
+  const input = el("input", { class: "input mono", spellcheck: "false", autocapitalize: "off", autocomplete: "off", placeholder: punct(t("addrPlaceholder")), "aria-label": punct(t("addrLabel")) });
   const f = el("form", { class: "form", novalidate: true }, el("p", { class: "sub" }, t("diagNeedAddr")), input, el("button", { class: "btn primary block", type: "submit" }, t("diagAddrBtn")));
   f.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -489,7 +488,7 @@ function showDone(d) {
   intro.hidden = bar.hidden = pager.hidden = follow.hidden = true;
   for (const s of steps) s.hidden = true;
   const r = route(vs.length, vs.length, true);
-  r.setAttribute("aria-label", zh(t("routeAriaDone")));
+  r.setAttribute("aria-label", punct(t("routeAriaDone")));
   doneBox.replaceChildren(
     r,
     el("span", { class: "badge ok" }, icon("check"), el("span", {}, t("arrivedBadge"))),
