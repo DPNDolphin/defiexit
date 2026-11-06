@@ -226,5 +226,137 @@
       "Silicon-Doku: Leitfaden zum Abheben",
       "Silicon auf X: Web3-Wallet von Korbit endet am 31. Dezember"
     ]
+  },
+  "standx-winddown": {
+    "name": "StandX wird abgewickelt: Fristen für DUSD-Airdrop, Positionen und Einlösungen",
+    "summary": "StandX wird abgewickelt. Der DUSD-Airdrop endet am 31. Dezember, Positionen werden am 15. Januar 2027 zwangsweise geschlossen, und Auszahlungen und Einlösungen enden am 31. Januar 2027.",
+    "deadlineNote": "Seit dem 15. Oktober gibt es keine Rendite mehr, und die Vaults nehmen keine Einzahlungen mehr an; seit dem 20. Oktober lassen sich Positionen nur noch verkleinern. Der DUSD-Airdrop ist vom 2. November, 00:00, bis zum 31. Dezember, 08:00 UTC, offen und verfällt danach. Alle Positionen werden am 15. Januar 2027 zwangsweise geschlossen und die Vaults abgerechnet. Auszahlungen und DUSD-Einlösungen enden am 31. Januar 2027 (die Einlösung dauert 7 Tage und ist bis zum 7. Februar abgeschlossen).",
+    "who": "Alle mit Positionen, Guthaben oder DUSD auf StandX (BNB Chain oder Solana) und alle, die auf PancakeSwap oder Raydium DUSD-Liquidität bereitstellen.",
+    "todo": "Airdrop abholen → Positionen schließen → Geld von der „Perps“-Wallet in die „Cash“-Wallet verschieben → in deine eigene Wallet abheben. Für USDT stell vor dem 31. Januar 2027 eine Einlöseanfrage, und zieh auch deine DUSD-Liquidität auf PancakeSwap und Raydium vor dem 31. Januar ab.",
+    "caution": "DUSD wird gegen USDT eingelöst. Nach dem 31. Januar 2027 gehören die Guthaben weiterhin ihren Besitzern, aber du musst dann an support@standx.com schreiben.",
+    "official": [
+      "StandX auf X: Regelungen zur Abwicklung",
+      "StandX auf X: Modus nur Reduzieren (reduce-only)",
+      "StandX auf X: Airdrop geöffnet"
+    ],
+    "milestones": [
+      "Der DUSD-Airdrop verfällt",
+      "Alle Positionen werden zwangsweise geschlossen und die Vaults abgerechnet"
+    ]
+  },
+  "parasail-pfil": {
+    "name": "Parasail: pFIL-Pool nur noch für Auszahlungen, Website bis Ende Januar 2027 online",
+    "summary": "Nach einem Exploit erlaubt der pFIL-Pool von Parasail nur noch Auszahlungen. Sobald die Auszahlungen wieder öffnen, tausch pFIL im Verhältnis 1:1 zurück in FIL. Die Website bleibt bis zum 31. Januar 2027 online.",
+    "deadlineNote": "Der Pool ist pausiert. Am 4. November sagte Parasail, die Auszahlungen würden „später in dieser Woche“ wieder öffnen. Die Website bleibt bis zum 31. Januar 2027 online; danach funktionieren nur noch direkte Contract-Aufrufe, und Parasail will vor der Abschaltung der Website eine Anleitung veröffentlichen.",
+    "who": "Alle, die pFIL halten.",
+    "todo": "Sobald Parasail ankündigt, dass die Auszahlungen wieder offen sind, folge seinem offiziellen Link, um pFIL im Verhältnis 1:1 zurück in FIL zu tauschen.",
+    "caution": "Dieser Pool wurde ausgenutzt: Laut Parasail wurden 344 056 FIL gestohlen, und die Lücke wurde von Parasail und mehreren großen Inhabern gedeckt. Vertrau nur Links aus offiziellen Kanälen.",
+    "official": [
+      "Parasail auf X: pFIL-Update vom 4. November"
+    ]
+  },
+  "derive-chain-rewards": {
+    "name": "Derive Chain eingestellt: Umzug auf Derive V3, Frist für Belohnungen am 1. Februar 2027",
+    "summary": "Derive Chain ist auf Derive V3 umgezogen, das Geld liegt jetzt auf Ethereum. Noch offene Trading- und Staking-Belohnungen müssen vor dem 1. Februar 2027 auf Optimism abgeholt werden.",
+    "deadlineNote": "Snapshot am 6. Oktober um 18:00 UTC; V3 ging am 8. Oktober live. Noch offene Trading- und Staking-Belohnungen werden bis zum 1. Februar 2027 über einen Contract auf Optimism abgeholt; danach holt die Foundation sie zurück.",
+    "who": "Alle, die auf Derive Chain (früher Lyra) gehandelt oder gestakt haben.",
+    "todo": "Dein Guthaben ist automatisch auf V3 umgezogen; prüf es auf `app.derive.xyz`. Leg bedingte oder TWAP-Orders neu an und hol deine offenen Belohnungen vor dem 1. Februar 2027 auf Optimism ab.",
+    "caution": "Die alte DRV-Menge auf Derive Chain ist ungültig („orphaned“ im Vorschlag) und wird anhand des Snapshots an die Inhaber auf Ethereum neu ausgegeben.",
+    "official": [
+      "Derive-Forum: Vorschlag zu Derive V3 (DIP)",
+      "Derive auf X: Derive V3 ist live"
+    ]
+  },
+  "quickswap-old-quick": {
+    "name": "QuickSwap: alter QUICK gegen neuen QUICK, Kurs sinkt monatlich",
+    "summary": "Der Tauschkurs von altem zu neuem QUICK bei QuickSwap sinkt jeden Monat: 1:750 bis zum 5. Dezember, nach dem 5. Dezember dann 1:500. Je früher du tauschst, desto mehr bekommst du.",
+    "deadlineNote": "Laut QuickSwap gilt der Kurs 1:750 bis zum 5. Dezember 2026 und sinkt nach dem 5. Dezember auf 1:500. Die weiteren Stufen laut Berichten Dritter: 1:250 nach dem 5. Januar 2027, und am 5. Februar 2027 endet der Tausch endgültig.",
+    "who": "Alle, die noch alten QUICK halten.",
+    "todo": "Tausch, bevor die jeweilige Kursstufe endet. Je früher du tauschst, desto mehr neuen QUICK bekommst du.",
+    "caution": "Der vollständige Zeitplan stammt aus Berichten Dritter; maßgeblich sind die Beiträge von QuickSwap selbst. QuickSwap hält eine Abstimmung darüber ab, was mit nicht getauschtem altem QUICK passiert (endet am 7. November, 12:00 UTC).",
+    "official": [
+      "QuickSwap auf X: Erinnerung vom 4. November",
+      "QuickSwap auf X: Abstimmung über nicht getauschten alten QUICK"
+    ],
+    "milestones": [
+      "Letzter Tag des Kurses 1:750; danach sinkt er auf 1:500",
+      "Letzter Tag des Kurses 1:500; danach sinkt er auf 1:250"
+    ]
+  },
+  "kelp-rseth-sunset": {
+    "name": "Kelp: alter rsETH auf eingestellten Netzwerken, manuelles Verfahren bis Juni 2027",
+    "summary": "Alter rsETH auf Netzwerken, die Kelp eingestellt hat, funktioniert nicht mehr direkt, aber du kannst ihn bis zum 15. Juni 2027 über den offiziellen Leitfaden von Kelp beantragen und auf Ethereum zurückbekommen.",
+    "deadlineNote": "Alter rsETH wurde am 15. Juni auf 22 Netzwerken eingestellt. Ab dem 5. Oktober wurde auch alter rsETH auf Base, Mantle und Ink eingestellt (ersetzt durch eine Chainlink-CCIP-Version). Das manuelle Verfahren endet am 15. Juni 2027 um 23:59 UTC.",
+    "who": "Alle, die noch alten rsETH auf Netzwerken halten, die Kelp eingestellt hat. Arbitrum ist nicht betroffen.",
+    "todo": "Folge nur dem Leitfaden im offiziellen Blog von Kelp. Prüf zuerst, dass du den alten rsETH-Contract hältst, und stell dann den Antrag so, wie der Leitfaden es beschreibt (er verlangt, die Token an eine Burn-Adresse auf der ursprünglichen Chain zu senden, eine Gebühr von 100 USDC zu zahlen und die Transaktionen per E-Mail zu schicken). Kelp schickt den rsETH jedes Quartal auf Ethereum zurück.",
+    "caution": "Dieses Verfahren (Token an eine Burn-Adresse senden, eine Gebühr zahlen, eine E-Mail schicken) ähnelt stark gängigen Betrugsmaschen. Folge nur dem Originaltext im offiziellen Blog von Kelp und ignoriere Direktnachrichten und andere Websites. Wenn du wrsETH auf Base, Mantle, Ink, Linea, Optimism oder Zircuit zurückwandelst (unwrap), bekommst du die neue Version, für die dieses Verfahren nicht nötig ist.",
+    "official": [
+      "Kelp-Blog: Leitfaden für rsETH auf eingestellten Netzwerken",
+      "Kelp auf X: CCIP-Migration abgeschlossen (8. Oktober)"
+    ]
+  },
+  "blast-l2-shutdown": {
+    "name": "Blast L2 ist abgeschaltet; offizielle Auszahlungsseite bis November 2027 offen",
+    "summary": "Blast L2 ist abgeschaltet. Verbinde deine Wallet auf blast.io, um deine Adresse nachzuschlagen und ETH, WETH und USDB auf Ethereum abzuheben, bis zum 4. November 2027.",
+    "deadlineNote": "Die reguläre Auszahlungsoberfläche wurde am 26. Oktober geschlossen (vorbei). Am 4. November gab Blast die Abschaltung des L2 bekannt. Die Auszahlungsseite `blast.io` bleibt 12 Monate offen, letzter unterstützter Tag ist der 4. November 2027.",
+    "who": "Alle mit ETH, WETH oder USDB auf Blast oder einer nie abgeschlossenen Auszahlung, auch Nutzer von Blast Mobile und von Safe oder anderen Contract-Wallets.",
+    "todo": "Verbinde deine Wallet auf `blast.io`, um deine Adresse nachzuschlagen und ETH, WETH und USDB auf Ethereum abzuheben; nicht abgeschlossene Auszahlungen sind automatisch dabei. Nutzer von Blast Mobile: Importier deine Seed-Phrase in MetaMask oder Rabby und verbinde dich dann. Safe und andere Contract-Wallets haben einen eigenen Einstieg.",
+    "caution": "Blast nutzt nur @blast (@Blast_L2 ist jetzt nur noch ein Platzhalter-Account). Die Auszahlungsseite nennt nur ETH und USD-Assets; ob der BLAST-Token, andere Token oder DeFi-Positionen auf dem L2 abgehoben werden können, hat Blast nicht gesagt. Gib eine Seed-Phrase nur selbst in einer Wallet-App ein, niemals auf einer Website.",
+    "official": [
+      "Auszahlungsseite von Blast",
+      "Blast-Doku: auf Ethereum abheben",
+      "Blast auf X: Abschaltung angekündigt (2. Oktober)",
+      "Blast auf X: L2 abgeschaltet (4. November)"
+    ]
+  },
+  "stader-maticx-fixed-rate": {
+    "name": "Stader: MaticX-Kurs festgeschrieben, Einlösung auf der Chain bis August 2029",
+    "summary": "Seit dem 29. Oktober wird MaticX von Stader zu einem festen Kurs von 1.2002 POL pro MaticX eingelöst. Die Einlösung läuft weiterhin über den Contract auf Ethereum, und der 3. August 2029 ist der letzte Tag.",
+    "deadlineNote": "Einzahlungen wurden im Juni geschlossen, seitdem lässt sich MaticX nur noch einlösen. Die MaticX-App wurde am 3. August geschlossen, Einlösungen laufen über Etherscan weiter. Ab dem 29. Oktober ist der Kurs auf 1.2002 POL pro MaticX festgeschrieben. Der 3. August 2029 ist der letzte Tag, um über den Contract einzulösen.",
+    "who": "Alle, die noch MaticX halten, auf Ethereum oder Polygon PoS.",
+    "todo": "Folge den Schritten im offiziellen Blog von Stader: Öffne den MaticX-Contract auf Ethereum bei Etherscan, beantrage eine Auszahlung (dein MaticX wird verbrannt), warte, bis das Unbonding der POL abgeschlossen ist, und heb die POL dann in deine Wallet ab. Die Ankündigung nennt eine Unbonding-Dauer von 80 Checkpoints, zum Zeitpunkt der Veröffentlichung geschätzt auf etwa 22 Stunden. MaticX auf Polygon PoS muss zuerst über die Polygon-Bridge auf Ethereum übertragen werden. Bereits beantragte Auszahlungen sind nicht betroffen; schließ sie einfach ab.",
+    "caution": "MaticX in einem Lending-Markt, Liquiditätspool oder Vault bleibt, wo er ist; Stader rät, das jeweilige Protokoll zu fragen, wie sich der feste Kurs auf deine Position auswirkt. Nutze nur die Contract-Adresse aus dem offiziellen Blogbeitrag von Stader.",
+    "official": [
+      "Stader-Blog: „Redemptions change for NearX, BNBx and MaticX“",
+      "Stader auf X: Beitrag vom 28. Oktober"
+    ]
+  },
+  "balancer-winddown": {
+    "name": "Balancer wird abgewickelt: Pools nur noch für Auszahlungen",
+    "summary": "Balancer wird abgewickelt. Die Pools erlauben nur noch Auszahlungen, die verbleibenden v3-Pools folgen am 30. November. Laut Balancer bleiben Auszahlungen offen, aber Liquiditätsanbieter und Staker müssen selbst abheben.",
+    "deadlineNote": "Seit dem 30. Oktober erlauben Pools, die sich pausieren lassen, nur noch Auszahlungen, und das Bug-Bounty-Programm ist beendet. Die v3-Pools, die Partner behalten wollten, bleiben bis zum 30. November offen; dann wird der v3-Vault pausiert, und die verbleibenden v3-Pools erlauben nur noch Auszahlungen. Laut Balancer bleiben Auszahlungen offen, ohne Enddatum. Danach bleibt eine vereinfachte Auszahlungsseite online, bis die veBAL-Sperren abgelaufen und zwei Runden der Treasury-Verteilung erfolgt sind (die erste Ende Mai 2027). Pools, die sich nicht pausieren lassen, laufen weiter, mit Protokollgebühren von 0.",
+    "who": "Liquiditätsanbieter in Balancer-Pools, alle, die in Gauges gestakt haben, und alle mit v3-Buffer-Anteilen oder alten v2-Mining-Belohnungen. Laut der Erinnerung von Balancer vom 23. Oktober wurden über $500 000 in alten Positionen externer Nutzer gefunden.",
+    "todo": "Geh auf `legacy.balancer.fi`, um Liquidität zu entfernen und aus den Gauges zu unstaken. Prüf auch, ob du v3-Buffer-Anteile und alte v2-Mining-Belohnungen hast, die Portfolio-Tracker wie DeBank nicht anzeigen.",
+    "caution": "Laut Balancer sind die Contracts nicht verwahrend, Auszahlungen hängen also nicht vom Team ab.",
+    "official": [
+      "Balancer-Forum: Abwicklungsvorschlag BIP-928",
+      "Balancer-Forum: Erinnerung an frühere Nutzer",
+      "Balancer auf X: Beitrag vom 30. Oktober"
+    ],
+    "milestones": [
+      "Die verbleibenden v3-Pools erlauben nur noch Auszahlungen (der v3-Vault wird pausiert); Auszahlungen bleiben offen"
+    ]
+  },
+  "compound-scroll-usdc": {
+    "name": "Compound III: USDC-Markt auf Scroll wird abgewickelt",
+    "summary": "Compound will den eingestellten USDC-Markt auf Scroll abwickeln. Sobald das beschlossen ist, können verbleibende Kredite liquidiert werden; Kreditnehmer sollten also bald zurückzahlen und ihre Sicherheiten zurückholen.",
+    "deadlineNote": "Dieser Markt wurde früher in diesem Jahr eingestellt. Laut einem Forenvorschlag vom 4. November wurde der On-Chain-Vorschlag noch nicht eingereicht, und es gibt noch kein Datum. Sobald er angenommen ist, können alle verbleibenden Kredite liquidiert werden.",
+    "who": "Alle, die im USDC-Markt von Compound III auf Scroll geliehen oder USDC bereitgestellt haben. Der Vorschlag zählt 1 959 Kreditnehmerkonten, alle klein.",
+    "todo": "Kreditnehmer: Zahl dein USDC bald zurück und hol deine WETH- oder wstETH-Sicherheit zurück. Anbieter: Heb dein USDC ab.",
+    "caution": "Der Vorschlag weist darauf hin, dass Scroll angekündigt hat, das Modell eines öffentlichen L2 zu verlassen, und rät Nutzern, alle DeFi-Positionen zu schließen (siehe den Scroll-Eintrag auf dieser Seite).",
+    "official": [
+      "Compound-Forum: Abwicklung des USDC-Markts auf Scroll"
+    ]
+  },
+  "parasail-stpeaq": {
+    "name": "Parasail: Staking-Pool stPEAQ eingestellt, bald nur noch Auszahlungen",
+    "summary": "Der Staking-Pool stPEAQ von Parasail wurde nach einem Exploit eingestellt. Laut Parasail deckt die peaq Foundation den Verlust, damit jeder Nutzer vollständig abheben kann. Warte auf das offizielle Auszahlungsdatum.",
+    "deadlineNote": "Parasail hat noch kein Datum festgelegt, ab dem der Nur-Auszahlungs-Modus öffnet.",
+    "who": "Alle, die stPEAQ halten.",
+    "todo": "Warte, bis Parasail ankündigt, wann der Nur-Auszahlungs-Modus öffnet, und den Auszahlungslink nennt, und heb dann dein PEAQ ab.",
+    "caution": "Dieser Pool wurde ausgenutzt: Laut Parasail wurden 1 096 424.06 PEAQ gestohlen. Vertrau nur Links aus offiziellen Kanälen.",
+    "official": [
+      "Parasail auf X: stPEAQ-Update vom 4. November"
+    ]
   }
 }
