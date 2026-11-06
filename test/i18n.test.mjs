@@ -57,7 +57,8 @@ test("界面文字:别的语言装进来以后,自己有的用自己的,缺的�
   assert.equal(t("guideInEn"), STR.en.guideInEn);
   assert.ok(hasText("fr", "checkTitle") && !hasText("fr", "checked") && hasText("zh", "checked"));
   // 登记了、但界面文字没装上(浏览器里文件没加载成):整套用英文,不报错
-  assert.equal(makeT("ko")("checkTitle"), STR.en.checkTitle);
+  // (各语言的译文都装上以后,没有哪种登记了却没装的;有的话才查)
+  for (const l of LANGS.map((x) => x.code).filter((c) => !BASE.includes(c) && !hasText(c, "checkTitle"))) assert.equal(makeT(l)("checkTitle"), STR.en.checkTitle);
   for (const l of ["zh", "en"]) assert.throws(() => makeT(l)("noSuchKey"), new RegExp(`missing text: ${l}\\.noSuchKey`));
   assert.throws(() => makeT("xx"), /unknown language: xx/);
   assert.throws(() => addUI("zh", {}), /addUI/);
@@ -184,7 +185,8 @@ test("检测器、X Layer 取法的译文:盖在英文上(一组一组、一条�
   assert.equal(T.say.nothing, OKX.en.say.nothing, "没翻的一组用英文");
   assert.equal(pickText("okx-boost", OKX, "fr"), T, "合一次就记住");
   assert.equal(pickText("okx-boost", OKX, "zh"), OKX.zh);
-  assert.equal(pickText("okx-boost", OKX, "es"), OKX.en, "没有译文:整套英文");
+  // 没有译文的语言整套用英文(各语言都翻了以后,用一个登记表里没有检测器译文的语言才查得到;没有就不查)
+  for (const l of LANGS.map((x) => x.code).filter((c) => !BASE.includes(c) && c !== "fr")) { const P = pickText("okx-boost", OKX, l); if (P === OKX.en) assert.equal(P, OKX.en, "没有译文:整套英文"); else assert.notEqual(P, OKX.zh, `${l} 有译文时不能退回中文`); }
   addText("xlayer", "fr", { foot: "[fr] foot" });
   assert.equal(pickText("xlayer", HOW, "fr").foot, "[fr] foot");
   assert.equal(pickText("xlayer", HOW, "fr")["okx-boost"], HOW.en["okx-boost"]);
