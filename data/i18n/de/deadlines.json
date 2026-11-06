@@ -358,5 +358,88 @@
     "official": [
       "Parasail auf X: stPEAQ-Update vom 4. November"
     ]
+  },
+  "scroll-transition": {
+    "name": "Scroll wird zu einem zugangsbeschränkten Netzwerk, SCR auf das Ethereum-Mainnet (Vorschlag)",
+    "summary": "Scroll hat vorgeschlagen, ein zugangsbeschränktes Netzwerk zu werden. DeFi-Positionen müssen vor der Umstellung geschlossen oder geregelt werden, prüf also zuerst deine Bestände auf der offiziellen Seite.",
+    "deadlineNote": "Der Forenvorschlag wurde am 3. November veröffentlicht und braucht noch eine DAO-Abstimmung. Laut Scroll ist das Netzwerk-Upgrade für „das Jahresende“ geplant, ein genaues Datum gibt es noch nicht.",
+    "who": "Alle mit Assets auf Scroll, besonders mit DeFi-Positionen wie Lending oder Liquidität, und SCR-Inhaber.",
+    "todo": "Prüf deine Bestände auf `positions.scroll.io` und schließ oder regle DeFi-Positionen vor der Umstellung. Die offizielle Bridge bleibt offen und funktioniert laut Scroll auch nach dem Upgrade.",
+    "caution": "Über den Vorschlag wurde noch nicht abgestimmt. Laut Scroll ändern sich Gesamtmenge und Tokenomics von SCR nicht. Aave und Compound wickeln ihre Märkte auf Scroll bereits ab.",
+    "official": [
+      "Scroll-Forum: Vorschlag zur Umstellung",
+      "Scroll auf X: Seite mit den Beständen (2. November)",
+      "Scroll auf X: Vorschlag veröffentlicht (3. November)"
+    ]
+  },
+  "compound-deprecated-markets": {
+    "name": "Compound III: Märkte auf Ethereum, Linea, Ronin, Mantle, Unichain und Polygon eingestellt",
+    "summary": "Compound III hat eine Reihe von Märkten eingestellt: keine neuen Kredite und keine Rendite mehr auf Einlagen. Heb alle Einlagen ab; Kreditnehmer sollten zurückzahlen, um ihre Sicherheiten zurückzubekommen.",
+    "deadlineNote": "Es gibt keine harte Frist. Am 2. September wurde vorgeschlagen, den wstETH-Markt auf Ethereum einzustellen; am 25. September wurden die Beleihungsfaktoren für Kredite in eingestellten Märkten auf fünf Chains auf null gesetzt; am 30. Oktober wurde vorgeschlagen, den WBTC-Markt auf Ethereum einzustellen. Auszahlungen aus dem USDC-Markt auf Linea sind seit dem 18. September pausiert, aus dem USDe-Markt auf Mantle seit dem 16. Oktober.",
+    "who": "Alle mit Einlagen oder Krediten in diesen eingestellten Märkten. Laut den Vorschlägen sind im wstETH-Markt auf Ethereum noch 93 Anbieter übrig, im WBTC-Markt 37.",
+    "todo": "Heb verbliebene Einlagen aus eingestellten Märkten ab; Kreditnehmer sollten zurückzahlen und ihre Sicherheiten zurückholen. Auszahlungen aus dem USDC-Markt auf Linea und dem USDe-Markt auf Mantle sind vorerst pausiert, heb also ab, sobald sie wieder möglich sind.",
+    "caution": "Die Pause auf Linea liegt an einem „möglichen Problem“ und wird aufgehoben, sobald es behoben ist; die Pause auf Mantle dient dazu, einen Vorschlag zum Abzug von Reserven umzusetzen.",
+    "official": [
+      "Compound-Forum: Einstellung des wstETH-Markts auf Ethereum",
+      "Compound-Forum: Beleihungsfaktoren null in eingestellten Märkten",
+      "Compound-Forum: Pause des USDC-Markts auf Linea",
+      "Compound-Forum: Pause des USDe-Markts auf Mantle",
+      "Compound-Forum: Einstellung des WBTC-Markts auf Ethereum"
+    ]
+  },
+  "diva-staking-shutdown": {
+    "name": "Diva Staking wird eingestellt (ohne Mainnet-Start)",
+    "summary": "Diva Staking wird eingestellt, ohne das Mainnet gestartet zu haben. Vorab-Einlagen in den Enzyme-Vaults lassen sich jetzt abheben; laut Diva gibt es „nichts mehr, worauf man warten müsste“.",
+    "deadlineNote": "Am 28. Oktober angekündigt, ohne Frist.",
+    "who": "Alle, die vorab in die Early Staker Vaults von Diva auf Enzyme eingezahlt haben.",
+    "todo": "Heb deine Vorab-Einlage aus den Early Staker Vaults auf Enzyme ab.",
+    "official": [
+      "Diva auf X: Ankündigung vom 28. Oktober"
+    ]
+  },
+  "aero-merger": {
+    "name": "Aerodrome und Velodrome verschmelzen zu Aero",
+    "summary": "Aerodrome und Velodrome sind zu Aero verschmolzen. Alte Pools zahlen keine Belohnungen mehr, verschieb also deine Liquidität in neue Pools und führe das Upgrade von Token und Sperren selbst auf der offiziellen Upgrade-Seite durch.",
+    "deadlineNote": "xVELO außerhalb von OP Mainnet und Ink musste bis zum 15. Oktober per Bridge zurück auf OP, und veNFTs mussten bis zum 20. Oktober aus Relay und anderen Vaults entfernt werden. Am 22. Oktober um 00:00 UTC endeten die Belohnungen in alten Pools, und die Upgrade-Seite wurde geöffnet. Laut Aero gibt es keine Frist für das Upgrade.",
+    "who": "Inhaber von AERO, VELO, veAERO oder veVELO und Liquiditätsanbieter in alten Pools.",
+    "todo": "Mach das Upgrade auf der Upgrade-Seite von `aerodrome.finance` oder `velodrome.finance`: AERO wird 1:1 und VELO im Verhältnis 1:0.044 in neues AERO umgewandelt, und veAERO oder veVELO werden zu sAERO. Hol vor dem Upgrade deine Belohnungen und Rebases ab und setz deine Stimmen zurück. Alte Pools zahlen keine Belohnungen, verschieb also deine Liquidität in neue Pools.",
+    "caution": "Das Upgrade lässt sich nicht rückgängig machen, und Belohnungen, die du vorher nicht abgeholt hast, sind verloren. Aero sagt, die alten Oberflächen „könnten später schließen“.",
+    "official": [
+      "Upgrade-Center von Aero",
+      "Aero-Artikel: Tag des Starts"
+    ]
+  },
+  "venus-vai-lisusd": {
+    "name": "Venus: VAI läuft aus, Märkte für lisUSD und TRX werden delistet",
+    "summary": "Venus lässt VAI auslaufen und delistet die Märkte für lisUSD und TRX. VAI im Vault lässt sich jederzeit abheben; Kreditnehmer sollten sich auf die Rückzahlung vorbereiten.",
+    "deadlineNote": "Ausgelöst wurde das dadurch, dass Chainlink den VAI-Preis-Feed einstellt. Es gibt keine harte Frist: VIP-662 trat am 21. September in Kraft (der VAI-Vault zahlt keine XVS-Belohnungen mehr), VIP-663 am 28. September (TRX und lisUSD gingen in die nächste Phase). Laut Venus werden spätere Schritte gesondert angekündigt.",
+    "who": "Alle mit VAI im VAI-Vault, alle, die VAI gemintet haben, und alle mit Einlagen oder Krediten in den Märkten für lisUSD oder TRX.",
+    "todo": "VAI im Vault lässt sich jederzeit abheben, und bereits verdiente XVS lassen sich weiterhin abholen. Wenn du VAI gemintet hast, bereite die Rückzahlung vor. Heb lisUSD-Einlagen ab und zahl lisUSD-Kredite zurück, bevor in Phase drei die Zinsen steigen.",
+    "official": [
+      "Venus-Community: Vorschlag zu VAI",
+      "Venus-Community: Delisting des lisUSD-Markts",
+      "Venus-Community: Bericht für September"
+    ]
+  },
+  "aave-v3-deprecation": {
+    "name": "Aave V3: sechs Deployments eingestellt, wenig genutzte Assets delistet",
+    "summary": "Aave V3 stellt sechs Deployments ein: Sonic, Scroll, zkSync Era, Metis, Soneium und Aptos. Heb Einlagen bald ab; Kreditnehmer sollten zurückzahlen, bevor die Liquidationsschwellen sinken.",
+    "deadlineNote": "Es gibt keine harte Frist. Die Märkte sind eingefroren, mit einem Reservefaktor von 99%, sodass fast alle Zinsen an die Treasury gehen. Laut Aave könnte es die Zinsen weiter erhöhen und die Liquidationsschwellen schrittweise senken.",
+    "who": "Alle mit Einlagen oder Krediten auf diesen sechs Deployments und alle, die die delisteten Assets auf anderen Deployments halten.",
+    "todo": "Heb Einlagen bald aus diesen sechs Deployments ab. Kreditnehmer: Zahl zurück und hol deine Sicherheiten zurück, damit du nicht liquidiert wirst, wenn die Schwellen sinken.",
+    "official": [
+      "Governance-Forum von Aave: Einstellung wenig genutzter Assets (ARFC)"
+    ]
+  },
+  "marinus-harmony": {
+    "name": "Marinus: Märkte auf Harmony eingestellt, nur noch Auszahlungen",
+    "summary": "Marinus hat seine Märkte auf Harmony eingestellt: Einlagen lassen sich nur noch abheben oder unstaken, und die Harmony-Chain selbst wird abgeschaltet.",
+    "deadlineNote": "Seit dem 14. September kannst du nur noch abheben und unstaken. Es gibt keine Frist.",
+    "who": "Alle, die bei Marinus auf Harmony eingezahlt oder gestakt haben.",
+    "todo": "Heb ab und unstake, was du bei Marinus auf Harmony angelegt hast.",
+    "caution": "Die Harmony-Chain selbst wird abgeschaltet; siehe den Harmony-Eintrag auf dieser Seite.",
+    "official": [
+      "Marinus auf X: Ankündigung vom 14. September"
+    ]
   }
 }
