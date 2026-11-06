@@ -1,0 +1,118 @@
+{
+  "title": "Menarik dari L2 ke Ethereum: kenapa harus menunggu, dan apa yang dilakukan setelah selesai",
+  "summary": "Saat Anda memindahkan dana dari L2 kembali ke Ethereum lewat bridge resmi, Anda menunggu sampai hasil chain itu dikonfirmasi di Ethereum: sekitar 7 hari untuk OP Mainnet dan Arbitrum, kini 5 hari untuk Base (1 hari untuk sebagian penarikan), dan biasanya beberapa jam untuk chain ZK seperti zkSync Era dan Linea. Sebagian besar chain tidak mengirim dana secara otomatis: di OP Mainnet dan Base, Anda Prove dulu di Ethereum, menunggu, lalu Finalize; di Arbitrum, Linea, dan Scroll, Anda kembali ke bridge setelah masa tunggu dan Claim di Ethereum. Jadi sisakan sedikit ETH di Ethereum untuk biayanya.",
+  "sections": [
+    {
+      "h": "Kenapa harus menunggu",
+      "p": [
+        "L2 menyerahkan hasilnya ke Ethereum untuk dikonfirmasi. Sebelum bridge resmi melepas dana di Ethereum, bridge harus yakin hasil itu benar.",
+        "Chain seperti OP Mainnet, Base, dan Arbitrum memposting hasilnya lebih dulu, lalu memberi waktu bagi siapa pun untuk menggugat hasil yang salah. Waktu itu disebut masa sanggah (challenge period). Chain ZK seperti zkSync Era, Linea, dan Scroll menunggu bukti (proof) dibuat dan diperiksa di Ethereum, dan zkSync menambahkan jeda keamanan lagi.",
+        "Masa tunggu adalah bagian dari aturan keamanan bridge resmi. Dokumentasi OP menyatakan dengan jelas bahwa masa tunggu ini tidak bisa diakali."
+      ],
+      "list": []
+    },
+    {
+      "h": "Berapa lama di tiap chain",
+      "p": [
+        "Berdasarkan dokumentasi resmi tiap chain (dicek 5 November 2026). Tambahkan waktu yang Anda perlukan untuk mengerjakan tiap langkah sendiri."
+      ],
+      "list": [
+        "OP Mainnet: masa sanggah 7 hari. Tiga langkah: mulai di OP Mainnet; setelah bagian chain itu diposting ke Ethereum, \"Prove\" di Ethereum; setelah 7 hari, \"Finalize\" di Ethereum.",
+        "Base: sejak upgrade Beryl pada 25 Juni 2026, standard bridge menunggu 5 hari, atau 1 hari jika hasil itu didukung bukti TEE sekaligus bukti ZK. Sebelum bisa prove, biasanya ada jeda sekitar 20–60 menit. Langkahnya sama dengan OP Mainnet: mulai, prove, finalize. Ikuti waktu yang ditampilkan bridge kepada Anda.",
+        "Arbitrum One / Nova: minimal 7 hari menurut dokumentasi resmi, dan hitung mundur bridge biasanya menunjukkan 7–8 hari (masa sanggahnya 45,818 blok Ethereum, sekitar 6.4 hari, ditambah sedikit pemrosesan sebelum dan sesudahnya). Saat hitung mundur selesai, buka profil Anda di kanan atas bridge, masuk ke Transactions, lalu tekan Claim.",
+        "zkSync Era: dokumentasinya menyebut jeda keamanan minimal 3 jam, dan 1–2 jam lebih lama saat jaringan sibuk. Langkah terakhir di Ethereum (\"finalize withdrawal\") bisa dikirim oleh siapa saja; apakah di mainnet langkah ini dikerjakan untuk Anda, dokumentasinya tidak menyebutkan. Jika bridge yang Anda pakai menampilkan tombol Claim, Anda perlu menekannya.",
+        "Linea: sekitar 2–12 jam untuk ETH dan token biasa. Penarikan dari Linea ke Ethereum selalu perlu Claim manual di Ethereum (riwayat bridge resmi menandainya \"Ready to claim\"). Untuk arah ini, bridge resmi juga memungut biaya anti-DDoS 0.001 ETH.",
+        "Scroll: tunggu sampai batch yang memuat transaksi Anda difinalisasi di Ethereum, lalu kirim satu transaksi \"Execute Withdrawal\" lagi di Ethereum (tombol Claim di bridge). Dokumentasi resmi saat ini tidak menyebut berapa lama prosesnya.",
+        "Chain lain: chain yang dibangun di atas OP Stack belum tentu sama dengan OP Mainnet; Base sudah 5 hari. Penarikan dari L3 ke Ethereum melalui dua tahap, masing-masing dengan masa tunggunya sendiri, dan dokumentasi Arbitrum memperkirakan kasus terburuk dengan pengaturan default sekitar dua minggu. Cek dokumentasi chain itu sendiri."
+      ]
+    },
+    {
+      "h": "Apa yang dilakukan setelah masa tunggu selesai",
+      "p": [
+        "Di sebagian besar bridge resmi, dana tidak masuk ke dompet Anda dengan sendirinya saat masa tunggu selesai. Dokumentasi Arbitrum menyatakan konfirmasi hanya membuat penarikan bisa diklaim: seseorang harus mengeksekusinya di Ethereum, dan tidak ada yang melakukannya secara otomatis. Sebelum chain-nya ditutup, Lisk mengingatkan pengguna bahwa penarikan belum selesai sampai diklaim."
+      ],
+      "list": [
+        "Kembali ke halaman bridge yang sama tempat Anda memulai, dan hubungkan dompet yang sama.",
+        "Cari penarikan itu di riwayatnya (History, Transactions, atau Activity) lalu tekan Prove, atau Claim / Finalize, sesuai petunjuk.",
+        "Langkah ini mengirim transaksi di Ethereum, jadi Anda membayar gas Ethereum. Dokumentasi OP mencatat bahwa transaksi prove dan finalize di Ethereum biasanya jauh lebih mahal daripada memulai penarikan di L2.",
+        "Jika Anda menarik dari dompet smart contract seperti Safe: dokumentasi Arbitrum menyebut penarikannya mungkin tidak muncul di riwayat bridge, dan Anda bisa mencari di riwayat dengan hash transaksi L2 yang memulainya, lalu Claim."
+      ]
+    },
+    {
+      "h": "Lebih lama dari yang disebut dokumentasi? Cek ini dulu",
+      "p": [
+        "Jangan mengulang dari awal. Cek satu per satu."
+      ],
+      "list": [
+        "OP Mainnet dan Base: masa tunggu paling cepat dihitung dari transaksi Prove Anda, bukan dari saat Anda memulai. Jika Anda prove terlambat beberapa hari, masa tunggu penuh dihitung dari saat itu. Jika hasil yang Anda gunakan untuk prove dinyatakan tidak sah, Anda harus prove lagi, dan hitungannya mulai dari awal.",
+        "Arbitrum: dalam kasus langka, ada yang mengajukan sanggahan dan masa tunggu jadi lebih lama; dokumentasinya menyebut dengan BoLD, penarikan yang jujur paling lama tertunda satu masa sanggah tambahan.",
+        "Chain ZK: zkSync menyatakan 3 jam bukan jaminan dan bisa lebih lama saat jaringan sibuk; Sophon menyatakan waktunya bervariasi dan meminta Anda mengikuti status di halaman penarikan resminya.",
+        "Sudah masuk tapi tidak terlihat? zkSync menyatakan penarikan seperti ini biasanya muncul di \"Internal Transactions\" pada halaman alamat Etherscan Anda, bukan di daftar transaksi biasa.",
+        "Linea: penarikan yang tidak diklaim lebih dari 90 hari tidak lagi tampil di aplikasi bridge resmi; Anda menyelesaikannya secara manual dengan dokumentasi resmi untuk developer.",
+        "Jika masih tidak masuk akal, tanyakan hanya di Discord resmi atau pusat bantuan proyek, dan abaikan siapa pun yang menghubungi Anda lebih dulu."
+      ]
+    },
+    {
+      "h": "Yang tidak boleh dilakukan",
+      "p": [
+        "Saat terburu-buru, orang mudah membayar terlalu mahal atau tertipu."
+      ],
+      "list": [
+        "Jangan memakai bridge lagi untuk \"mempercepat\". Penarikan yang sudah dimulai tidak bisa dibatalkan (dokumentasi Arbitrum), dan bridge cepat pihak ketiga adalah layanan terpisah yang tidak mempersingkat penarikan resmi yang sedang berjalan (dokumentasi Base). Memakai bridge lagi hanya mengirim jumlah lain.",
+        "Jangan membayar siapa pun yang menawarkan untuk \"mempercepat\" atau \"membuka kunci\" penarikan. Masa tunggu adalah aturan protokol, dan tidak ada yang bisa melewatinya dengan bayaran.",
+        "Jangan bertindak berdasarkan tautan dari hasil pencarian, DM, atau balasan. Gunakan hanya bridge resmi tempat Anda memulai, atau tautan yang diposting sendiri oleh akun resmi.",
+        "DeFiExit hanya meminta dompet Anda membagikan alamatnya — tidak pernah meminta Anda menandatangani, memberi izin, atau mengirim apa pun, dan kami tidak pernah menghubungi Anda lebih dulu."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Saya sudah memindahkan ETH kembali lewat bridge, tapi tertulis 7 hari. Apakah tersangkut?",
+      "a": "Kemungkinan besar tidak. Penarikan dari OP Mainnet atau Arbitrum ke Ethereum lewat bridge resmi biasanya memakan sekitar 7 hari; Base kini 5 hari, atau 1 hari untuk sebagian penarikan. Waktu itu tidak bisa dipersingkat. Setelah selesai, kembali ke bridge yang sama dan kerjakan langkah terakhir (Finalize atau Claim); baru setelah itu dana masuk. Di OP Mainnet dan Base, Anda juga perlu Prove dulu, di tengah prosesnya."
+    },
+    {
+      "q": "Penarikan saya dari Sophon masih belum masuk.",
+      "a": "Dokumentasi Sophon menyatakan penarikan resmi (canonical) ke Ethereum tidak instan: batch-nya harus dibuktikan di Ethereum, lalu Anda kembali ke claim.sophon.com dengan dompet yang sama dan mengirim transaksi Claim terakhir di Ethereum. Sophon menyatakan waktunya bervariasi, jadi ikuti status di halaman itu. Jika Anda memilih rute pihak ketiga di sana, cek status rute itu. Tenggat penarikan Sophon adalah 25 November 2026, dan mainnet ditutup pada 30 November, jadi jangan menunggu sampai akhir."
+    },
+    {
+      "q": "Hitung mundurnya sudah selesai berhari-hari lalu, dan dananya masih belum ada.",
+      "a": "Biasanya langkah terakhir masih belum dikerjakan. Arbitrum menyatakan hitung mundur yang selesai hanya membuat penarikan bisa diklaim: Anda menekan Claim di riwayat bridge, dan tidak ada yang melakukannya secara otomatis. Penarikan Linea ke Ethereum selalu perlu Claim manual. Di OP Mainnet dan Base, Anda Prove, menunggu masa tunggunya habis, lalu Finalize. Sebelum menekannya, pastikan dompet punya sedikit ETH di Ethereum untuk gas."
+    },
+    {
+      "q": "Ada yang bilang bisa mempercepat penarikan saya dengan sedikit biaya. Apakah itu benar?",
+      "a": "Tidak. Masa tunggu adalah aturan protokol bridge resmi: dokumentasi OP menyatakan tidak bisa diakali, dan Arbitrum menyatakan penarikan yang sudah dimulai tidak bisa dibatalkan. Siapa pun yang memungut biaya untuk \"mempercepat\" atau \"membuka kunci\" sedang menipu. Jangan pernah juga memberikan frasa pemulihan atau kunci privat Anda kepada siapa pun."
+    },
+    {
+      "q": "Kenapa penarikan saya dari L3 tertulis sekitar dua minggu?",
+      "a": "Dari L3 ke Ethereum ada dua tahap: kembali dulu ke L2 di bawahnya, lalu dari L2 itu ke Ethereum, dan masing-masing tahap punya masa tunggunya sendiri. Dokumentasi Arbitrum memperkirakan kasus terburuk dengan pengaturan default sekitar dua minggu. Beberapa proyek punya pengaturan sendiri: panduan resmi Horizen tertanggal 23 Oktober 2026 menyatakan penarikan ETH yang dimulai lewat bridge resminya sebelum 4 November akan difinalisasi untuk Anda dan masuk ke Base dalam sekitar dua minggu."
+    },
+    {
+      "q": "Berapa lama waktu saya untuk menekan Claim? Bisa kedaluwarsa?",
+      "a": "Arbitrum menyatakan penarikan yang sudah dikonfirmasi bisa menunggu tanpa batas waktu sampai Anda mengeksekusinya. Dokumentasi OP Mainnet dan Base tidak menyebut batas waktu. Di Linea, penarikan yang lebih lama dari 90 hari hilang dari halaman bridge resmi tapi masih bisa diselesaikan secara manual sesuai dokumentasi. Pengecualiannya adalah chain yang sedang ditutup: ikuti pengumuman penutupannya. Contohnya, Lisk menyatakan penarikan yang masih berjalan saat penutupan akan dikreditkan ke tujuannya di Ethereum, dan situs pemulihan resmi Blast juga mencakup penarikan yang belum selesai."
+    }
+  ],
+  "sources": [
+    "Dokumentasi OP: Finalitas transaksi di OP Mainnet (penarikan Standard Bridge 7 hari)",
+    "Dokumentasi OP: Alur penarikan (initiate, prove, finalize; prove ulang mengatur ulang hitungan waktu)",
+    "Dokumentasi OP: Mengirim data antara L1 dan L2 (masa tunggu tidak bisa diakali; langkah di L1 lebih mahal)",
+    "Dokumentasi Base: Penarikan (5 hari atau 1 hari, 20–60 menit, bridge cepat tidak mempersingkatnya)",
+    "Dokumentasi Base: Beryl — Penarikan lebih cepat (7 hari dipangkas menjadi 5)",
+    "Dokumentasi Base: Upgrade (Beryl aktif di mainnet 25 Juni 2026)",
+    "Dokumentasi Arbitrum: Panduan cepat bridge (minimal 7 hari, hitung mundur 7–8 hari, Claim)",
+    "Dokumentasi Arbitrum: Pemecahan masalah bridge (sekitar 6.4 hari, tidak bisa dibatalkan, dompet smart contract)",
+    "Dokumentasi Arbitrum: Memantau penarikan (klaim tidak otomatis; L3 dua tahap, sekitar dua minggu)",
+    "Dokumentasi ZKsync: Jeda penarikan (minimal 3 jam, transaksi internal di Etherscan)",
+    "Dokumentasi ZKsync: Memindahkan aset lewat bridge (siapa saja bisa finalize di L1)",
+    "Dokumentasi ZKsync: Finalitas (bukti sekitar satu jam, total sekitar 3 jam)",
+    "Dokumentasi Linea: Memindahkan token lewat bridge (2–12 jam, klaim manual, biaya 0.001 ETH, 90 hari)",
+    "Dokumentasi Linea: Finalitas transaksi (bukti ZK diverifikasi di Ethereum)",
+    "Dokumentasi Scroll (sumber di GitHub): Ikhtisar teknologi (bukti validitas diverifikasi di Ethereum)",
+    "Dokumentasi Scroll (sumber di GitHub): Scroll Messenger — dari L2 ke L1 perlu transaksi Execute Withdrawal",
+    "Dokumentasi Sophon: Finalisasi penarikan resmi (canonical) (waktu bervariasi; klaim terakhir di Ethereum)",
+    "Sophon di X: tenggat penarikan 25 November, penutupan 30 November (19 Oktober 2026)",
+    "Lisk di X: penarikan belum selesai sampai diklaim (1 November 2026)",
+    "Lisk di X: penarikan yang masih berjalan akan dikreditkan di Ethereum (3 November 2026)",
+    "Situs pemulihan resmi Blast (termasuk penarikan yang belum selesai)",
+    "Blog Horizen: Perubahan untuk Horizen (23 Oktober 2026)"
+  ]
+}

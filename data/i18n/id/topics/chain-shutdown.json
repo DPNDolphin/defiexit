@@ -1,0 +1,107 @@
+{
+  "title": "Chain akan ditutup: bagaimana cara mengeluarkan dana saya?",
+  "summary": "Pertama, cari \"hari terakhir penarikan\" resmi — tanggal ini sering lebih awal dari tanggal penutupan. Lalu kerjakan berurutan: keluar dari posisi Anda di aplikasi di chain itu dan klaim hadiah, pindahkan dana keluar lewat bridge sesuai rute yang disebut panduan resmi, dan sisakan sedikit gas di kedua sisi. Setelah tenggat, ada proyek yang membuka jalur pemulihan resmi dan ada yang menyatakan dana tidak bisa diakses lagi, jadi jangan mengandalkan kesempatan kedua.",
+  "sections": [
+    {
+      "h": "Langkah 1: pastikan tanggalnya benar",
+      "p": [
+        "Pengumuman penutupan sering memuat dua tanggal: hari terakhir Anda bisa menarik dana, dan hari chain benar-benar berhenti. Bertindaklah berdasarkan tanggal pertama, dan jangan tunggu sampai hari terakhir. Percayai tanggal hanya dari akun dan situs resmi, bukan dari cerita ulang orang lain."
+      ],
+      "list": [
+        "Sophon: 25 November adalah tenggat penarikan; setelah itu infrastruktur utama dan situs terkait mulai dimatikan, menjelang penutupan mainnet final pada 30 November. Kata Sophon: \"25 November adalah hari untuk bertindak, bukan 30 November.\"",
+        "Abstract: chain ditutup pada 15 Desember 2026, dan dana yang belum dipindahkan keluar lewat bridge sampai saat itu tidak akan bisa diakses.",
+        "Horizen L3: batas waktu bridge (4 November, 13:00 UTC) ditetapkan sehari sebelum penghentian total, supaya snapshot-nya bersih dan tidak ada transaksi yang masih berjalan saat chain berhenti."
+      ]
+    },
+    {
+      "h": "Langkah 2: keluar dari posisi dan klaim hadiah sebelum memakai bridge",
+      "p": [
+        "Dana yang ada di staking, farm, pool likuiditas, atau pinjaman tidak termasuk saldo dompet Anda. Tarik dulu ke dompet di aplikasi asalnya; baru setelah itu Anda bisa memindahkannya lewat bridge."
+      ],
+      "list": [
+        "Horizen: tarik stake Anda di halaman staking dulu, lalu klaim hadiah, lalu pindahkan lewat bridge ke Base.",
+        "Sophon: selain menarik SOPH, ETH, USDC, dan aset lain, klaim semua hadiah staking atau Guardian yang belum diambil, dan tarik apa pun yang masih ada di Sophon Farm.",
+        "Sebagian posisi diurus untuk Anda, jadi jangan disentuh sendiri: menurut Sophon, Guardian NFT, vSOPH, dan SOPH yang di-stake dipindahkan ke Ethereum secara otomatis. Baca panduan resmi sampai habis sebelum bertindak."
+      ]
+    },
+    {
+      "h": "Langkah 3: pakai rute yang disebut panduan resmi, dan sisakan gas di kedua sisi",
+      "p": [
+        "Panduan resmi biasanya menjelaskan rutenya, berapa gas yang perlu disisakan, dan token mana yang berada di luar rencana resmi."
+      ],
+      "list": [
+        "Gunakan hanya bridge atau halaman migrasi yang tercantum di panduan resmi. Contohnya, Abstract menyebut Migration Hub (migrate.abs.xyz) dan native bridge-nya (native-bridge.abs.xyz, yang menurut Abstract punya jeda sekitar 3 jam); Sophon mengarahkan ke claim.sophon.com.",
+        "Kembali ke Ethereum lewat native bridge resmi biasanya ada masa tunggunya, dan sebagian besar chain perlu satu kali Claim lagi di Ethereum. Lihat \"Menarik dari L2 ke Ethereum\" untuk detailnya.",
+        "Sisakan gas: tinggalkan sedikit koin asli di chain yang akan ditutup untuk biaya, dan sedikit ETH di Ethereum untuk langkah terakhir. Horizen meminta pengguna yang kekurangan gas menyetor sedikit sekali ETH dari Base lewat native bridge, hanya jumlah minimum yang diizinkan bridge.",
+        "Token yang diterbitkan pihak lain bisa berada di luar rencana resmi: menurut Horizen, USDC.e dioperasikan oleh Stargate, bukan Horizen, sehingga tidak termasuk pengembalian oleh DAO dan pengguna harus memindahkannya sendiri lewat bridge.",
+        "Dompet smart contract dan multisig: cek apakah proyek punya jalur atau kontak terpisah. Situs pemulihan Blast memungkinkan pemilik Safe atau dompet pintar lain mengklaim atas nama dompet itu; Horizen meminta pengguna dompet smart contract mengirim email ke alamat keamanan resminya sebelum tenggat."
+      ]
+    },
+    {
+      "h": "Setelah tenggat: masih ada jalan?",
+      "p": [
+        "Tergantung proyeknya. Berikut pengaturan yang diumumkan proyek-proyek itu sendiri (dicek 5 November 2026); tidak berlaku untuk chain lain."
+      ],
+      "list": [
+        "Blast: L2 ini ditutup pada 4 November 2026. Situs pemulihan resminya, blast.io, tetap buka selama 12 bulan, dengan tanggal dukungan terakhir 4 November 2027. ETH, WETH, dan USDB yang disimpan di Blast, serta penarikan yang belum selesai, diklaim di mainnet Ethereum. Pengguna Blast Mobile diminta mengimpor frasa pemulihan dompet itu ke aplikasi dompet seperti MetaMask atau Rabby lalu menghubungkannya; ketik frasa pemulihan hanya di aplikasi dompet, jangan pernah di situs web.",
+        "Lisk: Lisk Chain ditutup pada 2 November 2026, dan portal serta bridge-nya sudah ditutup. Lisk menyatakan sedang membangun smart contract khusus dan merencanakan proses klaim manual pada Januari 2027, dengan detail menyusul; penarikan yang masih berjalan saat penutupan akan dikreditkan ke alamat tujuannya di Ethereum. LSK di Ethereum atau di exchange tidak terdampak.",
+        "Horizen L3: snapshot diambil pada 4 November pukul 13:00 UTC. Setelah snapshot ditinjau publik selama satu minggu, Horizen DAO akan mengirim sisa ZEN (termasuk hadiah staking yang belum diklaim) dan saldo ETH di atas 0.001 ETH ke alamat yang sama di Base, diperkirakan pada paruh kedua November. ETH di bawah 0.001 tidak dikembalikan, dan USDC.e tidak termasuk.",
+        "Proyek lain terang-terangan menyatakan bahwa melewatkan tenggat berarti kehilangan akses: Abstract menyatakan dana yang tidak dipindahkan lewat bridge sampai tanggal itu tidak akan bisa diakses, dan Sophon menyatakan aset yang tersisa setelah tenggat berisiko tidak bisa diakses selamanya.",
+        "Setiap solusi resmi diumumkan di akun dan situs resmi. Jika ada yang mengirimi Anda DM tentang \"jalur pemulihan\", anggap itu penipuan."
+      ]
+    },
+    {
+      "h": "Penipuan yang muncul di sekitar penutupan",
+      "p": [
+        "Makin dekat tenggat, makin banyak penipu. Proyek-proyek itu sendiri sudah memperingatkan secara terbuka soal masing-masing modus berikut."
+      ],
+      "list": [
+        "Situs migrasi palsu: Sophon memperingatkan pengguna untuk \"hanya memakai tautan resmi Sophon dan berhati-hati terhadap situs migrasi palsu\"; Abstract memperingatkan soal peniruan, situs migrasi palsu, dan DM yang mengaku mewakili Abstract.",
+        "DM dari \"CS\": Horizen menyatakan timnya tidak akan pernah DM Anda lebih dulu, tidak akan pernah meminta kunci privat atau frasa pemulihan, dan tidak akan pernah meminta Anda mengirim dana kepada mereka.",
+        "\"Approve untuk membuka kunci\": izin (approval) memungkinkan orang lain memindahkan token keluar dari dompet Anda. MetaMask menyebut tekanan waktu yang dibuat di sekitar tenggat sebagai tanda khas permintaan izin yang berbahaya.",
+        "DeFiExit hanya meminta dompet Anda membagikan alamatnya — tidak pernah meminta Anda menandatangani, memberi izin, atau mengirim apa pun, dan kami tidak pernah menghubungi Anda lebih dulu."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Apakah token di cold wallet saya harus dipindahkan?",
+      "a": "Tergantung di chain mana tokennya berada, bukan jenis dompetnya. Cold wallet hanya menyimpan kunci Anda; hanya aset di chain yang akan ditutup yang perlu dikeluarkan. Contohnya, Lisk menyatakan LSK di Ethereum atau di exchange tidak terdampak penutupan chain-nya, dan Sophon menyatakan SOPH adalah token asli Ethereum, jadi hanya bagian yang ada di Sophon Chain yang perlu ditarik. Cek di dompet atau block explorer saldo itu ada di chain mana."
+    },
+    {
+      "q": "Tenggatnya sudah lewat. Apakah dana saya hilang?",
+      "a": "Belum tentu, tapi jangan terlalu berharap. Cek situs resmi dan akun X resmi chain itu untuk pengaturan setelah penutupan: Blast membuka situs pemulihan resmi selama 12 bulan, Lisk merencanakan proses klaim pada Januari 2027, dan Horizen DAO mengirim kembali saldo di Base. Proyek lain menyatakan melewatkan tenggat berarti kehilangan akses. Jangan pernah percaya \"jalur pemulihan\" yang tidak diumumkan oleh proyeknya sendiri."
+    },
+    {
+      "q": "Apakah saya perlu \"verifikasi dompet\" atau membayar biaya sebelum bisa migrasi?",
+      "a": "Membayar seseorang lebih dulu: tidak. Horizen menyatakan timnya tidak akan pernah meminta Anda mengirim dana kepada mereka; satu-satunya biaya adalah gas yang dibayar dompet Anda sendiri saat mengirim transaksi. \"Verifikasi dompet\": MetaMask menyatakan pesan mendesak yang meminta Anda membuka tautan untuk \"memverifikasi\" akun adalah penipuan yang umum. Jika panduan resmi memang meminta Anda menandatangani konfirmasi, lakukan hanya di halaman yang disebut dalam postingan resmi, dan baca pop-up dompet dengan cermat."
+    },
+    {
+      "q": "Saya tidak punya gas di chain yang akan ditutup, jadi tidak bisa memindahkan dana keluar lewat bridge.",
+      "a": "Cek panduan resmi dulu. Beberapa chain menghentikan deposit selama penutupan: Sophon menonaktifkan deposit baru pada 25 Juni 2026, sementara Horizen tetap membuka deposit ETH dari Base hanya agar pengguna bisa membayar gas, dan menyarankan menyetor jumlah minimum. Jika panduan tidak membahasnya, tanyakan di Discord resmi, bukan kepada orang yang diam-diam menawarkan \"membayarkan gas Anda\"."
+    },
+    {
+      "q": "Saya sudah memulai lewat bridge resmi. Kenapa belum masuk?",
+      "a": "Native bridge resmi ke Ethereum memang ada masa tunggunya, dan sebagian besar juga butuh satu kali Claim lagi dari Anda di Ethereum. Contohnya, Abstract menyatakan native bridge-nya punya jeda sekitar 3 jam, sedangkan OP Mainnet biasanya 7 hari. Lihat \"Menarik dari L2 ke Ethereum\" untuk detailnya."
+    }
+  ],
+  "sources": [
+    "Sophon di X: jadwal penutupan 1/4, mainnet ditutup 30 November (19 Oktober 2026)",
+    "Sophon di X: 2/4, tenggat penarikan 25 November (19 Oktober 2026)",
+    "Sophon di X: 3/4, penarikan, hadiah, dan aset Farm (19 Oktober 2026)",
+    "Sophon di X: 4/4, hanya pakai tautan resmi, waspadai situs migrasi palsu (19 Oktober 2026)",
+    "Sophon di X: pengingat 2 November (SOPH sendiri tetap ada)",
+    "Dokumentasi Sophon: Panduan migrasi chain (posisi dipindahkan otomatis, deposit dimatikan sejak 25 Juni)",
+    "Abstract di X: \"Abstract is Winding Down\" (6 Oktober 2026)",
+    "Blog Horizen: Perubahan untuk Horizen (penutupan L3, pengembalian oleh DAO, pengingat keamanan; 23 Oktober 2026)",
+    "Horizen di X: bridge ditutup 4 November pukul 13:00 UTC (4 November 2026)",
+    "Blast di X: L2 sudah ditutup; situs pemulihan buka 12 bulan (4 November 2026)",
+    "Situs pemulihan resmi Blast (ETH, WETH, USDB; Blast Mobile; Safe)",
+    "Blog Lisk: Lisk Chain sudah ditutup",
+    "Bantuan Lisk: Klaim Lisk Chain (proses klaim manual pada Januari 2027)",
+    "Lisk di X: kontrak khusus; penarikan yang masih berjalan dikreditkan di Ethereum (3 November 2026)",
+    "Dokumentasi OP: penarikan Standard Bridge 7 hari di OP Mainnet",
+    "Bantuan MetaMask: Apa itu izin token? (tanda-tanda izin berbahaya)",
+    "Bantuan MetaMask: Kanal dukungan resmi (pesan penipuan \"verifikasi akun Anda\")"
+  ]
+}

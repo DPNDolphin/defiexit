@@ -1,0 +1,102 @@
+{
+  "title": "Penipuan paling umum saat penutupan dan migrasi",
+  "summary": "Yang paling sering: \"CS\" yang menghubungi Anda lebih dulu, situs migrasi atau airdrop palsu, permintaan \"approve\" atau tanda tangan yang membuat orang lain bisa mengambil token Anda, dan layanan \"pemulihan\" berbayar. Satu aturan menghentikan sebagian besarnya: proyek asli tidak DM Anda lebih dulu, tidak pernah meminta frasa pemulihan atau kunci privat, dan tidak pernah meminta Anda mengirim uang lebih dulu — dan satu-satunya tautan yang bisa dipercaya adalah yang diposting oleh akun resmi itu sendiri dan situs resminya.",
+  "sections": [
+    {
+      "h": "Kenapa penipuan melonjak di saat seperti ini",
+      "p": [
+        "Penutupan dan migrasi punya tenggat, dan banyak orang terburu-buru meminta bantuan di tempat umum. ethereum.org menyebut penipu yang menyamar sebagai CS menyisir kanal publik untuk mencari orang yang bertanya, lalu mengirim pesan pribadi menawarkan bantuan, dengan tujuan mendapatkan kunci privat atau dana Anda.",
+        "MetaMask juga menyebut tekanan waktu yang dibuat di sekitar tenggat sebagai tanda khas permintaan izin yang berbahaya. Makin dekat tenggat, makin pelan Anda seharusnya melangkah."
+      ],
+      "list": []
+    },
+    {
+      "h": "Penipuan yang paling umum",
+      "p": [
+        "Masing-masing modus ini sudah diperingatkan secara terbuka oleh proyek atau penyedia dompet."
+      ],
+      "list": [
+        "\"CS\" yang mendatangi Anda: Anda menyebut masalah di X, Discord, atau Telegram, lalu seseorang mengirim DM mengaku sebagai dukungan resmi, atau membalas dengan tautan \"bantuan\". Horizen menyatakan timnya tidak akan pernah DM Anda lebih dulu; MetaMask menyatakan tidak akan pernah DM Anda untuk menawarkan dukungan, tidak punya dukungan lewat telepon, dan tidak pernah menghubungi Anda soal kasus dukungan di X.",
+        "Situs migrasi dan airdrop palsu yang mirip aslinya. Sophon memperingatkan: \"hanya pakai tautan resmi Sophon dan berhati-hatilah terhadap situs migrasi palsu.\" Abstract memperingatkan soal peniruan, situs migrasi palsu, dan DM yang mengaku mewakilinya. Dokumentasi Sophon menambahkan: jangan pernah mengikuti tautan klaim, migrasi, atau tukar token yang tidak Anda minta.",
+        "\"Approve untuk membuka kunci / migrasi\": izin (approval) memungkinkan situs atau kontrak memindahkan token tertentu keluar dari dompet Anda, dan tanda tangan tanpa gas seperti permit bisa melakukan hal yang sama. Saran MetaMask: cek persis apa yang diminta situs sebelum memberi izin, dan batasi jumlahnya jika bisa; jika ada situs yang meminta Anda memberi izin untuk semua NFT Anda demi menerima airdrop, jangan tertipu, karena Anda tidak perlu izin semacam itu untuk menerima apa pun.",
+        "Token atau NFT yang tidak pernah Anda minta, dengan pesan yang mengarahkan Anda ke situs web untuk mengklaimnya. MetaMask menyebut ini penipuan airdrop yang umum: situs itu kemungkinan besar mengincar frasa pemulihan atau izin dari Anda, jadi jangan berinteraksi; sembunyikan saja. ethereum.org menambahkan bahwa situs semacam itu meminta Anda menghubungkan dompet dan meng-\"approve\" transaksi yang menyerahkan aset Anda ke penipu.",
+        "\"Pemulihan\" berbayar: seseorang mengaku bisa mengembalikan dana Anda yang dicuri atau tersangkut, dengan biaya di muka. FBI memperingatkan bahwa pelaku seperti ini muncul di media sosial, kolom komentar, dan hasil pencarian; mereka mengambil pembayaran awal lalu menghilang, atau menyerahkan \"laporan pelacakan\" yang tidak lengkap atau tidak akurat lalu meminta lebih. Sebagian menyamar sebagai firma hukum atau lembaga pemerintah. Perusahaan swasta tidak bisa mengeluarkan perintah penyitaan, dan penegak hukum tidak memungut biaya dari korban untuk penyelidikan."
+      ]
+    },
+    {
+      "h": "Cara mengecek tautan",
+      "p": [
+        "Tautan penipuan bisa terlihat persis sama dengan yang asli, jadi nilailah dari mana asalnya."
+      ],
+      "list": [
+        "Ambil tautan hanya dari postingan akun resmi itu sendiri, atau klik dari beranda resmi. Saran Abstract: gunakan hanya tautan resmi dan cocokkan silang di Discord serta kanal resmi lainnya.",
+        "Cek akunnya sendiri: pastikan @nama akunnya cocok dengan yang tercantum di situs resmi, jangan hanya berpegang pada foto dan nama tampilan.",
+        "Jangan memakai tautan dari hasil pencarian, iklan, utas komentar, atau DM. FBI mencatat bahwa layanan pemulihan palsu muncul di kolom komentar dan hasil pencarian.",
+        "Cek lagi di pop-up dompet: MetaMask menyatakan permintaan izin menampilkan nama situs dan alamat web di bagian atas agar Anda bisa memastikan itu situs yang Anda maksud. Lalu lihat apakah langkah itu transfer, izin, atau tanda tangan.",
+        "Jika Anda tidak bisa memahami apa yang dilakukan pop-up itu, jangan konfirmasi; tanyakan dulu di Discord resmi."
+      ]
+    },
+    {
+      "h": "Yang tidak dilakukan proyek yang sah",
+      "p": [
+        "Jika Anda menemui salah satu dari ini, Anda bisa langsung berhenti."
+      ],
+      "list": [
+        "DM Anda lebih dulu. (Horizen: timnya tidak akan pernah DM Anda lebih dulu. MetaMask: tidak akan pernah DM Anda untuk menawarkan dukungan.)",
+        "Meminta frasa pemulihan, kunci privat, atau kata sandi Anda. ethereum.org menyatakan tidak ada layanan, agen dukungan, atau situs web sah yang akan memintanya; MetaMask menyatakan satu-satunya saat Anda perlu memasukkan frasa pemulihan adalah ketika membuat dompet dan ketika memulihkannya.",
+        "Meminta Anda mengirim dana kepada mereka. (Horizen: \"Kami tidak akan pernah meminta Anda mengirim dana kepada kami.\")",
+        "Menelepon Anda, atau meminta akses jarak jauh ke komputer Anda. (MetaMask tidak punya dukungan lewat telepon. ethereum.org: jangan pernah mengizinkan siapa pun mengakses komputer Anda dari jarak jauh.)",
+        "Memungut biaya untuk \"mempercepat\", \"membuka kunci\", atau \"memulihkan\" dana Anda.",
+        "DeFiExit hanya meminta dompet Anda membagikan alamatnya — tidak pernah meminta Anda menandatangani, memberi izin, atau mengirim apa pun, dan kami tidak pernah menghubungi Anda lebih dulu."
+      ]
+    },
+    {
+      "h": "Jika Anda sudah telanjur mengklik atau menandatangani",
+      "p": [
+        "Makin cepat Anda bertindak, makin besar peluang membatasi kerugian."
+      ],
+      "list": [
+        "Jika Anda memberi izin ke situs yang mencurigakan: MetaMask menyarankan mencabut izin itu secepat mungkin (misalnya, tinjau dan cabut di MetaMask Portfolio) sebelum dana diambil. Begitu dompet sudah dikuras, hampir tidak ada yang bisa dilakukan.",
+        "Jika frasa pemulihan atau kunci privat Anda bocor, atau muncul transaksi yang tidak Anda lakukan: MetaMask menyarankan segera membuat dompet baru, memindahkan sisanya ke sana, dan meninggalkan dompet lama; jika Anda curiga ada sweeper script, jangan kirim gas lagi ke dompet lama.",
+        "Transaksi on-chain tidak bisa dibatalkan. Simpan catatan transaksinya dan laporkan ke polisi setempat; di AS, Anda bisa melapor ke IC3 milik FBI.",
+        "Bersiaplah akan ada orang yang mengirim DM menawarkan untuk mengembalikannya. Itulah penipuan lanjutan yang diperingatkan FBI; jangan beri mereka uang atau informasi pribadi apa pun."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Akun \"dukungan resmi\" mengirimi saya DM, menawarkan untuk mengeluarkan dana saya yang tersangkut. Apakah itu asli?",
+      "a": "Hampir pasti penipuan. Horizen menyatakan timnya tidak akan pernah DM Anda lebih dulu, dan MetaMask menyatakan tidak akan pernah DM Anda untuk menawarkan dukungan. Jangan membalas atau mengklik apa pun; tanyakan sendiri lewat kanal resmi yang tercantum di situs web proyek, misalnya tiket di Discord resmi."
+    },
+    {
+      "q": "Halaman migrasi meminta saya menghubungkan dompet dan menandatangani sesuatu. Haruskah saya lakukan?",
+      "a": "Pertama, pastikan tautannya berasal dari postingan akun resmi itu sendiri. Lalu baca pop-up dompet: apakah itu penarikan atau transfer biasa, atau tanda tangan \"approve\" atau permit? Approve dan permit memungkinkan orang lain memindahkan token Anda; jika memang benar-benar diperlukan, beri izin hanya ke kontrak yang disebut di panduan resmi, dan hanya sebesar jumlah yang Anda pakai. Jika Anda tidak memahami pop-up itu, jangan tanda tangani; tanyakan dulu di Discord resmi."
+    },
+    {
+      "q": "Token yang tidak pernah saya beli muncul di dompet saya, dengan pesan untuk mengunjungi sebuah situs web.",
+      "a": "Biarkan saja. MetaMask menggambarkan ini sebagai penipuan airdrop yang umum: saat Anda \"mengklaim\", yang Anda tandatangani bisa jadi izin yang membuat mereka bisa mengambil token Anda, atau Anda bisa digiring untuk mengetik frasa pemulihan. Abaikan dan sembunyikan."
+    },
+    {
+      "q": "Ada yang bilang bisa mengembalikan kripto saya yang dicuri dengan imbalan biaya.",
+      "a": "FBI sudah memperingatkan soal persis ini: mereka mengambil biaya di muka lalu menghilang, atau membuat \"laporan pelacakan\" yang tidak lengkap atau tidak akurat lalu meminta lebih. Perusahaan swasta tidak bisa mengeluarkan perintah penyitaan untuk memulihkan mata uang kripto, dan penegak hukum tidak memungut biaya dari korban untuk penyelidikan. Jangan beri mereka uang atau informasi pribadi."
+    },
+    {
+      "q": "Bagaimana saya tahu sebuah tautan itu resmi?",
+      "a": "Percayai hanya dua tempat: postingan akun resmi itu sendiri, dan beranda resmi. Saran Abstract adalah memakai hanya tautan resmi dan mencocokkan silang di Discord serta kanal resmi lainnya. Tautan di balasan, DM, atau iklan pencarian tidak dihitung, semirip apa pun kelihatannya."
+    }
+  ],
+  "sources": [
+    "Sophon di X: hanya pakai tautan resmi, waspadai situs migrasi palsu (19 Oktober 2026)",
+    "Dokumentasi Sophon: FAQ penarikan (jangan pernah mengikuti tautan yang tidak diminta)",
+    "Abstract di X: \"Abstract is Winding Down\" (peniruan, situs migrasi palsu, DM; 6 Oktober 2026)",
+    "Blog Horizen: pengingat keamanan (tidak pernah DM lebih dulu, tidak pernah meminta kunci, tidak pernah meminta dana; 23 Oktober 2026)",
+    "Bantuan MetaMask: Tips keamanan dasar (frasa pemulihan, kunci privat)",
+    "Bantuan MetaMask: Kanal dukungan resmi (tanpa DM, tanpa telepon, tanpa kontak di X)",
+    "Bantuan MetaMask: Apa itu izin token? (permit, izin berbahaya, mencabut izin)",
+    "Bantuan MetaMask: Hindari penipu, rug pull, dan penipuan airdrop",
+    "Bantuan MetaMask: Saya diretas atau ditipu",
+    "ethereum.org: Keamanan dan pencegahan penipuan (penipuan berkedok dukungan, penipuan airdrop)",
+    "PSA FBI IC3: perusahaan yang mengaku-ngaku bisa memulihkan kripto yang hilang (11 Agustus 2023)",
+    "PSA FBI IC3: firma hukum fiktif yang menawarkan pemulihan dana (13 Agustus 2025)"
+  ]
+}
