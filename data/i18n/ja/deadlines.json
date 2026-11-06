@@ -119,5 +119,129 @@
       "ZetaChainガバナンス：提案68",
       "ZetaChainブログ：ZETAをSolanaへ"
     ]
+  },
+  "astralabs-astra-migration": {
+    "name": "AstraLabs：ASTRAが新しいコントラクトへ移行",
+    "summary": "AstraLabsはASTRAを新しいコントラクトに移します。11月7日にスナップショット、新しいトークンは12月10日までに受け取る必要があります。遅れた申請は受け付けられません。",
+    "deadlineNote": "11月7日に流動性が新しいコントラクトに移り、スナップショットが取られます。新しいコントラクトは11月7日から10日の間に稼働し、取引は11月10日に再開します。期限は12月10日で、AstraLabsは遅れた申請は受け付けず、返金もしないとしています。",
+    "who": "スナップショット時点で旧ASTRAを持っている人。",
+    "todo": "スナップショットまで旧トークンを持ったままにし、その後AstraLabsがXアカウントで案内する方法で、12月10日までに新しいトークンを受け取ってください。",
+    "caution": "交換比率、新しいコントラクトのアドレス、受け取り方法はまだ発表されていません。AstraLabsはリンクをXアカウントにだけ投稿するとしているので、偽のページに注意してください。",
+    "official": [
+      "AstraLabsのX投稿：10月15日のお知らせ"
+    ],
+    "milestones": [
+      "スナップショット：これより前に旧トークンを持っておく"
+    ]
+  },
+  "abstract-chain-shutdown": {
+    "name": "Abstractチェーンの終了",
+    "summary": "Abstractチェーンは12月15日に終了し、それまでにブリッジで移さなかった資金にはアクセスできなくなります。先にアプリから抜け、それからブリッジで移してください。",
+    "deadlineNote": "Abstractは12月15日に終了します。Abstract自身の言葉では、それまでにブリッジで移さなかった資金には「アクセスできなくなります」。",
+    "who": "Abstractに資産がある人（チェーン上のアプリ内の資産を含む）。",
+    "todo": "まずチェーン上のアプリから引き出し、それからMigration Hub（`migrate.abs.xyz`）かネイティブブリッジ（`native-bridge.abs.xyz`、約3時間）で移してください。移行ページにはStargate、Relay、Jumperも載っています。",
+    "caution": "Abstractは偽の移行サイトとなりすましのDMに注意するよう呼びかけています。",
+    "official": [
+      "Abstractの移行ページ",
+      "AbstractのX投稿：「Abstract is Winding Down」"
+    ]
+  },
+  "stargate-v1-pools": {
+    "name": "Stargate V1プールの終了",
+    "summary": "Stargate V1のプールは12月15日に動かなくなります。V1の流動性提供者はそれまでに引き出す必要があり、今は手数料なしで引き出せます。",
+    "deadlineNote": "9月4日に発表：V1のメッセージングを約二週間止めた後、手数料なしの引き出しが始まりました。12月15日にLayerZero V1 Relayerが停止し、V1プールは完全に動かなくなります。Stargate V2とHydraは影響を受けません。Metisではプールがもっと早く、10月23日に終わりました。このページのMetisの項目をご覧ください。",
+    "who": "Stargate V1プールの流動性提供者。ただし、期限が10月23日だったMetisは除きます。",
+    "todo": "12月15日より前に、V1プールから流動性を引き出してください。",
+    "official": [
+      "StargateのX投稿：9月4日のお知らせ",
+      "Metisブログ：V1プールはすべてのチェーンで12月15日に終了、Metisではそれより早く終了"
+    ]
+  },
+  "stargate-stg-zro": {
+    "name": "Stargate：STGをZROに交換できる最終日",
+    "summary": "STGをLayerZeroのZROに交換できるのは12月15日までで、その後はサポートされません。",
+    "deadlineNote": "交換は2025年8月26日に始まり、12月15日に終わります。LayerZeroは、その後の交換はサポートしないとしています。",
+    "who": "まだSTGを持っている人。取引所に預けている残高は取引所が対応し、通常はもっと早く締め切られます。",
+    "todo": "12月15日より前にSTGをZROに交換してください。Stargateの公式の交換ガイドに固定レートが書かれています：1 STG = 0.08634 ZRO。",
+    "caution": "Stargateの公式の交換ページによると、交換するにはSTGがEthereum上にある必要があります。ほかのネットワークにある場合は、先にEthereumへブリッジしてください。公式ページからリンクされている入口だけを使ってください。",
+    "official": [
+      "LayerZeroブログ：9月のエコシステム最新情報",
+      "StargateのX投稿：交換の開始（2025年8月）",
+      "Stargateの公式交換ページ"
+    ]
+  },
+  "fluxtra-frontend": {
+    "name": "Fluxtraのウェブサイト閉鎖、ボールトはOMiesへ",
+    "summary": "Fluxtraのウェブサイトは12月31日に閉鎖されます。QuickSwap LPボールトからは今すぐ引き出してください。ほかの二つのボールトはすでにOMiesに表示されています。",
+    "deadlineNote": "12月31日が、Fluxtraの画面から引き出せる最終日で、その後ウェブサイトは完全に閉鎖されます。QuickSwap LPボールトはすでに運用を終えており、Fluxtraは今すぐ引き出すよう求めています。",
+    "who": "MANTRAチェーンでFluxtraのボールトを使った人。",
+    "todo": "wmantraUSDとstMANTRAのボールトの預け入れは、すでに`onchainomies.com`に表示されているので、そのままで構いません。QuickSwap LPボールトからは今すぐ引き出してください。",
+    "official": [
+      "FluxtraのX投稿：10月30日のお知らせ"
+    ]
+  },
+  "neon-evm-shutdown": {
+    "name": "Neon EVMの終了",
+    "summary": "Neon EVM（Solana上で動くEVM）は終了します。12月31日より前に、NeonPassで資産をSolanaに移してください。",
+    "deadlineNote": "開発とサポートは10月1日に終わりました。12月31日が移行と引き出しの期限です。",
+    "who": "Neon EVMに資産がある人。",
+    "todo": "12月31日より前に、NeonPassでNeon EVMの資産をSolanaに移してください。手順は公式ドキュメントにあります。",
+    "caution": "Neonによると、Solana上のNEONトークンはなくなりません。12月31日以降も引き出しができるかどうかは明らかにしていません。",
+    "official": [
+      "Neon EVMのウェブサイトのお知らせ",
+      "Neon EVMドキュメント：NeonPassでの引き出し"
+    ]
+  },
+  "quickswap-soneium-frontend": {
+    "name": "QuickSwap：Soneiumの画面が終了",
+    "summary": "Soneium上のQuickSwapの画面は12月31日に停止します。それまでに流動性を引き出してください。その後はブロックエクスプローラーでコントラクトを直接呼び出す必要があります。",
+    "deadlineNote": "ガバナンス投票は10月21日に可決されました（賛成99.22%）。Soneiumへのデプロイの画面は12月31日に停止します。その後は、Soneiumの公式ブロックエクスプローラーでコントラクトを直接呼び出せば資金を引き出せる、とQuickSwapはしています。",
+    "who": "Soneium上のQuickSwapに流動性や資産がある人。",
+    "todo": "12月31日より前に、QuickSwapの画面でSoneium上の流動性と資産を引き出してください。その後は`soneium.blockscout.com`でコントラクトを直接呼び出してください。",
+    "official": [
+      "QuickSwapのX投稿：10月22日のお知らせ",
+      "QuickSwapのガバナンス投票（Snapshot）"
+    ]
+  },
+  "relay-vaults": {
+    "name": "Relay Vaultsの終了",
+    "summary": "Relayの流動性ボールトは終了します。引き出しページは12月31日に閉じるので、それまでに公式ページで引き出してください。",
+    "deadlineNote": "新規の預け入れは停止しています。引き出しページは12月31日に閉じ、その後はコントラクトを直接呼び出す方法だけが残ります。",
+    "who": "Relay Vaults（EthereumとArbitrumのWETHボールト）に預け入れがある人。",
+    "todo": "`relay.link/vaults`で引き出してください。12月31日以降は、公式ドキュメントに従ってERC4626コントラクトの`redeem(shares, receiver, owner)`を直接呼び出すか、ネイティブゲートウェイを使ってネイティブのETHで受け取ってください。",
+    "caution": "一度に引き出せる量は、ボールトの利用可能な流動性によります。コントラクトは今も預け入れを受け付けるので、間違えて預けたものも同じ方法で取り出せます。",
+    "official": [
+      "Relayドキュメント：ボールトからの引き出し",
+      "RelayのX投稿：10月9日のお知らせ"
+    ]
+  },
+  "silicon-network-shutdown": {
+    "name": "Silicon Networkの終了（KorbitのWeb3ウォレットを含む）",
+    "summary": "Siliconチェーンは12月31日に終了し、残した資金は後から取り戻せません。Ethereumからブリッジした資産は、公式ブリッジで戻す必要があります。",
+    "deadlineNote": "Siliconは12月31日12:00 UTC+9（03:00 UTC）に終了します。その後ブロックエクスプローラーが閉じ、ネットワークは終わります。Silicon自身の言葉では、それまでに引き出さなかった資金は「復旧できません」。",
+    "who": "Siliconに資産がある人（KorbitのWeb3ウォレットの利用者を含む）。",
+    "todo": "Ethereumからブリッジした資産：期限までに公式ブリッジでEthereumへ引き出し、手数料用のETHを少し残してください。KorbitのWeb3ウォレットの利用者：Korbitの手順に従ってください。Siliconのネイティブトークンは直接ブリッジできないので、先にチェーン上で交換してください。",
+    "official": [
+      "Siliconドキュメント：サービス終了のお知らせ",
+      "Siliconドキュメント：引き出しガイド",
+      "SiliconのX投稿：KorbitのWeb3ウォレットは12月31日に終了"
+    ]
+  },
+  "standx-winddown": {
+    "name": "StandXの終了：DUSDエアドロップ、ポジション、償還の期限",
+    "summary": "StandXは終了に向かっています。DUSDのエアドロップは12月31日に終わり、ポジションは2027年1月15日に強制決済され、引き出しと償還は2027年1月31日に締め切られます。",
+    "deadlineNote": "10月15日から利回りの支払いは止まり、ボールトは預け入れを受け付けていません。10月20日からポジションは減らすことしかできません。DUSDのエアドロップは11月2日00:00から12月31日08:00 UTCまで受け取れ、その後は失効します。2027年1月15日にすべてのポジションが強制決済され、ボールトが精算されます。引き出しとDUSDの償還は2027年1月31日に締め切られます（償還には7日かかり、2月7日までに完了します）。",
+    "who": "StandX（BNB ChainまたはSolana）にポジション、残高、DUSDがある人と、PancakeSwapやRaydiumでDUSDの流動性を提供している人。",
+    "todo": "エアドロップを受け取る → ポジションを決済する → PerpsウォレットからCashウォレットへ資金を移す → ご自身のウォレットへ引き出す。USDTで受け取るには2027年1月31日より前に償還を申請し、PancakeSwapとRaydiumのDUSDの流動性も1月31日より前に引き出してください。",
+    "caution": "DUSDはUSDTに償還されます。2027年1月31日以降も残高は持ち主のものですが、support@standx.comにメールする必要があります。",
+    "official": [
+      "StandXのX投稿：終了に関する案内",
+      "StandXのX投稿：ポジション縮小のみ（reduce-only）モード",
+      "StandXのX投稿：エアドロップの開始"
+    ],
+    "milestones": [
+      "DUSDのエアドロップが失効",
+      "すべてのポジションを強制決済し、ボールトを精算"
+    ]
   }
 }
