@@ -317,7 +317,8 @@
       "caution": {"zh": "提案 70 要 11 月 7 日通过才生效。每种低于 5 美元的、放在池子、金库或合约钱包里的 ZRC-20 领不了。官方说门户只要签名,不要发交易,也不要助记词。", "en": "Proposal 70 only takes effect if it passes on Nov 7. ZRC-20 tokens worth under $5 each, or held in pools, vaults or contract wallets, can't be collected. ZetaChain says the portal only asks for a signature, never a transaction or your seed phrase."},
       "official": [
         {"label": {"zh": "ZetaChain 官方 X：11 月 4 日公告", "en": "ZetaChain on X: Nov 4 post"}, "url": "https://x.com/ZetaChain/status/2118018948813959485"},
-        {"label": {"zh": "ZetaChain 治理:提案 68", "en": "ZetaChain governance: proposal 68"}, "url": "https://hub.zetachain.com/governance/proposal/68"},
+        {"label": {"zh": "ZetaChain 治理:提案 68(已通过:迁到 Solana)", "en": "ZetaChain governance: proposal 68 (already passed: move to Solana)"}, "url": "https://hub.zetachain.com/governance/proposal/68"},
+        {"label": {"zh": "ZetaChain 治理:提案 70(机制和日期;投票到 11 月 7 日)", "en": "ZetaChain governance: proposal 70 (mechanism and dates; vote ends Nov 7)"}, "url": "https://hub.zetachain.com/governance/proposal/70"},
         {"label": {"zh": "ZetaChain 官方博客:ZETA 迁到 Solana", "en": "ZetaChain blog: bringing ZETA to Solana"}, "url": "https://zetachain.com/blog/bringing-zeta-and-private-ai-to-solana"}
       ],
       "announced": "2026-11-04",

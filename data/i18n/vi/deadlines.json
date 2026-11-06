@@ -91,7 +91,7 @@
     "who": "Những ai nắm giữ ZETA hoặc wZETA trên ZetaChain, có ZETA trong pool hoặc liquid staking, và những ai có tài sản đã chuyển qua cầu nối (ZRC-20) bị kẹt trên ZetaChain. ZETA dạng ERC-20 trên Ethereum không bị ảnh hưởng.",
     "todo": "Trước snapshot, hãy unwrap wZETA và thoát khỏi các pool và liquid staking (ZETA nằm trong hợp đồng không thể nhận theo địa chỉ). Từ ngày 9/12, ký tại `hub.zetachain.com/migrate` để nhận ZETA trên Solana (tối thiểu 10 ZETA, không cần SOL). Với token ZRC-20, ký tại `hub.zetachain.com/bridged-assets` để nhận lại trên chuỗi gốc.",
     "caution": "Đề xuất 70 chỉ có hiệu lực nếu được thông qua vào ngày 7/11. Token ZRC-20 mỗi loại trị giá dưới $5, hoặc nằm trong pool, vault hay ví hợp đồng, sẽ không nhận được. ZetaChain cho biết cổng chỉ yêu cầu chữ ký, không bao giờ yêu cầu giao dịch hay cụm từ khôi phục của bạn.",
-    "official": ["ZetaChain trên X: bài đăng ngày 4/11", "Quản trị ZetaChain: đề xuất 68", "Blog ZetaChain: đưa ZETA lên Solana"]
+    "official": ["ZetaChain trên X: bài đăng ngày 4/11", "Quản trị ZetaChain: đề xuất 68 (đã thông qua: chuyển sang Solana)", "Quản trị ZetaChain: đề xuất 70 (cơ chế và ngày giờ; bỏ phiếu đến 7/11)", "Blog ZetaChain: đưa ZETA lên Solana"]
   },
   "astralabs-astra-migration": {
     "name": "AstraLabs: ASTRA chuyển sang hợp đồng mới",

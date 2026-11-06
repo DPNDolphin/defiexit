@@ -91,7 +91,7 @@
     "who": "Siapa pun yang memegang ZETA atau wZETA di ZetaChain, punya ZETA di pool atau liquid staking, dan siapa pun yang punya aset hasil bridge (ZRC-20) yang tertahan di ZetaChain. ZETA ERC-20 di Ethereum tidak terdampak.",
     "todo": "Sebelum snapshot, unwrap wZETA dan keluar dari pool dan liquid staking (ZETA yang ada di dalam kontrak tidak bisa diklaim berdasarkan alamat). Mulai 9 Desember, tanda tangani di `hub.zetachain.com/migrate` untuk menerima ZETA di Solana (minimal 10 ZETA, tidak perlu SOL). Untuk token ZRC-20, tanda tangani di `hub.zetachain.com/bridged-assets` untuk mendapatkannya kembali di chain asalnya.",
     "caution": "Proposal 70 hanya berlaku jika disetujui pada 7 November. Token ZRC-20 yang masing-masing bernilai di bawah $5, atau yang ada di pool, vault, atau dompet kontrak, tidak bisa diklaim. ZetaChain menyatakan portal hanya meminta tanda tangan, tidak pernah transaksi atau frasa pemulihan Anda.",
-    "official": ["ZetaChain di X: postingan 4 November", "Tata kelola ZetaChain: proposal 68", "Blog ZetaChain: membawa ZETA ke Solana"]
+    "official": ["ZetaChain di X: postingan 4 November", "Tata kelola ZetaChain: proposal 68 (sudah disetujui: pindah ke Solana)", "Tata kelola ZetaChain: proposal 70 (mekanisme dan tanggal; pemungutan suara sampai 7 November)", "Blog ZetaChain: membawa ZETA ke Solana"]
   },
   "astralabs-astra-migration": {
     "name": "AstraLabs: ASTRA pindah ke kontrak baru",
