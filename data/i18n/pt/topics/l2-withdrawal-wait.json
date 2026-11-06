@@ -72,7 +72,7 @@
     },
     {
       "q": "O meu saque da Sophon ainda não chegou.",
-      "a": "A documentação da Sophon diz que um saque oficial (canônico) para a Ethereum não é instantâneo: o lote precisa ser provado na Ethereum, e depois você volta a claim.sophon.com com a mesma carteira e envia uma transação final de Claim na Ethereum. A Sophon diz que o tempo varia, então siga o status que aparece nessa página. Se você escolheu uma rota de terceiros ali, confira o status dessa rota. O prazo de saque da Sophon é 25 de novembro de 2026, e a mainnet encerra em 30 de novembro, então não deixe para o fim."
+      "a": "A documentação da Sophon diz que um saque oficial (canônico) para a Ethereum não é instantâneo: o lote precisa ser provado na Ethereum, e depois você volta a claim.sophon.com usando a mesma carteira e envia uma transação final de Claim na Ethereum. A Sophon diz que o tempo varia, então siga o status que aparece nessa página. Se você escolheu uma rota de terceiros ali, confira o status dessa rota. O prazo de saque da Sophon é 25 de novembro de 2026, e a mainnet encerra em 30 de novembro, então não deixe para o fim."
     },
     {
       "q": "A contagem regressiva terminou há dias e o dinheiro ainda não está lá.",
