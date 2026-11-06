@@ -507,5 +507,122 @@
       "Lazy Summerフォーラム：秩序ある終了のRFC（11月5日）",
       "Lazy Summerフォーラム：ボールトを引き出しのみに（7月29日）"
     ]
+  },
+  "aster-apollox-offline": {
+    "name": "Aster：ApolloXのウェブサイトとAPIが終了",
+    "summary": "Asterは旧ApolloXのウェブサイトとAPIを終了しており、11月5日ごろに完了します。まだ残高やポジションがあるなら、今すぐ決済して引き出してください。",
+    "deadlineNote": "11月3日10:00 UTCから、Asterは旧APXコントラクトの整理を始め、約48時間かかるとしました。つまり11月5日10:00 UTCごろに終わります。apollox.financeのウェブサイトとAPIもあわせて終了します。",
+    "who": "ApolloX（`apollox.finance`）にまだ残高や未決済のポジションがある人。",
+    "todo": "ポジションを決済し、ご自身のウォレットに引き出してください。問題があれば、AsterはDiscordのサポートに連絡するよう案内しています。",
+    "caution": "整理が終わった後もコントラクトを直接使えるかどうかは、Asterは明らかにしていません。",
+    "official": [
+      "AsterのX投稿：11月3日の整理のお知らせ"
+    ]
+  },
+  "lisk-chain-closed": {
+    "name": "Liskチェーンの終了",
+    "summary": "Liskチェーンは11月2日に終了しました。終了時に進行中だった引き出しはEthereumで入金され、チェーンに残った資金については2027年1月に手続きが始まるとLiskはしています。",
+    "deadlineNote": "チェーンは当初10月31日に終了する予定で、実際の最終日は11月2日でした。ブリッジを始められる最終日は10月24日でした（ブリッジには約8日かかります）。Liskは、チェーンに残った資金のための専用コントラクトを2027年1月に用意するとしています。",
+    "who": "終了時点でLiskにまだ資産があった人、または進行中の引き出しがあった人。",
+    "todo": "Liskによると、終了時点で進行中だった引き出しは、Ethereum上の送り先アドレスに直接入金されます。チェーンに残った資金については、2027年1月の公式の手続きを待ってください。今のところ、やることはありません。",
+    "caution": "Liskは、資金を取り戻す手伝いを申し出て連絡することも、シードフレーズを聞くことも決してないとしています。ステーキング報酬のコントラクトにある約520万LSK（貯まったが未受け取りの報酬を含む）はバーンされますが、ユーザーが自分でステーキングしたLSKはバーンされません。",
+    "official": [
+      "Liskブログ：Liskチェーンの終了",
+      "LiskのX投稿：1月の手続き（11月3日）",
+      "LiskのX投稿：最終日のリマインダー（11月1日）",
+      "Liskブログ：新しいLiskの紹介"
+    ]
+  },
+  "stratex-vaults": {
+    "name": "StratExのボールト（QuickSwap上）の終了",
+    "summary": "StratExのボールトは終了し、StratExは11月3日に、引き出していなかった全員に資金を返したとしています。ウォレットに届いたか確認してください。",
+    "deadlineNote": "手動での引き出しは11月1日に止まりました。11月3日、StratExは引き出していなかった全員に資金を返したとしました。",
+    "who": "StratExのボールトにお金があり、11月1日より前に引き出さなかった人。",
+    "todo": "返された資金がウォレットに届いているか確認してください。",
+    "official": [
+      "StratExのX投稿：資金の返還（11月3日）",
+      "StratExのX投稿：引き出しの締め切り（10月21日）",
+      "StratExのX投稿：最終のお知らせ（9月17日）"
+    ]
+  },
+  "lista-cdp-winddown": {
+    "name": "Lista DAO：Lista CDPは終了、Lista Lendingへ移行",
+    "summary": "Lista CDPは終了しました。Listaによると、対応マーケットのポジションは自動でLista Lendingに移され、やることはありません。ご自身のポジションが対応マーケットにあったか確認してください。",
+    "deadlineNote": "ポジションは9月30日から10月31日まで移行や返済ができました。11月1日と2日、Listaは対応マーケットのポジションを自動で移行したとしました。",
+    "who": "Lista CDPにポジションがあった人。",
+    "todo": "11月2日、Listaは対応するすべてのマーケットが自動でLista Lendingに移り、やることはないとしました。ご自身のポジションが対応マーケットにあったか確認してください。",
+    "caution": "対応していないマーケットのポジションがどうなるかは、Listaは明らかにしていません。",
+    "official": [
+      "Listaブログ：CDP終了の前にやること",
+      "ListaのX投稿：対応は不要（11月2日）",
+      "ListaのX投稿：移行完了（11月1日）",
+      "ListaのX投稿：10月1日のお知らせ"
+    ]
+  },
+  "kyan-exchange": {
+    "name": "Kyan取引所（旧Premia）の終了",
+    "summary": "Kyan（旧Premia）は終了し、残高は10月31日までに引き出す必要がありました。引き出せない場合は、Discordで質問するようKyanは案内しています。",
+    "deadlineNote": "10月19日に発表：残高は「月末までに」、つまり10月31日までに引き出すようにとのことでした。",
+    "who": "Kyanに残高が残っている人。",
+    "todo": "引き出せない場合は、Kyanの公式Discordの#supportへ行ってください。チームが手動で対応します。",
+    "official": [
+      "KyanのX投稿：10月19日の終了のお知らせ"
+    ]
+  },
+  "stargate-hydra-chains": {
+    "name": "Stargate v2とHydra、利用の少ないチェーンへの対応を一括で終了",
+    "summary": "Stargate v2とHydraは、利用の少ない複数のチェーンへの対応を終了し、最後のグループは10月23日に止まりました。",
+    "deadlineNote": "9月20日ごろ、複数のチェーン（Sophon、Silicon、Arbitrum Nova、Degen、Superpositionを含む）でHydraの資産が止まりました。Aurora、Taiko、LightLink、Gnosisは9月23日に、Gravity、Camp、GOAT、Metisは10月23日に止まりました。",
+    "who": "これらのチェーンのStargateプールの流動性提供者と、HydraのUSDC.eやUSDTの保有者。",
+    "todo": "各締め切りの前に、流動性提供者（ETHプールを含む）は引き出す必要があり、HydraのUSDC.eとUSDTの保有者はStargateのプールへブリッジして償還する必要がありました。",
+    "caution": "締め切りの後もHydraの資産を償還できるかどうかは、Stargateの投稿には書かれていません。",
+    "official": [
+      "StargateのX投稿：9月25日のリマインダー",
+      "StargateのX投稿：9月10日のリマインダー",
+      "StargateのX投稿：8月21日のお知らせ"
+    ]
+  },
+  "stargate-metis-pools": {
+    "name": "Metis上のStargate：V1・V2プールの流動性は10月23日までに引き出す必要があった",
+    "summary": "MetisでのStargateの対応は10月23日に終わり、その前にV1・V2プールの流動性を引き出す必要がありました。Metisは、残ったものは通常の画面では引き出すのが難しいか、できない可能性があると警告しています。",
+    "deadlineNote": "Metis AndromedaでのStargateの対応は10月23日に終わり、LayerZero LabsのDVNとExecutorは10月30日にMetisへの対応を止めました。影響を受けるプール：Stargate V2のUSDT、ETH、METISプールと、Stargate V1のUSDT、METIS、MAIプール。",
+    "who": "Metis上のStargate V1・V2プールの流動性提供者と、LayerZero V1でMETIS、HERA、QI、MTVTをほかのチェーンにブリッジした人。",
+    "todo": "期限の前に：LPトークンをステーキングしていれば解除し、Stargateアプリで流動性を引き出し、LayerZero V1で出ていったMETIS、HERA、QI、MTVTは同じ経路でMetisに戻します。逃してしまった場合は、Metisチームに連絡するようMetisは案内しています。",
+    "caution": "Metisによると、期限後にMetis上のStargateプールに残った流動性は、通常のStargateの画面では引き出すのが難しいか、できない可能性があります。Metisの公式（canonical）ブリッジが発行したm.USDC、m.USDT、WETH、METISは影響を受けません。",
+    "official": [
+      "Metisブログ：Metis AndromedaでのStargateの終了とLayerZeroの変更"
+    ]
+  },
+  "mint-blockchain-shutdown": {
+    "name": "Mint Blockchainの終了",
+    "summary": "Mint Blockchainは終了し、期限は10月20日でした。公式の引き出しページでEthereumに戻せるのは、ETH、WBTC、USDC、USDTだけです。",
+    "deadlineNote": "期限は10月20日でした。",
+    "who": "Mintチェーンに資産がある人。",
+    "todo": "公式ページ`mintchain.io/withdraw`は、ETH、WBTC、USDC、USDTをEthereumに引き出すことにだけ対応しています（imTokenのお知らせによると、引き出しは毎週処理され、約10日で届きます）。",
+    "caution": "期限後にほかに方法があるかどうかは、Mintは明らかにしていません。",
+    "official": [
+      "Mintの引き出しページ"
+    ]
+  },
+  "coinex-csc-shutdown": {
+    "name": "CoinEx Smart Chain（CSC）とOneSwapの終了",
+    "summary": "CoinExは終了に向かっています。CSCチェーンとOneSwapは9月29日に止まり、取引所のアカウントにあるお金は12月22日までに引き出す必要があります。",
+    "deadlineNote": "CSCとOneSwapは9月29日に止まり、ブリッジの償還も同時に終わりました。CoinEx取引所からの引き出しは、12月22日10:00 UTC+8まで可能です。",
+    "who": "CSCやOneSwapに資産がある人と、CoinEx取引所のアカウントにお金が残っている人。",
+    "todo": "オンチェーンの期限は過ぎています。12月22日より前に、取引所のアカウントのお金を引き出してください。その後、USDTは別の保管に移され、毎月5%の保管手数料がかかります。受け取るには、2028年8月22日までにsupport@coinex.comにメールしてください。",
+    "caution": "CoinExによると、これが最後のお知らせで、この後にCoinExの名前で出る「新しいお知らせ」は偽物です。",
+    "official": [
+      "CoinExのお知らせ"
+    ]
+  },
+  "awe-stpt-migration": {
+    "name": "AWE Network：STPTからAWEへ（Baseへ移行）",
+    "summary": "Ethereum上のSTPTをBase上のAWEに交換する期間は9月21日に終わり、AWEは遅れての交換はできないとしています。",
+    "deadlineNote": "期限は9月21日でした。AWEによると、約99%が移行済みです。",
+    "who": "まだSTPTを持っている人。",
+    "todo": "AWEは、遅れての交換はできないとしています。交換されなかったトークンの扱いは、コミュニティのガバナンス提案で決められます。",
+    "official": [
+      "AWEブログ：移行期間の終了"
+    ]
   }
 }
