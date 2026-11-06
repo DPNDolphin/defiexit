@@ -226,5 +226,137 @@
       "Documentation de Silicon : guide de retrait",
       "Silicon sur X : le portefeuille Web3 de Korbit s'arrête le 31 décembre"
     ]
+  },
+  "standx-winddown": {
+    "name": "Arrêt de StandX : dates limites pour l'airdrop de DUSD, les positions et les rachats",
+    "summary": "StandX cesse ses activités. L'airdrop de DUSD se termine le 31 décembre, les positions sont fermées d'office le 15 janvier 2027, et les retraits et rachats ferment le 31 janvier 2027.",
+    "deadlineNote": "Depuis le 15 octobre, le rendement est arrêté et les coffres n'acceptent plus de dépôts ; depuis le 20 octobre, les positions ne peuvent plus qu'être réduites. L'airdrop de DUSD est ouvert du 2 novembre, 00:00, au 31 décembre, 08:00 UTC, et expire ensuite. Toutes les positions sont fermées d'office et les coffres soldés le 15 janvier 2027. Les retraits et les rachats de DUSD ferment le 31 janvier 2027 (le rachat prend 7 jours et se termine au plus tard le 7 février).",
+    "who": "Toute personne ayant des positions, des soldes ou des DUSD sur StandX (BNB Chain ou Solana), et toute personne fournissant de la liquidité DUSD sur PancakeSwap ou Raydium.",
+    "todo": "Collectez l'airdrop → fermez vos positions → transférez les fonds du portefeuille « Perps » vers le portefeuille « Cash » → retirez vers votre propre portefeuille. Pour obtenir de l'USDT, demandez un rachat avant le 31 janvier 2027, et retirez aussi votre liquidité DUSD sur PancakeSwap et Raydium avant le 31 janvier.",
+    "caution": "Le DUSD se rachète contre de l'USDT. Après le 31 janvier 2027, les soldes appartiennent toujours à leurs propriétaires, mais il faudra écrire à support@standx.com.",
+    "official": [
+      "StandX sur X : modalités de l'arrêt",
+      "StandX sur X : mode réduction uniquement (reduce-only)",
+      "StandX sur X : ouverture de l'airdrop"
+    ],
+    "milestones": [
+      "L'airdrop de DUSD expire",
+      "Toutes les positions sont fermées d'office et les coffres soldés"
+    ]
+  },
+  "parasail-pfil": {
+    "name": "Parasail : pool pFIL en retraits uniquement, site en ligne jusqu'à fin janvier 2027",
+    "summary": "Après une attaque, le pool pFIL de Parasail n'autorise plus que les retraits. Dès que les retraits rouvrent, échangez vos pFIL contre des FIL à 1:1. Le site reste en ligne jusqu'au 31 janvier 2027.",
+    "deadlineNote": "Le pool est en pause. Le 4 novembre, Parasail a indiqué que les retraits rouvriraient « plus tard cette semaine ». Le site reste en ligne jusqu'au 31 janvier 2027 ; ensuite, seuls les appels directs au contrat fonctionneront, et Parasail dit qu'il publiera des instructions avant la mise hors ligne du site.",
+    "who": "Toute personne détenant des pFIL.",
+    "todo": "Dès que Parasail annonce la réouverture des retraits, suivez son lien officiel pour échanger vos pFIL contre des FIL à 1:1.",
+    "caution": "Ce pool a été attaqué : Parasail indique que 344 056 FIL ont été volés et que le manque a été couvert par Parasail et plusieurs gros détenteurs. Ne faites confiance qu'aux liens des canaux officiels.",
+    "official": [
+      "Parasail sur X : point sur pFIL du 4 novembre"
+    ]
+  },
+  "derive-chain-rewards": {
+    "name": "Derive Chain mise à la retraite : passage à Derive V3, date limite des récompenses le 1er février 2027",
+    "summary": "Derive Chain est passée à Derive V3, avec des fonds conservés sur Ethereum. Les récompenses de trading et de staking encore en attente doivent être collectées sur Optimism avant le 1er février 2027.",
+    "deadlineNote": "Instantané le 6 octobre à 18:00 UTC ; la V3 a été lancée le 8 octobre. Les récompenses de trading et de staking encore en attente se collectent depuis un contrat sur Optimism jusqu'au 1er février 2027 ; ensuite, la fondation les reprend.",
+    "who": "Toute personne ayant fait du trading ou du staking sur Derive Chain (anciennement Lyra).",
+    "todo": "Votre solde est passé automatiquement sur la V3 ; vérifiez-le sur `app.derive.xyz`. Recréez vos ordres conditionnels ou TWAP, et collectez vos récompenses en attente sur Optimism avant le 1er février 2027.",
+    "caution": "L'ancienne offre de DRV sur Derive Chain est annulée (« orphaned » dans la proposition) et réémise aux détenteurs sur Ethereum d'après l'instantané.",
+    "official": [
+      "Forum de Derive : proposition Derive V3 (DIP)",
+      "Derive sur X : Derive V3 est en ligne"
+    ]
+  },
+  "quickswap-old-quick": {
+    "name": "QuickSwap : ancien QUICK contre nouveau QUICK, un taux qui baisse chaque mois",
+    "summary": "Chez QuickSwap, le taux d'échange de l'ancien QUICK contre le nouveau baisse chaque mois : 1:750 jusqu'au 5 décembre, puis 1:500 après le 5 décembre. Plus vous échangez tôt, plus vous recevez.",
+    "deadlineNote": "QuickSwap indique que le taux de 1:750 reste disponible jusqu'au 5 décembre 2026, et passe à 1:500 après le 5 décembre. Les étapes suivantes, selon des sources tierces : 1:250 après le 5 janvier 2027, et fin définitive de l'échange le 5 février 2027.",
+    "who": "Toute personne détenant encore de l'ancien QUICK.",
+    "todo": "Échangez avant la fin de chaque palier de taux. Plus vous échangez tôt, plus vous recevez de nouveaux QUICK.",
+    "caution": "Le calendrier complet vient de sources tierces ; ce sont les publications de QuickSwap elles-mêmes qui font foi. QuickSwap organise un vote sur le sort de l'ancien QUICK non échangé (fin le 7 novembre, 12:00 UTC).",
+    "official": [
+      "QuickSwap sur X : rappel du 4 novembre",
+      "QuickSwap sur X : vote sur l'ancien QUICK non échangé"
+    ],
+    "milestones": [
+      "Dernier jour du taux de 1:750 ; il passe ensuite à 1:500",
+      "Dernier jour du taux de 1:500 ; il passe ensuite à 1:250"
+    ]
+  },
+  "kelp-rseth-sunset": {
+    "name": "Kelp : ancien rsETH sur des réseaux abandonnés, procédure manuelle jusqu'en juin 2027",
+    "summary": "L'ancien rsETH sur les réseaux abandonnés par Kelp ne fonctionne plus directement, mais vous pouvez faire une demande via le guide officiel de Kelp pour le retrouver sur Ethereum jusqu'au 15 juin 2027.",
+    "deadlineNote": "L'ancien rsETH a été abandonné sur 22 réseaux le 15 juin. À partir du 5 octobre, l'ancien rsETH sur Base, Mantle et Ink a été abandonné lui aussi (remplacé par une version Chainlink CCIP). La procédure manuelle ferme le 15 juin 2027 à 23:59 UTC.",
+    "who": "Toute personne détenant encore de l'ancien rsETH sur des réseaux abandonnés par Kelp. Arbitrum n'est pas concerné.",
+    "todo": "Suivez uniquement le guide du blog officiel de Kelp. Vérifiez d'abord que vous détenez bien l'ancien contrat rsETH, puis faites votre demande comme le décrit le guide (il vous demande d'envoyer les jetons à une adresse de destruction sur la chaîne d'origine, de payer des frais de 100 USDC et d'envoyer les transactions par e-mail). Kelp renvoie le rsETH sur Ethereum chaque trimestre.",
+    "caution": "Cette procédure (envoyer des jetons à une adresse de destruction, payer des frais, envoyer un e-mail) ressemble beaucoup aux arnaques courantes. Suivez uniquement le texte original du blog officiel de Kelp, et ignorez les messages privés et les autres sites. Convertir (unwrap) du wrsETH sur Base, Mantle, Ink, Linea, Optimism ou Zircuit vous donne la nouvelle version, qui ne nécessite pas cette procédure.",
+    "official": [
+      "Blog de Kelp : guide pour le rsETH sur les réseaux abandonnés",
+      "Kelp sur X : migration CCIP terminée (8 octobre)"
+    ]
+  },
+  "blast-l2-shutdown": {
+    "name": "Le L2 Blast a fermé ; site de retrait officiel ouvert jusqu'en novembre 2027",
+    "summary": "Le L2 Blast a fermé. Connectez votre portefeuille sur blast.io pour rechercher votre adresse et retirer l'ETH, le WETH et l'USDB sur Ethereum, jusqu'au 4 novembre 2027.",
+    "deadlineNote": "L'interface de retrait habituelle a fermé le 26 octobre (date passée). Le 4 novembre, Blast a annoncé la fermeture du L2. Le site de retrait `blast.io` reste ouvert 12 mois, avec le 4 novembre 2027 comme dernier jour pris en charge.",
+    "who": "Toute personne ayant de l'ETH, du WETH ou de l'USDB sur Blast, ou un retrait jamais terminé, y compris les utilisateurs de Blast Mobile et ceux de Safe ou d'autres portefeuilles de contrat.",
+    "todo": "Connectez votre portefeuille sur `blast.io` pour rechercher votre adresse et retirer l'ETH, le WETH et l'USDB sur Ethereum ; les retraits non terminés sont inclus automatiquement. Utilisateurs de Blast Mobile : importez votre phrase de récupération dans MetaMask ou Rabby, puis connectez-vous. Safe et les autres portefeuilles de contrat ont un point d'entrée distinct.",
+    "caution": "Blast n'utilise que @blast (@Blast_L2 n'est plus qu'un compte réservé). Le site de retrait ne mentionne que l'ETH et les actifs en USD ; Blast n'a pas dit si le jeton BLAST, d'autres jetons ou des positions DeFi sur le L2 peuvent être retirés. Ne saisissez une phrase de récupération que vous-même, dans une application de portefeuille, et jamais sur un site web.",
+    "official": [
+      "Page de retrait de Blast",
+      "Documentation de Blast : retirer vers Ethereum",
+      "Blast sur X : annonce de la fermeture (2 octobre)",
+      "Blast sur X : fermeture du L2 (4 novembre)"
+    ]
+  },
+  "stader-maticx-fixed-rate": {
+    "name": "Stader : taux du MaticX figé, rachat sur la blockchain possible jusqu'en août 2029",
+    "summary": "Depuis le 29 octobre, le MaticX de Stader se rachète à un taux fixe de 1.2002 POL par MaticX. Le rachat passe toujours par le contrat sur Ethereum, et le 3 août 2029 est le dernier jour.",
+    "deadlineNote": "Les dépôts ont fermé en juin, et depuis, le MaticX ne permet plus que le rachat. L'application MaticX a fermé le 3 août, et les rachats continuent via Etherscan. À partir du 29 octobre, le taux est fixé à 1.2002 POL par MaticX. Le 3 août 2029 est le dernier jour pour racheter via le contrat.",
+    "who": "Toute personne détenant encore du MaticX, sur Ethereum ou Polygon PoS.",
+    "todo": "Suivez les étapes du blog officiel de Stader : ouvrez le contrat MaticX sur Ethereum dans Etherscan, demandez un retrait (votre MaticX est détruit), attendez la fin du déblocage (unbonding) des POL, puis retirez les POL vers votre portefeuille. L'annonce indique une période de déblocage de 80 checkpoints, estimée à environ 22 heures au moment de la publication. Le MaticX sur Polygon PoS doit d'abord être transféré vers Ethereum via le pont Polygon. Les retraits déjà demandés ne sont pas concernés ; terminez-les simplement.",
+    "caution": "Le MaticX placé dans un marché de prêt, un pool de liquidité ou un coffre reste où il est ; Stader conseille de demander à ce protocole comment le taux fixe affecte votre position. N'utilisez que l'adresse de contrat indiquée dans l'article du blog officiel de Stader.",
+    "official": [
+      "Blog de Stader : « Redemptions change for NearX, BNBx and MaticX »",
+      "Stader sur X : publication du 28 octobre"
+    ]
+  },
+  "balancer-winddown": {
+    "name": "Arrêt de Balancer : les pools passent en retraits uniquement",
+    "summary": "Balancer cesse ses activités. Les pools n'autorisent plus que les retraits ; les pools v3 restants suivront le 30 novembre. Selon Balancer, les retraits restent ouverts, mais fournisseurs de liquidité et stakers doivent retirer eux-mêmes leurs fonds.",
+    "deadlineNote": "Depuis le 30 octobre, les pools qui peuvent être mis en pause n'autorisent plus que les retraits, et le programme de bug bounty a pris fin. Les pools v3 que des partenaires ont demandé à conserver restent ouverts jusqu'au 30 novembre ; à cette date, le Vault v3 est mis en pause et les pools v3 restants passent en retraits uniquement. Balancer indique que les retraits restent ouverts, sans date de fin. Ensuite, une page de retrait simplifiée reste en ligne jusqu'à l'expiration des blocages veBAL et jusqu'à ce que deux tours de distribution de la trésorerie aient eu lieu (le premier fin mai 2027). Les pools qui ne peuvent pas être mis en pause continuent de fonctionner, avec des frais de protocole fixés à 0.",
+    "who": "Les fournisseurs de liquidité des pools Balancer, toute personne ayant des fonds stakés dans des gauges, et toute personne ayant des parts de buffer v3 ou d'anciennes récompenses de minage v2. Le rappel de Balancer du 23 octobre indique avoir trouvé plus de $500 000 dans d'anciennes positions appartenant à des utilisateurs extérieurs.",
+    "todo": "Allez sur `legacy.balancer.fi` pour retirer votre liquidité et sortir vos fonds du staking des gauges. Vérifiez aussi si vous avez des parts de buffer v3 et d'anciennes récompenses de minage v2, que les outils de suivi de portefeuille comme DeBank n'affichent pas.",
+    "caution": "Balancer indique que les contrats sont non dépositaires : les retraits ne dépendent donc pas de l'équipe.",
+    "official": [
+      "Forum de Balancer : proposition d'arrêt BIP-928",
+      "Forum de Balancer : rappel aux anciens utilisateurs",
+      "Balancer sur X : publication du 30 octobre"
+    ],
+    "milestones": [
+      "Les pools v3 restants passent en retraits uniquement (le Vault v3 est mis en pause) ; les retraits restent ouverts"
+    ]
+  },
+  "compound-scroll-usdc": {
+    "name": "Compound III : clôture du marché USDC sur Scroll",
+    "summary": "Compound prévoit de clôturer le marché USDC retiré sur Scroll. Une fois la mesure adoptée, les prêts restants pourront être liquidés : les emprunteurs devraient donc rembourser et reprendre leur garantie rapidement.",
+    "deadlineNote": "Ce marché a été retiré plus tôt cette année. Une proposition publiée sur le forum le 4 novembre indique que la proposition sur la blockchain n'a pas encore été soumise et qu'il n'y a pas encore de date. Une fois celle-ci adoptée, tous les prêts restants pourront être liquidés.",
+    "who": "Toute personne ayant emprunté au marché USDC de Compound III sur Scroll, ou y ayant fourni de l'USDC. La proposition compte 1 959 comptes emprunteurs, tous de petite taille.",
+    "todo": "Emprunteurs : remboursez vite votre USDC et reprenez votre garantie en WETH ou en wstETH. Prêteurs : retirez votre USDC.",
+    "caution": "La proposition rappelle que Scroll a annoncé quitter le modèle de L2 public et conseille aux utilisateurs de fermer toutes leurs positions DeFi (voir l'entrée Scroll sur cette page).",
+    "official": [
+      "Forum de Compound : clôture du marché USDC sur Scroll"
+    ]
+  },
+  "parasail-stpeaq": {
+    "name": "Parasail : pool de staking stPEAQ retiré, passage en retraits uniquement",
+    "summary": "Le pool de staking stPEAQ de Parasail a été retiré après une attaque. Parasail indique que la fondation peaq couvre la perte pour que chaque utilisateur puisse tout retirer. Attendez la date de retrait officielle.",
+    "deadlineNote": "Parasail n'a pas encore fixé de date pour l'ouverture du mode retraits uniquement.",
+    "who": "Toute personne détenant des stPEAQ.",
+    "todo": "Attendez que Parasail annonce l'ouverture du mode retraits uniquement et le lien de retrait, puis retirez vos PEAQ.",
+    "caution": "Ce pool a été attaqué : Parasail indique que 1 096 424.06 PEAQ ont été volés. Ne faites confiance qu'aux liens des canaux officiels.",
+    "official": [
+      "Parasail sur X : point sur stPEAQ du 4 novembre"
+    ]
   }
 }
