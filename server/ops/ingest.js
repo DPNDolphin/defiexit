@@ -55,15 +55,19 @@ export const outHosts = (mine) => (mine && mine.kind === "post" ? ALLOWED_HOSTS 
 const inHosts = (rules) => [...ALLOWED_HOSTS, ...(rules && Array.isArray(rules.officialHosts) ? rules.officialHosts : [])];
 // 链接的几种写法:带协议的(任何 xxx://)、英文域名(含 xn-- 编码的)、IP 地址、中文域名(汉字之间夹着英文句点);
 // 后几种和「长得像句点的」(DOTS)、「最后一段紧跟着别的文字」(TLD_GLUED)在 names.js,协议、链的名字检查也用。
-// 带协议的链接到哪儿为止:空白,和包着链接的符号(括号、尖括号、引号、反引号、反斜杠、中文的书名号引号、句号顿号)都不算链接;
-// 末尾的标点(. , ; : ! ? 和 markdown 的 ] * _ ~)也不算(TRAIL)。所以 [x](https://defiexit.com)、<https://defiexit.com>、
-// (see https://defiexit.com/deadlines/). 都读成 defiexit.com;括号后面紧跟着的字照普通文字再查一遍(…com/x)evil.com 里的 evil.com 照样拦)
-const SCHEME = /[a-z][a-z0-9+.-]{1,20}:\/\/[^\s<>"'`(){}|\\^「」『』【】《》〈〉“”‘’。、]*/gi;
+// 带协议的链接到哪儿为止(认出来的这一段,下面叫 link):空白,和包着链接、跟在链接后面的符号(括号、尖括号、引号、反引号、反斜杠、
+// 中文的书名号引号、句号顿号,还有逗号、分号、感叹号:全角的「，；！」统一写法以后也是它们)都不算链接;末尾的 . : ? ] * _ ~ 也不算(TRAIL)。
+// 所以 [x](https://defiexit.com)、<https://defiexit.com>、(see https://defiexit.com/deadlines/).、官网：https://defiexit.com（100%免费）
+// 都读成 defiexit.com;后面紧跟着的字照普通文字再查一遍(…com/x)evil.com 里的 evil.com 照样拦)
+const SCHEME = /[a-z][a-z0-9+.-]{1,20}:\/\/[^\s<>"'`(){}|\\^「」『』【】《》〈〉“”‘’。、,;!]*/gi;
 const TRAIL = /[.,;:!?\]*_~]+$/;
-// 链接到哪儿为止只管「在哪儿结束」,不能让前面一段主机名顶替真正的主机名:同一个链接按浏览器的读法再看一遍整串(到空白为止)。
-// 主机名那一段(:// 后面到第一个 / ? # 为止;反斜杠不算结束,有的程序把它前面当账号名)里有 @ 的(@ 前面会被当成账号名,
-// 真正去的是后面,比如 https://defiexit.com(a)@evil%2ecom/ 去的是 evil.com)、有 % 的(编码过的主机名,解码以后可能是别的网址),一律不收;
-// 整串解析出来的主机名是个正常的网址、又和认出来的不一样的,也不收;带端口的不收(:443 这种默认端口浏览器自己去掉,照收)
+// link 只管「在哪儿结束」,不能让前面一段主机名顶替真正的主机名。同一个链接再按 markdown 和浏览器的读法看一遍(下面叫 whole):
+// 到空白为止的整串,去掉末尾的标点和收尾的括号、引号(圆括号、方括号只去掉多出来的那个:[x](https://a.com/b_(c)) 外面那层是 markdown 的,
+// b_(c) 是链接自己的)。这几样不收:
+//   link 自己的主机名那一段(:// 后面到第一个 / ? # 为止)带 @ 或 %:@ 前面会被当成账号名,编码过的主机名解码以后可能是别的网址;
+//   whole 按浏览器解析出来的主机名是个正常的网址,又和 link 的不一样(https://defiexit.com(a)@evil%2ecom/ 去的是 evil.com),或者带着账号名;
+//   有的程序不把反斜杠当路径、把它前面当账号名:whole 的主机名那一段(反斜杠不算结束)里最后一个 @ 后面是另一个正常的网址;带端口的(:443 照收)。
+// 跟在链接后面的话(https://defiexit.com（@DeFiExit）、（100%免费）)被浏览器读成乱字主机名的,哪儿也去不了,不算
 const AT_WHY = "含带 @ 的链接(@ 前面会被当成账号名,真正去的是 @ 后面的网址)";
 const PCT_WHY = "含编码过的网址(主机名里有 %,解码以后可能是别的网址)";
 // 「正常的网址」:只有英文字母、数字、连字号的几段。xn-- 那种是括号、汉字这些乱字被浏览器编出来的(defiexit.com」 → defiexit.xn--com-k03b),
@@ -71,6 +75,28 @@ const PCT_WHY = "含编码过的网址(主机名里有 %,解码以后可能是�
 const DNS_NAME = /^(?!(?:.*\.)?xn--)[a-z0-9-]+(?:\.[a-z0-9-]+)+$/;
 const authOf = (s) => { const a = s.replace(/^[a-z][a-z0-9+.-]*:\/\//i, ""), end = a.search(/[/?#]/); return end < 0 ? a : a.slice(0, end); };
 const portOf = (s) => { try { return new URL(s).port; } catch { return ""; } };
+const urlOf = (s) => { try { return new URL(s); } catch { return null; } };
+// 浏览器解析出来的主机名,是正常的网址才回它
+const realOf = (u) => { const h = u ? u.hostname.toLowerCase().replace(/\.$/, "") : ""; return DNS_NAME.test(h) ? h : null; };
+// whole:整串去掉末尾的标点、收尾的括号和引号;圆括号、方括号成对的留着(是链接自己的)
+const CLOSING = /[.,;:!?*_~'"`>}」』】》〉”’。、]$/;
+function wholeOf(s) {
+  for (;;) {
+    const last = s.slice(-1), open = last === ")" ? "(" : last === "]" ? "[" : null;
+    if (open) { if (s.split(open).length >= s.split(last).length) return s; s = s.slice(0, -1); }
+    else if (CLOSING.test(last)) s = s.slice(0, -1);
+    else return s;
+  }
+}
+// 反斜杠不算结束的那种读法:主机名那一段里最后一个 @ 后面(去掉端口、解码)是个正常的网址才回它
+function altHost(s) {
+  const a = s.replace(/^[a-z][a-z0-9+.-]*:\/\//i, ""), end = a.search(/[/?#]/), auth = end < 0 ? a : a.slice(0, end), at = auth.lastIndexOf("@");
+  if (at < 0) return null;
+  let h = auth.slice(at + 1).replace(/:\d*$/, "");
+  try { h = decodeURIComponent(h); } catch { /* 解不开就照原样 */ }
+  h = h.toLowerCase().replace(/\.$/, "");
+  return DNS_NAME.test(h) ? h : null;
+}
 // 看不见的字符:零宽空格、零宽连接符、方向标记、BOM、变体选择符、词连接符这一类(Unicode 的格式字符 Cf 和「默认可忽略」的字符)。
 // 查词、查网址之前先去掉:私\u200b信我、evil.c\u200bom 显示出来(浏览器解析网址时也一样)就是私信我、evil.com。原文照存(表情里的连接符照常显示);
 // 韩文的几个填充符看着像空格,换成空格。会把字倒过来、挪位置显示的方向控制字符(LRE RLE PDF LRO RLO、LRI RLI FSI PDI)看到的和存的不是一个顺序,不收
@@ -89,15 +115,17 @@ function hostOf(s) {
 }
 // 敏感词默认的找法:BANNED 按字面找,不分大小写(对人的回复、项目帖、收件续答都用它;宣传稿换成 reachWord,见下面「宣传卡片」)
 const bannedWord = (t) => { const low = t.toLowerCase(); return BANNED.find((w) => low.includes(w)) || null; };
-// 「主机名 + 路径开头」放行的带协议链接(宣传稿放行我们自己的 GitHub 仓库,见 REACH_PATHS):https、不带账号密码和端口、主机名一模一样,
-// 路径(按 URL 的标准写法,../ 先算掉;不分大小写)正好是这一段或者在它下面:/DPNDolphin/defiexit-x、/DPNDolphin 都不算
+// 「主机名 + 路径开头」放行的带协议链接(宣传稿放行我们自己的 GitHub 仓库,见 REACH_PATHS):https、不带账号密码和端口、主机名一模一样;
+// 路径里不许有 ..、编码过的点和斜杠、反斜杠(真正去哪儿看不清:…/defiexit(a)/../../attacker/repo 浏览器去的是 /attacker/repo);
+// 路径(不分大小写)以这一段开头,后面要么没了,要么不是仓库名里能有的字:/DPNDolphin/defiexit-x、.git、/DPNDolphin 都不算,
+// …/defiexit/blob/…、…/defiexit（源码）照收(后面那种浏览器去的是这个账号下不存在的页面,去不了别人那儿)
 function onPath(link, p) {
-  try {
-    const u = new URL(link);
-    if (u.protocol !== "https:" || u.username || u.password || u.port || u.hostname !== p.host) return false;
-    const path = u.pathname.toLowerCase(), pre = p.prefix.toLowerCase();
-    return path === pre || path.startsWith(pre + "/");
-  } catch { return false; }
+  const u = urlOf(link);
+  if (!u || u.protocol !== "https:" || u.username || u.password || u.port || u.hostname !== p.host) return false;
+  const raw = link.replace(/^[a-z][a-z0-9+.-]*:\/\/[^/?#]*/i, "").split(/[?#]/)[0];
+  if (/\.\.|%2e|%2f|%5c|\\/i.test(raw)) return false;
+  const path = u.pathname.toLowerCase(), pre = p.prefix.toLowerCase();
+  return path.startsWith(pre) && !/[a-z0-9._-]/.test(path.charAt(pre.length));
 }
 
 // hosts:这份草稿许带的网址,主机名一模一样才算(blast.io 不放行 xblast.io、blast.io.evil.com),带协议的只认 https;
@@ -119,17 +147,21 @@ export function checkText(s, max = MAX.draft, hosts = ALLOWED_HOSTS, { words = b
   // 先统一写法再找网址(三种规矩都一样):全角字母、全角的点换成半角(NFKC),英文之间的「。」换成点,长得像的绕不过去
   const u = visible(c.normalize("NFKC")).replace(DOTS, ".");
   for (const m of u.matchAll(SCHEME)) {
-    const full = /^\S*/.exec(u.slice(m.index))[0], link = m[0].replace(TRAIL, "");
-    const auth = authOf(full), host = hostOf(link), real = hostOf(full), port = portOf(link);
+    const link = m[0].replace(TRAIL, ""), whole = wholeOf(/^\S*/.exec(u.slice(m.index))[0]);
+    const host = hostOf(link), port = portOf(link), auth = authOf(link), wu = urlOf(whole), real = realOf(wu);
     if (auth.includes("@") || auth.includes("%")) {
-      // 真正去的网址(整串按浏览器读出来的主机名;读出来是乱字的,用认出来的)不在名单里:照旧说是哪个站外链接;在名单里也不收(账号名、编码过的写法看不清)
-      const dest = real && DNS_NAME.test(real) ? real : host;
+      // 真正去的网址(浏览器读出来是正常网址的用它,不然用认出来的)不在名单里:照旧说是哪个站外链接;在名单里也不收(账号名、编码过的写法看不清)
+      const dest = real || host;
       if (dest && !hosts.includes(dest)) return off(dest);
       return auth.includes("@") ? AT_WHY : PCT_WHY;
     }
-    if (real && real !== host && DNS_NAME.test(real)) return off(real);
+    if (real && real !== host) return off(real);
+    if (real && (wu.username || wu.password)) return hosts.includes(real) ? AT_WHY : off(real);
+    const alt = altHost(whole);
+    if (alt && alt !== host) return off(alt);
     if (port) return `含带端口的链接「${host}:${port}」`;
-    if (host && /^https:\/\//i.test(link) && (hosts.includes(host) || paths.some((p) => onPath(link, p)))) continue;
+    // 放行的路径:link 和 whole(浏览器读出来去的还是这个主机名时)都得在那一段下面
+    if (host && /^https:\/\//i.test(link) && (hosts.includes(host) || paths.some((p) => onPath(link, p) && (!real || onPath(whole, p))))) continue;
     return off(host || link.slice(0, 30));
   }
   const rest = u.replace(SCHEME, " ");
