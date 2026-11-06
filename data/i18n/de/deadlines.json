@@ -441,5 +441,71 @@
     "official": [
       "Marinus auf X: Ankündigung vom 14. September"
     ]
+  },
+  "harmony-shutdown": {
+    "name": "Harmony-Mainnet wird abgeschaltet, ONE zieht auf Ethereum um",
+    "summary": "Das Harmony-Mainnet wird abgeschaltet, und ONE wurde anhand des Snapshots vom 10. September per Airdrop an dieselbe Adresse auf Ethereum verteilt. Ältere Wallets müssen zur Bestätigung signieren, und der Block-Explorer schließt am 18. November.",
+    "deadlineNote": "Der Snapshot wurde am 10. September um 14:00 UTC erstellt (vorbei). Seit dem 2. Oktober wird ERC-20-ONE per Airdrop an dieselbe Adresse auf Ethereum verteilt. `explorer.harmony.one` schließt am 18. November (das betrifft die Daten des Block-Explorers, keine Frist für Token).",
+    "who": "Alle, die zum Zeitpunkt des Snapshots ONE auf Harmony hielten, Nutzer älterer Wallets und alle, die Daten des Block-Explorers von vor 2025 brauchen.",
+    "todo": "Guthaben in normalen Wallets werden automatisch per Airdrop an dieselbe Adresse auf Ethereum verteilt. Ältere Wallets: Signiere auf `migrate.country/confirm` (aus dem Beitrag von Harmony vom 2. Oktober). Wenn du Daten des Block-Explorers von vor 2025 brauchst, exportier sie vor dem 18. November selbst.",
+    "caution": "Dem ging ein Minting-Exploit im August 2026 voraus, und `bridge.harmony.one` ist seit dem 12. August außer Betrieb. Öffne `migrate.country` nur über den Link in den Beiträgen von Harmony selbst. Laut Harmony musste Geld in Multisigs, Liquiditätspools und On-Chain-Apps vor dem 10. September abgezogen werden (vorbei).",
+    "official": [
+      "Harmony auf X: „Harmony to Migrate Its ONE Token“",
+      "Harmony auf X: Airdrop (2. Oktober)",
+      "Harmony auf X: Block-Explorer schließt am 18. November"
+    ],
+    "milestones": [
+      "Der Block-Explorer explorer.harmony.one schließt"
+    ]
+  },
+  "bouncebit-chain-retired": {
+    "name": "BounceBit-Chain eingestellt, BB auf BNB Chain neu ausgegeben",
+    "summary": "Nach einem Exploit wurde die BounceBit-Chain eingestellt und BB im Verhältnis 1:1 auf BNB Chain neu ausgegeben. Guthaben ab 10 BB kamen automatisch an; kleinere müssen auf dem offiziellen Portal abgeholt werden.",
+    "deadlineNote": "Ab dem 1. September um 06:00 UTC wurde BB im Verhältnis 1:1 an dieselbe Adresse auf BNB Chain geschickt, anhand eines Snapshots von vor dem Exploit. Am 3. September meldete BounceBit, die Verteilung sei abgeschlossen. Für Guthaben unter 10 BB wurde keine Frist genannt.",
+    "who": "Alle, die zum Zeitpunkt des Snapshots BB auf der BounceBit-Chain hielten, besonders mit Guthaben unter 10 BB.",
+    "todo": "Guthaben ab 10 BB sind automatisch angekommen; prüf dieselbe Adresse auf BNB Chain. Bei weniger als 10 BB nutze deine ursprüngliche Adresse auf `portal.bouncebit.io`.",
+    "caution": "Die Chain wurde wegen eines Exploits gestoppt, nutze also nur offizielle Einstiege. Laut BounceBit schreibt es dir nie zuerst eine Direktnachricht. Was mit anderen Assets auf der Chain passiert, etwa BBTC, sagen seine Beiträge nicht.",
+    "official": [
+      "BounceBit auf X: Verteilung abgeschlossen (3. September)",
+      "BounceBit auf X: kleine Guthaben (3. September)",
+      "BounceBit auf X: Zeitplan (31. August)"
+    ]
+  },
+  "stader-bnbx-redemption": {
+    "name": "Stader: Einlösungen von BNBx laufen nicht mehr über den Contract, sondern per E-Mail-Antrag",
+    "summary": "Seit dem 29. Oktober wird BNBx von Stader nicht mehr über den Contract eingelöst, sondern per E-Mail-Antrag nach dem offiziellen Blog von Stader: 1 BNBx = 1.1099 BNB, minus 0.2 BNBx Gebühr pro Antrag, vierteljährlich abgerechnet.",
+    "deadlineNote": "BNBx wurde am 29. Januar eingestellt und lässt sich seitdem nur noch einlösen; sein Kurs ist seit März auf 1.1099 BNB pro BNBx festgeschrieben. Die sofortige, kostenlose Einlösung über den Contract war vor dem 29. Oktober möglich (vorbei). Ab dem 29. Oktober wird nur noch per E-Mail-Antrag eingelöst, mit vierteljährlicher Abrechnung. Wie lange Anträge möglich bleiben, sagt die Ankündigung nicht.",
+    "who": "Alle, die noch BNBx auf BNB Chain halten. Liegt deins in einem DEX-Pool oder einem Lending-Protokoll, sollst du es laut Stader zuerst in deine eigene Wallet abheben.",
+    "todo": "Folge nur den Schritten aus der Ankündigung im offiziellen Blog von Stader (`staderlabs.com/blog`): Sende von der Wallet, die die BNBx hält, nur auf BNB Chain, und schick dann die Transaktion per E-Mail im Format, das der Beitrag beschreibt. Stader zahlt nur an die Wallet aus, die die Token gesendet hat, sende also nicht von einem Börsenkonto. Die Gebühr beträgt fest 0.2 BNBx und macht bei einem kleinen Guthaben also einen größeren Anteil aus.",
+    "caution": "Dieses Verfahren (Token an eine Adresse senden, dann eine E-Mail schicken) ähnelt stark gängigen Betrugsmaschen. Vertrau nur der Adresse und der E-Mail im Originalbeitrag im offiziellen Blog von Stader; diese Seite übernimmt sie absichtlich nicht. Laut Stader wird es dir nie eine Direktnachricht schreiben, nie nach deiner Seed-Phrase oder deinen privaten Schlüsseln fragen und nie verlangen, dass du eine Zahlung schickst. Nutze keine Antragsadressen aus Direktnachrichten, Gruppenchats oder von anderen Websites; prüf sie im unten verlinkten Blog von Stader.",
+    "official": [
+      "Stader-Blog: „Redemptions change for NearX, BNBx and MaticX“",
+      "Stader auf X: Beitrag vom 28. Oktober"
+    ]
+  },
+  "robin-markets-v1": {
+    "name": "Robin Markets: V1 wird eingestellt",
+    "summary": "Robin Markets stellt V1 ein. Punkte, die Renditegarantie und der Matching-Bonus laufen seit dem 3. November um 20:00 UTC nicht mehr auf. Laut Ankündigung bleiben Auszahlungen möglich, eine Frist dafür wird nicht genannt.",
+    "deadlineNote": "Angekündigt am 3. November. Punkte, die Renditegarantie und der Matching-Bonus laufen seit dem 3. November um 20:00 UTC nicht mehr auf. Es gibt keine Frist zum Abheben: Laut Robin startet die nächste Version „vor Jahresende“, V1 bleibt bis dahin online, und Auszahlungen funktionieren auch danach noch.",
+    "who": "Alle, die Polymarket-Positionen in Robin Markets V1 eingezahlt haben, um Rendite zu erzielen.",
+    "todo": "Punkte, die Renditegarantie und der Matching-Bonus laufen seit dem 3. November um 20:00 UTC nicht mehr auf; laut Doku wird alles, was bis dahin aufgelaufen ist, bei deiner nächsten Auszahlung automatisch ausgezahlt. Laut Robin kann jeder mit einer offenen Position sie jetzt abheben.",
+    "official": [
+      "Robin Markets auf X: Ankündigung vom 3. November",
+      "Robin-Markets-Doku: Renditegarantie und Matching-Bonus (beendet)",
+      "Robin-Markets-Doku: auf Polygon bereitgestellte Contracts"
+    ]
+  },
+  "summerfi-winddown": {
+    "name": "Summer.fi: Lazy-Summer-Vaults nur noch für Auszahlungen, geordnete Abwicklung in Diskussion",
+    "summary": "Summer.fi schließt: Lazy-Summer-Vaults erlauben nur noch Auszahlungen, auf der offiziellen Website kannst du noch selbst abheben. Ein Community-RFC vom 5. November bespricht eine geordnete Abwicklung; den Rest zu Merkl zu schieben ist nur eine Option.",
+    "deadlineNote": "Nach dem Exploit vom 6. Juli sollte die ursprüngliche Oberfläche der App von Summer.fi am 31. August schließen (die Website bietet jetzt nur noch eine Ausstiegsseite), und die Vaults nahmen keine Einzahlungen mehr an und erlauben nur noch Auszahlungen. Ein Community-RFC vom 5. November listet Optionen für eine geordnete Abwicklung auf: einen Snapshot erstellen, alles abheben und über Merkl im selben Token auf derselben Chain zurückgeben; eine Frist ankündigen, in der Nutzer selbst abheben, und danach den Rest einsammeln; oder gar nichts einsammeln. Ein Datum wurde nicht festgelegt.",
+    "who": "Alle, die noch Einlagen in Lazy-Summer-Vaults haben (Ethereum, Base, Arbitrum, Sonic, HyperEVM). Laut RFC lagen am 5. November noch etwa $369 000 in 16 Vaults.",
+    "todo": "Geh auf `summer.fi`, verbinde deine Wallet, sieh dir deine Positionen an, steig aus und hol offene Belohnungen ab. Assets einzusammeln, damit sie über Merkl abgeholt werden können, ist eine Option; das Verfahren und eine mögliche Frist zum Abheben hängen von späteren formellen Governance-Entscheidungen ab.",
+    "caution": "Dieser Community-RFC vom 5. November enthält unverbindliche Umfragen und bewegt selbst kein Geld. Laut RFC werden Verluste aus dem Exploit vom 6. Juli (USDC-Vaults auf Ethereum) und aus Zahlungsausfällen nicht vollständig gedeckt. Prüf die Ausstiegsseite auf `summer.fi`; verbinde dich nicht und signiere nichts, nur weil ein Link in einem Forenbeitrag oder einem On-Chain-Vorschlag auftaucht.",
+    "official": [
+      "Website von Summer.fi: nur noch Auszahlungen",
+      "Lazy-Summer-Forum: RFC zur geordneten Abwicklung (5. November)",
+      "Lazy-Summer-Forum: Vaults nur noch für Auszahlungen (29. Juli)"
+    ]
   }
 }
