@@ -1,0 +1,730 @@
+{
+  "meth-cmeth-rewards": {
+    "name": "mETH Protocol：過去のcmETHキャンペーン報酬のページが終了",
+    "summary": "過去のcmETHキャンペーンの報酬ページが11月7日に閉じます。まだ受け取っていない報酬は、それまでに受け取ってください。",
+    "deadlineNote": "11月7日に、過去のcmETHキャンペーンの報酬ページが閉じます。cmETH自体はいつでもmETHへのステーキング解除やブリッジができ、こちらに期限はありません。",
+    "who": "過去のcmETHキャンペーンに参加し、まだ受け取っていない報酬がある人。",
+    "todo": "11月7日より前に、mETH Protocolのサイトで報酬を受け取ってください。cmETHは急ぐ必要はなく、いつでもmETHへのステーキング解除やブリッジができます。",
+    "caution": "mETH Protocolは、報酬の受け取り期間の後もステーキング解除とブリッジのコントラクトは動き続ける「見込み」だとしていますが、残っている量を見て見直すとしています。",
+    "official": [
+      "mETH Protocolブログ：cmETH終了のスケジュール"
+    ]
+  },
+  "gmo-gyen-zusd-redemption": {
+    "name": "GMO Trust：ステーブルコインGYEN・ZUSDの終了",
+    "summary": "GYENとZUSDが終了します。11月11日までに額面で償還するか、償還しなければ年末までに11月12日のレートでUSDCを受け取ります。",
+    "deadlineNote": "額面での償還は米国東部時間11月11日23:59:59に締め切られ、トークンはそれまでに届いている必要があります。償還されなかった分は、GMO Trustが11月12日に決めるレートで、同じチェーン上のUSDCとして年末までに送ります。",
+    "who": "GYENまたはZUSDを持っている人（Ethereum、Arbitrum、Stellarなどのチェーン）。",
+    "todo": "額面で償還するには、`stablecoin.z.com`でアカウントを開設し、本人確認（KYC）を通過して、円（GYEN）または米ドル（ZUSD）の銀行口座を登録してください。トークンは期限前に届いている必要があります。償還しなければ、年末にUSDCに転換されます。EthereumとArbitrumには、売却できるUniswapのプールもあります。",
+    "caution": "GMO Trustが対応していないチェーンにブリッジしたトークン、マネーロンダリング対策の審査を通らなかったトークン、そのチェーンの最低送金額に満たないトークンは、自動のUSDCを受け取れません。Stellarでは先にUSDCのトラストラインを開いてください。Arbitrum上のGYENが11月11日以降に自動でUSDCに転換されるかどうかは、GMO Trustは明らかにしていません。",
+    "official": [
+      "GMO Trustヘルプセンター：11月11日より前に償還する方法",
+      "GMO Trustヘルプセンター：償還しなかった場合",
+      "GMO TrustのX投稿：8月20日のリマインダー",
+      "GMO TrustのX投稿：9月10日の強制償還のお知らせ"
+    ]
+  },
+  "blur-frontend-blend": {
+    "name": "Blur：blur.ioが閉鎖、Blendは新規ローンを停止",
+    "summary": "Blurのウェブサイトは11月12日に閉鎖され、同じ日にBlendも新規ローンを止めます。借り手はそれまでに返済する必要があります。",
+    "deadlineNote": "11月12日にblur.ioのウェブサイトが動かなくなります。同じ日にBlendも新しいローンのマッチングを止めます：借り手はそれまでに返済しなければならず、返済しないとプロトコルのルールによりローンはデフォルトになります。マーケットプレイスのコントラクトはオンチェーンで動き続けます。",
+    "who": "Blendの借り手と、blur.ioのウェブサイトを頼りにBlurに資産を置いている人。",
+    "todo": "Blendの借り手：11月12日より前に返済してください。それ以外の人：Blurが11月12日以降に公開するというBlendの引き出しツールを待ち、@blur_ioが投稿したリンクだけを使ってください。",
+    "caution": "Blurは@blur_ioだけを信じるよう呼びかけています。投稿には、Blur Pool（入札用プール）からETHを引き出す方法は別に書かれておらず、引き出しツールの公開日もまだ決まっていません。",
+    "official": [
+      "BlurのX投稿：終了のお知らせ",
+      "BlurのX投稿：Blendはどうなるか"
+    ]
+  },
+  "universal-uassets-winddown": {
+    "name": "Universal：ラップ資産uAssetsの終了",
+    "summary": "UniversalのuAssetsは11月17日に終了します。それまでにUniversalアプリで売るか償還してください。その後は償還用のコントラクトだけが残ります。",
+    "deadlineNote": "プロトコルは11月17日に終了します。その後、残ったuAssetsはコントラクトで償還されます：Base上では、uSOL、uXRP、uDOGE、uADA、uBTC、uLTCがそれぞれBase上のSOL、cbXRP、cbDOGE、cbADA、cbBTC、cbLTCになり、それ以外はすべてUSDCになります（Universalは、これはまだ変わる可能性があるとしています）。",
+    "who": "uAssets（uSOL、uBTC、uXRPなど）を持っている人。",
+    "todo": "11月17日より前に、Universalアプリで売るか、ミント・償還（mint and redeem）のページで元の資産に償還してください。金額が大きい場合は、Universalの終了ページにあるアドレスにメールしてください。",
+    "caution": "Universalは11月17日より前に償還用のコントラクトと手順を公開するとしており、需要が多いと償還が遅くなることがあるとしています。サードパーティのプールやレンディング市場にあるuAssetsがどうなるかは明らかにしていません。",
+    "official": [
+      "Universalの終了ページ"
+    ]
+  },
+  "pancakeswap-opbnb-cake": {
+    "name": "PancakeSwap：opBNBからのCAKEのブリッジ経路が終了",
+    "summary": "LayerZeroがopBNBのサポートを終えるため、opBNB上のCAKEは11月23日より前にBNB Chainへブリッジで戻す必要があります。",
+    "deadlineNote": "11月23日00:00 UTCから、opBNBからCAKEをブリッジで移すLayerZeroの経路が止まります。",
+    "who": "opBNB上にCAKEを持っている人。",
+    "todo": "PancakeSwapのブリッジページでopBNB → BNB Chainを選び、CAKEをブリッジで移してください。手順はPancakeSwapの投稿にあります。",
+    "caution": "原因はLayerZeroによるopBNBのサポート終了なので、LayerZeroを使うopBNB上のほかのトークンも影響を受ける可能性があります。各プロジェクトのお知らせを確認してください。",
+    "official": [
+      "PancakeSwapのX投稿：お知らせ",
+      "PancakeSwapのX投稿：ブリッジの方法"
+    ]
+  },
+  "sophon-chain-shutdown": {
+    "name": "Sophonチェーンの終了",
+    "summary": "Sophonチェーンは11月30日に終了します。資金をEthereumに引き出せる最終日は11月25日です。",
+    "deadlineNote": "11月25日が引き出しの最終日です。その後、インフラと関連サイトが停止し始め、11月30日にメインネットが完全に終了します。",
+    "who": "SophonにSOPH、ETH、USDCなどの資産がある人、Sophonのファームに資産がある人、未受け取りのステーキング報酬やGuardian報酬がある人。",
+    "todo": "11月25日より前に、公式ページで資産をEthereumに引き出してください（Sophonの投稿では`claim.sophon.com`）。ファームの資産は`farm.sophon.xyz`で取り出し、ステーキング報酬とGuardian報酬も受け取ってください。ノード報酬は引き続きEthereumのウォレットに届きます。",
+    "caution": "Sophonの投稿には二つのドメインが使われています：`claim.sophon.com`（10月19日と11月2日）と`claim.sophon.xyz`（10月22日）。Sophonは偽の移行サイトに注意するよう呼びかけています。",
+    "official": [
+      "SophonのX投稿：最終スケジュール（10月19日）",
+      "SophonのX投稿：リマインダー（11月2日）",
+      "SophonのX投稿：最初のお知らせ（6月25日）"
+    ]
+  },
+  "recall-staking-readonly": {
+    "name": "Recall：ステーキングアプリが11月30日に読み取り専用に",
+    "summary": "Recall Foundationは活動を終了し、ステーキングアプリは11月30日に読み取り専用になります。それまでにステーキング解除と引き出しを済ませてください。",
+    "deadlineNote": "10月30日から、新しいステーキング解除の申請にはクールダウンがありません（すでにクールダウン中の申請は元の日付のままで、ロック期間も短くなりません）。11月30日に`app.recall.network`は読み取り専用になります。その後も、ロックが終わったポジションはBaseScanでコントラクトを直接呼び出して引き出せます。",
+    "who": "BaseでRECALLをステーキングした人。",
+    "todo": "11月30日より前に、`app.recall.network`でご自身でステーキング解除と引き出しをしてください。その後は、BaseScanでステーキングコントラクトのWrite as Proxyから`unstake(tokenId)`と`withdraw(tokenId)`を呼び出します。手数料用にBase上のETHが少し必要です。",
+    "caution": "Recallによると、保有者への分配はなく、新しいトークン、エアドロップ、移行もありません。それを持ちかけてくるものは偽物です。お知らせにはステーキングコントラクトのアドレスが書かれていないので、コントラクトを直接呼び出す前に、公式チャンネルから出たアドレスだけを使ってください。同じ投稿の中で、ある箇所では「30日後」にアクセスが止まるとし、別の箇所では「11月30日に読み取り専用」としています。",
+    "official": [
+      "RecallのX投稿：「The Recall Foundation is winding down」",
+      "Recall LabsのX投稿：会社の活動終了"
+    ]
+  },
+  "megapot-app-shutdown": {
+    "name": "Megapot：アプリの終了",
+    "summary": "MegapotのウェブサイトとTelegramのミニアプリは12月1日に閉鎖されます。メール、X、Telegramのログインで作ったアカウントなら、それまでに残高を引き出してください。",
+    "deadlineNote": "10月29日からチケットの販売は止まり、引き出しに本人確認は不要になりました。12月1日に`megapot.io`とTelegramのミニアプリが閉鎖されます。プロトコル自体は動き続けます。",
+    "who": "メール、X、Telegramのログインでアカウントを作った人と、未受け取りのオフチェーンの残念賞がある人。ご自身のウォレットで参加した場合、チケットと賞金はそのまま手元に残ります。",
+    "todo": "12月1日より前にアカウントの残高を引き出し、オフチェーンの残念賞もそれまでに受け取ってください。オンチェーンの賞金と紹介報酬は、12月1日以降もBasescanやサードパーティのアプリから受け取れます。流動性提供者はいつでも引き出せます。",
+    "official": [
+      "MegapotのX投稿：「Winding down the Megapot app, going all in on Prizerail」"
+    ]
+  },
+  "thundercore-migration": {
+    "name": "ThunderCoreチェーン停止：TTはBNB Chainへ移行",
+    "summary": "ThunderCoreは停止し、TTはBNB Chainに移行します。移行サイトは12月1日まで開いています。",
+    "deadlineNote": "ThunderBridgeは8月28日に停止しました。最後のブロック236120709は9月1日に生成されました。移行サイトは9月1日から12月1日まで開いています。",
+    "who": "メインネットのTT、veTT、Ethereum上のERC20-TT、またはThunderBridge内の資産を持っている人。取引所にある場合は、取引所の案内に従ってください。",
+    "todo": "`migration.thundercore.com`でご自身の状況を確認し、移行の手順に従ってください。",
+    "caution": "サードパーティのトークンとNFTは移行されません。9月1日より前にコントラクトの中にあったものは自動では移行されず、個別に審査されますが、保証はありません。12月1日以降どうなるかは、ThunderCoreは明らかにしていません。",
+    "official": [
+      "ThunderCore：移行のお知らせ",
+      "ThunderCore：最後のブロックと移行サイト",
+      "ThunderCoreのX投稿：9月1日"
+    ]
+  },
+  "zetachain-shutdown": {
+    "name": "ZetaChainの終了：ZETAはSolanaへ移行",
+    "summary": "ZetaChainは12月9日ごろに停止し、ZETAをSolanaに移す予定です。スナップショットの前に、wZETAをアンラップし、プールとリキッドステーキングから抜けてください。",
+    "deadlineNote": "提案70の投票は11月7日に終わり、可決された場合にだけ効力を持ちます。提案によると、12月9日ごろにブロック20,755,000でスナップショットを取ってチェーンを止め、同じ日にZETAの移行ポータルとブリッジ資産のページが開きます。クロスチェーンの送金はすでに止まっています（入金は6月、引き出しは7月1日）。読み取り専用のアーカイブノードは2027年10月31日まで稼働します。",
+    "who": "ZetaChain上でZETAやwZETAを持っている人、プールやリキッドステーキングにZETAがある人、ZetaChainに残ったブリッジ資産（ZRC-20）がある人。Ethereum上のERC-20 ZETAは影響を受けません。",
+    "todo": "スナップショットの前に、wZETAをアンラップし、プールとリキッドステーキングから抜けてください（コントラクト内のZETAはアドレス単位では受け取れません）。12月9日から、`hub.zetachain.com/migrate`で署名するとSolana上でZETAを受け取れます（最低10 ZETA、SOLは不要）。ZRC-20トークンは、`hub.zetachain.com/bridged-assets`で署名すると元のチェーンで取り戻せます。",
+    "caution": "提案70は、11月7日に可決された場合にだけ効力を持ちます。ZRC-20トークンのうち、一つあたりの価値が$5未満のもの、またはプール、ボールト、コントラクトウォレットにあるものは受け取れません。ZetaChainによると、ポータルが求めるのは署名だけで、取引やシードフレーズを求めることは決してありません。",
+    "official": [
+      "ZetaChainのX投稿：11月4日の投稿",
+      "ZetaChainガバナンス：提案68（可決済み：Solanaへ移行）",
+      "ZetaChainガバナンス：提案70（仕組みと日程、投票は11月7日まで）",
+      "ZetaChainブログ：ZETAをSolanaへ"
+    ]
+  },
+  "astralabs-astra-migration": {
+    "name": "AstraLabs：ASTRAが新しいコントラクトへ移行",
+    "summary": "AstraLabsはASTRAを新しいコントラクトに移します。11月7日にスナップショット、新しいトークンは12月10日までに受け取る必要があります。遅れた申請は受け付けられません。",
+    "deadlineNote": "11月7日に流動性が新しいコントラクトに移り、スナップショットが取られます。新しいコントラクトは11月7日から10日の間に稼働し、取引は11月10日に再開します。期限は12月10日で、AstraLabsは遅れた申請は受け付けず、返金もしないとしています。",
+    "who": "スナップショット時点で旧ASTRAを持っている人。",
+    "todo": "スナップショットまで旧トークンを持ったままにし、その後AstraLabsがXアカウントで案内する方法で、12月10日までに新しいトークンを受け取ってください。",
+    "caution": "交換比率、新しいコントラクトのアドレス、受け取り方法はまだ発表されていません。AstraLabsはリンクをXアカウントにだけ投稿するとしているので、偽のページに注意してください。",
+    "official": [
+      "AstraLabsのX投稿：10月15日のお知らせ"
+    ],
+    "milestones": [
+      "スナップショット：これより前に旧トークンを持っておく"
+    ]
+  },
+  "abstract-chain-shutdown": {
+    "name": "Abstractチェーンの終了",
+    "summary": "Abstractチェーンは12月15日に終了し、それまでにブリッジで移さなかった資金にはアクセスできなくなります。先にアプリから抜け、それからブリッジで移してください。",
+    "deadlineNote": "Abstractは12月15日に終了します。Abstract自身の言葉では、それまでにブリッジで移さなかった資金には「アクセスできなくなります」。",
+    "who": "Abstractに資産がある人（チェーン上のアプリ内の資産を含む）。",
+    "todo": "まずチェーン上のアプリから引き出し、それからMigration Hub（`migrate.abs.xyz`）かネイティブブリッジ（`native-bridge.abs.xyz`、約3時間）で移してください。移行ページにはStargate、Relay、Jumperも載っています。",
+    "caution": "Abstractは偽の移行サイトとなりすましのDMに注意するよう呼びかけています。",
+    "official": [
+      "Abstractの移行ページ",
+      "AbstractのX投稿：「Abstract is Winding Down」"
+    ]
+  },
+  "stargate-v1-pools": {
+    "name": "Stargate V1プールの終了",
+    "summary": "Stargate V1のプールは12月15日に動かなくなります。V1の流動性提供者はそれまでに引き出す必要があり、今は手数料なしで引き出せます。",
+    "deadlineNote": "9月4日に発表：V1のメッセージングを約二週間止めた後、手数料なしの引き出しが始まりました。12月15日にLayerZero V1 Relayerが停止し、V1プールは完全に動かなくなります。Stargate V2とHydraは影響を受けません。Metisではプールがもっと早く、10月23日に終わりました。このページのMetisの項目をご覧ください。",
+    "who": "Stargate V1プールの流動性提供者。ただし、期限が10月23日だったMetisは除きます。",
+    "todo": "12月15日より前に、V1プールから流動性を引き出してください。",
+    "official": [
+      "StargateのX投稿：9月4日のお知らせ",
+      "Metisブログ：V1プールはすべてのチェーンで12月15日に終了、Metisではそれより早く終了"
+    ]
+  },
+  "stargate-stg-zro": {
+    "name": "Stargate：STGをZROに交換できる最終日",
+    "summary": "STGをLayerZeroのZROに交換できるのは12月15日までで、その後はサポートされません。",
+    "deadlineNote": "交換は2025年8月26日に始まり、12月15日に終わります。LayerZeroは、その後の交換はサポートしないとしています。",
+    "who": "まだSTGを持っている人。取引所に預けている残高は取引所が対応し、通常はもっと早く締め切られます。",
+    "todo": "12月15日より前にSTGをZROに交換してください。Stargateの公式の交換ガイドに固定レートが書かれています：1 STG = 0.08634 ZRO。",
+    "caution": "Stargateの公式の交換ページによると、交換するにはSTGがEthereum上にある必要があります。ほかのネットワークにある場合は、先にEthereumへブリッジしてください。公式ページからリンクされている入口だけを使ってください。",
+    "official": [
+      "LayerZeroブログ：9月のエコシステム最新情報",
+      "StargateのX投稿：交換の開始（2025年8月）",
+      "Stargateの公式交換ページ"
+    ]
+  },
+  "fluxtra-frontend": {
+    "name": "Fluxtraのウェブサイト閉鎖、ボールトはOMiesへ",
+    "summary": "Fluxtraのウェブサイトは12月31日に閉鎖されます。QuickSwap LPボールトからは今すぐ引き出してください。ほかの二つのボールトはすでにOMiesに表示されています。",
+    "deadlineNote": "12月31日が、Fluxtraの画面から引き出せる最終日で、その後ウェブサイトは完全に閉鎖されます。QuickSwap LPボールトはすでに運用を終えており、Fluxtraは今すぐ引き出すよう求めています。",
+    "who": "MANTRAチェーンでFluxtraのボールトを使った人。",
+    "todo": "wmantraUSDとstMANTRAのボールトの預け入れは、すでに`onchainomies.com`に表示されているので、そのままで構いません。QuickSwap LPボールトからは今すぐ引き出してください。",
+    "official": [
+      "FluxtraのX投稿：10月30日のお知らせ"
+    ]
+  },
+  "neon-evm-shutdown": {
+    "name": "Neon EVMの終了",
+    "summary": "Neon EVM（Solana上で動くEVM）は終了します。12月31日より前に、NeonPassで資産をSolanaに移してください。",
+    "deadlineNote": "開発とサポートは10月1日に終わりました。12月31日が移行と引き出しの期限です。",
+    "who": "Neon EVMに資産がある人。",
+    "todo": "12月31日より前に、NeonPassでNeon EVMの資産をSolanaに移してください。手順は公式ドキュメントにあります。",
+    "caution": "Neonによると、Solana上のNEONトークンはなくなりません。12月31日以降も引き出しができるかどうかは明らかにしていません。",
+    "official": [
+      "Neon EVMのウェブサイトのお知らせ",
+      "Neon EVMドキュメント：NeonPassでの引き出し"
+    ]
+  },
+  "quickswap-soneium-frontend": {
+    "name": "QuickSwap：Soneiumの画面が終了",
+    "summary": "Soneium上のQuickSwapの画面は12月31日に停止します。それまでに流動性を引き出してください。その後はブロックエクスプローラーでコントラクトを直接呼び出す必要があります。",
+    "deadlineNote": "ガバナンス投票は10月21日に可決されました（賛成99.22%）。Soneiumへのデプロイの画面は12月31日に停止します。その後は、Soneiumの公式ブロックエクスプローラーでコントラクトを直接呼び出せば資金を引き出せる、とQuickSwapはしています。",
+    "who": "Soneium上のQuickSwapに流動性や資産がある人。",
+    "todo": "12月31日より前に、QuickSwapの画面でSoneium上の流動性と資産を引き出してください。その後は`soneium.blockscout.com`でコントラクトを直接呼び出してください。",
+    "official": [
+      "QuickSwapのX投稿：10月22日のお知らせ",
+      "QuickSwapのガバナンス投票（Snapshot）"
+    ]
+  },
+  "relay-vaults": {
+    "name": "Relay Vaultsの終了",
+    "summary": "Relayの流動性ボールトは終了します。引き出しページは12月31日に閉じるので、それまでに公式ページで引き出してください。",
+    "deadlineNote": "新規の預け入れは停止しています。引き出しページは12月31日に閉じ、その後はコントラクトを直接呼び出す方法だけが残ります。",
+    "who": "Relay Vaults（EthereumとArbitrumのWETHボールト）に預け入れがある人。",
+    "todo": "`relay.link/vaults`で引き出してください。12月31日以降は、公式ドキュメントに従ってERC4626コントラクトの`redeem(shares, receiver, owner)`を直接呼び出すか、ネイティブゲートウェイを使ってネイティブのETHで受け取ってください。",
+    "caution": "一度に引き出せる量は、ボールトの利用可能な流動性によります。コントラクトは今も預け入れを受け付けるので、間違えて預けたものも同じ方法で取り出せます。",
+    "official": [
+      "Relayドキュメント：ボールトからの引き出し",
+      "RelayのX投稿：10月9日のお知らせ"
+    ]
+  },
+  "silicon-network-shutdown": {
+    "name": "Silicon Networkの終了（KorbitのWeb3ウォレットを含む）",
+    "summary": "Siliconチェーンは12月31日に終了し、残した資金は後から取り戻せません。Ethereumからブリッジした資産は、公式ブリッジで戻す必要があります。",
+    "deadlineNote": "Siliconは12月31日12:00 UTC+9（03:00 UTC）に終了します。その後ブロックエクスプローラーが閉じ、ネットワークは終わります。Silicon自身の言葉では、それまでに引き出さなかった資金は「復旧できません」。",
+    "who": "Siliconに資産がある人（KorbitのWeb3ウォレットの利用者を含む）。",
+    "todo": "Ethereumからブリッジした資産：期限までに公式ブリッジでEthereumへ引き出し、手数料用のETHを少し残してください。KorbitのWeb3ウォレットの利用者：Korbitの手順に従ってください。Siliconのネイティブトークンは直接ブリッジできないので、先にチェーン上で交換してください。",
+    "official": [
+      "Siliconドキュメント：サービス終了のお知らせ",
+      "Siliconドキュメント：引き出しガイド",
+      "SiliconのX投稿：KorbitのWeb3ウォレットは12月31日に終了"
+    ]
+  },
+  "standx-winddown": {
+    "name": "StandXの終了：DUSDエアドロップ、ポジション、償還の期限",
+    "summary": "StandXは終了に向かっています。DUSDのエアドロップは12月31日に終わり、ポジションは2027年1月15日に強制決済され、引き出しと償還は2027年1月31日に締め切られます。",
+    "deadlineNote": "10月15日から利回りの支払いは止まり、ボールトは預け入れを受け付けていません。10月20日からポジションは減らすことしかできません。DUSDのエアドロップは11月2日00:00から12月31日08:00 UTCまで受け取れ、その後は失効します。2027年1月15日にすべてのポジションが強制決済され、ボールトが精算されます。引き出しとDUSDの償還は2027年1月31日に締め切られます（償還には7日かかり、2月7日までに完了します）。",
+    "who": "StandX（BNB ChainまたはSolana）にポジション、残高、DUSDがある人と、PancakeSwapやRaydiumでDUSDの流動性を提供している人。",
+    "todo": "エアドロップを受け取る → ポジションを決済する → PerpsウォレットからCashウォレットへ資金を移す → ご自身のウォレットへ引き出す。USDTで受け取るには2027年1月31日より前に償還を申請し、PancakeSwapとRaydiumのDUSDの流動性も1月31日より前に引き出してください。",
+    "caution": "DUSDはUSDTに償還されます。2027年1月31日以降も残高は持ち主のものですが、support@standx.comにメールする必要があります。",
+    "official": [
+      "StandXのX投稿：終了に関する案内",
+      "StandXのX投稿：ポジション縮小のみ（reduce-only）モード",
+      "StandXのX投稿：エアドロップの開始"
+    ],
+    "milestones": [
+      "DUSDのエアドロップが失効",
+      "すべてのポジションを強制決済し、ボールトを精算"
+    ]
+  },
+  "parasail-pfil": {
+    "name": "Parasail：pFILプールは引き出しのみ、ウェブサイトは2027年1月末まで",
+    "summary": "不正流出の後、ParasailのpFILプールは引き出しのみになっています。引き出しが再開したら、pFILをFILに1:1で交換してください。ウェブサイトは2027年1月31日まで公開されます。",
+    "deadlineNote": "プールは一時停止中です。11月4日、Parasailは引き出しを「今週後半に」再開するとしました。ウェブサイトは2027年1月31日まで公開され、その後はコントラクトを直接呼び出す方法しか使えなくなります。Parasailは、サイトの公開終了前に手順を公開するとしています。",
+    "who": "pFILを持っている人。",
+    "todo": "Parasailが引き出しの再開を発表したら、公式のリンクからpFILをFILに1:1で交換してください。",
+    "caution": "このプールは不正流出の被害を受けました：Parasailによると344,056 FILが盗まれ、不足分はParasailと複数の大口保有者が補てんしました。公式チャンネルのリンクだけを信じてください。",
+    "official": [
+      "ParasailのX投稿：11月4日のpFILの最新情報"
+    ]
+  },
+  "derive-chain-rewards": {
+    "name": "Derive Chainの終了：Derive V3へ移行、報酬の期限は2027年2月1日",
+    "summary": "Derive ChainはDerive V3に移行し、資金はEthereumで保管されています。未受け取りの取引報酬とステーキング報酬は、2027年2月1日より前にOptimismで受け取る必要があります。",
+    "deadlineNote": "スナップショットは10月6日18:00 UTC、V3は10月8日に稼働しました。未受け取りの取引報酬とステーキング報酬は、2027年2月1日までOptimism上のコントラクトから受け取れ、その後は財団が回収します。",
+    "who": "Derive Chain（旧Lyra）で取引やステーキングをした人。",
+    "todo": "残高は自動でV3に移されています。`app.derive.xyz`で確認してください。条件付き注文やTWAP注文は作り直し、未受け取りの報酬は2027年2月1日より前にOptimismで受け取ってください。",
+    "caution": "Derive Chain上の旧DRVの供給は無効になり（提案では「orphaned」）、スナップショットに基づいてEthereum上で保有者に再発行されます。",
+    "official": [
+      "Deriveフォーラム：Derive V3の提案（DIP）",
+      "DeriveのX投稿：Derive V3が稼働"
+    ]
+  },
+  "quickswap-old-quick": {
+    "name": "QuickSwap：旧QUICKから新QUICKへ、交換比率は毎月下がる",
+    "summary": "QuickSwapの旧QUICKから新QUICKへの交換比率は毎月下がります：12月5日までは1:750、12月5日以降は1:500です。早く交換するほど多く受け取れます。",
+    "deadlineNote": "QuickSwapによると、1:750の比率は2026年12月5日まで有効で、12月5日以降は1:500に下がります。その先は、サードパーティの報道によると2027年1月5日以降は1:250で、2027年2月5日に交換は完全に終了します。",
+    "who": "まだ旧QUICKを持っている人。",
+    "todo": "各比率の期間が終わる前に交換してください。早く交換するほど、新しいQUICKを多く受け取れます。",
+    "caution": "全体のスケジュールはサードパーティの報道によるもので、最終的にはQuickSwap自身の投稿に従ってください。QuickSwapは、交換されなかった旧QUICKの扱いについて投票を行っています（11月7日12:00 UTCに終了）。",
+    "official": [
+      "QuickSwapのX投稿：11月4日のリマインダー",
+      "QuickSwapのX投稿：交換されなかった旧QUICKに関する投票"
+    ],
+    "milestones": [
+      "1:750の比率の最終日。この後は1:500に下がる",
+      "1:500の比率の最終日。この後は1:250に下がる"
+    ]
+  },
+  "kelp-rseth-sunset": {
+    "name": "Kelp：サポート終了したネットワークの旧rsETH、2027年6月まで手動で対応",
+    "summary": "Kelpがサポートを終えたネットワーク上の旧rsETHは、もう直接は使えませんが、2027年6月15日までKelpの公式ガイドに従って申請すれば、Ethereumで取り戻せます。",
+    "deadlineNote": "旧rsETHは6月15日に22のネットワークでサポートが終わりました。10月5日からは、Base、Mantle、Inkの旧rsETHもサポートが終わりました（Chainlink CCIP版に置き換え）。手動での対応は2027年6月15日23:59 UTCに締め切られます。",
+    "who": "Kelpがサポートを終えたネットワーク上に、まだ旧rsETHを持っている人。Arbitrumは影響を受けません。",
+    "todo": "Kelpの公式ブログのガイドだけに従ってください。まず旧rsETHのコントラクトを持っていることを確認し、ガイドのとおりに申請します（元のチェーンでバーンアドレスにトークンを送り、100 USDCの手数料を払い、取引をメールで送るよう求められます）。Kelpは四半期ごとに、Ethereum上でrsETHを返します。",
+    "caution": "この手順（バーンアドレスへのトークン送付、手数料の支払い、メールの送信）は、よくある詐欺にとてもよく似ています。Kelpの公式ブログの原文だけに従い、DMやほかのウェブサイトは無視してください。Base、Mantle、Ink、Linea、Optimism、ZircuitでwrsETHをアンラップすると新しい版が受け取れ、この手順は必要ありません。",
+    "official": [
+      "Kelpブログ：サポート終了ネットワークのrsETHのガイド",
+      "KelpのX投稿：CCIPへの移行完了（10月8日）"
+    ]
+  },
+  "blast-l2-shutdown": {
+    "name": "Blast L2は終了、公式の引き出しサイトは2027年11月まで",
+    "summary": "Blast L2は終了しました。2027年11月4日まで、blast.ioでウォレットを接続して自分のアドレスを調べ、Ethereum上でETH、WETH、USDBを引き出せます。",
+    "deadlineNote": "通常の引き出し画面は10月26日に閉じました（経過済み）。11月4日、BlastはL2の終了を発表しました。`blast.io`の引き出しサイトは12か月間開いており、最終サポート日は2027年11月4日です。",
+    "who": "BlastにETH、WETH、USDBがある人、または完了しなかった引き出しがある人（Blast Mobileの利用者、Safeなどのコントラクトウォレットの利用者を含む）。",
+    "todo": "`blast.io`でウォレットを接続して自分のアドレスを調べ、Ethereum上でETH、WETH、USDBを引き出してください。完了しなかった引き出しも自動で含まれます。Blast Mobileの利用者：シードフレーズをMetaMaskかRabbyにインポートしてから接続してください。Safeなどのコントラクトウォレットには別の入口があります。",
+    "caution": "Blastが使うのは@blastだけです（@Blast_L2は今は名前を確保しておくだけのアカウントです）。引き出しサイトにはETHとUSDの資産しか書かれておらず、BLASTトークン、ほかのトークン、L2上のDeFiのポジションを引き出せるかどうかは、Blastは明らかにしていません。シードフレーズは必ずウォレットアプリの中でご自身で入力し、ウェブサイトには絶対に入力しないでください。",
+    "official": [
+      "Blastの引き出しページ",
+      "Blastドキュメント：Ethereumへの引き出し",
+      "BlastのX投稿：終了の発表（10月2日）",
+      "BlastのX投稿：L2の終了（11月4日）"
+    ]
+  },
+  "stader-maticx-fixed-rate": {
+    "name": "Stader：MaticXの比率を固定、オンチェーンでの償還は2029年8月まで",
+    "summary": "10月29日から、StaderのMaticXはMaticX一つにつき1.2002 POLの固定比率で償還されます。償還は引き続きEthereum上のコントラクトで行い、2029年8月3日が最終日です。",
+    "deadlineNote": "6月に預け入れが終了し、それ以降MaticXは償還のみになっています。MaticXのアプリは8月3日に閉鎖され、償還はEtherscanで続いています。10月29日から、比率はMaticX一つにつき1.2002 POLに固定されます。2029年8月3日が、コントラクトで償還できる最終日です。",
+    "who": "EthereumまたはPolygon PoS上に、まだMaticXを持っている人。",
+    "todo": "Staderの公式ブログの手順に従ってください：EtherscanでEthereum上のMaticXコントラクトを開き、引き出しを申請し（MaticXはバーンされます）、POLのアンボンディングが終わるのを待ってから、POLをウォレットに引き出します。お知らせによると、アンボンディング期間は80チェックポイントで、公開時点では約22時間と見込まれていました。Polygon PoS上のMaticXは、先にPolygonブリッジでEthereumに移す必要があります。すでに申請した引き出しは影響を受けないので、そのまま完了させてください。",
+    "caution": "レンディング市場、流動性プール、ボールトにあるMaticXはそのままです。Staderは、固定比率がポジションにどう影響するかはそのプロトコルに聞くよう案内しています。Staderの公式ブログの投稿にあるコントラクトアドレスだけを使ってください。",
+    "official": [
+      "Staderブログ：NearX、BNBx、MaticXの償還の変更",
+      "StaderのX投稿：10月28日の投稿"
+    ]
+  },
+  "balancer-winddown": {
+    "name": "Balancerの終了：プールは引き出しのみへ",
+    "summary": "Balancerは終了に向かっています。プールは引き出しのみになり、残りのv3プールも11月30日に続きます。引き出しは開いたままですが、流動性提供者とステーカーはご自身で引き出す必要があります。",
+    "deadlineNote": "10月30日から、一時停止できるプールは引き出しのみになり、バグ報奨金は終了しました。パートナーが維持を求めたv3プールは11月30日まで開いており、その日にv3 Vaultが一時停止され、残りのv3プールも引き出しのみに移ります。Balancerによると、引き出しは終了日なしで開いたままです。その後、veBALのロックが満了し、トレジャリーの分配が二回（一回目は2027年5月末）終わるまで、簡易版の引き出しページが残ります。一時停止できないプールは、プロトコル手数料を0にしたまま動き続けます。",
+    "who": "Balancerのプールの流動性提供者、ゲージでステーキングしている人、v3のバッファー持ち分や旧v2のマイニング報酬がある人。Balancerの10月23日のリマインダーによると、外部ユーザーの古いポジションが$500,000以上見つかっています。",
+    "todo": "`legacy.balancer.fi`で流動性を引き出し、ゲージのステーキングを解除してください。DeBankなどのポートフォリオ管理サービスには表示されない、v3のバッファー持ち分と旧v2のマイニング報酬も確認してください。",
+    "caution": "Balancerによると、コントラクトはノンカストディアルなので、引き出しはチームに左右されません。",
+    "official": [
+      "Balancerフォーラム：BIP-928の終了提案",
+      "Balancerフォーラム：過去のユーザーへのリマインダー",
+      "BalancerのX投稿：10月30日の投稿"
+    ],
+    "milestones": [
+      "残りのv3プールが引き出しのみに（v3 Vaultは一時停止）。引き出しは開いたまま"
+    ]
+  },
+  "compound-scroll-usdc": {
+    "name": "Compound III：ScrollのUSDCマーケットの整理",
+    "summary": "Compoundは、サポートを終えたScrollのUSDCマーケットを整理する予定です。可決されると残りのローンは清算されうるので、借り手は早めに返済して担保を取り戻してください。",
+    "deadlineNote": "このマーケットは今年初めにサポートが終了しています。11月4日のフォーラムの提案によると、オンチェーンの提案はまだ提出されておらず、日付も決まっていません。可決されると、残りのローンはすべて清算されうるようになります。",
+    "who": "ScrollのCompound III USDCマーケットでUSDCを借りた人、または供給した人。提案によると借り手のアカウントは1,959件で、いずれも少額です。",
+    "todo": "借り手：早めにUSDCを返済し、WETHやwstETHの担保を取り戻してください。供給者：USDCを引き出してください。",
+    "caution": "提案は、ScrollがパブリックなL2のモデルから離れると発表したことを挙げ、ユーザーにすべてのDeFiのポジションを閉じるよう勧めています（このページのScrollの項目を参照）。",
+    "official": [
+      "Compoundフォーラム：ScrollのUSDCマーケットの整理"
+    ]
+  },
+  "parasail-stpeaq": {
+    "name": "Parasail：stPEAQステーキングプールの終了、引き出しのみへ",
+    "summary": "ParasailのstPEAQステーキングプールは、不正流出の後に終了しました。Parasailは、peaq財団が損失を補てんし、全ユーザーが全額引き出せるとしています。公式の引き出し日を待ってください。",
+    "deadlineNote": "Parasailは、引き出しのみのモードを開始する日付をまだ決めていません。",
+    "who": "stPEAQを持っている人。",
+    "todo": "Parasailが引き出しのみのモードの開始日と引き出しのリンクを発表するのを待ってから、PEAQを引き出してください。",
+    "caution": "このプールは不正流出の被害を受けました：Parasailによると1,096,424.06 PEAQが盗まれました。公式チャンネルのリンクだけを信じてください。",
+    "official": [
+      "ParasailのX投稿：11月4日のstPEAQの最新情報"
+    ]
+  },
+  "scroll-transition": {
+    "name": "Scrollが許可型ネットワークへ移行、SCRはEthereumメインネットへ（提案）",
+    "summary": "Scrollは許可型ネットワークへの移行を提案しました。移行前にDeFiのポジションを閉じるか処理する必要があるので、まず公式ページで保有資産を確認してください。",
+    "deadlineNote": "フォーラムの提案は11月3日に投稿され、まだDAOの投票が必要です。Scrollは、ネットワークのアップグレードを「年末」に予定しており、正確な日付はまだないとしています。",
+    "who": "Scrollに資産がある人、特にレンディングや流動性などのDeFiのポジションがある人と、SCRの保有者。",
+    "todo": "`positions.scroll.io`で保有資産を確認し、移行前にDeFiのポジションを閉じるか処理してください。公式ブリッジは開いたままで、Scrollはアップグレード後も使えるとしています。",
+    "caution": "提案はまだ投票されていません。Scrollによると、SCRの総供給量とトークノミクスは変わりません。AaveとCompoundはすでにScrollのマーケットを整理し始めています。",
+    "official": [
+      "Scrollフォーラム：移行の提案",
+      "ScrollのX投稿：保有資産のページ（11月2日）",
+      "ScrollのX投稿：提案の投稿（11月3日）"
+    ]
+  },
+  "compound-deprecated-markets": {
+    "name": "Compound III：Ethereum、Linea、Ronin、Mantle、Unichain、Polygonのマーケットのサポート終了",
+    "summary": "Compound IIIは複数のマーケットのサポートを終了しました：新規の借り入れはできず、預け入れに利回りも付きません。預け入れは引き出し、借り手は返済して担保を取り戻してください。",
+    "deadlineNote": "決まった期限はありません。9月2日にEthereumのwstETHマーケットのサポート終了が提案され、9月25日に五つのチェーンのサポート終了マーケットで借り入れの担保掛け目がゼロに設定され、10月30日にEthereumのWBTCマーケットのサポート終了が提案されました。LineaのUSDCマーケットは9月18日から、MantleのUSDeマーケットは10月16日から引き出しが一時停止されています。",
+    "who": "サポートが終了したこれらのマーケットに預け入れや借り入れがある人。提案によると、EthereumのwstETHマーケットには93人、WBTCマーケットには37人の供給者が残っています。",
+    "todo": "サポートが終了したマーケットに残っている預け入れは引き出し、借り手は返済して担保を取り戻してください。LineaのUSDCとMantleのUSDeのマーケットは今は引き出しが一時停止されているので、再開したら引き出してください。",
+    "caution": "Lineaの一時停止は「潜在的な問題」によるもので、解決すれば解除されます。Mantleの一時停止は、準備金を引き出す提案を実行するためのものです。",
+    "official": [
+      "Compoundフォーラム：EthereumのwstETHマーケットのサポート終了",
+      "Compoundフォーラム：サポート終了マーケットの担保掛け目をゼロに",
+      "Compoundフォーラム：LineaのUSDCマーケットの一時停止",
+      "Compoundフォーラム：MantleのUSDeマーケットの一時停止",
+      "Compoundフォーラム：EthereumのWBTCマーケットのサポート終了"
+    ]
+  },
+  "diva-staking-shutdown": {
+    "name": "Diva Stakingの終了（メインネットは公開されず）",
+    "summary": "Diva Stakingはメインネットを公開しないまま終了します。Enzymeのボールトへの事前の預け入れは今すぐ引き出せ、Divaは「もう待つものはない」としています。",
+    "deadlineNote": "10月28日に発表され、期限は示されていません。",
+    "who": "EnzymeにあるDivaのEarly Staker Vaultsに事前に預け入れた人。",
+    "todo": "EnzymeのEarly Staker Vaultsから、事前に預けた分を引き出してください。",
+    "official": [
+      "DivaのX投稿：10月28日のお知らせ"
+    ]
+  },
+  "aero-merger": {
+    "name": "AerodromeとVelodromeがAeroに統合",
+    "summary": "AerodromeとVelodromeはAeroに統合されました。古いプールはもう報酬を出さないので流動性を新しいプールに移し、トークンとロックは公式のアップグレードページでご自身でアップグレードしてください。",
+    "deadlineNote": "OP MainnetとInk以外にあったxVELOは10月15日までにOPへブリッジで戻す必要があり、veNFTは10月20日までにRelayなどのボールトから取り出す必要がありました。10月22日00:00 UTCに古いプールの報酬が止まり、アップグレードページが開きました。Aeroによると、アップグレードに期限はありません。",
+    "who": "AERO、VELO、veAERO、veVELOの保有者と、古いプールの流動性提供者。",
+    "todo": "`aerodrome.finance`または`velodrome.finance`のアップグレードページでアップグレードしてください：AEROは1:1、VELOは1:0.044で新しいAEROになり、veAEROやveVELOはsAEROになります。アップグレードの前に、報酬とリベースを受け取り、投票を解除してください。古いプールは報酬を出さないので、流動性を新しいプールに移してください。",
+    "caution": "アップグレードは取り消せず、アップグレード前に受け取っていない報酬は失われます。Aeroによると、古いフロントエンドは「後で閉鎖される可能性がある」とのことです。",
+    "official": [
+      "Aeroアップグレードセンター",
+      "Aeroの記事：ローンチ日"
+    ]
+  },
+  "venus-vai-lisusd": {
+    "name": "Venus：VAIの段階的な廃止、lisUSDとTRXのマーケットは上場廃止",
+    "summary": "VenusはVAIを段階的に廃止し、lisUSDとTRXのマーケットを上場廃止にします。ボールトのVAIはいつでも引き出せ、借り手は返済の準備をしてください。",
+    "deadlineNote": "ChainlinkがVAIの価格フィードを終了することがきっかけです。決まった期限はありません：VIP-662は9月21日に発効し（VAIボールトのXVS報酬の支払いを停止）、VIP-663は9月28日に発効しました（TRXとlisUSDが次の段階へ）。Venusは、その後の段階は別途発表するとしています。",
+    "who": "VAIボールトにVAIがある人、VAIを発行した人、lisUSDやTRXのマーケットに預け入れや借り入れがある人。",
+    "todo": "ボールトのVAIはいつでも引き出せ、すでに貯まったXVSも受け取れます。VAIを発行した場合は返済の準備をしてください。lisUSDの預け入れは引き出し、lisUSDの借り入れは第三段階で金利が上がる前に返済してください。",
+    "official": [
+      "Venusコミュニティ：VAIの提案",
+      "Venusコミュニティ：lisUSDマーケットの上場廃止",
+      "Venusコミュニティ：9月の報告"
+    ]
+  },
+  "aave-v3-deprecation": {
+    "name": "Aave V3：六つのデプロイのサポート終了、利用の少ない資産は上場廃止",
+    "summary": "Aave V3は六つのデプロイのサポートを終了します：Sonic、Scroll、zkSync Era、Metis、Soneium、Aptos。預け入れは早めに引き出し、借り手は清算の基準が下がる前に返済してください。",
+    "deadlineNote": "決まった期限はありません。マーケットは凍結され、準備金比率は99%なので、利息のほとんどはトレジャリーに入ります。Aaveは、金利をさらに上げ、清算の基準を段階的に下げることがあるとしています。",
+    "who": "これら六つのデプロイに預け入れや借り入れがある人と、ほかのデプロイで上場廃止になる資産を持っている人。",
+    "todo": "これら六つのデプロイから、早めに預け入れを引き出してください。借り手：基準が下がったときに清算されないよう、返済して担保を取り戻してください。",
+    "official": [
+      "Aaveガバナンスフォーラム：利用の少ない資産のサポート終了（ARFC）"
+    ]
+  },
+  "marinus-harmony": {
+    "name": "Marinus：Harmonyのマーケットはサポート終了、引き出しのみ",
+    "summary": "MarinusはHarmonyのマーケットのサポートを終了しました：預け入れは引き出しかステーキング解除しかできず、Harmonyチェーン自体も終了に向かっています。",
+    "deadlineNote": "9月14日から、引き出しとステーキング解除しかできません。期限はありません。",
+    "who": "HarmonyでMarinusに預け入れたり、ステーキングしたりした人。",
+    "todo": "HarmonyのMarinusに入れたものを引き出し、ステーキングを解除してください。",
+    "caution": "Harmonyチェーン自体が終了に向かっています。このページのHarmonyの項目をご覧ください。",
+    "official": [
+      "MarinusのX投稿：9月14日のお知らせ"
+    ]
+  },
+  "harmony-shutdown": {
+    "name": "Harmonyメインネットの終了、ONEはEthereumへ移行",
+    "summary": "Harmonyメインネットは終了に向かい、9月10日のスナップショットに基づいてONEがEthereum上の同じアドレスにエアドロップされました。古いウォレットは署名で確認が必要で、ブロックエクスプローラーは11月18日に閉じます。",
+    "deadlineNote": "スナップショットは9月10日14:00 UTCに取られました（経過済み）。10月2日から、ERC-20のONEがEthereum上の同じアドレスにエアドロップされています。`explorer.harmony.one`は11月18日に閉じます（トークンの期限ではなく、ブロックエクスプローラーのデータの話です）。",
+    "who": "スナップショット時点でHarmony上にONEを持っていた人、古いウォレットの利用者、2025年より前のブロックエクスプローラーのデータが必要な人。",
+    "todo": "通常のウォレットの残高は、Ethereum上の同じアドレスに自動でエアドロップされます。古いウォレット：`migrate.country/confirm`で署名してください（Harmonyの10月2日の投稿より）。2025年より前のブロックエクスプローラーのデータが必要なら、11月18日より前にご自身でエクスポートしてください。",
+    "caution": "これは2026年8月の不正発行の攻撃を受けた対応で、`bridge.harmony.one`は8月12日から停止しています。`migrate.country`は、Harmony自身の投稿にあるリンクからだけ開いてください。Harmonyは、マルチシグ、流動性プール、オンチェーンのアプリにある資金は9月10日より前に引き出す必要があったとしていました（経過済み）。",
+    "official": [
+      "HarmonyのX投稿：「Harmony to Migrate Its ONE Token」",
+      "HarmonyのX投稿：エアドロップ（10月2日）",
+      "HarmonyのX投稿：ブロックエクスプローラーは11月18日に終了"
+    ],
+    "milestones": [
+      "ブロックエクスプローラーexplorer.harmony.oneの終了"
+    ]
+  },
+  "bouncebit-chain-retired": {
+    "name": "BounceBitチェーンの終了、BBはBNB Chainで再発行",
+    "summary": "不正流出の後、BounceBitチェーンは終了し、BBはBNB Chainで1:1で再発行されました。10 BB以上は自動で届き、それより少ない場合は公式ポータルで受け取る必要があります。",
+    "deadlineNote": "9月1日06:00 UTCから、不正流出の前のスナップショットに基づき、BBがBNB Chain上の同じアドレスに1:1で送られました。9月3日、BounceBitは配布が完了したとしました。10 BB未満の残高の期限は示されていません。",
+    "who": "スナップショット時点でBounceBitチェーンにBBを持っていた人、特に残高が10 BB未満の人。",
+    "todo": "10 BB以上は自動で届いているので、BNB Chain上の同じアドレスを確認してください。10 BB未満なら、元のアドレスで`portal.bouncebit.io`を使ってください。",
+    "caution": "チェーンは不正流出によって止まったので、公式の入口だけを使ってください。BounceBitは、こちらから先にDMを送ることは決してないとしています。投稿には、BBTCなどチェーン上のほかの資産がどうなるかは書かれていません。",
+    "official": [
+      "BounceBitのX投稿：配布完了（9月3日）",
+      "BounceBitのX投稿：少額の残高（9月3日）",
+      "BounceBitのX投稿：スケジュール（8月31日）"
+    ]
+  },
+  "stader-bnbx-redemption": {
+    "name": "Stader：BNBxの償還はコントラクトからメールでの申請へ",
+    "summary": "10月29日から、StaderのBNBxはコントラクトで償還できず、Staderの公式ブログに従いメールで申請します：1 BNBxにつき1.1099 BNB、申請ごとに手数料0.2 BNBx、四半期ごとに精算。",
+    "deadlineNote": "BNBxは1月29日にサポートが終了し、それ以降は償還のみになっています。比率は3月からBNBx一つにつき1.1099 BNBに固定されています。10月29日より前は、コントラクトで即時・無料で償還できました（経過済み）。10月29日からは、償還はメールでの申請だけになり、四半期ごとに精算されます。申請をいつまで受け付けるかは、お知らせに書かれていません。",
+    "who": "BNB Chain上にまだBNBxを持っている人。DEXのプールやレンディングプロトコルにある場合は、先にご自身のウォレットに引き出すようStaderは案内しています。",
+    "todo": "Staderの公式ブログ（`staderlabs.com/blog`）のお知らせにある手順だけに従ってください：BNBxを持っているウォレットから、BNB Chainでだけ送り、投稿が説明する形式で取引をメールで送ります。Staderはトークンを送ったウォレットにしか支払わないので、取引所のアカウントからは送らないでください。手数料は0.2 BNBxで固定なので、残高が少ないほど割合が大きくなります。",
+    "caution": "この手順（アドレスにトークンを送り、メールする）は、よくある詐欺にとてもよく似ています。Staderの公式ブログの原文にあるアドレスとメールだけを信じてください。このページには、あえて書き写していません。Staderは、DMを送ること、シードフレーズや秘密鍵を聞くこと、支払いを求めることは決してないとしています。DM、グループチャット、ほかのウェブサイトで渡された受け取り用アドレスは使わず、下のリンクのStaderブログで確認してください。",
+    "official": [
+      "Staderブログ：NearX、BNBx、MaticXの償還の変更",
+      "StaderのX投稿：10月28日の投稿"
+    ]
+  },
+  "robin-markets-v1": {
+    "name": "Robin Markets：V1の終了",
+    "summary": "Robin MarketsはV1を終了します。ポイント、利回り保証、マッチングボーナスは11月3日20:00 UTCに付与が止まりました。お知らせによると引き出しは引き続き可能で、引き出しの期限は示されていません。",
+    "deadlineNote": "11月3日に発表されました。ポイント、利回り保証、マッチングボーナスは11月3日20:00 UTCに付与が止まりました。引き出しの期限はありません：Robinは、次のバージョンを「年末より前に」公開し、それまでV1を稼働させ、その後も引き出しは使えるとしています。",
+    "who": "利回りを得るために、PolymarketのポジションをRobin Markets V1に預けた人。",
+    "todo": "ポイント、利回り保証、マッチングボーナスは11月3日20:00 UTCに付与が止まりました。ドキュメントによると、それまでに貯まった分は次の引き出しのときに自動で支払われます。Robinは、ポジションが残っている人は今すぐ引き出せるとしています。",
+    "official": [
+      "Robin MarketsのX投稿：11月3日のお知らせ",
+      "Robin Marketsドキュメント：利回り保証とマッチングボーナス（終了）",
+      "Robin Marketsドキュメント：Polygonにデプロイされたコントラクト"
+    ]
+  },
+  "summerfi-winddown": {
+    "name": "Summer.fi：Lazy Summerのボールトは引き出しのみ、秩序ある終了を議論中",
+    "summary": "Summer.fiは終了に向かい、Lazy Summerのボールトは引き出しのみです。公式サイトで今もご自身で引き出せます。11月5日のコミュニティRFCが秩序ある終了を議論しており、残りをMerklに移すのは選択肢の一つにすぎません。",
+    "deadlineNote": "7月6日の不正流出の後、元のSummer.fiアプリの画面は8月31日に閉じる予定となり（今のサイトには出口のページしかありません）、ボールトは預け入れを止めて引き出しのみになりました。11月5日のコミュニティRFCは、秩序ある終了の選択肢として次を挙げています：スナップショットを取ってすべて引き出し、同じチェーンの同じトークンでMerkl経由で返す、ユーザーが自分で引き出す期限を告知してから残りを移す、まったく移さない。日付は決まっていません。",
+    "who": "Lazy Summerのボールト（Ethereum、Base、Arbitrum、Sonic、HyperEVM）に預け入れが残っている人。RFCによると、11月5日時点で16のボールトに約$369,000が残っています。",
+    "todo": "`summer.fi`でウォレットを接続し、ポジションを確認して抜け、未受け取りの報酬も受け取ってください。資産を移してMerklで受け取れるようにするのは選択肢の一つで、方法や引き出しの期限は、今後の正式なガバナンスの決定によります。",
+    "caution": "この11月5日のコミュニティRFCには拘束力のない投票が含まれ、RFC自体で資金が動くことはありません。RFCによると、7月6日の不正流出（EthereumのUSDCボールト）と不良債権による損失は全額は補てんされません。出口のページは`summer.fi`で確認し、フォーラムの投稿やオンチェーンの提案にリンクがあるというだけで接続や署名をしないでください。",
+    "official": [
+      "Summer.fiのウェブサイト：引き出しのみ",
+      "Lazy Summerフォーラム：秩序ある終了のRFC（11月5日）",
+      "Lazy Summerフォーラム：ボールトを引き出しのみに（7月29日）"
+    ]
+  },
+  "aster-apollox-offline": {
+    "name": "Aster：ApolloXのウェブサイトとAPIが終了",
+    "summary": "Asterは旧ApolloXのウェブサイトとAPIを終了しており、11月5日ごろに完了します。まだ残高やポジションがあるなら、今すぐ決済して引き出してください。",
+    "deadlineNote": "11月3日10:00 UTCから、Asterは旧APXコントラクトの整理を始め、約48時間かかるとしました。つまり11月5日10:00 UTCごろに終わります。apollox.financeのウェブサイトとAPIもあわせて終了します。",
+    "who": "ApolloX（`apollox.finance`）にまだ残高や未決済のポジションがある人。",
+    "todo": "ポジションを決済し、ご自身のウォレットに引き出してください。問題があれば、AsterはDiscordのサポートに連絡するよう案内しています。",
+    "caution": "整理が終わった後もコントラクトを直接使えるかどうかは、Asterは明らかにしていません。",
+    "official": [
+      "AsterのX投稿：11月3日の整理のお知らせ"
+    ]
+  },
+  "lisk-chain-closed": {
+    "name": "Liskチェーンの終了",
+    "summary": "Liskチェーンは11月2日に終了しました。終了時に進行中だった引き出しはEthereumで入金され、チェーンに残った資金については2027年1月に手続きが始まるとLiskはしています。",
+    "deadlineNote": "チェーンは当初10月31日に終了する予定で、実際の最終日は11月2日でした。ブリッジを始められる最終日は10月24日でした（ブリッジには約8日かかります）。Liskは、チェーンに残った資金のための専用コントラクトを2027年1月に用意するとしています。",
+    "who": "終了時点でLiskにまだ資産があった人、または進行中の引き出しがあった人。",
+    "todo": "Liskによると、終了時点で進行中だった引き出しは、Ethereum上の送り先アドレスに直接入金されます。チェーンに残った資金については、2027年1月の公式の手続きを待ってください。今のところ、やることはありません。",
+    "caution": "Liskは、資金を取り戻す手伝いを申し出て連絡することも、シードフレーズを聞くことも決してないとしています。ステーキング報酬のコントラクトにある約520万LSK（貯まったが未受け取りの報酬を含む）はバーンされますが、ユーザーが自分でステーキングしたLSKはバーンされません。",
+    "official": [
+      "Liskブログ：Liskチェーンの終了",
+      "LiskのX投稿：1月の手続き（11月3日）",
+      "LiskのX投稿：最終日のリマインダー（11月1日）",
+      "Liskブログ：新しいLiskの紹介"
+    ]
+  },
+  "stratex-vaults": {
+    "name": "StratExのボールト（QuickSwap上）の終了",
+    "summary": "StratExのボールトは終了し、StratExは11月3日に、引き出していなかった全員に資金を返したとしています。ウォレットに届いたか確認してください。",
+    "deadlineNote": "手動での引き出しは11月1日に止まりました。11月3日、StratExは引き出していなかった全員に資金を返したとしました。",
+    "who": "StratExのボールトにお金があり、11月1日より前に引き出さなかった人。",
+    "todo": "返された資金がウォレットに届いているか確認してください。",
+    "official": [
+      "StratExのX投稿：資金の返還（11月3日）",
+      "StratExのX投稿：引き出しの締め切り（10月21日）",
+      "StratExのX投稿：最終のお知らせ（9月17日）"
+    ]
+  },
+  "lista-cdp-winddown": {
+    "name": "Lista DAO：Lista CDPは終了、Lista Lendingへ移行",
+    "summary": "Lista CDPは終了しました。Listaによると、対応マーケットのポジションは自動でLista Lendingに移され、やることはありません。ご自身のポジションが対応マーケットにあったか確認してください。",
+    "deadlineNote": "ポジションは9月30日から10月31日まで移行や返済ができました。11月1日と2日、Listaは対応マーケットのポジションを自動で移行したとしました。",
+    "who": "Lista CDPにポジションがあった人。",
+    "todo": "11月2日、Listaは対応するすべてのマーケットが自動でLista Lendingに移り、やることはないとしました。ご自身のポジションが対応マーケットにあったか確認してください。",
+    "caution": "対応していないマーケットのポジションがどうなるかは、Listaは明らかにしていません。",
+    "official": [
+      "Listaブログ：CDP終了の前にやること",
+      "ListaのX投稿：対応は不要（11月2日）",
+      "ListaのX投稿：移行完了（11月1日）",
+      "ListaのX投稿：10月1日のお知らせ"
+    ]
+  },
+  "kyan-exchange": {
+    "name": "Kyan取引所（旧Premia）の終了",
+    "summary": "Kyan（旧Premia）は終了し、残高は10月31日までに引き出す必要がありました。引き出せない場合は、Discordで質問するようKyanは案内しています。",
+    "deadlineNote": "10月19日に発表：残高は「月末までに」、つまり10月31日までに引き出すようにとのことでした。",
+    "who": "Kyanに残高が残っている人。",
+    "todo": "引き出せない場合は、Kyanの公式Discordの#supportへ行ってください。チームが手動で対応します。",
+    "official": [
+      "KyanのX投稿：10月19日の終了のお知らせ"
+    ]
+  },
+  "stargate-hydra-chains": {
+    "name": "Stargate v2とHydra、利用の少ないチェーンへの対応を一括で終了",
+    "summary": "Stargate v2とHydraは、利用の少ない複数のチェーンへの対応を終了し、最後のグループは10月23日に止まりました。",
+    "deadlineNote": "9月20日ごろ、複数のチェーン（Sophon、Silicon、Arbitrum Nova、Degen、Superpositionを含む）でHydraの資産が止まりました。Aurora、Taiko、LightLink、Gnosisは9月23日に、Gravity、Camp、GOAT、Metisは10月23日に止まりました。",
+    "who": "これらのチェーンのStargateプールの流動性提供者と、HydraのUSDC.eやUSDTの保有者。",
+    "todo": "各締め切りの前に、流動性提供者（ETHプールを含む）は引き出す必要があり、HydraのUSDC.eとUSDTの保有者はStargateのプールへブリッジして償還する必要がありました。",
+    "caution": "締め切りの後もHydraの資産を償還できるかどうかは、Stargateの投稿には書かれていません。",
+    "official": [
+      "StargateのX投稿：9月25日のリマインダー",
+      "StargateのX投稿：9月10日のリマインダー",
+      "StargateのX投稿：8月21日のお知らせ"
+    ]
+  },
+  "stargate-metis-pools": {
+    "name": "Metis上のStargate：V1・V2プールの流動性は10月23日までに引き出す必要があった",
+    "summary": "MetisでのStargateの対応は10月23日に終わり、その前にV1・V2プールの流動性を引き出す必要がありました。Metisは、残ったものは通常の画面では引き出すのが難しいか、できない可能性があると警告しています。",
+    "deadlineNote": "Metis AndromedaでのStargateの対応は10月23日に終わり、LayerZero LabsのDVNとExecutorは10月30日にMetisへの対応を止めました。影響を受けるプール：Stargate V2のUSDT、ETH、METISプールと、Stargate V1のUSDT、METIS、MAIプール。",
+    "who": "Metis上のStargate V1・V2プールの流動性提供者と、LayerZero V1でMETIS、HERA、QI、MTVTをほかのチェーンにブリッジした人。",
+    "todo": "期限の前に：LPトークンをステーキングしていれば解除し、Stargateアプリで流動性を引き出し、LayerZero V1で出ていったMETIS、HERA、QI、MTVTは同じ経路でMetisに戻します。逃してしまった場合は、Metisチームに連絡するようMetisは案内しています。",
+    "caution": "Metisによると、期限後にMetis上のStargateプールに残った流動性は、通常のStargateの画面では引き出すのが難しいか、できない可能性があります。Metisの公式（canonical）ブリッジが発行したm.USDC、m.USDT、WETH、METISは影響を受けません。",
+    "official": [
+      "Metisブログ：Metis AndromedaでのStargateの終了とLayerZeroの変更"
+    ]
+  },
+  "mint-blockchain-shutdown": {
+    "name": "Mint Blockchainの終了",
+    "summary": "Mint Blockchainは終了し、期限は10月20日でした。公式の引き出しページでEthereumに戻せるのは、ETH、WBTC、USDC、USDTだけです。",
+    "deadlineNote": "期限は10月20日でした。",
+    "who": "Mintチェーンに資産がある人。",
+    "todo": "公式ページ`mintchain.io/withdraw`は、ETH、WBTC、USDC、USDTをEthereumに引き出すことにだけ対応しています（imTokenのお知らせによると、引き出しは毎週処理され、約10日で届きます）。",
+    "caution": "期限後にほかに方法があるかどうかは、Mintは明らかにしていません。",
+    "official": [
+      "Mintの引き出しページ"
+    ]
+  },
+  "coinex-csc-shutdown": {
+    "name": "CoinEx Smart Chain（CSC）とOneSwapの終了",
+    "summary": "CoinExは終了に向かっています。CSCチェーンとOneSwapは9月29日に止まり、取引所のアカウントにあるお金は12月22日までに引き出す必要があります。",
+    "deadlineNote": "CSCとOneSwapは9月29日に止まり、ブリッジの償還も同時に終わりました。CoinEx取引所からの引き出しは、12月22日10:00 UTC+8まで可能です。",
+    "who": "CSCやOneSwapに資産がある人と、CoinEx取引所のアカウントにお金が残っている人。",
+    "todo": "オンチェーンの期限は過ぎています。12月22日より前に、取引所のアカウントのお金を引き出してください。その後、USDTは別の保管に移され、毎月5%の保管手数料がかかります。受け取るには、2028年8月22日までにsupport@coinex.comにメールしてください。",
+    "caution": "CoinExによると、これが最後のお知らせで、この後にCoinExの名前で出る「新しいお知らせ」は偽物です。",
+    "official": [
+      "CoinExのお知らせ"
+    ]
+  },
+  "awe-stpt-migration": {
+    "name": "AWE Network：STPTからAWEへ（Baseへ移行）",
+    "summary": "Ethereum上のSTPTをBase上のAWEに交換する期間は9月21日に終わり、AWEは遅れての交換はできないとしています。",
+    "deadlineNote": "期限は9月21日でした。AWEによると、約99%が移行済みです。",
+    "who": "まだSTPTを持っている人。",
+    "todo": "AWEは、遅れての交換はできないとしています。交換されなかったトークンの扱いは、コミュニティのガバナンス提案で決められます。",
+    "official": [
+      "AWEブログ：移行期間の終了"
+    ]
+  },
+  "tether-alloy": {
+    "name": "Tether：Alloy by TetherとaUSD₮の終了",
+    "summary": "Alloy by TetherとaUSD₮は9月17日に終了しました。それまでに、ユーザーはaUSD₮を返し、XAU₮の担保を取り戻す必要がありました。",
+    "deadlineNote": "期限は9月17日でした。",
+    "who": "AlloyでXAU₮を担保にaUSD₮を発行した人。",
+    "todo": "期限前に、ユーザーはaUSD₮を返し、XAU₮の担保を取り戻す必要がありました。Tetherによると、今はプラットフォームからはこの操作ができません。",
+    "caution": "期限後に担保がどうなるかは、Tetherは明らかにしていません。",
+    "official": [
+      "Tetherのお知らせ"
+    ]
+  },
+  "trust-wallet-networks": {
+    "name": "Trust Wallet、24のネットワークへの対応を終了",
+    "summary": "9月15日から、Trust Walletには24のネットワークが表示されなくなりましたが、資産はチェーン上にそのまま残っています。EVMチェーンは、カスタムネットワークとしてご自身で追加できます。",
+    "deadlineNote": "9月15日に、これらのネットワークはウォレットの一覧から消えました。Trust Handleはそれより先、9月7日に止まりました。",
+    "who": "これらのネットワークに資産があるTrust Walletの利用者：上に挙げた15のEVMチェーンと、9つの非EVMチェーン（一覧はTrust Walletの公式ブログにあります）。",
+    "todo": "資産はチェーン上にそのまま残っています。EVMチェーンは、検証済みのRPCを使ってカスタムネットワークとしてご自身で追加してください。非EVMチェーンは、そのチェーンに対応するほかのウォレットにウォレットをインポートしてください。",
+    "caution": "RPCは、そのチェーンの公式ドキュメントにあるものだけを使ってください。シードフレーズは必ず信頼できるウォレットアプリの中でご自身で入力し、ウェブサイトには絶対に入力しないでください。",
+    "official": [
+      "Trust Walletブログ"
+    ]
+  },
+  "vanar-vanry-migration": {
+    "name": "Vanar：VANRYはBaseへ移行",
+    "summary": "VANRYをBaseに移す期間は9月10日に終わり、Vanarのページには、これ以上の移行は処理しないと書かれています。",
+    "deadlineNote": "交換の期間は8月11日13:00 UTCから9月10日13:00 UTCまででした。まだステーキング解除中だったトークンは、9月11日にBaseでエアドロップされました。",
+    "who": "Ethereum、Polygon、Vanar ChainにVANRYを持っている人。",
+    "todo": "Vanarのページによると、期間の終了後は移行できません。9月10日より前にステーキング解除を始めたのにトークンを受け取っていない場合は、Vanarにメールしてください。",
+    "official": [
+      "Vanarの交換ページ"
+    ]
+  },
+  "superposition-shutdown": {
+    "name": "Superpositionチェーンの終了、Arbitrum Oneへ",
+    "summary": "Superpositionチェーンは9月8日に終了しました。Superpositionは、その後チェーンに残った資産には「アクセスできなくなる可能性がある」としていました。",
+    "deadlineNote": "チェーンは9月8日に終了しました。",
+    "who": "終了時点で、まだSuperpositionに資産があった人。",
+    "todo": "期限前に、ユーザーはCamelotなどのポジションから抜け、ArbitrumのネイティブブリッジかRelayでArbitrum Oneに戻る必要がありました。",
+    "caution": "11月5日時点で、公式の代わりの手段は発表されていません。",
+    "official": [
+      "SuperpositionのX投稿：8月4日のお知らせ"
+    ]
+  },
+  "arbitrum-nova-maintenance": {
+    "name": "Arbitrum Novaはメンテナンスモード（終了ではない）",
+    "summary": "9月2日から、Arbitrum Novaは終了ではなくメンテナンスモードです。公式ブリッジでArbitrum Oneに移すことが推奨されています。",
+    "deadlineNote": "移行期間は6月4日から9月2日まででした。9月2日からチェーンはメンテナンスのみとなり、RPCへのアクセスはより制限されています。",
+    "who": "Arbitrum Novaに資産がある人（MOONの保有者を含む）。",
+    "todo": "公式のArbitrum PortalのブリッジでArbitrum Oneに移してください。金額が大きい場合は、先にEthereumに引き出してください（7日間のチャレンジ期間があります）。MOONには直接の経路がないので、先にEthereumに移す必要があります。",
+    "caution": "公式ブリッジは第3段階でも使えます。AlchemyはNovaのRPCを停止しました。",
+    "official": [
+      "Arbitrumフォーラム：NovaのFAQ"
+    ]
+  },
+  "ton-old-bridge": {
+    "name": "旧TONブリッジ（bridge-v3.ton.org）が完全に終了",
+    "summary": "旧TONブリッジは9月1日に完全に閉鎖されました。EthereumとBSCのWrapped TON、TON上のjUSDTとjUSDCは、それまでにブリッジで戻す必要がありました。",
+    "deadlineNote": "9月1日から、旧ブリッジはどの送金も処理しません。",
+    "who": "EthereumかBNB ChainにWrapped TONを持っている人、またはTON上にjUSDT、jUSDCなどのトークンを持っている人。",
+    "todo": "期限前に、EthereumとBSCのWrapped TONはTONへ、TON上のjUSDT、jUSDCなどのトークンはEthereumへ、ブリッジで戻す必要がありました。",
+    "caution": "11月5日時点で、公式チャンネルに代わりの手段は投稿されていません。",
+    "official": [
+      "TON Statusの公式Telegramチャンネル"
+    ]
+  },
+  "dfk-chain-sunset": {
+    "name": "DeFi Kingdoms：DFK Chainの終了",
+    "summary": "DFK Chainは8月28日に終了予定でした（経過済み）。DeFi Kingdomsは、JEWELやBTC、ETH、USDC、AVAXなどDFK外のトークンは移行できないとし、保有者が事前に自分でブリッジする必要があるとしていました。",
+    "deadlineNote": "7月31日に発表され、終了日は8月28日とされました。",
+    "who": "DFK Chain上でJEWEL、またはBTC、ETH、USDC、AVAXなどのDFK外のトークンを持っている人、そこでの流動性提供者、スマートウォレットの利用者。",
+    "todo": "DeFi Kingdomsの求めたこと：スマートウォレットの利用者は、ブリッジの前に資産を通常のウォレットに移し、DFKネイティブの資産二つのプールを含め、すべてのLPを解消すること。当時チームは、JEWELはAvalanche C-Chainにブリッジでき、DFKネイティブの資産の移行は準備中で、詳細は追って知らせるとしていました。",
+    "caution": "DeFi Kingdomsは、JEWELやDFK外のトークンを移行することも、再発行することも、管理することもできないとしていました。7月31日のお知らせには、8月28日以降もチェーンに残っているものがどうなるかは書かれていません。",
+    "official": [
+      "DeFi KingdomsのX投稿：7月31日のお知らせ",
+      "DeFi KingdomsのX投稿：やるべきこと"
+    ]
+  },
+  "moonbeam-glmr-base": {
+    "name": "Moonbeam：GLMRはBaseへ移行",
+    "summary": "GLMRをBaseに移す期限は7月31日に過ぎました。Moonbeamは、先にチェーン上のプロトコルから資金を引き出し、GLMRをBaseへ1:1でブリッジするよう求めていました。ブリッジされなかったGLMRの扱いは、お知らせにありません。",
+    "deadlineNote": "期限は7月31日でした（時刻とタイムゾーンは示されていません）。Moonbeamは、7月31日までの移行期間中はチェーンが動き続け、チェーンの運用が終わるとオンチェーンのプロトコルに残った資金には「アクセスできなくなる可能性がある」としていました。チェーンがいつ止まるかは、お知らせに書かれていません。",
+    "who": "Moonbeam上のGLMRの保有者と、そのチェーンのプロトコル（流動性、レンディング、ステーキングのコントラクトなど）に資金がある人。取引所にあるGLMRは、取引所が自動で移行を処理するとMoonbeamはしています。",
+    "todo": "手順は次のとおりでした：先にチェーン上のプロトコルから資金を引き出し、公式の移行ページでGLMRをBaseへ1:1でブリッジする。7月3日のお知らせは、期限後も移行できるかどうか、ブリッジされなかったトークンをどう扱うかを明らかにしていません。",
+    "caution": "公式の移行ページは`migrate.portal.moonbeam.network`です。7月3日のお知らせは、期限後もこのページが使えるかどうかを明らかにしていません。「遅れての移行」を持ちかけてDMしてくる人は無視してください。",
+    "official": [
+      "Moonbeamニュース：「Moonbeam Network Relaunches on Base」",
+      "MoonbeamのX投稿：7月3日のお知らせ"
+    ]
+  },
+  "moonriver-movr-base": {
+    "name": "Moonriver：MOVRはBaseへ移行",
+    "summary": "MOVRをBaseに移す期限は7月31日に過ぎました。Moonriverは、先にチェーン上のプロトコルから資金を引き出し、MOVRを二段階でBaseへ1:1でブリッジするよう求めていました。ブリッジされなかったMOVRの扱いは、お知らせにありません。",
+    "deadlineNote": "期限は7月31日でした（時刻とタイムゾーンは示されていません）。Moonriverは、チェーンの運用が終わるとオンチェーンのプロトコルに残った資金には「永久にアクセスできなくなる可能性がある」としていました。チェーンがいつ止まるかは、お知らせに書かれていません。",
+    "who": "Moonriver上のMOVRの保有者と、そのチェーンのプロトコル（流動性、レンディング、ステーキングのコントラクトなど）に資金がある人。取引所にあるMOVRはやることがなく、取引所が自動で処理するとMoonriverはしています。",
+    "todo": "手順は次のとおりでした：先にチェーン上のプロトコルから資金を引き出し、公式の移行ページで二回に分けてブリッジする。MOVRはMoonriverからMoonbeamへ（xcMOVRとして）移り、その後、移行用のブリッジがBase上のMOVRに1:1、手数料なしで替えます。7月7日のお知らせは、期限後も移行できるかどうかを明らかにしていません。",
+    "caution": "公式の移行ページは`migrate.portal.moonbeam.network`で、関連するコントラクトもそこで確認できます。7月7日のお知らせは、期限後も移行ポータルが使えるかどうかを明らかにしていません。「遅れての移行」を持ちかけてDMしてくる人は無視してください。",
+    "official": [
+      "Moonbeamニュース：「MOVR is Migrating to Base」",
+      "MoonriverのX投稿：7月7日のお知らせ"
+    ]
+  }
+}

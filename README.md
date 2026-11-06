@@ -33,6 +33,12 @@
 - **网站**:静态页面加三个小接口(Cloudflare Pages Functions):`/api/see` 截图求助(图交给 Cloudflare Workers AI 认),`/api/assets` 全部资产(地址交给 Zerion 查,需要在 Pages 里配机密 `ZERION_API_KEY`,没配就不显示这一块),`/api/hit` 体检计数(体检结果页查完一个这个浏览器没数过的地址,发一次固定的 `{"k":"checkup"}`,不带地址、不带任何编号;服务器只按北京时间每天存一个总数,是约数)。都不存用户的地址和图片(托管在 Cloudflare,托管商会处理访问日志)。Zerion 查不到的 X Layer、Merlin,由浏览器直接只读查这两条链的公共节点(OKX 的 X Layer 节点、Merlin 官方浏览器),币价用 DefiLlama 的免费接口。前端零依赖;安全响应头只允许页面连到配置里列出的公开接口(`scripts/site.mjs`)。链图标放在 `static/chains/`,来源和许可(web3icons、Trust Wallet assets,都是 MIT)见那里的 `LICENSE.txt`。
 - **运营台**(`admin/`、`functions/admin/`、`functions/api/admin/`、`server/ops/`):网址 defiexit.com/admin/(预览 ops.defiexit.pages.dev/admin/,见 `wrangler.toml` 的 `ADMIN_HOSTS`),别的主机 404。一个管理员,账号密码登录(密码至少 8 位;勾「30 天内免登录」凭证 30 天有效,不勾 1 天);第一次设管理员用维护者签名送进去的一次性设置码(24 小时有效),或 Cloudflare 机密 `SETUP_CODE`(PBKDF2、`__Host-` cookie、同源检查、输错按 IP 递增等待;管理员改的草稿也过同样的链接检查)。Cloudflare D1(绑定名 `OPS`)存:我们 X 帖子下的公开评论、我们准备回复的公开帖子、回复草稿、管理员的决定,每天的体检次数(只有日期和数),还有 X 上说自己钱卡住的公开帖子的问题记录(哪个协议、哪条链、哪种问题、哪天发的、我们回没回;运营台只显示计数);评论原文、对方账号和帖子链接最多留 30 天,到期后在下一次打开运营台时删除,只留不带账号的需求摘要(问题记录不存帖子编号本身,只存它的哈希;链接和账号到期删掉,只留计数用的那几样)。数据由维护者用 Ed25519 签名送进去(`/api/admin/ingest`,公钥在 `wrangler.toml` 的 `INGEST_PUBKEYS`,正式、预览各一把);管理员点「刷新」时服务器经 api.fxtwitter.com 读公开计数和评论。运营台不能改网站、不能发帖、不碰钱包;发帖由管理员在 X 上自己点。
 - **中英两套**:中文在 `/`,英文在 `/en/`。界面文字在 `src/js/lib/i18n.js`;每份配方都要带英文版 `recipes/<协议>/i18n/en.json`,缺一条、条数对不上、或者英文版里混着中文,构建直接报错。
+- **多语言**:别的语言登记在 `src/js/lib/langs.js`(编号、网址前缀 `/<编号>/`、`<html lang>`、og:locale、菜单上的名字),都照英文翻,只加文件、不改原文件:
+  - 界面文字 `src/js/lib/i18n/<编号>.js`(`export default { … }`,键和 `STR.en` 一样)。**有这个文件的语言才出页面、进语言菜单**;
+  - 截止日历 `data/i18n/<编号>/deadlines.json`、专题 `data/i18n/<编号>/topics/<slug>.json`、指南 `recipes/<协议>/i18n/<编号>.json`(和 en.json 结构一样);
+  - 体检和现场诊断里检测器说的话、X Layer 的取法 `src/js/detectors/i18n/<名字>.<编号>.js`(名字:hyperliquid、woofi、dyorswap、okx-boost、xlayer;和 `*.text.js` 里英文那一套一样的结构,可以只翻一部分)。
+  - 缺的(整个文件、某一条、某个字段)退回英文,页面上会说一句;有的就逐条和英文核对:数字、网址、域名、0x 地址、`代码`、`{{变量}}`、截图编号、**粗体** 都要原样留着,不能混着中文,条数要对上,函数要能跑、该显示的参数都显示,写错了构建报错(规则在 `scripts/i18n.mjs`)。
+  - 截止日历、专题的译文里照英文写的数(344,056、0.2),构建时换成这种语言的写法(德文 344.056、0,2);指南、界面文字不换(要和官网、钱包上看到的一样)。
 - **字体**:Barlow Semi Condensed(标题)、Atkinson Hyperlegible Next(正文)、Atkinson Hyperlegible Mono(地址和数字),都放在本站 `static/fonts/`,SIL Open Font License,授权文件在同一目录;汉字用系统字体。
 
 ## 本地运行

@@ -1,0 +1,102 @@
+{
+  "title": "Las estafas más comunes durante cierres y migraciones",
+  "summary": "Las habituales son los agentes de “soporte” que te escriben primero, los sitios falsos de migración o de airdrop, las solicitudes de “aprobación” o de firma que permiten que alguien se lleve tus tokens y los servicios de “recuperación” de pago. Una regla frena la mayoría: los proyectos reales no te escriben primero por mensaje privado, nunca te piden tu frase semilla ni tus claves privadas y nunca te piden que envíes dinero primero; y los únicos enlaces de confianza son los que publica la propia cuenta oficial y el sitio web oficial.",
+  "sections": [
+    {
+      "h": "Por qué las estafas se disparan en estos momentos",
+      "p": [
+        "Los cierres y las migraciones vienen con fechas límite, y mucha gente pide ayuda en público y con prisa. ethereum.org dice que los estafadores de soporte buscan en los canales públicos a personas que hacen preguntas y luego les envían un mensaje privado ofreciendo ayuda, con el objetivo de conseguir sus claves privadas o sus fondos.",
+        "MetaMask, por su parte, señala la presión de tiempo armada en torno a fechas límite como una señal típica de una solicitud de aprobación maliciosa. Cuanto más cerca esté la fecha límite, más despacio tienes que ir."
+      ],
+      "list": []
+    },
+    {
+      "h": "Las estafas más comunes",
+      "p": [
+        "Cada una de estas ha sido señalada públicamente por un proyecto o por un proveedor de billeteras."
+      ],
+      "list": [
+        "El “soporte” que te encuentra: mencionas un problema en X, Discord o Telegram, y alguien te escribe por mensaje privado diciendo que es el soporte oficial, o responde con un enlace de “ayuda”. Horizen dice que su equipo nunca te escribirá primero por mensaje privado; MetaMask dice que nunca te escribirá por mensaje privado para ofrecerte soporte, que no tiene soporte telefónico y que nunca te contacta por X sobre un caso de soporte.",
+        "Sitios falsos de migración y de airdrop que parecen los reales. Sophon advirtió: “usen solo enlaces oficiales de Sophon y tengan cuidado con los sitios de migración falsos”. Abstract advirtió sobre suplantaciones, sitios de migración falsos y mensajes privados que dicen representarlo. La documentación de Sophon añade: nunca sigas un enlace de reclamo, de migración o de intercambio de tokens que no hayas pedido.",
+        "“Aprueba para desbloquear / migrar”: una aprobación permite que un sitio o un contrato saque un token determinado de tu billetera, y una firma sin gas, como un permit, puede hacer lo mismo. El consejo de MetaMask: revisa exactamente qué pide un sitio antes de aprobar y limita el monto cuando puedas; si un sitio te pide aprobar todos tus NFT para recibir un airdrop, no caigas, porque no deberías necesitar ese tipo de aprobación para recibir nada.",
+        "Tokens o NFT que nunca pediste, con un mensaje que te manda a un sitio web para reclamarlos. MetaMask lo llama una estafa de airdrop común: lo más probable es que el sitio busque tu frase semilla o una aprobación, así que no interactúes; ocúltalo. ethereum.org añade que esos sitios te piden conectar tu billetera y “aprobar” una transacción que entrega tus activos al estafador.",
+        "“Recuperación” de pago: alguien dice que puede recuperar tu dinero robado o atascado, cobrando por adelantado. El FBI advierte que estos operadores aparecen en redes sociales, en secciones de comentarios y en resultados de búsqueda; cobran un pago inicial y desaparecen, o entregan un “informe de rastreo” incompleto o inexacto y piden más. Algunos se hacen pasar por despachos de abogados u organismos del gobierno. Las empresas privadas no pueden emitir órdenes de incautación, y las fuerzas del orden no cobran a las víctimas por investigar."
+      ]
+    },
+    {
+      "h": "Cómo comprobar un enlace",
+      "p": [
+        "Un enlace de estafa puede verse idéntico al real, así que júzgalo por su origen."
+      ],
+      "list": [
+        "Toma los enlaces solo de publicaciones de la propia cuenta oficial, o entra desde la página de inicio oficial. El consejo de Abstract: usa solo el enlace oficial y compruébalo en Discord y en otros canales oficiales.",
+        "Revisa la cuenta en sí: asegúrate de que el @usuario coincida con el que aparece en el sitio web oficial, en lugar de guiarte por la foto y el nombre visible.",
+        "No uses enlaces de resultados de búsqueda, anuncios, hilos de comentarios ni mensajes privados. El FBI señala que los falsos servicios de recuperación aparecen en secciones de comentarios y en resultados de búsqueda.",
+        "Vuelve a comprobar en la ventana emergente de la billetera: MetaMask dice que la solicitud de aprobación muestra arriba el nombre y la dirección web del sitio para que confirmes que es el sitio que querías usar. Luego mira si el paso es una transferencia, una aprobación o una firma.",
+        "Si no entiendes qué hace la ventana emergente, no la confirmes; pregunta primero en el Discord oficial."
+      ]
+    },
+    {
+      "h": "Lo que los proyectos legítimos no hacen",
+      "p": [
+        "Si te topas con cualquiera de estas cosas, puedes detenerte ahí mismo."
+      ],
+      "list": [
+        "Escribirte primero por mensaje privado. (Horizen: su equipo nunca te escribirá primero. MetaMask: nunca te escribirá por mensaje privado para ofrecerte soporte.)",
+        "Pedirte tu frase semilla, tus claves privadas o tu contraseña. ethereum.org dice que ningún servicio, agente de soporte ni sitio web legítimo te los pedirá jamás; MetaMask dice que las únicas veces que necesitas escribir tu frase semilla son al crear una billetera y al restaurarla.",
+        "Pedirte que les envíes tus fondos. (Horizen: “Nunca te pediremos que nos envíes tus fondos”.)",
+        "Llamarte por teléfono o pedirte acceso remoto a tu computadora. (MetaMask no tiene soporte telefónico. ethereum.org: nunca permitas que nadie acceda en remoto a tu computadora.)",
+        "Cobrar una comisión por “acelerar”, “desbloquear” o “recuperar” tus fondos.",
+        "DeFiExit solo le pide a tu billetera que comparta su dirección: nunca te pide firmar, aprobar ni enviar nada, y nunca escribimos primero."
+      ]
+    },
+    {
+      "h": "Si ya hiciste clic o firmaste",
+      "p": [
+        "Cuanto más rápido actúes, más posibilidades tienes de limitar el daño."
+      ],
+      "list": [
+        "Si aprobaste un sitio sospechoso: MetaMask dice que revoques la aprobación lo antes posible (por ejemplo, revísala y revócala en MetaMask Portfolio) antes de que se lleven los fondos. Una vez vaciada la billetera, es poco lo que se puede hacer.",
+        "Si se filtró tu frase semilla o tu clave privada, o aparecen transacciones que no hiciste: MetaMask recomienda crear una billetera nueva de inmediato, pasar a ella lo que quede y abandonar la antigua; si sospechas de un script “sweeper”, no envíes más gas a la billetera antigua.",
+        "Las transacciones en la blockchain no se pueden revertir. Guarda los registros de las transacciones y denúncialo ante la policía de tu país; en Estados Unidos, puedes denunciarlo ante el IC3 del FBI.",
+        "Prepárate para que te escriban por mensaje privado ofreciéndote recuperarlo. Esa es la estafa posterior de la que advierte el FBI; no les des dinero ni datos personales."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Una cuenta de “soporte oficial” me escribió por mensaje privado para ofrecerme sacar mis fondos atascados. ¿Es real?",
+      "a": "Casi seguro que es una estafa. Horizen declara que su equipo nunca te escribirá primero, y MetaMask dice que nunca te escribirá por mensaje privado para ofrecerte soporte. No respondas ni toques nada; pregunta tú por los canales oficiales que aparecen en el sitio web del proyecto, como un ticket en el Discord oficial."
+    },
+    {
+      "q": "Una página de migración quiere que conecte mi billetera y firme algo. ¿Debo hacerlo?",
+      "a": "Primero confirma que el enlace salió de una publicación de la propia cuenta oficial. Luego lee la ventana emergente de la billetera: ¿es un simple retiro o una transferencia, o es una firma de “aprobación” o de permit? Las aprobaciones y los permits permiten que otra persona mueva tus tokens; si de verdad hace falta una, aprueba solo el contrato que indica la guía oficial, y solo la cantidad que vas a usar. Si no entiendes la ventana emergente, no firmes; pregunta primero en el Discord oficial."
+    },
+    {
+      "q": "Aparecieron en mi billetera tokens que nunca compré, con un mensaje para visitar un sitio web.",
+      "a": "No los toques. MetaMask lo describe como una estafa de airdrop común: cuando vas a “reclamar”, lo que firmas puede ser una aprobación que les permite llevarse tus tokens, o te pueden llevar a escribir tu frase semilla. Ignóralo y ocúltalo."
+    },
+    {
+      "q": "Alguien dice que puede recuperar mis criptomonedas robadas a cambio de una comisión.",
+      "a": "El FBI ha advertido exactamente sobre esto: cobran una comisión por adelantado y desaparecen, o presentan un “informe de rastreo” incompleto o inexacto y piden más. Las empresas privadas no pueden emitir órdenes de incautación para recuperar criptomonedas, y las fuerzas del orden no cobran a las víctimas por investigar. No les des dinero ni datos personales."
+    },
+    {
+      "q": "¿Cómo sé si un enlace es oficial?",
+      "a": "Confía solo en dos lugares: las publicaciones de la propia cuenta oficial y la página de inicio oficial. El consejo de Abstract es usar solo el enlace oficial y comprobarlo en Discord y en otros canales oficiales. Los enlaces en respuestas, mensajes privados o anuncios de búsqueda no cuentan, por idénticos que parezcan."
+    }
+  ],
+  "sources": [
+    "Sophon en X: usa solo enlaces oficiales, cuidado con los sitios de migración falsos (19 de octubre de 2026)",
+    "Documentación de Sophon: preguntas frecuentes sobre retiros (nunca sigas enlaces no solicitados)",
+    "Abstract en X: “Abstract is Winding Down” (suplantaciones, sitios de migración falsos, mensajes privados; 6 de octubre de 2026)",
+    "Blog de Horizen: recordatorio de seguridad (nunca escribe primero, nunca pide claves, nunca pide fondos; 23 de octubre de 2026)",
+    "Soporte de MetaMask: consejos básicos de seguridad (frase semilla, claves privadas)",
+    "Soporte de MetaMask: canales oficiales de soporte (sin mensajes privados, sin teléfono, sin contacto por X)",
+    "Soporte de MetaMask: ¿qué es una aprobación de token? (permits, aprobaciones maliciosas, revocación)",
+    "Soporte de MetaMask: evita estafadores, rug pulls y estafas de airdrop",
+    "Soporte de MetaMask: me hackearon o me estafaron",
+    "ethereum.org: seguridad y prevención de estafas (estafas de soporte, estafas de airdrop)",
+    "Aviso del IC3 del FBI: empresas que afirman falsamente recuperar criptomonedas perdidas (11 de agosto de 2023)",
+    "Aviso del IC3 del FBI: despachos de abogados ficticios que ofrecen recuperar fondos (13 de agosto de 2025)"
+  ]
+}

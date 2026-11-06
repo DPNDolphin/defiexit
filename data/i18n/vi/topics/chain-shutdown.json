@@ -1,0 +1,107 @@
+{
+  "title": "Chuỗi sắp đóng cửa: làm sao lấy tiền ra?",
+  "summary": "Trước hết hãy tìm \"ngày cuối cùng được rút\" do bên chính thức công bố — ngày này thường sớm hơn ngày đóng chuỗi. Sau đó làm theo thứ tự: thoát các vị thế trong ứng dụng trên chuỗi đó và nhận phần thưởng, chuyển tiền ra qua cầu nối theo đúng lộ trình mà hướng dẫn chính thức nêu, và giữ một ít gas ở cả hai phía. Sau hạn chót, có dự án mở lối lấy lại chính thức, có dự án nói tiền sẽ không truy cập được nữa, nên đừng trông chờ vào cơ hội thứ hai.",
+  "sections": [
+    {
+      "h": "Bước 1: nắm đúng các mốc ngày",
+      "p": [
+        "Thông báo đóng cửa thường có hai mốc ngày: ngày cuối cùng bạn có thể rút tiền, và ngày chuỗi thực sự dừng. Hãy làm theo mốc thứ nhất, và đừng đợi đến ngày cuối. Chỉ tin ngày tháng từ tài khoản và trang web chính thức, không tin lời kể lại."
+      ],
+      "list": [
+        "Sophon: ngày 25/11 là hạn chót rút tiền; sau đó hạ tầng chủ chốt và các trang web liên quan bắt đầu đóng, trước khi mainnet đóng hẳn vào ngày 30/11. Theo lời Sophon: \"Ngày 25/11 là ngày phải hành động, không phải ngày 30/11.\"",
+        "Abstract: chuỗi đóng cửa vào ngày 15/12/2026, và tiền chưa được chuyển ra qua cầu nối trước thời điểm đó sẽ không truy cập được nữa.",
+        "Horizen L3: thời điểm khóa cầu nối (13:00 UTC ngày 4/11) được đặt trước ngày dừng hẳn một ngày, để ảnh chụp số dư (snapshot) được sạch và không còn giao dịch nào đang chạy dở khi chuỗi dừng."
+      ]
+    },
+    {
+      "h": "Bước 2: thoát vị thế và nhận phần thưởng trước khi chuyển qua cầu nối",
+      "p": [
+        "Tiền đang nằm trong staking, farm, pool thanh khoản hay cho vay không thuộc số dư ví của bạn. Hãy rút về ví trong chính ứng dụng ban đầu trước; chỉ khi đó bạn mới chuyển được qua cầu nối."
+      ],
+      "list": [
+        "Horizen: rút khoản stake ở trang staking trước, rồi nhận phần thưởng, rồi chuyển qua cầu nối sang Base.",
+        "Sophon: ngoài việc rút SOPH, ETH, USDC và các tài sản khác, hãy nhận mọi phần thưởng staking hoặc Guardian còn tồn, và rút mọi thứ còn nằm trong Sophon Farm.",
+        "Có những vị thế được xử lý giúp bạn, nên đừng tự ý động vào: Sophon cho biết Guardian NFT, vSOPH và SOPH đang stake sẽ tự động chuyển sang Ethereum. Hãy đọc hết hướng dẫn chính thức trước khi làm."
+      ]
+    },
+    {
+      "h": "Bước 3: đi theo lộ trình mà hướng dẫn chính thức nêu, và giữ gas ở cả hai phía",
+      "p": [
+        "Hướng dẫn chính thức thường ghi rõ lộ trình, cần giữ bao nhiêu gas, và những token nào nằm ngoài phương án chính thức."
+      ],
+      "list": [
+        "Chỉ dùng các cầu nối hoặc trang chuyển đổi mà hướng dẫn chính thức liệt kê. Ví dụ, Abstract nêu tên Migration Hub (migrate.abs.xyz) và cầu nối gốc (native-bridge.abs.xyz, Abstract cho biết có độ trễ khoảng 3 giờ); Sophon chỉ đến claim.sophon.com.",
+        "Quay về Ethereum qua cầu nối gốc chính thức thường phải chờ, và hầu hết các chuỗi cần thêm một lần Claim trên Ethereum. Xem chi tiết ở \"Rút từ L2 về Ethereum\".",
+        "Giữ gas: để lại một ít coin gốc trên chuỗi sắp đóng để trả phí, và một ít ETH trên Ethereum cho bước cuối. Horizen hướng dẫn người dùng thiếu gas nạp một lượng ETH rất nhỏ từ Base qua cầu nối gốc, chỉ ở mức tối thiểu mà cầu nối cho phép.",
+        "Token do bên khác phát hành có thể nằm ngoài phương án chính thức: Horizen cho biết USDC.e do Stargate vận hành, không phải Horizen, nên không nằm trong đợt hoàn trả của DAO và người dùng phải tự chuyển ra qua cầu nối.",
+        "Ví hợp đồng thông minh và ví đa chữ ký (multisig): kiểm tra xem dự án có lộ trình hoặc đầu mối liên hệ riêng không. Trang lấy lại tài sản của Blast cho phép chủ sở hữu ví Safe hoặc ví thông minh khác nhận thay cho ví đó; Horizen đề nghị người dùng ví hợp đồng thông minh gửi email đến địa chỉ bảo mật chính thức của Horizen trước hạn chót."
+      ]
+    },
+    {
+      "h": "Sau hạn chót: còn cách nào không?",
+      "p": [
+        "Tùy từng dự án. Dưới đây là các phương án do chính các dự án công bố (kiểm tra ngày 5/11/2026); không áp dụng cho chuỗi khác."
+      ],
+      "list": [
+        "Blast: L2 này đã đóng cửa vào ngày 4/11/2026. Trang lấy lại tài sản chính thức, blast.io, mở trong 12 tháng, ngày hỗ trợ cuối cùng là 4/11/2027. ETH, WETH và USDB nắm giữ trên Blast, cùng các lệnh rút chưa hoàn tất, được nhận trên mainnet Ethereum. Người dùng Blast Mobile được hướng dẫn nhập cụm từ khôi phục của ví đó vào một ứng dụng ví như MetaMask hoặc Rabby rồi kết nối; chỉ nhập cụm từ khôi phục vào ứng dụng ví, không bao giờ nhập vào một trang web.",
+        "Lisk: Lisk Chain đã đóng cửa vào ngày 2/11/2026, cổng thông tin và cầu nối đều đã đóng. Lisk cho biết đang xây dựng một hợp đồng thông minh riêng và dự kiến mở quy trình nhận thủ công vào tháng 1/2027, chi tiết sẽ thông báo sau; các lệnh rút đang dở dang lúc đóng cửa sẽ được ghi có vào địa chỉ đích trên Ethereum. LSK trên Ethereum hoặc trên các sàn không bị ảnh hưởng.",
+        "Horizen L3: snapshot được chụp lúc 13:00 UTC ngày 4/11. Sau một tuần công khai rà soát snapshot, Horizen DAO sẽ gửi số ZEN còn lại (gồm cả phần thưởng staking chưa nhận) và số dư ETH trên 0.001 ETH về cùng địa chỉ trên Base, dự kiến vào nửa cuối tháng 11. ETH dưới 0.001 không được hoàn trả, và USDC.e không được bao gồm.",
+        "Các dự án khác nói thẳng rằng lỡ hạn chót là mất quyền truy cập: Abstract cho biết tiền chưa chuyển ra qua cầu nối trước hạn sẽ không truy cập được nữa, còn Sophon cho biết tài sản còn lại sau hạn chót có nguy cơ vĩnh viễn không truy cập được.",
+        "Mọi giải pháp chính thức đều được công bố trên tài khoản và trang web chính thức. Nếu ai đó nhắn tin riêng cho bạn về một \"kênh lấy lại tiền\", hãy coi đó là lừa đảo."
+      ]
+    },
+    {
+      "h": "Các trò lừa đảo xuất hiện quanh các đợt đóng cửa",
+      "p": [
+        "Càng gần hạn chót, kẻ lừa đảo càng nhiều. Chính các dự án đã công khai cảnh báo về từng trò dưới đây."
+      ],
+      "list": [
+        "Trang chuyển đổi giả: Sophon cảnh báo người dùng \"chỉ dùng đường dẫn chính thức của Sophon và cẩn thận với các trang chuyển đổi giả\"; Abstract cảnh báo về việc mạo danh, trang chuyển đổi giả và tin nhắn riêng tự xưng đại diện Abstract.",
+        "Tin nhắn riêng từ \"nhân viên hỗ trợ\": Horizen cho biết đội ngũ của họ sẽ không bao giờ nhắn tin riêng cho bạn trước, không bao giờ hỏi khóa riêng tư hay cụm từ khôi phục, và không bao giờ yêu cầu bạn gửi tiền cho họ.",
+        "\"Cấp quyền để mở khóa\": một lần cấp quyền cho phép người khác chuyển token ra khỏi ví của bạn. MetaMask liệt kê việc tạo áp lực thời gian quanh các hạn chót là dấu hiệu điển hình của một yêu cầu cấp quyền độc hại.",
+        "DeFiExit chỉ đề nghị ví của bạn chia sẻ địa chỉ — không bao giờ yêu cầu bạn ký, cấp quyền hay gửi bất cứ thứ gì, và chúng tôi không bao giờ nhắn tin cho bạn trước."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Tôi có phải chuyển token trong ví lạnh không?",
+      "a": "Điều đó phụ thuộc vào việc token nằm trên chuỗi nào, không phụ thuộc vào loại ví. Ví lạnh chỉ giữ khóa của bạn; chỉ tài sản trên chuỗi sắp đóng mới cần chuyển ra. Ví dụ, Lisk cho biết LSK trên Ethereum hoặc trên các sàn không bị ảnh hưởng bởi việc đóng chuỗi, và Sophon cho biết SOPH vốn là token gốc trên Ethereum, nên chỉ phần nằm trên Sophon Chain mới cần rút. Hãy kiểm tra trong ví hoặc trên trình khám phá khối xem số dư nằm trên chuỗi nào."
+    },
+    {
+      "q": "Hạn chót đã qua. Tiền của tôi mất rồi sao?",
+      "a": "Chưa chắc, nhưng đừng trông chờ. Hãy xem trang web và tài khoản X chính thức của chuỗi để biết phương án sau khi đóng cửa: Blast mở trang lấy lại tài sản chính thức trong 12 tháng, Lisk dự kiến mở quy trình nhận vào tháng 1/2027, và Horizen DAO đang gửi trả số dư trên Base. Các dự án khác nói lỡ hạn chót là mất quyền truy cập. Đừng bao giờ tin một \"kênh lấy lại tiền\" mà chính dự án chưa công bố."
+    },
+    {
+      "q": "Tôi có cần \"xác minh ví\" hay trả phí trước khi chuyển đổi không?",
+      "a": "Trả tiền cho ai đó trước: không. Horizen cho biết đội ngũ của họ sẽ không bao giờ yêu cầu bạn gửi tiền cho họ; chi phí duy nhất là phí gas mà chính ví của bạn trả khi gửi giao dịch. \"Xác minh ví\": MetaMask cho biết các tin nhắn khẩn cấp yêu cầu bạn bấm đường dẫn để \"xác minh\" tài khoản là trò lừa đảo phổ biến. Nếu hướng dẫn chính thức thật sự yêu cầu bạn ký một xác nhận, chỉ làm trên trang được nêu trong bài đăng chính thức, và đọc kỹ cửa sổ bật lên của ví."
+    },
+    {
+      "q": "Tôi không có gas trên chuỗi sắp đóng, nên không chuyển ra qua cầu nối được.",
+      "a": "Hãy xem hướng dẫn chính thức trước. Một số chuỗi ngừng nhận nạp trong thời gian đóng cửa: Sophon tắt nạp mới từ ngày 25/6/2026, còn Horizen giữ việc nạp ETH từ Base mở chỉ để người dùng có thể trả gas, và khuyên chỉ nạp mức tối thiểu. Nếu hướng dẫn không đề cập, hãy hỏi trên Discord chính thức, đừng hỏi người nhắn riêng đề nghị \"trả gas giúp bạn\"."
+    },
+    {
+      "q": "Tôi đã bắt đầu rút qua cầu nối chính thức. Sao tiền vẫn chưa về?",
+      "a": "Cầu nối gốc chính thức về Ethereum đều có thời gian chờ, và hầu hết còn cần bạn thực hiện thêm một lần Claim trên Ethereum. Ví dụ, Abstract cho biết cầu nối gốc của họ có độ trễ khoảng 3 giờ, còn OP Mainnet thường mất 7 ngày. Xem chi tiết ở \"Rút từ L2 về Ethereum\"."
+    }
+  ],
+  "sources": [
+    "Sophon trên X: lịch trình đóng cửa 1/4, mainnet đóng ngày 30/11 (19/10/2026)",
+    "Sophon trên X: 2/4, hạn chót rút tiền ngày 25/11 (19/10/2026)",
+    "Sophon trên X: 3/4, rút tiền, phần thưởng và tài sản trong Farm (19/10/2026)",
+    "Sophon trên X: 4/4, chỉ dùng đường dẫn chính thức, cẩn thận trang chuyển đổi giả (19/10/2026)",
+    "Sophon trên X: lời nhắc ngày 2/11 (bản thân SOPH vẫn tồn tại)",
+    "Tài liệu Sophon: Hướng dẫn chuyển chuỗi (các vị thế được chuyển tự động, ngừng nhận nạp từ ngày 25/6)",
+    "Abstract trên X: \"Abstract is Winding Down\" (6/10/2026)",
+    "Blog Horizen: Những thay đổi của Horizen (đóng L3, DAO hoàn trả, nhắc nhở bảo mật; 23/10/2026)",
+    "Horizen trên X: cầu nối đóng lúc 13:00 UTC ngày 4/11 (4/11/2026)",
+    "Blast trên X: L2 đã đóng cửa; trang lấy lại tài sản mở trong 12 tháng (4/11/2026)",
+    "Trang lấy lại tài sản chính thức của Blast (ETH, WETH, USDB; Blast Mobile; Safe)",
+    "Blog Lisk: Lisk Chain đã đóng cửa",
+    "Hỗ trợ Lisk: Nhận tài sản từ Lisk Chain (quy trình nhận thủ công vào tháng 1/2027)",
+    "Lisk trên X: hợp đồng riêng; các lệnh rút dở dang được ghi có trên Ethereum (3/11/2026)",
+    "Tài liệu OP: rút qua Standard Bridge trên OP Mainnet mất 7 ngày",
+    "Hỗ trợ MetaMask: Cấp quyền token là gì? (dấu hiệu của một lần cấp quyền độc hại)",
+    "Hỗ trợ MetaMask: Các kênh hỗ trợ chính thức (tin nhắn lừa đảo \"xác minh tài khoản\")"
+  ]
+}

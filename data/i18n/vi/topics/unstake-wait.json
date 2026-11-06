@@ -1,0 +1,94 @@
+{
+  "title": "Hủy stake mất bao lâu?",
+  "summary": "Tùy giao thức, và hầu hết gồm hai bước: gửi yêu cầu, chờ, rồi quay lại rút. Theo tài liệu chính thức: EigenLayer cố định 14 ngày; Lido thường mất 1–5 ngày và lâu hơn khi hàng chờ dài; thời gian chờ (cooldown) của sUSDe trên Ethena hiện là 1–7 ngày và có thể thay đổi. ether.fi và Rocket Pool không đưa ra số ngày cố định — bạn có nhận ETH ngay hay không tùy vào lượng ETH sẵn có của giao thức.",
+  "sections": [
+    {
+      "h": "Vì sao không phải lúc nào cũng lấy lại ngay được",
+      "p": [
+        "Tiền đã stake nằm trong các hợp đồng của giao thức. Để trả lại, giao thức hoặc phải có sẵn coin, hoặc phải chạy hết một khoảng chờ bảo mật theo quy tắc của nó. Vì vậy hầu hết các giao thức gồm hai bước: bạn gửi yêu cầu, chờ, rồi quay lại trang chính thức để rút, khi đó tiền mới về ví của bạn.",
+        "Dưới đây là những gì tài liệu chính thức của từng giao thức nói (kiểm tra ngày 5/11/2026). Số liệu có thể thay đổi, nên hãy dựa vào những gì trang chính thức hiển thị lúc bạn thao tác."
+      ],
+      "list": []
+    },
+    {
+      "h": "Mỗi giao thức mất bao lâu",
+      "p": [
+        "Có khoảng chờ cố định số ngày, có khoảng chờ tùy hàng chờ, và có khoảng chờ tùy lượng tiền sẵn có mà giao thức đang giữ."
+      ],
+      "list": [
+        "EigenLayer: sau khi bạn nhấn Unstake, tiền vào hàng chờ rút cố định 14 ngày trên mainnet (100,800 khối trong hợp đồng). Sau đó nhấn Withdraw trong mục \"Available to Withdraw\" và ký thêm một lần để lấy tiền về. Restaking gốc (EigenPods) còn phải cho validator thoát ra trước: một hàng chờ thoát (theo tài liệu thường dưới một ngày, nhưng không có giới hạn khi mạng tắc nghẽn nặng), một khoảng trễ cố định khoảng 27 giờ, và một đợt quét (sweep) 0–9.1 ngày, nên tổng thời gian dài hơn.",
+        "Lido (stETH, wstETH): gửi yêu cầu ở tab Request; trong điều kiện bình thường mất 1–5 ngày. Độ dài hàng chờ, hàng chờ thoát validator của Ethereum và chế độ Bunker đều có thể làm thời gian dài hơn. Sau khi gửi, tab Claim hiện thời gian ước tính; khi đã sẵn sàng, nhấn Claim để nhận ETH.",
+        "Ethena (sUSDe): hủy stake có thời gian chờ (cooldown). Tài liệu gọi đó là \"linh hoạt (hiện từ 1 đến 7 ngày)\", do quản trị (governance) quyết định tùy tình trạng dự trữ, và hợp đồng cho phép tối đa 90 ngày. Trong thời gian chờ, USDe của bạn nằm trong một hợp đồng riêng, và bạn rút về khi hết thời gian chờ. Hãy dựa vào thời gian hiển thị lúc bạn gửi yêu cầu.",
+        "ether.fi (eETH, weETH): có hai cách. Quy đổi tức thì trả tiền ngay, trừ một khoản phí thoát nhỏ, khi quỹ đệm của giao thức đủ thanh khoản. Rút theo hàng chờ thì không mất phí: bạn nhận một NFT yêu cầu rút và nhận ETH khi yêu cầu được xử lý xong. Tài liệu không đưa ra số ngày cố định; thời gian tùy vào thanh khoản của giao thức, việc rút từ validator Ethereum và tình trạng mạng.",
+        "Rocket Pool (rETH): không có hàng chờ. Đổi lại sang ETH trên trang chính thức là tức thì, nhưng chỉ khi deposit pool có đủ ETH. Nếu không đủ, trang hiện \"Insufficient liquidity\" và chuyển qua CoW Swap của bên thứ ba, hoặc bạn có thể đổi trên một sàn phi tập trung, nhiều khả năng phải chịu một mức chênh giá nhỏ."
+      ]
+    },
+    {
+      "h": "Tôi có thể bán thay vì chờ không?",
+      "p": [
+        "Hầu hết token staking thanh khoản đều có thể đổi trên sàn, nhưng giá không phải lúc nào cũng bằng giá trị quy đổi, và không có gì đảm bảo lúc nào cũng có người mua."
+      ],
+      "list": [
+        "Lido cho biết nếu không muốn chờ, bạn có thể đổi stETH hoặc wstETH trên các sàn phi tập trung hoặc nền tảng tổng hợp để thoát ngay.",
+        "Ethena cho biết bạn có thể bán sUSDe trước khi hết thời gian chờ nếu có thị trường bên ngoài, nhưng Ethena không có kế hoạch tạo ra thị trường như vậy và không thể đảm bảo sẽ có.",
+        "ether.fi cho biết một thị trường thứ cấp có thanh khoản cũng không đảm bảo weETH luôn được giao dịch đúng bằng giá trị quy đổi.",
+        "Rocket Pool cho biết đổi trên sàn nhiều khả năng sẽ phải chịu một mức chênh giá nhỏ."
+      ]
+    },
+    {
+      "h": "Trong lúc chờ",
+      "p": [
+        "Trong lúc chờ, tiền vẫn nằm trong các hợp đồng của giao thức. Hãy lưu ý những điều sau."
+      ],
+      "list": [
+        "Bạn có thể nhận ít hơn số đã yêu cầu: Lido cho biết việc bị phạt cắt giảm (slashing) và các khoản phạt có thể khiến số ETH nhận được thấp hơn số đã yêu cầu, và EigenLayer cho biết phần nằm trong hàng chờ rút vẫn có thể bị slashing.",
+        "NFT rút tiền chính là quyền nhận tiền: Lido cho biết NFT này chuyển nhượng được, ai giữ nó thì người đó nhận được tiền, còn bạn thì mất quyền đó. Đừng bao giờ gửi nó cho bất kỳ \"nhân viên hỗ trợ\" nào.",
+        "Chỉ dùng trang chính thức: stake.lido.fi cho Lido, app.eigenlayer.xyz cho EigenLayer. Đừng dùng đường dẫn từ kết quả tìm kiếm hay tin nhắn riêng.",
+        "Nếu trang không tải được, hãy xem tài khoản X hoặc Discord chính thức của dự án trước. Tài liệu của EigenLayer mô tả cách hoàn tất lệnh rút trực tiếp qua hợp đồng Delegation trên Etherscan khi ứng dụng gặp sự cố. Cách đó chỉ dành cho người quen thao tác với hợp đồng; nó tốn gas và sẽ thất bại nếu chưa đủ 14 ngày. Nếu bạn không quen, hãy chờ trang chính thức hoạt động lại thay vì để ai đó \"làm giúp bạn\".",
+        "DeFiExit chỉ đề nghị ví của bạn chia sẻ địa chỉ — không bao giờ yêu cầu bạn ký, cấp quyền hay gửi bất cứ thứ gì, và chúng tôi không bao giờ nhắn tin cho bạn trước."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Tôi đã stake và giờ trang không hoạt động (hoặc báo lượng truy cập quá cao). Tiền của tôi còn không?",
+      "a": "Tiền đã stake được ghi trong các hợp đồng trên chuỗi, không phải trên trang web; trang web chỉ là một cách để tiếp cận chúng. Hãy xem thông báo trên X hoặc Discord chính thức của dự án và thử lại sau. Tài liệu của EigenLayer giải thích cách hoàn tất lệnh rút trên Etherscan khi ứng dụng không hoạt động, nhưng cách đó chỉ dành cho người quen thao tác với hợp đồng. Đừng đi tìm \"trang dự phòng\", và đừng nhận sự giúp đỡ của bất kỳ ai nhắn tin riêng cho bạn."
+    },
+    {
+      "q": "Tôi đã nhấn Unstake trên EigenLayer. Sao lại 14 ngày?",
+      "a": "Đó là khoảng trễ bảo mật được đặt trong hợp đồng của EigenLayer: 100,800 khối trên mainnet, khoảng 14 ngày. EigenLayer cho biết khoảng trễ này bảo vệ giao thức khi phát hiện lỗ hổng hoặc hoạt động bất thường. Hết 14 ngày, tiền không tự về: hãy quay lại ứng dụng, nhấn Withdraw và ký lần nữa."
+    },
+    {
+      "q": "Lido báo sẽ mất vài ngày. Như vậy có bình thường không?",
+      "a": "Có. Lido cho biết trong điều kiện bình thường mất 1–5 ngày, và lâu hơn khi hàng chờ dài, hàng chờ thoát validator của Ethereum bị dồn ứ, hoặc giao thức đang ở chế độ Bunker. Sau khi gửi yêu cầu, tab Claim hiện thời gian còn lại; khi đã sẵn sàng, bạn vẫn phải nhấn Claim."
+    },
+    {
+      "q": "Đã hết thời gian chờ. Sao tiền chưa về ví?",
+      "a": "Với hầu hết các giao thức, bạn phải tự làm bước thứ hai: Withdraw trên EigenLayer, Claim trên Lido, rút sau khi hết thời gian chờ trên Ethena, và nhận lệnh rút theo hàng chờ đã xử lý xong trên ether.fi. Hãy quay lại trang chính thức, kết nối đúng ví đó, tìm yêu cầu, xác nhận và ký. Việc này tốn một ít gas."
+    },
+    {
+      "q": "Có người nói họ có thể bỏ qua thời gian chờ nếu tôi trả phí.",
+      "a": "Đó là lừa đảo. Thời gian chờ là quy tắc trong hợp đồng của giao thức, như 14 ngày của EigenLayer, và không ai có thể bỏ qua nó bằng cách thu phí. Nếu cần tiền ngay, hãy dùng cách rút tức thì của chính giao thức nếu có, hoặc tự bán token trên sàn theo giá thị trường."
+    }
+  ],
+  "sources": [
+    "Tài liệu hợp đồng EigenLayer: DelegationManager (mainnet 100,800 khối = 14 ngày)",
+    "Tài liệu EigenLayer (mã nguồn trên GitHub): Hủy stake và rút tiền",
+    "Tài liệu EigenLayer (mã nguồn trên GitHub): Testnet và mainnet (ký quỹ 14 ngày trên mainnet)",
+    "Tài liệu EigenLayer (mã nguồn trên GitHub): Độ trễ khi rút như một biện pháp bảo mật",
+    "Tài liệu EigenLayer (mã nguồn trên GitHub): Độ trễ khi rút với restaking ETH gốc",
+    "Tài liệu EigenLayer (mã nguồn trên GitHub): Rút qua hợp đồng khi ứng dụng gặp sự cố",
+    "Trung tâm trợ giúp Lido: Rút Ethereum mất bao lâu? (1–5 ngày, các yếu tố ảnh hưởng)",
+    "Trung tâm trợ giúp Lido: Câu hỏi thường gặp về rút Ethereum (hai bước, có thể thấp hơn số đã yêu cầu)",
+    "Trung tâm trợ giúp Lido: Làm sao hủy stake stETH? (đổi trên sàn nếu không muốn chờ)",
+    "Trung tâm trợ giúp Lido: NFT rút tiền của Lido hoạt động thế nào? (ai giữ thì người đó nhận được)",
+    "Tài liệu Ethena: Cách stake USDe (thời gian chờ hiện là 1–7 ngày)",
+    "Tài liệu Ethena: Staking USDe (quy trình chờ; bán trước khi hết thời gian chờ)",
+    "Tài liệu Ethena: Các hàm chính của staking (thời gian chờ tối đa 90 ngày)",
+    "Tài liệu ether.fi: weETH / eETH (thời gian quy đổi tùy thanh khoản và các yếu tố khác)",
+    "Tài liệu ether.fi: Hướng dẫn tích hợp (quy đổi tức thì và rút theo hàng chờ)",
+    "Tài liệu ether.fi: Staking Ethereum (giá trên thị trường thứ cấp không được đảm bảo)",
+    "Tài liệu Rocket Pool: Tổng quan staking thanh khoản (dùng sàn khi pool thiếu ETH)",
+    "Tài liệu Rocket Pool: Staking qua Rocket Pool (tức thì; khi hết thanh khoản)"
+  ]
+}

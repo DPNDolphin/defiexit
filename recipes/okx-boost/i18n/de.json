@@ -1,0 +1,134 @@
+{
+  "title": "Deine in OKX Boost gesperrten Token zurück in deine Wallet holen",
+  "short": "Von OKX Boost in deine Wallet",
+  "verified": "Im Oktober 2026 mit dem eigenen Konto des Autors in der OKX-App nach dieser Anleitung getestet: Interaktionsadresse, Netzwerk und Betrag auf der Bestätigungsseite stimmten alle mit der Prüfkarte überein, und natives OKB kam wenige Sekunden später an. Der Quellcode des Sperr-Contracts ist im OKX-Explorer verifiziert. Er hat keinen Admin, nur die Adresse, die die Token gesperrt hat, kann sie abheben, und das Geld geht nur an diese Adresse zurück",
+  "covers": "OKB, USDT0 und USDG, die auf X Layer für den Plasma X Launch von OKX Boost gesperrt wurden",
+  "summary": "Für den Plasma X Launch von OKX Boost musstest du Token auf X Layer sperren (0.5 OKB, 200 USDT0 oder 200 USDG). Sie kommen nicht von allein zurück, und ein Jahr später haben mehr als tausend Adressen ihre noch nicht abgeholt. Öffne die Kampagnenseite in der OKX-App, tippe einmal auf „Unstake“, und das Geld geht zurück in deine Wallet.",
+  "facts": [
+    ["Transaktionen", "1 normale Transaktion. Keine Freigabe, keine Nachricht zum Signieren"],
+    ["Gebühr", "Unter $0.01, bezahlt mit dem OKB in deiner Wallet auf X Layer"],
+    ["Dauer", "Etwa 2 Minuten. Es kommt wenige Sekunden nach deiner Bestätigung an"],
+    ["Du brauchst", "Die OKX-App, auf das Konto umgestellt, das die Token gesperrt hat, und etwas OKB auf X Layer für die Gebühr"]
+  ],
+  "chips": ["Etwa 2 Minuten", "1 Transaktion, keine Freigaben", "Gebühr unter einem Cent"],
+  "support": {
+    "label": "OKX-Hilfecenter",
+    "url": "https://www.okx.com/help",
+    "note": "OKX schreibt dir nie zuerst eine Direktnachricht. Wer dir schreibt und behauptet, der Support zu sein, ist ein Betrüger."
+  },
+  "official": [{"label": "Kampagnenseite von OKX Boost", "url": "https://web3.okx.com/boost/x-launch/plasma"}],
+  "vars": {
+    "addrShort": "deine eigene Adresse",
+    "got": "die Token, die du gesperrt hast (meist 0.5 OKB)",
+    "sym": "den Token, den du gesperrt hast"
+  },
+  "pro": [
+    "**Route**: OKX-App, oben „Web3“ → unten den Entdecken-Tab (zweites Symbol) → `https://web3.okx.com/boost/x-launch/plasma` ins Suchfeld einfügen → das Ergebnis „Drittanbieter-Website“ → bei der Nachfrage **in der App öffnen** → nach unten zu den Staking-Details scrollen → der Unstake-Button → bestätigen.",
+    "**Eine Transaktion**: `unlock(bytes32 key, address token)` an den Sperr-Contract von OKX Boost 0xDA63…FD2b. Sie sendet 0 OKB und braucht weder eine Freigabe noch eine Nachrichtensignatur. Der Key ist `lp:175`, mit Leerzeichen auf 32 Bytes aufgefüllt; natives OKB wird als Token 0xEeee…EEeE geschrieben.",
+    "**Deine Zahlen**: {{got}}.",
+    "**Stolperfallen**: Die Web-Version kann sich nicht mit der Wallet in der OKX-App verbinden (sie meldet, die Wallet werde nicht unterstützt), wähle also bei der Nachfrage immer, die Seite in der App zu öffnen. Du brauchst etwas OKB auf X Layer für die Gebühr. Der Contract hat keine Frist: Nach dem Entsperren kann jederzeit abgehoben werden."
+  ],
+  "done": {
+    "where": "im Netzwerk X Layer in deiner Wallet",
+    "from": "Gesendet vom Sperr-Contract von OKX Boost",
+    "look": "Wo nachsehen: Öffne in der OKX-App in deiner Wallet den Token, den du gesperrt hast (meist OKB), und sieh dir seinen Transaktionsverlauf an."
+  },
+  "screens": {
+    "web": {"name": "Web-Version der Kampagnenseite (schwarzer Button Connect wallet unten)", "features": ["Die Adresszeile oben zeigt web3.okx.com", "Plasma X Launch, darunter groß 15,000,000 XPL", "Ein schwarzer Button Connect wallet ganz unten"], "do": "Das ist die Web-Version, die sich nicht mit deiner Wallet in der OKX-App verbinden kann. Tippe nicht auf „Connect wallet“: Tippe oben links auf das ×, um sie zu schließen, füge den Link wie in Schritt 1 erneut ein, und wenn du gefragt wirst, ob du die App-Version nutzen willst, tippe auf den ersten, fett gedruckten Button.", "images": [{"src": "ok-web.webp", "caption": "① Tippe oben links auf das **×** ✗ Tippe nicht auf „Connect wallet“"}]},
+    "jump": {"name": "Pop-up, das die App-Version anbietet", "features": ["Ein weißes Pop-up in der Mitte einer ausgegrauten Seite", "Dort steht, die App-Version laufe flüssiger", "Zwei Buttons: oben ein fett gedruckter, darunter Cancel"], "do": "Tippe oben auf den fett gedruckten Button. Er öffnet die eigene Kampagnenseite der OKX-App. Tippe nicht auf „Cancel“: Dann bleibst du auf der Web-Version, die sich nicht mit der Wallet verbinden kann."},
+    "unsupported": {"name": "Meldung, dass die Wallet nicht unterstützt wird", "features": ["Unten ein Fenster mit einem orangefarbenen Warnsymbol", "Dort sollst du zur Erweiterung OKX Wallet wechseln, um an der Kampagne teilzunehmen", "Zwei Buttons: Cancel und ein grüner Button zum Wallet-Wechsel"], "do": "Du hast auf der Web-Version auf „Connect wallet“ getippt, und das funktioniert in der OKX-App nicht. Tippe auf **Cancel**, schließ die Seite mit dem × oben links, öffne sie wie in Schritt 1 neu und wähle bei der Nachfrage die App-Version. Tippe nicht auf den Button zum Wallet-Wechsel.", "images": [{"src": "ok-unsupported.webp", "caption": "① Tippe auf **Cancel** ✗ Tippe nicht auf den grünen Button zum Wallet-Wechsel"}]},
+    "sign": {"name": "Deine Wallet will, dass du eine Nachricht signierst oder etwas freigibst (Approve / Permit)", "do": "Tippe auf **Reject** (ablehnen). Diese Anleitung besteht aus einer normalen Transaktion: keine Nachrichtensignaturen, keine Freigaben. Die Web-Version von web3.okx.com verlangt zum Anmelden eine Signatur, aber diese Anleitung nutzt die Web-Version nicht: Schließ die Seite, öffne sie wie in Schritt 1 neu und wähle bei der Nachfrage die App-Version.", "images": [{"src": "ok-sign.webp", "caption": "① Tippe auf **Reject** (ablehnen) ✗ Nicht bestätigen"}]},
+    "wrong-to": {"name": "Die Interaktionsadresse ist nicht 0xDA63E89d…2C0795FD2b, oder der Betrag hat ein Minuszeichen", "do": "Lehne ab. In dieser Anleitung geht die einzige Transaktion an den Sperr-Contract von OKX Boost 0xDA63E89dd0632Db71c89c031de11542C0795FD2b, und du bekommst Geld (ein Plus-Betrag): Du wirst nie aufgefordert, Token zu senden. Schließ die Seite und fang ab Schritt 1 neu an."},
+    "domain": {"name": "In der Adresszeile steht nicht web3.okx.com", "do": "Schließ die Seite sofort und signiere nichts. Füge `https://web3.okx.com/boost/x-launch/plasma` selbst ein; tippe nicht auf Links, die dir andere schicken."}
+  },
+  "steps": {
+    "open": {
+      "title": "Kampagnenseite in der OKX-App öffnen",
+      "items": [
+        "Tippe zuerst auf diesen Link, um ihn zu kopieren: `https://web3.okx.com/boost/x-launch/plasma`",
+        "So geht es in der OKX-App, ein Bild pro Tippen. Wir haben die App auf Chinesisch getestet, deshalb sind die Bilder auf Chinesisch. Ist deine App in einer anderen Sprache eingestellt, such den Button, der tut, was die jeweilige Bildunterschrift beschreibt, und hör auf, wenn du ihn nicht findest oder das, was du siehst, nicht passt."
+      ],
+      "copy": ["https://web3.okx.com/boost/x-launch/plasma"],
+      "images": [
+        "① Du liest das in der OKX-App? Wenn der Link kopiert ist, tippe oben links auf das **×**, um die Seite zu schließen, und komm zurück, wenn du fertig bist. Du liest es in einem anderen Browser? Öffne einfach die OKX-App",
+        "② Wähle oben **Web3** ③ Tippe auf den Entdecken-Tab, das zweite Symbol in der unteren Leiste. Die Beträge im Bild sind verdeckt; die Zeile OKX Boost X Launch unter DeFi ist diese Sperre",
+        "④ Tippe oben auf das Suchfeld",
+        "⑤ Drück lange auf das Suchfeld und tippe dann auf **Paste** („Einsetzen“ bzw. „Einfügen“)",
+        "⑥ Tippe auf das Ergebnis „Drittanbieter-Website“ darunter. Die Wallet kennzeichnet jede Webadresse so; die Adresse dahinter muss genau mit **https://web3.okx.com/** beginnen",
+        "⑦ Ein Pop-up bietet die App-Version an: Tippe auf den ersten, fett gedruckten Button, um diese Funktion in der App zu öffnen. Die Adresszeile im gelben Kasten muss genau **web3.okx.com** zeigen, nichts davor oder dahinter ✗ Tippe nicht auf „Cancel“: Die Web-Version kann sich nicht mit der Wallet in der App verbinden",
+        "⑧ Das ist die eigene Kampagnenseite der OKX-App. Oben rechts steht das aktuelle Konto; es muss das sein, das die Token gesperrt hat"
+      ],
+      "situations": {
+        "web-page": {"see": "Die Web-Version hat sich geöffnet: oben eine Adresszeile mit web3.okx.com und unten ein schwarzer Button Connect wallet", "do": "Die Web-Version kann sich nicht mit der Wallet in der OKX-App verbinden. Tippe nicht auf „Connect wallet“: Schließ sie mit dem × oben links, füge den Link erneut ein und tippe auf den fett gedruckten Button **in der App öffnen**, wenn das Pop-up erscheint."},
+        "no-dialog": {"see": "Das Pop-up mit der App-Version ist nicht erschienen", "do": "In unseren Tests ist es jedes Mal erschienen. Wenn nicht, schließ die Seite mit dem × oben links und füge den Link erneut ein. Klappt es dann immer noch nicht, tippe oben rechts auf „Hängst du fest?“ und schick uns den Bericht."},
+        "unsupported": {"see": "Eine Meldung sagt, die Wallet werde nicht unterstützt, und fordert dich auf, zur Erweiterung OKX Wallet zu wechseln", "do": "Du hast auf der Web-Version auf „Connect wallet“ getippt. Tippe auf **Cancel**, schließ die Seite, öffne sie wie oben neu und wähle bei der Nachfrage die App-Version. Tippe nicht auf den Button zum Wallet-Wechsel."},
+        "sign-login": {"see": "Eine Signaturanfrage von web3.okx.com, die mit „Welcome to OKX Wallet“ beginnt", "do": "Das ist die Web-Version, die eine Anmeldung will, und diese Anleitung braucht sie nicht. Tippe auf **Reject** (ablehnen), schließ die Seite, öffne sie wie oben neu und wähle bei der Nachfrage die App-Version."},
+        "third-party": {"see": "Das Suchergebnis nennt es eine Drittanbieter-Website", "do": "Das ist normal: Die Wallet kennzeichnet jede Webadresse so. Prüf die Adresse dahinter: Sie muss genau mit **https://web3.okx.com/** beginnen, mit einem Schrägstrich direkt nach okx.com und nichts dazwischen."},
+        "no-paste": {"see": "Langes Drücken auf das Suchfeld zeigt kein „Paste“ („Einsetzen“ bzw. „Einfügen“)", "do": "Komm auf diese Seite zurück und tippe noch einmal auf den Link, um ihn zu kopieren. Auf dem iPhone tippst du bei Nachfrage auf „Allow Paste“ („Einsetzen erlauben“). Klappt es dann immer noch nicht, tipp `https://web3.okx.com/boost/x-launch/plasma` von Hand ein."},
+        "wrong-account": {"see": "Das Konto oben rechts ist nicht das, das die Token gesperrt hat", "do": "Geh zurück zur Startseite der Wallet, tippe auf das kleine Dreieck neben dem Kontonamen, wechsle zu dem Konto, das die Token gesperrt hat (eine OKX-Wallet kann mehrere enthalten), und öffne die Seite neu. Auf dem falschen Konto findest du die Staking-Details nicht."},
+        "extension": {"see": "Ich nutze die Browser-Erweiterung OKX Wallet am Computer", "do": "Wir haben diese Anleitung nur in der OKX-App auf dem Handy getestet. Die Schritte der Erweiterung sind noch nicht geprüft, folge dieser Anleitung also vorerst nicht am Computer. Ist dieses Konto in der OKX-App auf deinem Handy, nutze die App; wenn du unsicher bist, tippe oben rechts auf „Hängst du fest?“ und schick uns den Bericht."}
+      }
+    },
+    "unstake": {
+      "title": "Unstaken",
+      "note": "Die einzige Transaktion",
+      "milestone": "Unstaking",
+      "images": [
+        "① Scroll nach unten bis zu den Staking-Details (die Zeile mit dem gestakten Betrag ist das, was du gesperrt hast, etwa {{got}}) und tippe darunter auf den Unstake-Button",
+        "② Die Unstake-Bestätigung öffnet sich. Vergleiche sie zuerst mit der Karte unten, und erst wenn alle drei gelben Kästen passen, tippe auf den grünen Bestätigungs-Button. Der verdeckte Teil im Bild ist deine eigene Adresse"
+      ],
+      "check": {
+        "title": "Prüf vor dem Bestätigen 3 Dinge",
+        "lead": "Das ist die eigene Bestätigungsseite der OKX-App. Vergleiche sie mit dieser Liste und tippe jeden Punkt an, sobald er passt.",
+        "confirm": [
+          {"title": "Es ist die Unstake-Bestätigung, auf X Layer", "sub": "Es ist eine Seite der OKX-App selbst, kein Pop-up einer Website"},
+          {"title": "Die Interaktionsadresse ist 0xDA63E89d…2C0795FD2b (der Sperr-Contract von OKX Boost)", "sub": "Die vollständige Adresse ist 0xDA63E89dd0632Db71c89c031de11542C0795FD2b. Mindestens der Anfang 0xDA63E89d und das Ende 2C0795FD2b müssen genau übereinstimmen, Zeichen für Zeichen"},
+          {"title": "Der Betrag hat ein Pluszeichen: +{{got}}", "sub": "Plus heißt: Geld, das du bekommst. Die Netzwerkgebühr darunter liegt unter $0.01"}
+        ],
+        "reject": ["Der Betrag hat ein Minuszeichen, oder du sollst Token senden", "Dort steht Approve oder Permit", "Es ist eine Signaturanfrage, bei der du eine Nachricht signieren sollst", "Die Interaktionsadresse stimmt nicht mit 0xDA63E89d…2C0795FD2b überein"],
+        "normal": [
+          "In der Zeile zur aktuellen Wallet steht deine eigene Adresse, darunter dein Kontoname",
+          "Nachdem du auf „Confirm“ getippt hast, fragt das Handy nach Face ID, einem Fingerabdruck oder deinem Passwort",
+          "Zuerst erscheint eine Meldung, dass die Transaktion bestätigt ist, dann eine, dass das Unstaking geklappt hat"
+        ]
+      },
+      "situations": {
+        "no-section": {"see": "Beim Scrollen gibt es keinen Block mit Staking-Details", "do": "Auf diesem Konto ist in dieser Kampagne nichts gesperrt: Entweder wurde es schon abgehoben, oder es ist nicht das Konto, das die Token gesperrt hat. Prüf das Konto oben rechts und tippe oben rechts auf „Hängst du fest?“ für eine Live-Prüfung."},
+        "low-gas": {"see": "Es heißt, die Gebühr kann nicht bezahlt werden oder das Guthaben ist zu niedrig", "do": "Du brauchst etwas OKB auf X Layer für die Gebühr (unter $0.01). Schick zuerst etwas OKB auf X Layer an diese Adresse (0.001 reicht locker), komm dann zurück und tippe erneut."},
+        "rejected": {"see": "Versehentlich abgelehnt", "do": "Nichts hat sich bewegt. Geh zurück zur Kampagnenseite und tippe noch einmal auf den Unstake-Button."},
+        "spinning": {"see": "Auf „Confirm“ getippt, und es lädt immer weiter", "do": "Warte eine Minute und tippe nicht noch einmal. Tippe dann oben rechts auf „Hängst du fest?“ für eine Live-Prüfung: Wir schauen uns den Sperr-Contract auf der Chain an und sehen so sofort, ob es herausgekommen ist."},
+        "sign": {"see": "Es ist eine Signaturanfrage, nicht die Unstake-Bestätigung", "do": "Lehne ab. Unstaking ist eine normale Transaktion und braucht keine Nachrichtensignatur. Höchstwahrscheinlich bist du auf der Web-Version: Geh zurück zu Schritt 1 und wähle bei der Nachfrage die App-Version."},
+        "wrong-to": {"see": "Die Interaktionsadresse ist nicht 0xDA63E89d…2C0795FD2b", "do": "Sofort ablehnen."}
+      }
+    },
+    "arrive": {
+      "title": "Prüfen, ob es angekommen ist",
+      "milestone": "Angekommen",
+      "images": [
+        "① Oben meldet eine Nachricht, dass das Unstaking geklappt hat, und der Block mit den Staking-Details ist weg: Das Geld ist zurück in deiner Wallet ② Um es in deiner Wallet zu sehen, tippe oben links auf **‹**, um die Kampagnenseite zu schließen, und dann oben links auf der Webseite auf das ×",
+        "③ Zurück auf der Startseite der Wallet (OKX unten), öffne die Liste deiner Token ④ Tippe auf **OKB** (oder USDT0 / USDG, wenn du das gesperrt hast). Die Guthaben im Bild sind verdeckt",
+        "⑤ Im Transaktionsverlauf gibt es einen neuen Unstake-Eintrag von OKX Boost, +{{got}}. Guthaben, Adresse und Datum im Bild sind verdeckt"
+      ],
+      "check": {
+        "title": "Prüfen, ob es angekommen ist",
+        "rows": [
+          ["Wie lange", "Wenige Sekunden nach deiner Bestätigung"],
+          ["Wo nachsehen", "Öffne in der OKX-App {{sym}} in deiner Wallet und sieh dir seinen Transaktionsverlauf an"],
+          ["Was du sehen solltest", "{{got}} mehr, in einem Unstake-Eintrag von OKX Boost"],
+          ["Eintrag auf der Blockchain", "Es kommt vom Sperr-Contract von OKX Boost 0xDA63…FD2b und geht an deine eigene Adresse"],
+          ["Wenn es nicht angekommen ist", "Tippe oben rechts auf „Hängst du fest?“ für eine Live-Prüfung: Wir schauen uns den Sperr-Contract auf der Chain an"]
+        ],
+        "foot": "Sobald es angekommen ist, bist du fertig. Wenn du OKB gesperrt hast, kommt echtes OKB zurück (der native Coin von X Layer), kein WOKB"
+      },
+      "situations": {
+        "not-wokb": {"see": "Ich habe OKB gesperrt: Ist OKB oder WOKB zurückgekommen?", "do": "Es ist echtes OKB (der native Coin von X Layer), kein WOKB."},
+        "usdt0": {"see": "Ich habe USDT0 oder USDG gesperrt", "do": "Du bekommst denselben Token und denselben Betrag zurück. Such in der Asset-Liste deiner Wallet nach USDT0 oder USDG."},
+        "no-record": {"see": "Der Eintrag ist nicht im Transaktionsverlauf", "do": "Tippe oben rechts auf „Hängst du fest?“ für eine Live-Prüfung: Steht deine Sperre im Contract auf 0, ist es draußen. Der Verlauf der Wallet braucht manchmal etwas, bis er es anzeigt."}
+      }
+    }
+  },
+  "sources": [
+    "OKX-Explorer · Sperr-Contract von OKX Boost (verifizierter Quellcode)",
+    "OKX Boost · Kampagnenseite Plasma X Launch"
+  ]
+}

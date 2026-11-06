@@ -1,0 +1,107 @@
+{
+  "title": "Eine Chain wird abgeschaltet: Wie hole ich mein Geld raus?",
+  "summary": "Such zuerst den offiziellen „letzten Tag zum Abheben“ – er liegt oft vor dem Abschaltdatum. Dann der Reihe nach: Steig aus deinen Positionen in Apps auf dieser Chain aus und hol deine Belohnungen ab, bring dein Geld über die Route aus dem offiziellen Leitfaden per Bridge raus und behalte auf beiden Seiten etwas Gas. Nach einer Frist öffnen manche Projekte einen offiziellen Weg zum Zurückholen, andere sagen, das Geld sei dann nicht mehr zugänglich – verlass dich also nicht auf eine zweite Chance.",
+  "sections": [
+    {
+      "h": "Schritt 1: Die richtigen Daten kennen",
+      "p": [
+        "Abschaltankündigungen nennen oft zwei Daten: den letzten Tag, an dem du abheben kannst, und den Tag, an dem die Chain wirklich stoppt. Richte dich nach dem ersten und warte nicht bis zum letzten Tag. Vertrau nur Daten vom offiziellen Account und von der offiziellen Website, nicht Nacherzählungen."
+      ],
+      "list": [
+        "Sophon: Der 25. November ist die Frist zum Abheben; danach werden zentrale Infrastruktur und zugehörige Websites nach und nach abgeschaltet, vor der endgültigen Abschaltung des Mainnets am 30. November. Sophon selbst sagt: „Der 25. November ist der Tag zum Handeln, nicht der 30. November.“",
+        "Abstract: Die Chain wird am 15. Dezember 2026 abgeschaltet, und Geld, das bis dahin nicht per Bridge abgezogen wurde, ist dann nicht mehr zugänglich.",
+        "Horizen L3: Der Bridge-Schluss (4. November, 13:00 UTC) wurde auf einen Tag vor der endgültigen Abschaltung gelegt, damit der Snapshot sauber ist und beim Stopp der Chain nichts mehr unterwegs ist."
+      ]
+    },
+    {
+      "h": "Schritt 2: Positionen auflösen und Belohnungen abholen, bevor du die Bridge nutzt",
+      "p": [
+        "Geld im Staking, in Farms, Liquiditätspools oder im Lending gehört nicht zum Guthaben deiner Wallet. Hol es zuerst in der ursprünglichen App zurück in deine Wallet; erst dann kannst du es per Bridge übertragen."
+      ],
+      "list": [
+        "Horizen: Zieh zuerst deinen Stake auf der Staking-Seite ab, hol dann die Belohnungen ab und übertrag danach per Bridge auf Base.",
+        "Sophon: Heb nicht nur SOPH, ETH, USDC und andere Assets ab, sondern hol auch offene Staking- oder Guardian-Belohnungen ab und zieh alles ab, was noch in der Sophon Farm liegt.",
+        "Manche Positionen werden für dich erledigt, also rühr sie nicht selbst an: Laut Sophon wandern Guardian-NFTs, vSOPH und gestaktes SOPH automatisch auf Ethereum. Lies den offiziellen Leitfaden vollständig, bevor du handelst."
+      ]
+    },
+    {
+      "h": "Schritt 3: Die Route aus dem offiziellen Leitfaden nehmen und auf beiden Seiten Gas behalten",
+      "p": [
+        "Der offizielle Leitfaden nennt meist die Route, wie viel Gas du behalten solltest und welche Token nicht unter den offiziellen Plan fallen."
+      ],
+      "list": [
+        "Nutze nur die Bridges oder Migrationsseiten, die der offizielle Leitfaden nennt. Abstract hat zum Beispiel seinen Migration Hub (migrate.abs.xyz) und seine native Bridge (native-bridge.abs.xyz, laut Abstract mit etwa 3 Stunden Verzögerung) genannt; Sophon verweist auf claim.sophon.com.",
+        "Der Weg zurück zu Ethereum über eine offizielle native Bridge bringt meist eine Wartezeit mit sich, und bei den meisten Chains ist danach noch ein „Claim“ auf Ethereum nötig. Details unter „Von einem L2 auf Ethereum abheben“.",
+        "Behalte Gas: Lass auf der Chain, die abgeschaltet wird, etwas vom nativen Coin für Gebühren liegen und etwas ETH auf Ethereum für den letzten Schritt. Horizen riet Nutzern ohne genug Gas, eine winzige Menge ETH von Base über die native Bridge einzuzahlen, nur das Minimum, das die Bridge erlaubt.",
+        "Token, die jemand anderes ausgibt, fallen womöglich nicht unter den offiziellen Plan: Laut Horizen wird USDC.e von Stargate betrieben, nicht von Horizen; es war deshalb nicht von der Rückgabe durch die DAO abgedeckt, und Nutzer mussten es selbst per Bridge abziehen.",
+        "Smart-Contract-Wallets und Multisigs: Prüf, ob das Projekt einen eigenen Weg oder Kontakt dafür hat. Auf der Rückhol-Website von Blast kann der Besitzer eines Safe oder einer anderen Smart Wallet das Guthaben für diese Wallet abholen; Horizen bat Nutzer von Smart-Contract-Wallets, vor der Frist an seine offizielle Sicherheits-E-Mail-Adresse zu schreiben."
+      ]
+    },
+    {
+      "h": "Nach der Frist: Gibt es noch einen Weg?",
+      "p": [
+        "Das hängt vom Projekt ab. Das hier sind Regelungen, die die Projekte selbst angekündigt haben (geprüft am 2026-11-05); sie lassen sich nicht auf andere Chains übertragen."
+      ],
+      "list": [
+        "Blast: Das L2 wurde am 4. November 2026 abgeschaltet. Die offizielle Rückhol-Website blast.io bleibt 12 Monate offen, der letzte Support-Tag ist der 4. November 2027. ETH, WETH und USDB auf Blast sowie nie abgeschlossene Auszahlungen werden auf dem Ethereum-Mainnet abgeholt. Nutzer von Blast Mobile sollen die Seed-Phrase dieser Wallet in eine Wallet-App wie MetaMask oder Rabby importieren und diese Wallet verbinden; gib eine Seed-Phrase nur in eine Wallet-App ein, niemals auf einer Website.",
+        "Lisk: Die Lisk Chain wurde am 2. November 2026 abgeschaltet, Portal und Bridge sind geschlossen. Laut Lisk wird ein eigener Smart Contract entwickelt, und für Januar 2027 ist ein manuelles Verfahren zum Abholen geplant, Details folgen; Auszahlungen, die bei der Abschaltung noch liefen, werden ihrer Zieladresse auf Ethereum gutgeschrieben. LSK auf Ethereum oder auf Börsen ist nicht betroffen.",
+        "Horizen L3: Am 4. November um 13:00 UTC wurde ein Snapshot erstellt. Nach einer einwöchigen öffentlichen Prüfung des Snapshots schickt die Horizen DAO verbleibende ZEN (einschließlich nicht abgeholter Staking-Belohnungen) und ETH-Guthaben über 0.001 ETH an dieselbe Adresse auf Base, voraussichtlich in der zweiten Novemberhälfte. ETH unter 0.001 wird nicht zurückgegeben, und USDC.e ist nicht abgedeckt.",
+        "Andere Projekte sagen klar, dass man nach Ablauf der Frist den Zugriff verliert: Laut Abstract ist Geld, das bis zum Stichtag nicht per Bridge abgezogen wurde, nicht mehr zugänglich, und laut Sophon drohen Assets, die nach der Frist noch dort liegen, dauerhaft unzugänglich zu werden.",
+        "Jede offizielle Lösung wird auf dem offiziellen Account und der offiziellen Website angekündigt. Wenn dir jemand per Direktnachricht einen „Rückhol-Kanal“ anbietet, behandle es als Betrug."
+      ]
+    },
+    {
+      "h": "Die Betrugsmaschen rund um Abschaltungen",
+      "p": [
+        "Je näher die Frist, desto mehr Betrüger. Die Projekte selbst haben öffentlich vor jeder dieser Maschen gewarnt."
+      ],
+      "list": [
+        "Gefälschte Migrationsseiten: Sophon warnte, man solle „nur offizielle Sophon-Links nutzen und sich vor gefälschten Migrationsseiten hüten“; Abstract warnte vor Identitätsbetrug, gefälschten Migrationsseiten und Direktnachrichten, die angeblich von Abstract kommen.",
+        "„Support“-Direktnachrichten: Laut Horizen schreibt sein Team dir nie zuerst, fragt nie nach privaten Schlüsseln oder Seed-Phrasen und verlangt nie, dass du ihm Geld schickst.",
+        "„Freigeben zum Entsperren“: Eine Freigabe erlaubt jemand anderem, einen Token aus deiner Wallet zu bewegen. MetaMask nennt Zeitdruck rund um Fristen als typisches Zeichen einer bösartigen Freigabeanfrage.",
+        "DeFiExit bittet deine Wallet nur, ihre Adresse zu teilen – es fordert dich nie auf, etwas zu signieren, freizugeben oder zu senden, und wir schreiben dir nie zuerst."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Muss ich die Token in meiner Cold Wallet bewegen?",
+      "a": "Das hängt davon ab, auf welcher Chain die Token liegen, nicht von der Art der Wallet. Eine Cold Wallet verwahrt nur deine Schlüssel; nur Assets auf der Chain, die abgeschaltet wird, müssen raus. Lisk sagte zum Beispiel, LSK auf Ethereum oder auf Börsen sei von der Abschaltung seiner Chain nicht betroffen, und laut Sophon ist SOPH ein nativer Ethereum-Token, sodass nur der Teil auf der Sophon Chain abgehoben werden muss. Prüf in deiner Wallet oder in einem Block-Explorer, auf welcher Chain das Guthaben liegt."
+    },
+    {
+      "q": "Die Frist ist abgelaufen. Ist mein Geld weg?",
+      "a": "Nicht unbedingt, aber verlass dich nicht darauf. Schau auf der offiziellen Website und dem X-Account der Chain nach Regelungen für die Zeit nach der Abschaltung: Blast hat für 12 Monate eine offizielle Rückhol-Website geöffnet, Lisk plant für Januar 2027 ein Verfahren zum Abholen, und die Horizen DAO schickt Guthaben auf Base zurück. Andere Projekte sagen, dass man nach der Frist den Zugriff verliert. Trau nie einem „Rückhol-Kanal“, den das Projekt nicht selbst angekündigt hat."
+    },
+    {
+      "q": "Muss ich meine „Wallet verifizieren“ oder eine Gebühr zahlen, bevor ich migrieren kann?",
+      "a": "Vorher jemanden bezahlen: nein. Laut Horizen verlangt sein Team nie, dass du ihm Geld schickst; die einzigen Kosten sind das Gas, das deine eigene Wallet für das Senden einer Transaktion zahlt. „Wallet verifizieren“: Laut MetaMask sind dringende Nachrichten, die dich auffordern, einem Link zu folgen, um dein Konto zu „verifizieren“, ein häufiger Betrug. Wenn der offizielle Leitfaden wirklich verlangt, dass du eine Bestätigung signierst, tu das nur auf der Seite, die im offiziellen Beitrag genannt ist, und lies das Wallet-Pop-up genau."
+    },
+    {
+      "q": "Ich habe kein Gas auf der Chain, die abgeschaltet wird, und komme deshalb nicht per Bridge raus.",
+      "a": "Schau zuerst in den offiziellen Leitfaden. Manche Chains stoppen Einzahlungen während einer Abschaltung: Sophon hat neue Einzahlungen am 25. Juni 2026 deaktiviert, während Horizen ETH-Einzahlungen von Base nur offen ließ, damit Nutzer Gas zahlen können, und riet, das Minimum einzuzahlen. Wenn der Leitfaden das nicht abdeckt, frag im offiziellen Discord nach, nicht bei jemandem, der dir privat anbietet, „dein Gas zu übernehmen“."
+    },
+    {
+      "q": "Ich habe schon über die offizielle Bridge gestartet. Warum ist nichts angekommen?",
+      "a": "Offizielle native Bridges zurück zu Ethereum bringen eine Wartezeit mit sich, und bei den meisten musst du danach noch selbst ein „Claim“ auf Ethereum ausführen. Abstract etwa gibt für seine native Bridge rund 3 Stunden Verzögerung an, bei OP Mainnet sind es meist 7 Tage. Details unter „Von einem L2 auf Ethereum abheben“."
+    }
+  ],
+  "sources": [
+    "Sophon auf X: Abschalt-Zeitplan 1/4, Mainnet-Abschaltung am 30. November (19. Oktober 2026)",
+    "Sophon auf X: 2/4, Frist zum Abheben am 25. November (19. Oktober 2026)",
+    "Sophon auf X: 3/4, Auszahlungen, Belohnungen und Farm-Assets (19. Oktober 2026)",
+    "Sophon auf X: 4/4, nur offizielle Links nutzen, Vorsicht vor gefälschten Migrationsseiten (19. Oktober 2026)",
+    "Sophon auf X: Erinnerung vom 2. November (SOPH selbst bleibt bestehen)",
+    "Sophon-Doku: Leitfaden zur Chain-Migration (Positionen werden automatisch verschoben, Einzahlungen seit 25. Juni aus)",
+    "Abstract auf X: „Abstract is Winding Down“ (6. Oktober 2026)",
+    "Horizen-Blog: „Changes for Horizen“ (Abwicklung des L3, Rückgabe durch die DAO, Sicherheitshinweis; 23. Oktober 2026)",
+    "Horizen auf X: Bridge schließt am 4. November um 13:00 UTC (4. November 2026)",
+    "Blast auf X: Das L2 ist abgeschaltet; Rückhol-Website 12 Monate offen (4. November 2026)",
+    "Offizielle Rückhol-Website von Blast (ETH, WETH, USDB; Blast Mobile; Safe)",
+    "Lisk-Blog: „The Lisk Chain has closed“",
+    "Lisk-Support: „Lisk Chain claims“ (manuelles Verfahren zum Abholen im Januar 2027)",
+    "Lisk auf X: eigener Contract; laufende Auszahlungen werden auf Ethereum gutgeschrieben (3. November 2026)",
+    "OP-Doku: 7-tägige Auszahlungen über die Standard Bridge auf OP Mainnet",
+    "MetaMask-Support: „What is a token approval?“ (Anzeichen einer bösartigen Freigabe)",
+    "MetaMask-Support: „Official support channels“ (Betrugsnachrichten „Verifiziere dein Konto“)"
+  ]
+}

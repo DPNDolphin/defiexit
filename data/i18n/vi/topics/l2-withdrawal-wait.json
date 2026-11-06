@@ -1,0 +1,118 @@
+{
+  "title": "Rút từ L2 về Ethereum: vì sao phải chờ, và hết thời gian chờ thì làm gì",
+  "summary": "Khi bạn chuyển tiền từ L2 về Ethereum qua cầu nối chính thức, bạn phải chờ đến khi kết quả của chuỗi được xác nhận trên Ethereum: khoảng 7 ngày với OP Mainnet và Arbitrum, Base nay là 5 ngày (một số lệnh rút chỉ 1 ngày), còn các chuỗi ZK như zkSync Era và Linea thường mất vài giờ. Hầu hết các chuỗi không tự động gửi tiền: trên OP Mainnet và Base, trước tiên bạn Prove trên Ethereum, chờ, rồi Finalize; trên Arbitrum, Linea và Scroll, hết thời gian chờ bạn quay lại cầu nối và Claim trên Ethereum. Vì vậy hãy giữ một ít ETH trên Ethereum để trả phí.",
+  "sections": [
+    {
+      "h": "Vì sao phải chờ",
+      "p": [
+        "L2 gửi kết quả của mình lên Ethereum để xác nhận. Trước khi cầu nối chính thức trả tiền trên Ethereum, nó phải chắc chắn kết quả đó là đúng.",
+        "Các chuỗi như OP Mainnet, Base và Arbitrum đăng kết quả trước, rồi chừa thời gian để bất kỳ ai cũng có thể phản bác một kết quả sai. Khoảng thời gian đó gọi là thời gian khiếu nại (challenge period). Các chuỗi ZK như zkSync Era, Linea và Scroll chờ một bằng chứng (proof) được tạo ra và kiểm tra trên Ethereum, và zkSync còn thêm một khoảng trễ bảo mật nữa.",
+        "Thời gian chờ là một phần trong quy tắc bảo mật của cầu nối chính thức. Tài liệu OP nói rõ rằng không thể lách qua nó."
+      ],
+      "list": []
+    },
+    {
+      "h": "Mỗi chuỗi mất bao lâu",
+      "p": [
+        "Theo tài liệu chính thức của từng chuỗi (kiểm tra ngày 5/11/2026). Cộng thêm thời gian bạn tự làm từng bước."
+      ],
+      "list": [
+        "OP Mainnet: thời gian khiếu nại 7 ngày. Ba bước: bắt đầu trên OP Mainnet; khi phần chuỗi đó đã được đăng lên Ethereum, \"Prove\" trên Ethereum; sau 7 ngày, \"Finalize\" trên Ethereum.",
+        "Base: từ bản nâng cấp Beryl ngày 25/6/2026, cầu nối tiêu chuẩn chờ 5 ngày, hoặc 1 ngày khi kết quả đó được bảo chứng bởi cả bằng chứng TEE lẫn bằng chứng ZK. Trước khi có thể prove, thường phải chờ khoảng 20–60 phút. Các bước giống OP Mainnet: bắt đầu, prove, finalize. Hãy dựa vào thời gian mà cầu nối hiển thị cho bạn.",
+        "Arbitrum One / Nova: ít nhất 7 ngày theo tài liệu chính thức, và đồng hồ đếm ngược của cầu nối thường hiện 7–8 ngày (thời gian khiếu nại là 45,818 khối Ethereum, khoảng 6.4 ngày, cộng thêm một ít thời gian xử lý trước và sau). Khi đếm ngược kết thúc, mở hồ sơ của bạn ở góc trên bên phải của cầu nối, vào Transactions, rồi nhấn Claim.",
+        "zkSync Era: tài liệu nêu độ trễ bảo mật ít nhất 3 giờ, và thêm 1–2 giờ khi mạng bận. Bước cuối trên Ethereum (\"finalize withdrawal\") có thể do bất kỳ ai gửi; còn trên mainnet có ai làm giúp bạn hay không thì tài liệu không nói. Nếu cầu nối bạn dùng hiện nút Claim, bạn cần nhấn nút đó.",
+        "Linea: khoảng 2–12 giờ đối với ETH và token thông thường. Rút từ Linea về Ethereum luôn cần Claim thủ công trên Ethereum (lịch sử của cầu nối chính thức đánh dấu là \"Ready to claim\"). Theo chiều này, cầu nối chính thức còn thu phí chống DDoS 0.001 ETH.",
+        "Scroll: chờ đến khi lô (batch) chứa giao dịch của bạn được hoàn tất trên Ethereum, rồi gửi thêm một giao dịch \"Execute Withdrawal\" trên Ethereum (nút Claim trên cầu nối). Tài liệu chính thức hiện tại không nói việc này mất bao lâu.",
+        "Các chuỗi khác: chuỗi xây trên OP Stack không nhất thiết giống OP Mainnet; Base đã là 5 ngày. Rút từ L3 về Ethereum phải đi qua hai chặng, mỗi chặng có thời gian chờ riêng, và tài liệu Arbitrum ước tính trường hợp xấu nhất với cài đặt mặc định là khoảng hai tuần. Hãy xem tài liệu riêng của chuỗi đó."
+      ]
+    },
+    {
+      "h": "Hết thời gian chờ thì làm gì",
+      "p": [
+        "Trên hầu hết các cầu nối chính thức, hết thời gian chờ thì tiền không tự về ví của bạn. Tài liệu Arbitrum cho biết việc xác nhận chỉ làm cho lệnh rút có thể nhận được: phải có người thực hiện nó trên Ethereum, và không có gì tự động làm việc đó. Trước khi chuỗi của mình đóng cửa, Lisk đã nhắc người dùng rằng lệnh rút chưa hoàn tất cho đến khi được nhận (claim)."
+      ],
+      "list": [
+        "Quay lại đúng trang cầu nối nơi bạn đã bắt đầu, và kết nối đúng ví đó.",
+        "Tìm lệnh rút trong lịch sử của trang (History, Transactions hoặc Activity) và nhấn Prove, hoặc Claim / Finalize, theo hướng dẫn hiện ra.",
+        "Bước này gửi một giao dịch trên Ethereum, nên bạn phải trả gas Ethereum. Tài liệu OP lưu ý rằng các giao dịch prove và finalize trên Ethereum thường tốn hơn nhiều so với việc bắt đầu rút trên L2.",
+        "Nếu bạn rút từ một ví hợp đồng thông minh như Safe: tài liệu Arbitrum cho biết lệnh rút có thể không hiện trong lịch sử của cầu nối, và bạn có thể tìm trong lịch sử bằng mã hash của giao dịch L2 đã khởi tạo nó, rồi Claim."
+      ]
+    },
+    {
+      "h": "Lâu hơn tài liệu nói? Hãy kiểm tra những điều này trước",
+      "p": [
+        "Đừng làm lại từ đầu. Kiểm tra lần lượt từng điều."
+      ],
+      "list": [
+        "OP Mainnet và Base: thời gian chờ ít nhất được tính từ giao dịch Prove của bạn, không phải từ lúc bạn bắt đầu. Nếu bạn prove muộn vài ngày, toàn bộ thời gian chờ được tính từ lúc đó. Nếu kết quả mà bạn đã prove bị xác định là không hợp lệ, bạn phải prove lại, và đồng hồ bắt đầu lại từ đầu.",
+        "Arbitrum: trong trường hợp hiếm, có người mở khiếu nại và thời gian chờ kéo dài hơn; tài liệu cho biết theo cơ chế BoLD, một lệnh rút trung thực chỉ bị chậm thêm tối đa một thời gian khiếu nại nữa.",
+        "Chuỗi ZK: zkSync cho biết 3 giờ không phải là cam kết và có thể lâu hơn khi mạng bận; Sophon cho biết thời gian thay đổi tùy lúc và đề nghị theo dõi trạng thái trên trang rút tiền chính thức của Sophon.",
+        "Tiền đã về nhưng không thấy? zkSync cho biết các lệnh rút này thường hiện trong mục \"Internal Transactions\" trên trang địa chỉ Etherscan của bạn, không nằm trong danh sách giao dịch thông thường.",
+        "Linea: các lệnh rút để quá 90 ngày chưa nhận sẽ không còn hiện trong ứng dụng cầu nối chính thức; bạn hoàn tất chúng thủ công theo tài liệu chính thức dành cho nhà phát triển.",
+        "Nếu vẫn không khớp, chỉ hỏi trên Discord chính thức hoặc trung tâm trợ giúp của dự án, và phớt lờ bất kỳ ai liên hệ bạn trước."
+      ]
+    },
+    {
+      "h": "Những điều không nên làm",
+      "p": [
+        "Lúc vội vàng là lúc người ta dễ trả thừa tiền hoặc bị lừa."
+      ],
+      "list": [
+        "Đừng chuyển qua cầu nối lần nữa để \"cho nhanh\". Lệnh rút đã bắt đầu thì không hủy được (tài liệu Arbitrum), và các cầu nối nhanh của bên thứ ba là dịch vụ riêng, không rút ngắn được lệnh rút chính thức đang chạy (tài liệu Base). Chuyển lần nữa chỉ là gửi thêm một khoản khác.",
+        "Đừng trả tiền cho bất kỳ ai đề nghị \"tăng tốc\" hay \"mở khóa\" lệnh rút. Thời gian chờ là quy tắc của giao thức, không ai bỏ qua được nó bằng cách thu phí.",
+        "Đừng làm theo đường dẫn từ kết quả tìm kiếm, tin nhắn riêng hay bình luận trả lời. Chỉ dùng cầu nối chính thức mà bạn đã bắt đầu, hoặc đường dẫn do chính tài khoản chính thức đăng.",
+        "DeFiExit chỉ đề nghị ví của bạn chia sẻ địa chỉ — không bao giờ yêu cầu bạn ký, cấp quyền hay gửi bất cứ thứ gì, và chúng tôi không bao giờ nhắn tin cho bạn trước."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Tôi đã chuyển ETH về qua cầu nối, nhưng trang báo 7 ngày. Có phải bị kẹt không?",
+      "a": "Nhiều khả năng là không. Rút từ OP Mainnet hoặc Arbitrum về Ethereum qua cầu nối chính thức bình thường mất khoảng 7 ngày; Base nay là 5 ngày, hoặc 1 ngày với một số lệnh rút. Thời gian đó không rút ngắn được. Khi hết thời gian, hãy quay lại đúng cầu nối đó và làm bước cuối (Finalize hoặc Claim); chỉ khi đó tiền mới về. Trên OP Mainnet và Base, bạn còn cần Prove trước, ở giữa quá trình."
+    },
+    {
+      "q": "Lệnh rút từ Sophon của tôi vẫn chưa về.",
+      "a": "Tài liệu của Sophon cho biết lệnh rút chính thức (canonical) về Ethereum không diễn ra tức thì: lô giao dịch phải được chứng minh trên Ethereum, sau đó bạn quay lại claim.sophon.com bằng đúng ví đó và gửi một giao dịch Claim cuối cùng trên Ethereum. Sophon cho biết thời gian thay đổi tùy lúc, nên hãy dựa vào trạng thái trên trang đó. Nếu bạn đã chọn một tuyến của bên thứ ba ở đó, hãy xem trạng thái của tuyến đó. Hạn chót rút tiền của Sophon là ngày 25/11/2026, và mainnet đóng cửa vào ngày 30/11, nên đừng để đến phút cuối."
+    },
+    {
+      "q": "Đếm ngược đã kết thúc từ mấy hôm trước mà tiền vẫn chưa về.",
+      "a": "Thường là vẫn còn thiếu bước cuối. Arbitrum cho biết đếm ngược kết thúc chỉ làm cho lệnh rút có thể nhận được: bạn phải nhấn Claim trong lịch sử của cầu nối, và không có gì tự động làm việc đó. Lệnh rút từ Linea về Ethereum luôn cần Claim thủ công. Trên OP Mainnet và Base, bạn Prove, chờ hết thời gian, rồi Finalize. Trước khi nhấn, hãy đảm bảo ví có một ít ETH trên Ethereum để trả gas."
+    },
+    {
+      "q": "Có người nói họ có thể tăng tốc lệnh rút của tôi với một khoản phí nhỏ. Có thật không?",
+      "a": "Không. Thời gian chờ là quy tắc giao thức của cầu nối chính thức: tài liệu OP nói không thể lách qua, và Arbitrum cho biết lệnh rút đã bắt đầu thì không hủy được. Bất kỳ ai thu phí để \"tăng tốc\" hay \"mở khóa\" đều đang lừa đảo. Cũng đừng bao giờ đưa cụm từ khôi phục hay khóa riêng tư của bạn cho ai."
+    },
+    {
+      "q": "Vì sao lệnh rút từ L3 của tôi báo khoảng hai tuần?",
+      "a": "Đi từ L3 về Ethereum phải qua hai chặng: trước tiên về L2 bên dưới nó, rồi từ L2 đó về Ethereum, và mỗi chặng có thời gian chờ riêng. Tài liệu Arbitrum ước tính trường hợp xấu nhất với cài đặt mặc định là khoảng hai tuần. Một số dự án có phương án riêng: hướng dẫn chính thức của Horizen ngày 23/10/2026 cho biết các lệnh rút ETH bắt đầu qua cầu nối chính thức trước ngày 4/11 sẽ được hoàn tất giúp bạn và về đến Base sau khoảng hai tuần."
+    },
+    {
+      "q": "Tôi có bao lâu để nhấn Claim? Có bị hết hạn không?",
+      "a": "Arbitrum cho biết một lệnh rút đã được xác nhận có thể chờ bạn thực hiện vô thời hạn. Tài liệu OP Mainnet và Base không nhắc đến giới hạn thời gian. Trên Linea, lệnh rút quá 90 ngày sẽ biến mất khỏi trang cầu nối chính thức nhưng vẫn có thể hoàn tất thủ công theo tài liệu. Ngoại lệ là chuỗi đang đóng cửa: khi đó hãy làm theo thông báo đóng cửa của chuỗi. Ví dụ, Lisk cho biết các lệnh rút đang dở dang lúc đóng cửa sẽ được ghi có vào địa chỉ đích trên Ethereum, và trang lấy lại tài sản chính thức của Blast cũng bao gồm các lệnh rút chưa hoàn tất."
+    }
+  ],
+  "sources": [
+    "Tài liệu OP: Tính hoàn tất của giao dịch trên OP Mainnet (rút qua Standard Bridge mất 7 ngày)",
+    "Tài liệu OP: Quy trình rút tiền (initiate, prove, finalize; prove lại sẽ đặt lại đồng hồ)",
+    "Tài liệu OP: Gửi dữ liệu giữa L1 và L2 (không thể lách thời gian chờ; các bước trên L1 tốn hơn)",
+    "Tài liệu Base: Rút tiền (5 ngày hoặc 1 ngày, 20–60 phút, cầu nối nhanh không rút ngắn được)",
+    "Tài liệu Base: Beryl — Rút tiền nhanh hơn (từ 7 ngày giảm còn 5)",
+    "Tài liệu Base: Các bản nâng cấp (Beryl chạy trên mainnet từ ngày 25/6/2026)",
+    "Tài liệu Arbitrum: Bắt đầu nhanh với cầu nối (ít nhất 7 ngày, đếm ngược 7–8 ngày, Claim)",
+    "Tài liệu Arbitrum: Xử lý sự cố cầu nối (khoảng 6.4 ngày, không hủy được, ví hợp đồng thông minh)",
+    "Tài liệu Arbitrum: Theo dõi lệnh rút (claim không tự động; L3 qua hai chặng, khoảng hai tuần)",
+    "Tài liệu ZKsync: Độ trễ khi rút (tối thiểu 3 giờ, giao dịch nội bộ trên Etherscan)",
+    "Tài liệu ZKsync: Chuyển tài sản qua cầu nối (bất kỳ ai cũng có thể finalize trên L1)",
+    "Tài liệu ZKsync: Tính hoàn tất (bằng chứng mất khoảng một giờ, tổng cộng khoảng 3 giờ)",
+    "Tài liệu Linea: Chuyển token qua cầu nối (2–12 giờ, claim thủ công, phí 0.001 ETH, 90 ngày)",
+    "Tài liệu Linea: Tính hoàn tất của giao dịch (bằng chứng ZK được kiểm chứng trên Ethereum)",
+    "Tài liệu Scroll (mã nguồn trên GitHub): Tổng quan công nghệ (bằng chứng hợp lệ được kiểm chứng trên Ethereum)",
+    "Tài liệu Scroll (mã nguồn trên GitHub): Scroll Messenger — từ L2 về L1 cần một giao dịch Execute Withdrawal",
+    "Tài liệu Sophon: Hoàn tất lệnh rút chính thức (canonical) (thời gian thay đổi; claim cuối cùng trên Ethereum)",
+    "Sophon trên X: hạn chót rút tiền ngày 25/11, đóng cửa ngày 30/11 (19/10/2026)",
+    "Lisk trên X: lệnh rút chưa hoàn tất cho đến khi được claim (1/11/2026)",
+    "Lisk trên X: các lệnh rút dở dang sẽ được ghi có trên Ethereum (3/11/2026)",
+    "Trang lấy lại tài sản chính thức của Blast (bao gồm các lệnh rút chưa hoàn tất)",
+    "Blog Horizen: Những thay đổi của Horizen (23/10/2026)"
+  ]
+}

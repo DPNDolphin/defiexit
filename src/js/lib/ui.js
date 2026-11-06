@@ -2,13 +2,21 @@
 import { zh } from "./zh.js";
 import { ICONS } from "./icons.js";
 
+// 挨着汉字的半角标点换成全角:只在中文页面上换(日文里也有汉字,不能按中文的规矩换)。
+// 拿不到页面语言的(测试里的假页面)照原来的做法换:没有汉字的文字本来就不会变
+const zhPage = () => {
+  const l = globalThis.document?.documentElement?.lang;
+  return l == null || /^zh/i.test(l);
+};
+export const punct = (s) => (zhPage() ? zh(s) : String(s));
+
 export function el(tag, attrs = {}, ...children) {
   const n = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
     if (k === "class") n.className = v;
     else if (v !== null && v !== undefined && v !== false) n.setAttribute(k, v === true ? "" : v);
   }
-  for (const c of children.flat()) if (c !== null && c !== undefined && c !== false) n.append(c instanceof Node ? c : zh(c));
+  for (const c of children.flat()) if (c !== null && c !== undefined && c !== false) n.append(c instanceof Node ? c : punct(c));
   return n;
 }
 
@@ -52,7 +60,7 @@ export function toast(msg, ms = 4000) {
   // 底部弹层(<dialog>)开着时在最上层,提示条要放进弹层里才看得见
   const host = document.querySelector("dialog[open]") || document.body;
   if (t.parentElement !== host) host.append(t);
-  t.textContent = zh(msg);
+  t.textContent = punct(msg);
   t.classList.add("show");
   clearTimeout(timer);
   timer = setTimeout(() => t.classList.remove("show"), ms);
@@ -75,4 +83,4 @@ export async function copy(text) {
 }
 
 export const contact = () => document.querySelector('meta[name="dx-contact"]')?.content || "";
-export const setText = (node, text) => { node.textContent = zh(text); };
+export const setText = (node, text) => { node.textContent = punct(text); };

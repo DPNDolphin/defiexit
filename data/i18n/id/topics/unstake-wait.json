@@ -1,0 +1,94 @@
+{
+  "title": "Berapa lama proses unstake?",
+  "summary": "Tergantung protokolnya, dan sebagian besar terdiri dari dua langkah: ajukan permintaan, tunggu, lalu kembali untuk menarik. Menurut dokumentasi resmi: EigenLayer tetap 14 hari; Lido biasanya 1–5 hari dan lebih lama saat antrean panjang; cooldown sUSDe di Ethena saat ini 1–7 hari dan bisa berubah. ether.fi dan Rocket Pool tidak memberi jumlah hari yang pasti — apakah Anda langsung mendapat ETH tergantung berapa banyak ETH yang tersedia di protokol.",
+  "sections": [
+    {
+      "h": "Kenapa dana tidak selalu bisa langsung kembali",
+      "p": [
+        "Dana yang di-stake berada di kontrak protokol. Untuk mengembalikannya, protokol harus punya koin siap pakai atau harus menjalani masa tunggu keamanan sesuai aturannya. Jadi sebagian besar protokol terdiri dari dua langkah: Anda mengajukan permintaan, menunggu, lalu kembali ke situs resmi dan menarik, barulah dana kembali ke dompet Anda.",
+        "Berikut isi dokumentasi resmi tiap protokol (dicek 5 November 2026). Angkanya bisa berubah, jadi ikuti apa yang ditampilkan situs resmi saat Anda bertindak."
+      ],
+      "list": []
+    },
+    {
+      "h": "Berapa lama di tiap protokol",
+      "p": [
+        "Sebagian masa tunggu berupa jumlah hari tetap, sebagian tergantung antrean, dan sebagian tergantung berapa banyak dana siap pakai yang dipegang protokol."
+      ],
+      "list": [
+        "EigenLayer: setelah Anda menekan Unstake, dana masuk antrean penarikan selama tetap 14 hari di mainnet (100,800 blok di kontrak). Lalu tekan Withdraw di bawah \"Available to Withdraw\" dan tanda tangani sekali lagi untuk mendapatkan dana kembali. Native restaking (EigenPods) juga mengharuskan validator keluar dulu: antrean keluar (biasanya kurang dari sehari menurut dokumentasi, tapi tanpa batas saat kemacetan ekstrem), jeda tetap sekitar 27 jam, dan sweep 0–9.1 hari, sehingga totalnya lebih lama.",
+        "Lido (stETH, wstETH): ajukan permintaan di tab Request; dalam kondisi normal butuh 1–5 hari. Panjang antrean, antrean keluar validator Ethereum, dan mode Bunker semuanya bisa membuatnya lebih lama. Setelah Anda mengajukan, tab Claim menampilkan perkiraannya; saat sudah siap, tekan Claim untuk mendapatkan ETH.",
+        "Ethena (sUSDe): unstake punya cooldown. Dokumentasinya menyebutnya \"dinamis (saat ini antara 1 dan 7 hari)\", ditetapkan lewat tata kelola tergantung kondisi cadangan, dan kontraknya mengizinkan hingga 90 hari. Selama cooldown, USDe Anda berada di kontrak terpisah, dan Anda menariknya saat cooldown selesai. Ikuti waktu yang ditampilkan saat Anda mengajukan permintaan.",
+        "ether.fi (eETH, weETH): ada dua rute. Penebusan instan langsung membayar, dipotong biaya keluar yang kecil, jika buffer protokol punya cukup likuiditas. Penarikan lewat antrean tanpa biaya: Anda mendapat NFT permintaan penarikan dan mengklaim ETH setelah diproses. Dokumentasinya tidak memberi jumlah hari yang pasti; waktunya tergantung likuiditas protokol, penarikan validator Ethereum, dan kondisi jaringan.",
+        "Rocket Pool (rETH): tidak ada antrean. Menukar kembali ke ETH di situs resmi bersifat instan, tapi hanya jika deposit pool punya cukup ETH. Jika tidak cukup, situs menampilkan \"Insufficient liquidity\" dan mengalihkan lewat CoW Swap milik pihak ketiga, atau Anda bisa menukar di exchange terdesentralisasi, kemungkinan dengan premi kecil."
+      ]
+    },
+    {
+      "h": "Bisakah saya menjual saja daripada menunggu?",
+      "p": [
+        "Sebagian besar token liquid staking bisa ditukar di exchange, tapi harganya tidak selalu sama dengan nilai penebusannya, dan tidak ada jaminan selalu ada pembeli setiap saat."
+      ],
+      "list": [
+        "Lido menyatakan jika Anda tidak ingin menunggu, Anda bisa menukar stETH atau wstETH di exchange terdesentralisasi atau agregator untuk keluar seketika.",
+        "Ethena menyatakan Anda bisa menjual sUSDe sebelum cooldown jika ada pasar di luar, tapi Ethena tidak berencana membuat pasar seperti itu dan tidak bisa menjaminnya.",
+        "ether.fi menyatakan pasar sekunder yang likuid tidak menjamin weETH selalu diperdagangkan sesuai nilai penebusannya.",
+        "Rocket Pool menyatakan menukar di exchange kemungkinan akan disertai premi kecil."
+      ]
+    },
+    {
+      "h": "Selama Anda menunggu",
+      "p": [
+        "Selama Anda menunggu, dana masih berada di kontrak protokol. Ingat hal-hal berikut."
+      ],
+      "list": [
+        "Anda bisa menerima lebih sedikit dari yang diminta: Lido menyatakan slashing dan penalti bisa membuat ETH yang bisa diklaim lebih rendah dari jumlah yang diminta, dan EigenLayer menyatakan porsi di antrean penarikan masih bisa terkena slashing.",
+        "NFT penarikan adalah hak atas dana itu: Lido menyatakan NFT ini bisa dipindahtangankan, dan siapa pun yang memegangnya bisa mengklaim, sementara Anda kehilangan kemampuan itu. Jangan pernah mengirimkannya ke \"CS\" mana pun.",
+        "Gunakan hanya situs resmi: stake.lido.fi untuk Lido, app.eigenlayer.xyz untuk EigenLayer. Jangan memakai tautan dari hasil pencarian atau DM.",
+        "Jika situsnya tidak bisa dimuat, cek dulu X atau Discord resmi proyek. Dokumentasi EigenLayer menjelaskan cara menyelesaikan penarikan langsung lewat kontrak Delegation-nya di Etherscan saat aplikasinya bermasalah. Itu hanya untuk orang yang terbiasa dengan kontrak; caranya memakan gas dan akan gagal sebelum 14 hari terlewati. Jika Anda tidak terbiasa, tunggu situs resminya pulih daripada membiarkan seseorang \"mengerjakannya untuk Anda\".",
+        "DeFiExit hanya meminta dompet Anda membagikan alamatnya — tidak pernah meminta Anda menandatangani, memberi izin, atau mengirim apa pun, dan kami tidak pernah menghubungi Anda lebih dulu."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Saya sudah stake dan sekarang situsnya tidak berfungsi (atau bilang trafik terlalu tinggi). Apakah dana saya masih ada?",
+      "a": "Dana yang di-stake tercatat di kontrak di chain, bukan di situs web; situs hanyalah salah satu cara untuk mengaksesnya. Cek pengumuman di X atau Discord resmi proyek dan coba lagi nanti. Dokumentasi EigenLayer menjelaskan cara menyelesaikan penarikan di Etherscan saat aplikasinya tidak berfungsi, tapi itu hanya untuk orang yang terbiasa dengan kontrak. Jangan mencari \"situs cadangan\", dan jangan menerima bantuan dari siapa pun yang mengirimi Anda DM."
+    },
+    {
+      "q": "Saya menekan Unstake di EigenLayer. Kenapa 14 hari?",
+      "a": "Itu jeda keamanan yang ditetapkan di kontrak EigenLayer: 100,800 blok di mainnet, sekitar 14 hari. Menurut EigenLayer, jeda ini melindungi protokol saat ditemukan celah keamanan atau aktivitas yang tidak biasa. Setelah 14 hari lewat, dana tidak kembali dengan sendirinya: kembali ke aplikasi, tekan Withdraw, dan tanda tangani lagi."
+    },
+    {
+      "q": "Lido bilang akan butuh beberapa hari. Apakah itu normal?",
+      "a": "Ya. Lido menyatakan 1–5 hari dalam kondisi normal, dan lebih lama saat antrean panjang, antrean keluar validator Ethereum menumpuk, atau protokol sedang dalam mode Bunker. Setelah mengajukan, tab Claim menampilkan sisa waktunya; saat sudah siap, Anda tetap harus menekan Claim."
+    },
+    {
+      "q": "Masa tunggunya sudah selesai. Kenapa dananya belum ada di dompet saya?",
+      "a": "Di sebagian besar protokol, Anda harus mengerjakan langkah kedua sendiri: Withdraw di EigenLayer, Claim di Lido, tarik setelah cooldown di Ethena, dan klaim penarikan antrean yang sudah diproses di ether.fi. Kembali ke situs resmi, hubungkan dompet yang sama, cari permintaannya, konfirmasi, dan tanda tangani. Ini memakan sedikit gas."
+    },
+    {
+      "q": "Ada yang bilang bisa melewati masa tunggu dengan imbalan biaya.",
+      "a": "Itu penipuan. Masa tunggu adalah aturan di kontrak protokol, seperti 14 hari milik EigenLayer, dan tidak ada yang bisa melewatinya dengan bayaran. Jika Anda butuh dana sekarang, gunakan rute instan milik protokol itu sendiri jika ada, atau jual sendiri tokennya di exchange dengan harga pasar."
+    }
+  ],
+  "sources": [
+    "Dokumentasi kontrak EigenLayer: DelegationManager (mainnet 100,800 blok = 14 hari)",
+    "Dokumentasi EigenLayer (sumber di GitHub): Unstake dan tarik",
+    "Dokumentasi EigenLayer (sumber di GitHub): Testnet vs mainnet (escrow 14 hari di mainnet)",
+    "Dokumentasi EigenLayer (sumber di GitHub): Jeda penarikan sebagai langkah keamanan",
+    "Dokumentasi EigenLayer (sumber di GitHub): Jeda penarikan native restaking ETH",
+    "Dokumentasi EigenLayer (sumber di GitHub): Menarik lewat kontrak saat aplikasi bermasalah",
+    "Pusat Bantuan Lido: Berapa lama penarikan Ethereum? (1–5 hari, faktor-faktornya)",
+    "Pusat Bantuan Lido: FAQ penarikan Ethereum (dua langkah, bisa lebih rendah dari yang diminta)",
+    "Pusat Bantuan Lido: Bagaimana cara unstake stETH? (tukar jika tidak mau menunggu)",
+    "Pusat Bantuan Lido: Bagaimana cara kerja NFT penarikan Lido? (siapa pun yang memegangnya bisa mengklaim)",
+    "Dokumentasi Ethena: Cara stake USDe (cooldown saat ini 1–7 hari)",
+    "Dokumentasi Ethena: Staking USDe (alur cooldown; menjual sebelum cooldown)",
+    "Dokumentasi Ethena: Fungsi utama staking (cooldown maksimal 90 hari)",
+    "Dokumentasi ether.fi: weETH / eETH (waktu penebusan tergantung likuiditas dan lainnya)",
+    "Dokumentasi ether.fi: Panduan integrasi (penebusan instan vs. penarikan lewat antrean)",
+    "Dokumentasi ether.fi: Staking Ethereum (harga pasar sekunder tidak dijamin)",
+    "Dokumentasi Rocket Pool: Ikhtisar liquid staking (pakai exchange saat pool kekurangan)",
+    "Dokumentasi Rocket Pool: Staking lewat Rocket Pool (instan; saat likuiditas habis)"
+  ]
+}

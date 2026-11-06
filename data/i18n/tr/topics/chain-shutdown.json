@@ -1,0 +1,107 @@
+{
+  "title": "Bir ağ kapanıyor: paramı nasıl çıkarırım?",
+  "summary": "Önce resmi “son çekim günü” tarihini bulun; çoğu zaman ağın kapanış tarihinden daha erkendir. Sonra sırayla ilerleyin: o ağdaki uygulamalarda pozisyonlarınızdan çıkın ve ödüllerinizi alın, resmi rehberin belirttiği rotayla köprüden çıkarın ve her iki tarafta da biraz gas bırakın. Son tarihten sonra bazı projeler resmi bir kurtarma yolu açar, bazıları ise paraya artık erişilemeyeceğini söyler; ikinci bir şansa güvenmeyin.",
+  "sections": [
+    {
+      "h": "1. adım: tarihleri doğru öğrenin",
+      "p": [
+        "Kapanış duyurularında çoğu zaman iki tarih olur: para çekebileceğiniz son gün ve ağın gerçekten durduğu gün. İlkine göre hareket edin ve son güne bırakmayın. Tarihlere yalnızca resmi hesaptan ve resmi siteden geliyorsa güvenin, başkalarının aktardıklarına değil."
+      ],
+      "list": [
+        "Sophon: 25 Kasım çekim için son tarih; ardından temel altyapı ve ilgili siteler kapanmaya başlar, ana ağın nihai kapanışı ise 30 Kasım'da. Sophon'un kendi sözleriyle: “Harekete geçme tarihi 30 Kasım değil, 25 Kasım.”",
+        "Abstract: ağ 15 Aralık 2026'da kapanıyor; o tarihe kadar köprüyle çıkarılmayan paraya erişilemeyecek.",
+        "Horizen L3: köprünün kapanış saati (4 Kasım, 13:00 UTC) kesin kapanıştan bir gün önceye konuldu; böylece anlık görüntü temiz olacak ve ağ durduğunda yolda bekleyen transfer kalmayacaktı."
+      ]
+    },
+    {
+      "h": "2. adım: köprüye geçmeden önce pozisyonlardan çıkın ve ödülleri alın",
+      "p": [
+        "Staking'de, farm'larda, likidite havuzlarında ya da borç verme protokollerinde duran para cüzdan bakiyenizin parçası değildir. Önce onu, bulunduğu uygulamada cüzdanınıza geri alın; ancak o zaman köprüyle taşıyabilirsiniz."
+      ],
+      "list": [
+        "Horizen: önce staking sayfasında stake'inizi çekin, sonra ödülleri alın, sonra köprüyle Base ağına geçin.",
+        "Sophon: SOPH, ETH, USDC ve diğer varlıkları çekmenin yanı sıra bekleyen staking veya Guardian ödüllerini de alın ve Sophon Farm'da hâlâ duran her şeyi çekin.",
+        "Bazı pozisyonlar sizin yerinize taşınır, bu yüzden onlara kendiniz dokunmayın: Sophon'a göre Guardian NFT'leri, vSOPH ve stake edilmiş SOPH otomatik olarak Ethereum'a taşınır. Harekete geçmeden önce resmi rehberi baştan sona okuyun."
+      ]
+    },
+    {
+      "h": "3. adım: resmi rehberdeki rotayı kullanın ve iki tarafta da gas bulundurun",
+      "p": [
+        "Resmi rehber genelde rotayı, ne kadar gas bırakmanız gerektiğini ve hangi tokenların resmi planın dışında kaldığını açıkça yazar."
+      ],
+      "list": [
+        "Yalnızca resmi rehberde listelenen köprüleri ya da geçiş sayfalarını kullanın. Örneğin Abstract, Migration Hub sayfasını (migrate.abs.xyz) ve yerel köprüsünü (native-bridge.abs.xyz; kendi söylediğine göre yaklaşık 3 saat gecikmeli) gösterdi; Sophon ise claim.sophon.com adresine yönlendiriyor.",
+        "Resmi yerel köprüyle Ethereum'a dönmek genelde bekleme gerektirir ve çoğu ağda Ethereum'da bir Claim işlemi daha yapmanız gerekir. Ayrıntılar için “L2'den Ethereum'a çekim” konusuna bakın.",
+        "Gas bulundurun: kapanan ağda ücretler için biraz yerel coin, Ethereum'da da son adım için biraz ETH bırakın. Horizen, gas'ı yetmeyen kullanıcılara Base ağından yerel köprüyle çok az, yalnızca köprünün izin verdiği en düşük miktarda ETH yatırmalarını söyledi.",
+        "Başkası tarafından ihraç edilen tokenlar resmi planın dışında kalabilir: Horizen, USDC.e'yi Horizen'in değil Stargate'in işlettiğini, bu yüzden DAO iadesine dahil olmadığını ve kullanıcıların onu kendilerinin köprüyle çıkarması gerektiğini söyledi.",
+        "Akıllı sözleşme cüzdanları ve çoklu imzalı cüzdanlar: projenin ayrı bir yolu ya da iletişim kanalı olup olmadığını kontrol edin. Blast'ın kurtarma sitesi, bir Safe'in ya da başka bir akıllı cüzdanın sahibinin o cüzdan adına talepte bulunmasına izin veriyor; Horizen, akıllı sözleşme cüzdanı kullananlardan son tarihten önce resmi güvenlik adresine e-posta göndermelerini istedi."
+      ]
+    },
+    {
+      "h": "Son tarihten sonra: hâlâ bir yol var mı?",
+      "p": [
+        "Projeye göre değişir. Bunlar projelerin kendi duyurduğu düzenlemeler (2026-11-05 tarihinde kontrol edildi); başka ağlar için geçerli değil."
+      ],
+      "list": [
+        "Blast: L2 ağı 4 Kasım 2026'da kapandı. Resmi kurtarma sitesi blast.io 12 ay açık kalacak; son destek tarihi 4 Kasım 2027. Blast'ta tutulan ETH, WETH ve USDB ile hiç tamamlanmamış çekimler Ethereum ana ağında talep edilir. Blast Mobile kullanıcılarına o cüzdanın kurtarma ifadesini MetaMask ya da Rabby gibi bir cüzdan uygulamasına aktarıp bağlamaları söyleniyor; kurtarma ifadesini yalnızca bir cüzdan uygulamasına yazın, asla bir web sitesine yazmayın.",
+        "Lisk: Lisk Chain 2 Kasım 2026'da kapandı; portalı ve köprüsü kapalı. Lisk, özel bir akıllı sözleşme geliştirdiğini ve Ocak 2027'de elle yürütülecek bir talep süreci planladığını, ayrıntıların sonra açıklanacağını söylüyor; kapanış anında süren çekimler Ethereum'daki hedef adreslerine yatırılacak. Ethereum'daki ya da borsalardaki LSK bundan etkilenmiyor.",
+        "Horizen L3: 4 Kasım'da 13:00 UTC'de bir anlık görüntü alındı. Anlık görüntünün bir haftalık kamuya açık incelemesinden sonra Horizen DAO, kalan ZEN'i (alınmamış staking ödülleri dahil) ve 0.001 ETH üzerindeki ETH bakiyelerini Base ağındaki aynı adrese gönderecek; bunun Kasım'ın ikinci yarısında olması bekleniyor. 0.001 altındaki ETH iade edilmiyor ve USDC.e kapsam dışında.",
+        "Diğer projeler son tarihi kaçırmanın erişimi kaybetmek demek olduğunu açıkça söylüyor: Abstract, o tarihe kadar köprüyle çıkarılmayan paraya erişilemeyeceğini; Sophon ise son tarihten sonra kalan varlıkların kalıcı olarak erişilemez hâle gelme riski taşıdığını söylüyor.",
+        "Resmi bir çözüm varsa resmi hesapta ve resmi sitede duyurulur. Biri size özel mesajla “kurtarma kanalı” diye bir şeyden söz ederse bunu dolandırıcılık sayın."
+      ]
+    },
+    {
+      "h": "Kapanışlar sırasında ortaya çıkan dolandırıcılıklar",
+      "p": [
+        "Son tarih yaklaştıkça dolandırıcılar çoğalır. Bunların her biri için projelerin kendileri herkese açık uyarı yaptı."
+      ],
+      "list": [
+        "Sahte geçiş siteleri: Sophon kullanıcıları “yalnızca resmi Sophon bağlantılarını kullanmaları ve sahte geçiş sitelerine karşı dikkatli olmaları” konusunda uyardı; Abstract da kendi adını kullanan sahte hesaplar, sahte geçiş siteleri ve Abstract adına geldiğini iddia eden özel mesajlar konusunda uyardı.",
+        "Özel mesajla gelen “destek”: Horizen, ekibinin size asla ilk mesajı atmayacağını, asla özel anahtarlarınızı ya da kurtarma ifadenizi istemeyeceğini ve asla kendilerine para göndermenizi istemeyeceğini söylüyor.",
+        "“Kilidi açmak için onaylayın”: bir onay, başka birinin cüzdanınızdan bir tokenı çekmesine izin verir. MetaMask, son tarihler etrafında kurulan zaman baskısını kötü amaçlı bir onay isteğinin tipik bir işareti olarak sayıyor.",
+        "DeFiExit cüzdanınızdan yalnızca adresini paylaşmasını ister; sizden asla bir şey imzalamanızı, onaylamanızı veya göndermenizi istemez ve size asla ilk mesajı biz atmayız."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Soğuk cüzdanımdaki tokenları da taşımam gerekiyor mu?",
+      "a": "Bu, cüzdanın türüne değil, tokenların hangi ağda olduğuna bağlı. Soğuk cüzdan yalnızca anahtarlarınızı saklar; yalnızca kapanan ağdaki varlıkların çıkarılması gerekir. Örneğin Lisk, Ethereum'daki ya da borsalardaki LSK'nin ağ kapanışından etkilenmediğini söyledi; Sophon da SOPH'un aslen bir Ethereum tokenı olduğunu, bu yüzden yalnızca Sophon Chain üzerindeki kısmın çekilmesi gerektiğini söylüyor. Bakiyenin hangi ağda olduğunu cüzdanınızda ya da bir blok gezgininde kontrol edin."
+    },
+    {
+      "q": "Son tarih geçti. Param gitti mi?",
+      "a": "Mutlaka değil, ama buna güvenmeyin. Kapanış sonrası düzenlemeler için ağın resmi web sitesine ve X hesabına bakın: Blast 12 ay açık kalacak resmi bir kurtarma sitesi açtı, Lisk Ocak 2027'de bir talep süreci planlıyor, Horizen DAO da bakiyeleri Base ağında geri gönderiyor. Diğer projeler son tarihi kaçırmanın erişimi kaybetmek demek olduğunu söylüyor. Projenin kendisinin duyurmadığı bir “kurtarma kanalına” asla güvenmeyin."
+    },
+    {
+      "q": "Geçiş yapabilmek için “cüzdanımı doğrulamam” ya da bir ücret ödemem gerekiyor mu?",
+      "a": "Önce birine para ödemek: hayır. Horizen, ekibinin sizden asla kendilerine para göndermenizi istemeyeceğini söylüyor; tek maliyet, kendi cüzdanınızın bir işlem göndermek için ödediği gas ücretidir. “Cüzdanınızı doğrulayın”: MetaMask, sizi hesabınızı “doğrulamak” için bir bağlantıya yönlendiren acil mesajların yaygın bir dolandırıcılık olduğunu söylüyor. Resmi rehber gerçekten bir onay imzalamanızı istiyorsa bunu yalnızca resmi gönderide verilen sayfada yapın ve cüzdan penceresini dikkatle okuyun."
+    },
+    {
+      "q": "Kapanan ağda gas'ım yok, bu yüzden köprüyle çıkamıyorum.",
+      "a": "Önce resmi rehbere bakın. Bazı ağlar kapanış sırasında para yatırmayı durdurur: Sophon yeni yatırmaları 25 Haziran 2026'da kapattı; Horizen ise Base ağından ETH yatırmayı yalnızca kullanıcılar gas ödeyebilsin diye açık tuttu ve en düşük miktarı yatırmayı önerdi. Rehberde bu konu yoksa size özelden “gas'ınızı karşılamayı” teklif eden birine değil, resmi Discord sunucusuna sorun."
+    },
+    {
+      "q": "Resmi köprüde çekimi zaten başlattım. Neden hâlâ ulaşmadı?",
+      "a": "Ethereum'a dönen resmi yerel köprülerde bekleme vardır ve çoğu, Ethereum'da sizin bir Claim işlemi daha yapmanızı da gerektirir. Örneğin Abstract, yerel köprüsünde yaklaşık 3 saatlik gecikme olduğunu söylüyor; OP Mainnet'te ise genelde 7 gün sürer. Ayrıntılar için “L2'den Ethereum'a çekim” konusuna bakın."
+    }
+  ],
+  "sources": [
+    "Sophon, X'te: kapanış takvimi 1/4, ana ağ 30 Kasım'da kapanıyor (19 Ekim 2026)",
+    "Sophon, X'te: 2/4, 25 Kasım çekim son tarihi (19 Ekim 2026)",
+    "Sophon, X'te: 3/4, çekimler, ödüller ve Farm varlıkları (19 Ekim 2026)",
+    "Sophon, X'te: 4/4, yalnızca resmi bağlantılar, sahte geçiş sitelerine dikkat (19 Ekim 2026)",
+    "Sophon, X'te: 2 Kasım hatırlatması (SOPH'un kendisi kalıyor)",
+    "Sophon belgeleri: Ağ geçiş rehberi (pozisyonlar otomatik taşınır, 25 Haziran'dan beri yatırma kapalı)",
+    "Abstract, X'te: “Abstract is Winding Down” (6 Ekim 2026)",
+    "Horizen blogu: Changes for Horizen (L3 kapanışı, DAO iadesi, güvenlik hatırlatması; 23 Ekim 2026)",
+    "Horizen, X'te: köprü 4 Kasım'da 13:00 UTC'de kapanıyor (4 Kasım 2026)",
+    "Blast, X'te: L2 kapandı; kurtarma sitesi 12 ay açık (4 Kasım 2026)",
+    "Blast resmi kurtarma sitesi (ETH, WETH, USDB; Blast Mobile; Safe)",
+    "Lisk blogu: Lisk Chain kapandı",
+    "Lisk destek: Lisk Chain talepleri (Ocak 2027'de elle talep süreci)",
+    "Lisk, X'te: özel sözleşme; süren çekimler Ethereum'da yatırılacak (3 Kasım 2026)",
+    "OP belgeleri: OP Mainnet'te Standard Bridge ile 7 günlük çekimler",
+    "MetaMask Destek: Token onayı nedir? (kötü amaçlı onayın işaretleri)",
+    "MetaMask Destek: Resmi destek kanalları (“hesabınızı doğrulayın” dolandırıcılık mesajları)"
+  ]
+}

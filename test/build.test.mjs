@@ -5,8 +5,10 @@ import { build, splitMarks, localize, TITLE_BAN } from "../scripts/build.mjs";
 import { STR } from "../src/js/lib/i18n.js";
 import { svgString } from "../src/js/lib/icons.js";
 import { site } from "../scripts/site.mjs";
+import { headerRules, headersFor } from "./cf-headers.mjs";
 
 const read = (f) => readFileSync(f, "utf8");
+const NT = "Cache-Control: public, max-age=0, must-revalidate, no-transform";
 const PAGES = ["dist/index.html", "dist/en/index.html", "dist/check/index.html", "dist/en/check/index.html", "dist/r/hyperliquid/index.html", "dist/en/r/hyperliquid/index.html", "dist/r/woofi/index.html", "dist/en/r/woofi/index.html", "dist/404.html",
   "dist/deadlines/index.html", "dist/en/deadlines/index.html", "dist/topics/index.html", "dist/en/topics/index.html"];
 
@@ -202,14 +204,20 @@ test("查到用户往前走了才说恭喜;往回退的只是提示", () => {
   }
 });
 
-test("每个网页都带 no-transform:Cloudflare 不往页面里插统计脚本", () => {
+test("每个网页都带 no-transform:Cloudflare 不往页面里插统计脚本;图片、样式、脚本不带(照样压缩);规则不超过 Cloudflare 认的 100 条", () => {
   const h = read("dist/_headers");
-  for (const p of ["/", "/en/", "/check/", "/en/check/", "/r/hyperliquid/", "/en/r/hyperliquid/", "/r/woofi/", "/en/r/woofi/", "/404.html", "/deadlines/", "/en/deadlines/", "/topics/", "/en/topics/"]) {
-    assert.ok(h.includes(`
-${p}
-  Cache-Control: public, max-age=0, must-revalidate, no-transform
-`), `缺 ${p}`);
+  assert.ok(headerRules(h).length <= 100, `_headers 有 ${headerRules(h).length} 条规则`);
+  // dist 里每一个 index.html 就是一个网页,地址是它所在的目录
+  const pages = [];
+  const walk = (d) => { for (const f of readdirSync(d, { withFileTypes: true })) if (f.isDirectory()) walk(`${d}/${f.name}`); else if (f.name === "index.html") pages.push(`${d.slice(4)}/`); };
+  walk("dist");
+  for (const f of PAGES.filter((f) => f.endsWith("/index.html"))) assert.ok(pages.includes(f.slice(4, -10)), `没找到 ${f}`);
+  for (const p of [...pages, "/404"]) assert.equal(headersFor(h, p).filter((x) => x === NT).length, 1, `${p} 要带一次 no-transform`);
+  for (const p of ["/assets/site.css", "/assets/fonts/atkinson-next.woff2", "/r/hyperliquid/img/fill.webp"]) {
+    assert.ok(existsSync(`dist${p}`), p);
+    assert.ok(!headersFor(h, p).some((x) => x.includes("no-transform")), `${p} 不该带 no-transform`);
   }
+  for (const p of ["/", "/en/r/woofi/", "/assets/site.css"]) assert.ok(headersFor(h, p).some((x) => x.startsWith("Content-Security-Policy: ")), `${p} 没有安全头`);
 });
 
 test("截止日历、专题:首页正文和顶栏导航都有入口;两页带 canonical 和 og 信息,标题不写领取类的词;倒数脚本拷进了网站", () => {
@@ -246,7 +254,7 @@ test("专题:data/topics 里的每一篇都出了中英两页,列表里都有;�
       const h = read(f);
       assert.ok(read(`dist${P}/topics/index.html`).includes(`<a href="${P}/topics/${s}/">`), `${f} 不在列表里`);
       assert.ok(!/<script(?![^>]*\ssrc=)[^>]*>/.test(h) && !/\sstyle="/.test(h), f);
-      assert.ok(headers.includes(`\n${P}/topics/${s}/\n  Cache-Control: public, max-age=0, must-revalidate, no-transform\n`), f);
+      assert.ok(headersFor(headers, `${P}/topics/${s}/`).includes(NT), f);
       if (P) assert.equal(h.replace(/<nav class="langs"[\s\S]*?<\/nav>/g, "").match(/[　-〿一-鿿＀-￯]+/), null, f);
     }
   }

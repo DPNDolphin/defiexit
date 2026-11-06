@@ -1,0 +1,257 @@
+{
+  "title": "Ambil kembali stake dan vault WOOFi Anda ke dompet",
+  "short": "WOOFi ke dompet Anda",
+  "verified": "Diuji pada 29 Oktober 2026 dengan akun penulis sendiri di dompet Binance, mengikuti panduan ini: klaim, unstake, dan penarikan vault masing-masing dikirim ke kontraknya dan membawa data seperti di kartu periksa, dan ketiganya sudah masuk. Layar-layarnya dicek di situs resmi pada 28 Oktober 2026 dengan dompet uji hanya baca.",
+  "fieldTests": [
+    "Sudah dipulihkan dengan dompet Binance mengikuti panduan ini; ketiga transaksi sudah masuk. Setelah terhubung, Anda bisa saja mendarat di halaman trading dengan grafik harga, dan dua kotak yang menunjukkan 0 di halaman vault mudah salah dibaca. Keduanya kini sudah dibahas di panduan."
+  ],
+  "covers": "WOO yang di-stake di Arbitrum, hadiah yang belum diklaim, dan ETH yang sudah diselesaikan dan menunggu di vault",
+  "summary": "WOO yang di-stake di WOOFi (Arbitrum), hadiah USDC yang belum pernah Anda klaim, dana di vault ETH yang sudah diselesaikan tapi belum diambil: tiga ketukan di situs resmi, masing-masing transaksi biasa, dan dana langsung kembali ke dompet Anda.",
+  "facts": [
+    ["Transaksi", "1–3 (tergantung apa yang Anda punya). Transaksi biasa, tanpa izin"],
+    ["Biaya", "Sekitar 0.00002 ETH untuk ketiganya, beberapa sen, dibayar dari ETH di dompet Anda di Arbitrum"],
+    ["Waktu", "Sekitar 5 menit, tanpa menunggu penyelesaian"],
+    ["Yang Anda perlukan", "Minimal 0.0002 ETH di Arbitrum di dompet Anda. Kurang dari itu, situs resmi tidak akan membiarkan Anda lanjut"]
+  ],
+  "chips": ["Sekitar 5 menit", "1–3 transaksi, tanpa izin", "Biaya beberapa sen"],
+  "support": {
+    "label": "Discord resmi WOOFi",
+    "note": "Kanal resmi yang tercantum di bagian bawah situs WOOFi adalah Discord dan X (@_WOOFi). WOOFi tidak pernah DM Anda lebih dulu. \"CS\" apa pun yang mengirimi Anda DM adalah penipu."
+  },
+  "official": [{"label": "Situs resmi WOOFi"}],
+  "vars": {
+    "addrShort": "alamat Anda sendiri",
+    "woo": "WOO yang Anda stake",
+    "rewards": "hadiah Anda yang belum diklaim",
+    "eth": "ETH yang bisa Anda ambil dari vault"
+  },
+  "pro": [
+    "**Rute**: woofi.com/stake → **Claim** hadiah → **Unstake** semuanya → **Earn** di bagian bawah → My vaults → kartu ETH di Arbitrum → tab WITHDRAW → **WITHDRAW** di samping Available for Withdrawals.",
+    "**Tiga transaksi**: claimRewards ke 0xa9E2…24Fb; unstake (semua) ke 0x2CFa…d8e2; withdraw ke 0xE77A…Ad6a. Semuanya mengirim 0 ETH, tanpa izin dan tanpa tanda tangan pesan.",
+    "**Angka Anda**: klaim {{rewards}}, unstake {{woo}} WOO, ambil {{eth}} ETH dari vault.",
+    "**Jebakan**: jangan ketuk Compound atau auto-compound. Untuk vault, ketuk WITHDRAW yang kecil, bukan tombol besar. Dengan kurang dari 0.0002 ETH di Arbitrum, situs resmi tidak akan membiarkan Anda lanjut."
+  ],
+  "done": {
+    "where": "di jaringan Arbitrum di dompet Anda",
+    "from": "Dikirim dari kontrak resmi WOOFi",
+    "look": "Tempat melihat: aplikasi dompet → Assets (Aset), dengan jaringan diatur ke Arbitrum."
+  },
+  "screens": {
+    "perps": {"img": "perps-1-en.webp", "name": "Halaman trading dengan grafik harga", "features": ["Grafik harga candlestick besar memenuhi bagian tengah halaman", "ETH di kiri atas, dengan 100x di bawahnya", "Tiga tab di atas grafik: Chart / Trades / Data"], "do": "Ini halaman trading perpetual WOOFi, bukan halaman staking. Ikuti dua gambar di bawah untuk kembali: Anda sudah sampai jika di kiri atas ada sakelar Spot / Perps dan bilah bawah memuat Stake. Lanjutkan jika alamat Anda tampil di kanan atas; jika tertulis Connect Wallet, hubungkan lagi.", "images": [{"src": "perps-1-en.webp", "caption": "① Ketuk tiga garis di kiri atas"}, {"src": "perps-2-en.webp", "caption": "② Ketuk **Stake**"}]},
+    "home": {"name": "Halaman pengenalan WOOFi (dengan LAUNCH APP)", "features": ["Judul besar: SWAP AND EARN ON REAL-WORLD ASSETS", "Tombol LAUNCH APP oranye di tengah", "Angka-angka besar di bawahnya, seperti Spot volume dan Perps volume"], "do": "Ini halaman pengenalan WOOFi, bukan halaman staking. Ikuti tiga gambar di bawah untuk kembali: ketuk **LAUNCH APP** (yang pertama terbuka adalah halaman trading dengan grafik harga), lalu tiga garis di kiri atas → **Stake**. Lanjutkan jika alamat Anda tampil di kanan atas; jika tertulis Connect Wallet, hubungkan lagi.", "images": [{"src": "home-launch.webp", "caption": "① Ketuk **LAUNCH APP** oranye di tengah"}, {"src": "perps-1-en.webp", "caption": "① Di halaman grafik harga, ketuk tiga garis di kiri atas"}, {"src": "perps-2-en.webp", "caption": "② Ketuk **Stake**"}]},
+    "stake-new": {"name": "Halaman staking, dompet belum terhubung", "features": ["Sakelar Spot / Perps di kiri atas", "Weekly rewards di dekat bagian atas", "Tombol Connect Wallet oranye"], "do": "Ini halaman staking, hanya saja Anda belum terhubung. Hubungkan dompet seperti di langkah 2."},
+    "wallets": {"name": "Diminta memilih dompet", "features": ["Judulnya Connect your wallet", "Sederet ikon dompet: Detected Wallet, Binance, Coinbase Wallet…", "powered by thirdweb di bagian bawah"], "do": "Ini pemilih dompet. Pilih **Detected Wallet**; di aplikasi Binance, **Binance** juga bisa. Saat dompet meminta izin terhubung dan permintaannya dari woofi.com, ketuk Connect (Hubungkan)."},
+    "networks": {"name": "Diminta memilih jaringan", "features": ["Judulnya Switch Network", "Dua kolom jaringan di bawah Mainnet: Ethereum, Arbitrum, Base…", "Tanda × di kanan atas"], "do": "Ini menu jaringan. Pilih **Arbitrum** dan konfirmasi pergantian jaringan di dompet."},
+    "stake": {"name": "Halaman staking, dompet terhubung", "features": ["Tab Stake / Unstake, dengan Stake berwarna oranye", "USDC reward dan XP", "Tombol Claim oranye di samping Compound"], "do": "Ini halaman staking dan dompet Anda sudah terhubung. Ketuk tombol di bawah untuk ke langkah yang Anda perlukan, lalu ikuti gambar dan kartu periksa di langkah itu. Jangan ketuk tombol di halaman ini dulu."},
+    "unstake": {"name": "Tab Unstake", "features": ["Tab Stake / Unstake, dengan Unstake berwarna oranye", "Kolom isian yang menunjukkan 0 WOO, dengan tombol UNSTAKE di kanannya", "Claim dan Compound di bawahnya, sama seperti di tab Stake"], "do": "Ini tab Unstake. Ketuk tombol di bawah untuk ke langkah \"Unstake WOO Anda\", lalu ikuti gambar dan kartu periksanya."},
+    "earn": {"name": "Halaman Earn dengan daftar vault", "features": ["My earnings, dengan Holdings, Monthly Profits, dan Average APR", "Dua tab: All vaults / My vaults", "Kotak pencarian bertuliskan Try \"USDT\""], "do": "Ini halaman vault. Cari kartu ETH di Arbitrum dan ikuti langkah \"Ambil ETH dari vault\"."},
+    "vault": {"name": "Tab WITHDRAW di vault", "features": ["Dua blok petunjuk berlabel STEP 1 dan STEP 2", "Tombol REQUEST WITHDRAWAL abu-abu", "Baris terakhir bertuliskan Available for Withdrawals, dengan WITHDRAW kecil di kanannya"], "do": "Ini tab penarikan vault. Ketuk tombol di bawah untuk ke langkah \"Ambil ETH dari vault\", lalu ikuti gambar dan kartu periksanya."},
+    "domain": {"name": "Bilah alamat tidak bertuliskan woofi.com", "do": "Segera tutup halaman dan jangan tanda tangani apa pun. Ketik sendiri `https://woofi.com/stake`; jangan ketuk tautan yang dikirim orang lain."},
+    "sign": {"name": "Dompet meminta Anda menandatangani pesan, atau memberi izin (Approve / Permit)", "do": "Ketuk Reject (Tolak). Setiap langkah di panduan ini adalah transaksi biasa: tanpa tanda tangan pesan, tanpa izin. Tutup halaman dan kembali ke langkah 1 untuk memeriksa alamatnya."},
+    "blocked": {"name": "Muncul pesan Blocked Address", "do": "WOOFi memblokir alamat ini berdasarkan daftar sanksi. Panduan ini tidak bisa membantu."},
+    "sorry": {"name": "WE'RE SORRY: wilayah Anda tidak didukung", "do": "Berhenti di sini. WOOFi tidak melayani wilayah Anda, dan panduan ini tidak akan membantu Anda mengakali pembatasan wilayah. Anda bisa bertanya di Discord resmi WOOFi."}
+  },
+  "steps": {
+    "open": {
+      "title": "Buka situs resmi di aplikasi dompet",
+      "items": [
+        "Pertama, ketuk alamat ini untuk menyalinnya: `https://woofi.com/stake`",
+        "Di bawah ini langkah-langkahnya di dompet Binance, satu gambar untuk setiap ketukan. Gambar-gambarnya dari aplikasi Binance versi bahasa Mandarin; versi bahasa Inggris tata letaknya sama. Di dompet lain, tempel alamat ini di browser DApp-nya."
+      ],
+      "images": [
+        "① Buka aplikasi Binance dan ketuk **Wallet** (Dompet) di bagian atas (saldo di gambar disembunyikan)",
+        "② Ketuk **Discover** (Jelajahi) di bagian bawah. Dompet yang dipilih di kiri atas harus dompet yang menyimpan dana ini (misalnya Wallet1). Jika bukan, ketuk untuk menggantinya",
+        "③ Ketuk kotak pencarian di bagian atas (Search DApp or enter URL)",
+        "④ iPhone akan bertanya apakah mengizinkan tempel: ketuk **Allow Paste** (Izinkan Tempel) (ponsel Android melewati ini)",
+        "⑤ Tekan lama kotak pencarian, lalu ketuk **Paste** (Tempel)",
+        "⑥ Ketuk baris yang muncul di bawah: **woofi.com/stake**",
+        "✗ Jangan ketuk WOOFi di History (Riwayat): yang tersimpan hanya beranda, yang membuka halaman pengenalan dan membuat Anda harus mengetuk tiga kali lebih banyak",
+        "⑦ Halaman langsung terbuka di halaman staking. Periksa bagian atas bertuliskan **woofi.com**: kelebihan satu huruf atau kurang satu titik berarti berhenti"
+      ],
+      "situations": {
+        "search-instead": {"see": "Mengetik alamat malah memunculkan hasil pencarian", "do": "Sertakan `https://` dan ketik alamat lengkapnya: `https://woofi.com/stake`."},
+        "restricted": {"see": "Muncul pesan WE'RE SORRY yang menyebut wilayah Anda tidak didukung", "do": "Berhenti di sini. WOOFi tidak melayani wilayah Anda, dan panduan ini tidak akan membantu Anda mengakali pembatasan wilayah. Anda bisa bertanya di Discord resmi WOOFi (lihat di bawah)."},
+        "not-sure": {"see": "Tidak yakin ini situs resmi", "do": "Lihat bilah alamat: domainnya harus persis **woofi.com**. Jika bukan, tutup halaman dan ketik sendiri alamatnya. Jangan ketuk tautan yang dikirim orang lain."},
+        "old-domain": {"see": "Bookmark Anda bertuliskan fi.woo.org", "do": "Itu alamat lama WOOFi dan sekarang dialihkan ke woofi.com. Pegang apa yang akhirnya tampil di bilah alamat: woofi.com."},
+        "history": {"see": "Anda mengetuk WOOFi di History dan masuk ke halaman pengenalan (judul besar SWAP AND EARN, tombol LAUNCH APP)", "do": "Ketuk **LAUNCH APP** oranye di tengah. Yang pertama terbuka adalah halaman trading dengan grafik harga; lalu ketuk tiga garis di kiri atas → **Stake** untuk sampai di halaman staking. Lain kali, tempel alamat lengkapnya alih-alih memakai History."},
+        "no-paste": {"see": "Menekan lama kotak pencarian tidak memunculkan Paste", "do": "Kembali ke halaman ini dan ketuk alamatnya lagi untuk menyalin. Di iPhone, ketuk Allow Paste (Izinkan Tempel) saat diminta. Jika masih tidak bisa, ketik `https://woofi.com/stake` secara manual."}
+      }
+    },
+    "connect": {
+      "title": "Hubungkan dompet dan ganti ke Arbitrum",
+      "note": "Hanya menghubungkan. Tanpa tanda tangan, tidak ada dana yang berpindah",
+      "images": [
+        "① Ketuk **Connect Wallet** (yang di kanan atas juga bisa)",
+        "① Pilih **Detected Wallet**: itu dompet di aplikasi yang sedang Anda pakai ② Di aplikasi Binance, **Binance** juga bisa. Saat dompet meminta izin terhubung dan permintaannya dari woofi.com, ketuk Connect (Hubungkan)",
+        "① Alamat Anda tampil di kanan atas (disembunyikan di tangkapan layar). Alamat itu harus {{addrShort}} ② Ikon ini adalah jaringan saat ini. Ketuk ikon itu",
+        "① Pilih **Arbitrum** dan konfirmasi pergantian jaringan di dompet. Jika sudah Arbitrum (ada titik kecil setelah namanya), tutup menu dengan × di kanan atas"
+      ],
+      "items": ["✗ Jika saat menghubungkan muncul pesan WE'RE SORRY yang menyebut wilayah Anda tidak didukung, berhenti di sini. Panduan ini tidak akan membantu Anda mengakali pembatasan wilayah."],
+      "situations": {
+        "perps-page": {"see": "Setelah terhubung, saya melihat halaman trading dengan grafik harga, bukan halaman staking", "do": "Itu halaman trading perpetual WOOFi. Ketuk tiga garis di kiri atas → **Stake** untuk kembali ke halaman staking. Jika kanan atas bertuliskan Connect Wallet, hubungkan lagi."},
+        "no-popup": {"see": "Sudah mengetuk Connect Wallet, tapi dompet tidak meminta izin terhubung", "do": "Buka halaman di dalam browser DApp milik aplikasi dompet itu sendiri (langkah 1). Jika Detected Wallet tidak bereaksi, buka ulang halaman dan coba Binance."},
+        "wrong-address": {"see": "Alamat di kanan atas bukan alamat yang berisi dana", "do": "Ganti ke dompet yang menyimpan dana ini di aplikasi dompet, lalu hubungkan lagi. Jangan lanjut jika alamatnya tidak cocok."},
+        "sign-on-connect": {"see": "Dompet meminta Anda menandatangani pesan saat menghubungkan", "do": "Ketuk Reject (Tolak), tutup halaman, dan periksa alamatnya lagi. WOOFi tidak butuh tanda tangan untuk terhubung (kode situsnya tidak mengirim permintaan tanda tangan apa pun)."},
+        "wrong-network": {"see": "Halaman bertuliskan Wrong Network di bagian atas", "do": "Ketuk ikon jaringan di kanan atas, pilih **Arbitrum**, dan konfirmasi pergantiannya di dompet."},
+        "blocked-address": {"see": "Muncul pesan Blocked Address", "do": "WOOFi memblokir alamat ini berdasarkan daftar sanksi. Panduan ini tidak bisa membantu."}
+      }
+    },
+    "claim": {
+      "title": "Klaim hadiah Anda",
+      "whenText": "Hanya perlu jika Anda punya hadiah yang belum diklaim",
+      "note": "Transaksi 1",
+      "milestone": "Klaim",
+      "detour": {
+        "see": "Melihat grafik harga (tiga garis di kiri atas)? Dua ketukan untuk kembali ke halaman staking",
+        "thumb": "perps-1-en.webp",
+        "images": [
+          {"src": "perps-1-en.webp", "caption": "① Ketuk tiga garis di kiri atas"},
+          {"src": "perps-2-en.webp", "caption": "② Ketuk **Stake** untuk kembali ke halaman staking, lalu lanjutkan di bawah"}
+        ]
+      },
+      "images": [
+        "Gulir ke bawah ke kotak Stake / Unstake. ① Ketuk **Claim** (USDC reward di atasnya adalah yang belum Anda klaim. Di tangkapan layar disembunyikan, dan seharusnya sekitar {{rewards}}) ✗ Jangan ketuk Compound: tombol itu mengubah hadiah menjadi WOO dan men-stake-nya lagi, kebalikan dari yang Anda mau"
+      ],
+      "check": {
+        "title": "Sebelum konfirmasi, periksa 3 hal",
+        "lead": "Setelah Anda mengetuk Claim, dompet meminta Anda mengonfirmasi transaksi (di dompet Binance judulnya Contract call). Cocokkan dengan daftar ini dan ketuk setiap poin setelah cocok.",
+        "skip": "Sudah diklaim (USDC reward 0)? Lewati langkah ini",
+        "confirm": [
+          {"title": "Permintaan berasal dari woofi.com, di Arbitrum", "sub": "Dompet Binance menulis Arbitrum One. Kelebihan satu huruf atau kurang satu titik pada nama situs berarti berhenti"},
+          {"title": "Kontraknya 0xa9E2…24Fb (kontrak staking WOOFi)", "sub": "Di dompet Binance, ini baris kontrak (dompet lain mungkin menulis To). 6 karakter pertama dan 4 karakter terakhir harus cocok"},
+          {"title": "Anda tidak membayar apa pun selain biaya jaringan kecil", "sub": "Dompet Binance menampilkan jumlah plus yang akan Anda terima: hadiah Anda (sekitar {{rewards}}). Biaya jaringan di bawah satu sen"}
+        ],
+        "reject": ["Meminta Anda mengirim token apa pun (jumlah bertanda minus, atau ada kata send atau pay)", "Tertulis Approve atau Permit", "Meminta Anda menandatangani pesan (Sign)", "Tidak berasal dari woofi.com"],
+        "normal": [
+          "Baris tindakan biasanya bertuliskan claimRewards",
+          "Jumlah yang akan Anda terima juga mencantumkan sedikit USDC.e dan ARB: transaksi ini membayar beberapa token hadiah sekaligus (riwayat Binance menunjukkan 3 perubahan saldo)",
+          "Biaya jaringan diambil dari ETH Anda di Arbitrum, di bawah satu sen",
+          "Dompet mungkin memperingatkan bahwa ini panggilan kontrak. Jika situs dan alamatnya sama-sama cocok, aman untuk lanjut"
+        ]
+      },
+      "situations": {
+        "perps-page": {"see": "Halamannya grafik harga dan tidak ada Claim", "do": "Anda berada di halaman trading perpetual WOOFi. Ketuk tiga garis di kiri atas → **Stake**. Claim ada di halaman staking."},
+        "cancelled": {"see": "Halaman menampilkan Cancelled · User denied transaction signature", "do": "Anda mengetuk Reject (Tolak) di dompet, jadi tidak ada yang berpindah. Periksa lagi, lalu ketuk Claim sekali lagi."},
+        "insufficient-gas": {"see": "Tombolnya bertuliskan INSUFFICIENT GAS", "do": "Situs resmi mensyaratkan minimal 0.0002 ETH di Arbitrum di dompet Anda. Kirim dulu sedikit ETH ke dompet ini di Arbitrum (0.0005 sudah lebih dari cukup), lalu kembali."},
+        "compound-clicked": {"see": "Tidak sengaja mengetuk Compound", "do": "Hadiah Anda sudah diubah menjadi WOO dan ditambahkan ke stake. Tidak ada yang hilang: hadiah itu ikut keluar bersama sisanya saat Anda unstake di langkah berikutnya."},
+        "auto-compound": {"see": "Transaksi gagal dengan !COMPOUND", "do": "Auto-compound sedang aktif. Selama aktif, Anda tidak bisa klaim, dan fitur ini tidak bisa dimatikan selama 7 hari setelah dinyalakan. Ketuk \"Ada kendala?\" di kanan atas untuk melihat kondisi Anda. Jika ragu, tanyakan di Discord resmi WOOFi."},
+        "wrong-to": {"see": "Permintaan dikirim ke alamat selain 0xa9E2…24Fb", "do": "Langsung ketuk Reject (Tolak)."}
+      }
+    },
+    "unstake": {
+      "title": "Unstake WOO Anda",
+      "whenText": "Hanya perlu jika Anda punya WOO yang di-stake",
+      "note": "Transaksi 2",
+      "milestone": "Unstake",
+      "detour": {
+        "see": "Melihat grafik harga (tiga garis di kiri atas)? Dua ketukan untuk kembali ke halaman staking",
+        "thumb": "perps-1-en.webp",
+        "images": [
+          {"src": "perps-1-en.webp", "caption": "① Ketuk tiga garis di kiri atas"},
+          {"src": "perps-2-en.webp", "caption": "② Ketuk **Stake** untuk kembali ke halaman staking, lalu lanjutkan di bawah"}
+        ]
+      },
+      "images": [
+        "① Di halaman staking, ketuk tab **Unstake**",
+        "② Ketuk angka di kanan kolom isian (seluruh WOO yang Anda stake, disembunyikan di tangkapan layar). Jumlah penuh akan terisi",
+        "③ Setelah jumlahnya terisi (sekitar {{woo}}; situs resmi menampilkan beberapa desimal lebih banyak), ketuk **UNSTAKE**",
+        "④ Di Unstake Confirmation, periksa jumlahnya lalu ketuk **UNSTAKE**. Dompet meminta Anda mengonfirmasi transaksi: cocokkan dengan kartu di bawah ! Tertulis XP (poin) Anda akan dihapus. XP tidak bisa diperdagangkan dan tidak memengaruhi uang yang Anda terima kembali"
+      ],
+      "check": {
+        "title": "Sebelum konfirmasi, periksa 3 hal",
+        "lead": "Setelah Anda mengetuk UNSTAKE, dompet meminta Anda mengonfirmasi transaksi (di dompet Binance judulnya Contract call). Cocokkan dengan daftar ini dan ketuk setiap poin setelah cocok.",
+        "skip": "Tidak punya WOO yang di-stake? Lewati langkah ini",
+        "confirm": [
+          {"title": "Permintaan berasal dari woofi.com, di Arbitrum", "sub": "Dompet Binance menulis Arbitrum One. Kelebihan satu huruf atau kurang satu titik pada nama situs berarti berhenti"},
+          {"title": "Kontraknya 0x2CFa…d8e2 (kontrak staking WOOFi)", "sub": "Alamatnya berbeda dari langkah klaim. Itu normal"},
+          {"title": "Anda tidak membayar apa pun selain biaya jaringan kecil", "sub": "Dompet Binance menampilkan jumlah plus yang akan Anda terima: WOO Anda yang kembali (sekitar {{woo}}). Biaya jaringan di bawah satu sen"}
+        ],
+        "reject": ["Meminta Anda mengirim token apa pun (jumlah bertanda minus, atau ada kata send atau pay)", "Tertulis Approve atau Permit", "Meminta Anda menandatangani pesan (Sign)", "Tidak berasal dari woofi.com"],
+        "normal": [
+          "Baris tindakan biasanya bertuliskan unstake",
+          "Unstake tidak punya masa kunci dan tanpa biaya"
+        ]
+      },
+      "situations": {
+        "amount-not-full": {"see": "Jumlahnya belum semuanya", "do": "Ketuk angka di kanan kolom isian untuk mengisi jumlah penuh. Mengetik sendiri cenderung menyisakan sedikit."},
+        "insufficient-balance": {"see": "Tombolnya bertuliskan INSUFFICIENT BALANCE", "do": "Jumlahnya lebih besar dari yang Anda stake. Ketuk angka di kanan kolom isian untuk mengisinya lagi."},
+        "xp": {"see": "Konfirmasi menyebut XP Anda akan dihapus", "do": "XP adalah sistem poin WOOFi. XP tidak bisa diperdagangkan, dan kehilangannya tidak memengaruhi uang yang Anda terima kembali."},
+        "cancelled": {"see": "Halaman menampilkan Cancelled · User denied transaction signature", "do": "Anda mengetuk Reject (Tolak) di dompet, jadi tidak ada yang berpindah. Periksa lagi, lalu ketuk UNSTAKE sekali lagi."},
+        "wrong-to": {"see": "Permintaan dikirim ke alamat selain 0x2CFa…d8e2", "do": "Langsung ketuk Reject (Tolak)."}
+      }
+    },
+    "vault": {
+      "title": "Ambil ETH dari vault",
+      "whenText": "Hanya perlu jika ada dana yang sudah diselesaikan menunggu Anda di vault ETH",
+      "note": "Transaksi 3",
+      "milestone": "Vault",
+      "detour": {
+        "see": "Melihat grafik harga (tiga garis di kiri atas)? Dua ketukan untuk ke halaman Earn",
+        "thumb": "perps-1-en.webp",
+        "images": [
+          {"src": "perps-1-en.webp", "caption": "① Ketuk tiga garis di kiri atas"},
+          {"src": "perps-earn-en.webp", "caption": "② Ketuk **Earn**. Setelah berada di halaman Earn, lanjutkan dari gambar 2 di bawah"}
+        ]
+      },
+      "images": [
+        "① Di bagian paling bawah halaman staking, ketuk **Earn**",
+        "② Gulir sedikit ke bawah dan ketuk **My vaults** (hanya vault yang pernah Anda isi dana)",
+        "③ Ketuk kartu **ETH** di Arbitrum (My Deposits adalah angka Anda, disembunyikan di tangkapan layar)",
+        "④ Kartu terbuka di DEPOSIT. Ketuk tab **WITHDRAW** di sebelahnya",
+        "⑤ Gulir ke baris terakhir, Available for Withdrawals (yang bisa Anda ambil, disembunyikan di tangkapan layar; halaman menampilkan 4 desimal, sekitar {{eth}} ETH), lalu ketuk **WITHDRAW** di kanannya ✗ Jangan sentuh dua kotak yang menunjukkan 0, UNSTAKE oranye, dan REQUEST WITHDRAWAL abu-abu"
+      ],
+      "items": [
+        "! Dana yang sudah diselesaikan tidak otomatis dikirim ke dompet Anda. Anda harus mengetuk ini sendiri, dan langkah inilah yang sering terlewat oleh banyak orang."
+      ],
+      "check": {
+        "title": "Sebelum konfirmasi, periksa 3 hal",
+        "lead": "Setelah Anda mengetuk WITHDRAW, dompet meminta Anda mengonfirmasi transaksi (di dompet Binance judulnya Contract call). Cocokkan dengan daftar ini dan ketuk setiap poin setelah cocok.",
+        "skip": "Tidak ada yang menunggu di vault? Lewati langkah ini",
+        "confirm": [
+          {"title": "Permintaan berasal dari woofi.com, di Arbitrum", "sub": "Dompet Binance menulis Arbitrum One. Kelebihan satu huruf atau kurang satu titik pada nama situs berarti berhenti"},
+          {"title": "Kontraknya 0xE77A…Ad6a (kontrak penarikan vault WOOFi)", "sub": "Masing-masing dari tiga langkah memakai alamat yang berbeda. Itu normal"},
+          {"title": "Anda tidak membayar apa pun selain biaya jaringan kecil", "sub": "Dompet Binance menampilkan jumlah plus yang akan Anda terima: ETH yang keluar (sekitar {{eth}}). Biaya jaringan di bawah satu sen"}
+        ],
+        "reject": ["Meminta Anda mengirim token apa pun (jumlah bertanda minus, atau ada kata send atau pay)", "Tertulis Approve atau Permit", "Meminta Anda menandatangani pesan (Sign)", "Tidak berasal dari woofi.com"],
+        "normal": [
+          "Baris tindakan bertuliskan withdraw, dan data mentahnya diawali 0x3ccfd60b",
+          "Anda menerima ETH asli (native), bukan WETH. Riwayat Binance menyebutnya penebusan (redemption)"
+        ]
+      },
+      "situations": {
+        "no-available": {"see": "Available for Withdrawals bernilai 0", "do": "Entah sudah diambil, atau belum diselesaikan. Ketuk \"Ada kendala?\" di kanan atas untuk pemeriksaan langsung."},
+        "big-button": {"see": "Tombol besar REQUEST WITHDRAWAL tidak bisa diketuk", "do": "Memang begitu: Anda tidak memerlukannya. Ketuk **WITHDRAW** kecil di kanan Available for Withdrawals."},
+        "shares-left": {"see": "My Deposits lebih besar dari Available for Withdrawals", "do": "Sebagian dana Anda di vault belum diajukan penarikannya. Untuk saat ini panduan ini hanya membahas dana yang sudah diselesaikan dan menunggu diambil. Untuk sisanya, gunakan Instant Withdraw di tab WITHDRAW (langsung masuk, biaya 1%) atau REQUEST WITHDRAWAL (gratis, tapi Anda menunggu sampai Selasa depan)."},
+        "cancelled": {"see": "Halaman menampilkan Cancelled · User denied transaction signature", "do": "Anda mengetuk Reject (Tolak) di dompet, jadi tidak ada yang berpindah. Periksa lagi, lalu ketuk WITHDRAW sekali lagi."},
+        "wrong-to": {"see": "Permintaan dikirim ke alamat selain 0xE77A…Ad6a", "do": "Langsung ketuk Reject (Tolak)."}
+      }
+    },
+    "arrive": {
+      "title": "Cek apakah dana sudah masuk",
+      "milestone": "Masuk",
+      "check": {
+        "title": "Cek apakah dana sudah masuk",
+        "rows": [
+          ["Berapa lama", "Beberapa detik setelah setiap transaksi terkonfirmasi"],
+          ["Tempat melihat", "Aplikasi dompet → Assets (Aset), dengan jaringan diatur ke Arbitrum"],
+          ["Yang seharusnya terlihat", "Bertambah sekitar {{woo}} WOO, {{rewards}}, dan {{eth}} ETH (mana saja yang Anda punya)"],
+          ["Catatan on-chain", "WOO datang dari kontrak staking WOOFi 0x2CFa…d8e2, token hadiah dari kontrak hadiah WOOFi, ETH dari kontrak penarikan vault WOOFi 0xE77A…Ad6a. Semuanya diterima alamat Anda"],
+          ["Jika belum masuk", "Ketuk \"Ada kendala?\" di kanan atas untuk pemeriksaan langsung. Jika transaksinya berhasil tapi WOO tidak terlihat, tambahkan tokennya di dompet"]
+        ],
+        "foot": "Begitu dana masuk, selesai. WOO adalah token biasa: simpan atau tukarkan di dompet Anda"
+      },
+      "situations": {
+        "no-woo": {"see": "WOO tidak terlihat di dompet", "do": "Beberapa dompet tidak menampilkan token baru dengan sendirinya. Cari WOO (Arbitrum) di dompet Anda, atau tambahkan dengan alamat kontrak `0xcafcd85d8ca7ad1e1c6f82f651fa15e33aefd07b`."},
+        "eth-not-weth": {"see": "Yang masuk ETH, bukan WETH", "do": "Itu normal: kontrak penarikan vault membuka WETH dan mengirimi Anda ETH asli."},
+        "want-usdc": {"see": "Ingin menukar WOO ke USDC", "do": "WOO sudah ada di dompet Anda sendiri, jadi Anda bisa memakai fitur swap bawaan dompet. Panduan ini tidak membahas penukaran. Periksa kuotasi harga dan slippage sebelum menukar."}
+      }
+    }
+  },
+  "sources": [
+    "Dokumentasi WOOFi · Cara kerja vault Earn",
+    "Dokumentasi WOOFi · Alamat kontrak di Arbitrum",
+    "Arsip dokumentasi WOOFi · Staking WOO (halaman aslinya sudah offline)",
+    "Chainlink · Feed harga WOO/USD (Arbitrum)",
+    "Discord resmi WOOFi"
+  ]
+}

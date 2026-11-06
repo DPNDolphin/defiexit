@@ -1,0 +1,244 @@
+{
+  "title": "Saque o seu saldo da Hyperliquid para a sua carteira",
+  "short": "Da Hyperliquid para a sua carteira",
+  "verified": "Testado em uma conta real em 2026-10-27: seguindo este guia, o valor recebido bateu com a estimativa, com diferença de menos de 0.01 USDC.",
+  "fieldTests": [
+    "Saque feito com a carteira da Binance seguindo este guia; o valor recebido bateu com a estimativa. No meio do caminho apareceu uma janela “Account Type Update” (Unified Account). Depois de confirmar, não foi preciso transferir nada, e o guia agora cobre esse caso."
+  ],
+  "covers": "O USDC da sua conta e o USDH, que não é mais emitido",
+  "summary": "Ainda tem USDC na Hyperliquid, ou um pouco de USDH, uma stablecoin que não é mais emitida? Venda o USDH por USDC e depois saque tudo de uma vez para a sua carteira na Arbitrum.",
+  "movesBy": "Hyperliquid",
+  "facts": [
+    ["Assinaturas", "2–3, todas são assinaturas, sem gas"],
+    ["Taxa", "1 USDC é descontado do saque"],
+    ["Tempo", "Uns 10 minutos de passos; o saque chega em uns 5"],
+    ["Do que você precisa", "Nada. Você não precisa de ETH na Arbitrum"]
+  ],
+  "chips": ["Uns 10 minutos", "2–3 assinaturas", "Sem gas; sacar custa 1 USDC"],
+  "support": {
+    "label": "Suporte oficial da Hyperliquid",
+    "note": "A documentação da Hyperliquid diz que o suporte só é feito por um ticket no canal open-ticket do Discord oficial, ou pelo formulário de e-mail oficial. Qualquer “suporte” que mande mensagem privada para você é golpista."
+  },
+  "official": [{"label": "Site oficial da Hyperliquid"}],
+  "vars": {
+    "addrShort": "o seu próprio endereço",
+    "usdhSell": "a sua quantidade de USDH (2 casas decimais)",
+    "orderMin": "quantidade × 0.995",
+    "spotAfter": "o que a venda render",
+    "withdrawAmt": "todo o seu saldo",
+    "arrive": "o saque menos 1"
+  },
+  "pro": [
+    "**Rota**: o USDH não é mais emitido → venda no spot por USDC com uma ordem limitada a {{floorPx}} ou melhor → “Withdraw” para a Arbitrum. Taxa de 1 USDC; chega em uns 5 minutos.",
+    "**Modo da conta**: contas unificadas (o novo padrão) sacam direto. Contas separadas, mais antigas, primeiro passam o USDC do spot para Perps com “Perps ⇄ Spot”.",
+    "**Seus números**: venda {{usdhSell}} USDH, saque {{withdrawAmt}} USDC; chegam cerca de {{arrive}} USDC.",
+    "**Assinaturas**: 2–3 assinaturas EIP-712, sem gas. Confira duas coisas: o domínio é app.hyperliquid.xyz, e destination é {{addrShort}}.",
+    "**Armadilhas**: ao buscar USDH também aparece USDHL, então escolha o certo. Tocar no livro de ofertas à direita substitui o seu preço."
+  ],
+  "done": {
+    "where": "na rede Arbitrum da sua carteira",
+    "from": "Enviado pela ponte oficial da Hyperliquid 0x2Df1…3dF7",
+    "look": "Onde ver: app da sua carteira → “Assets” (Ativos) → USDC → a linha da Arbitrum."
+  },
+  "steps": {
+    "open": {
+      "title": "Abra o site oficial no app da sua carteira",
+      "items": [
+        "Abra o app da sua carteira (por exemplo, a aba “Wallet” (Carteira) do app da Binance) e confira se a carteira selecionada é a que tem esses fundos.",
+        "Abra `https://app.hyperliquid.xyz` no navegador DApp integrado da carteira. Inclua https://, ou o endereço vira uma pesquisa.",
+        "Quando carregar, confira a barra de endereço: o domínio deve ser exatamente **app.hyperliquid.xyz**. Uma letra a mais ou um ponto a menos significa que não é o site verdadeiro.",
+        "✗ Se a página disser que não pode ser usada na sua região (restricted jurisdiction), pare aqui. Este guia não ensina a contornar restrições regionais."
+      ],
+      "situations": {
+        "search-instead": {"see": "Digitar o endereço do site mostra resultados de busca", "do": "Digite o endereço completo, com https:// na frente: `https://app.hyperliquid.xyz`."},
+        "restricted": {"see": "A página diz que não pode ser usada na sua região (restricted jurisdiction)", "do": "Pare aqui. Este guia não ensina a contornar restrições regionais."},
+        "not-sure": {"see": "Você não tem certeza de que é o site oficial", "do": "Confira a barra de endereço: o domínio deve ser exatamente **app.hyperliquid.xyz**. Se não for, feche a página e digite o endereço do site à mão. Nunca use um link que alguém mandou para você."}
+      }
+    },
+    "connect": {
+      "title": "Conecte a sua carteira",
+      "note": "Só conectar. Sem assinatura, e nenhum dinheiro se move",
+      "images": [
+        "① Toque em **Connect** no canto superior direito",
+        "① Escolha **Default Wallet** (carteira padrão). A sua carteira pede para conectar: se o pedido vier de app.hyperliquid.xyz, toque em “Connect” (Conectar)",
+        "① O seu endereço aparece no canto superior direito (aqui está borrado). Deve ser {{addrShort}} ② Toque no nome do mercado, à esquerda, para abrir a lista"
+      ],
+      "situations": {
+        "no-popup": {"see": "Você tocou em “Connect”, mas a carteira não pediu para conectar", "do": "Abra a página no navegador DApp integrado do app da sua carteira (passo 1). Um navegador comum do celular não consegue falar com a sua carteira."},
+        "wrong-address": {"see": "O endereço no canto superior direito não é o que tem os fundos", "do": "Mude para a carteira certa no app da sua carteira e conecte de novo. Se o endereço não bater, não continue."},
+        "wrong-origin": {"see": "O pedido de conexão não vem de app.hyperliquid.xyz", "do": "Toque em “Reject” (Rejeitar) e feche a página. Pode não ser o site oficial."}
+      }
+    },
+    "search": {
+      "title": "Encontre o mercado de USDH",
+      "whenText": "Só se você tiver USDH (deste passo até o passo 6)",
+      "images": [
+        "① Digite USDH na busca ② Toque em **USDH/USDC** (com SPOT embaixo) ✗ Não toque em USDHL/USDC: é outra moeda, com uma letra de diferença"
+      ],
+      "situations": {
+        "two-results": {"see": "Aparecem USDH e USDHL", "do": "Escolha **USDH/USDC**, o que tem SPOT embaixo. USDHL é outra moeda; os nomes diferem em uma letra."},
+        "not-found": {"see": "O USDH não aparece", "do": "Confira a grafia (U-S-D-H). Ainda nada? Toque em **All**, à direita da busca, e busque de novo."}
+      }
+    },
+    "panel": {
+      "title": "Abra o painel de venda e mude para ordem limitada",
+      "images": [
+        "! O quadro amarelo é o aviso da própria Hyperliquid: o USDH não é mais emitido, então os compradores neste mercado vão ficar cada vez mais raros. Quanto antes você vender, melhor",
+        "① Toque em **Trade** embaixo",
+        "① Toque na setinha ao lado de **Market**, no canto superior esquerdo",
+        "① Escolha **Limit** (uma ordem limitada só é executada no seu preço ou num melhor)"
+      ],
+      "situations": {
+        "no-limit": {"see": "Não aparece Limit no menu", "do": "Toque na setinha ao lado de Market, no canto superior esquerdo, onde está o quadro vermelho na captura de tela acima."}
+      }
+    },
+    "fill": {
+      "title": "Preencha a ordem de venda",
+      "note": "Preencha agora; no próximo passo você ativa o trading",
+      "images": [
+        "① Toque em **Sell** ② Preço: {{floorPx}} ③ Quantidade: {{usdhSell}} (a captura mostra números de exemplo) ④ Dê uma olhada em Order Value: cerca de {{orderMin}} USDC, o mínimo que você vai receber ⑤ Toque em **Enable Trading**"
+      ],
+      "items": [
+        "! Os números verdes à direita são ordens de compra de outras pessoas. Você vai vender para elas, geralmente a um preço melhor que 0.995. **Não toque neles**: tocar em um substitui o preço que você digitou."
+      ],
+      "situations": {
+        "value-off": {"see": "Order Value está muito diferente do número daqui", "do": "Provavelmente o preço ou a quantidade estão errados: preço {{floorPx}}, quantidade {{usdhSell}}. Se você tocou nos números verdes à direita, o seu preço foi substituído; digite de novo."},
+        "not-enough": {"see": "Diz que o seu saldo não é suficiente para essa quantidade", "do": "Parte do seu USDH pode já estar presa numa ordem de venda aberta. O diagnóstico ao vivo acima mostra quanto você realmente pode vender. Se você ainda não informou o seu endereço, informe lá em cima primeiro."},
+        "place-order": {"see": "O botão já diz Place Order, não Enable Trading", "do": "O trading já foi ativado antes. Pule “Ative o trading” e vá direto para “Faça a ordem de venda”."}
+      }
+    },
+    "enable": {
+      "title": "Ative o trading",
+      "note": "Assinatura 1",
+      "grantsText": "Depois que você assinar, esta chave de ordens pode fazer ordens por você na Hyperliquid sem a sua carteira abrir. Confira o cartão linha por linha e toque em “Reject” (Rejeitar) se algo não bater.",
+      "images": [
+        "① Deixe **Stay Connected** desmarcado ② Toque em **Establish Connection**. A sua carteira pede uma assinatura: compare com o cartão abaixo"
+      ],
+      "check": {
+        "title": "Antes de assinar, confira 3 coisas",
+        "lead": "Depois de tocar em Establish Connection, a sua carteira mostra um pedido de assinatura. Compare com este cartão e marque cada linha conforme for conferindo.",
+        "skip": "O trading já está ativado e o botão diz Place Order? Pule este passo",
+        "confirm": [
+          {"title": "O pedido vem de app.hyperliquid.xyz", "sub": "Uma letra a mais ou um ponto a menos faz dele outro site"},
+          {"title": "Diz ApproveAgent e Mainnet", "sub": "Isso cria uma chave que só pode fazer ordens. A documentação da Hyperliquid diz que ela não pode enviar dinheiro para ninguém nem sacar"},
+          {"title": "É só uma assinatura: sem valor e sem destinatário", "sub": "Nada é gasto e nenhuma taxa é cobrada"}
+        ],
+        "reject": ["Pede para você enviar dinheiro, ou mostra um valor", "Menciona Permit, ou aprovar (Approve) um token", "Não vem de app.hyperliquid.xyz"],
+        "normal": [
+          "agentAddress é um endereço aleatório que muda toda vez: é a chave de ordens temporária que a página cria",
+          "chainId pode mostrar 42161 ou 56. Os dois estão certos; ele segue a rede atual da sua carteira",
+          "verifyingContract é tudo zero. Também está certo"
+        ]
+      },
+      "situations": {
+        "no-approve-agent": {"see": "O pedido de assinatura não menciona ApproveAgent", "do": "Toque em “Reject” (Rejeitar). Se o cartão não bater, não assine."},
+        "no-change": {"see": "Você assinou, mas nada mudou na página", "do": "Espere alguns segundos. Se o botão ainda não disser Place Order, recarregue a página, conecte a carteira de novo e toque em Establish Connection outra vez. Assinar uma segunda vez é normal."},
+        "chain-id": {"see": "O pedido mostra chainId 42161 ou 56", "do": "É normal. Ele segue a rede atual da sua carteira e não muda nada."}
+      }
+    },
+    "order": {
+      "title": "Faça a ordem de venda",
+      "note": "Aqui a sua carteira não vai abrir",
+      "milestone": "Vender USDH",
+      "movesText": "Esta ordem de venda na Hyperliquid é assinada pela chave de ordens que você aprovou antes, então nenhum pop-up da carteira aparece. DeFiExit nunca toca no seu dinheiro.",
+      "items": [
+        "Depois que você assinar, a página diz Established connection e o botão Enable Trading vira **Place Order**.",
+        "Confira mais uma vez: Sell / preço {{floorPx}} / quantidade {{usdhSell}} (digite de novo se tiverem sido apagados).",
+        "Toque em Place Order. Se aparecer uma caixa Confirm Order, confira as mesmas três coisas e confirme. Quem assina esta é a chave de ordens da página, então a sua carteira fica quieta.",
+        "Quando for executada, você deve ver a mensagem Order filled. Em Balances, o USDH cai para menos de 0.01 e o USDC sobe cerca de {{spotAfter}}. Open Orders fica vazio.",
+        "! Se a ordem continuar em Open Orders, o melhor preço de compra caiu abaixo de {{floorPx}}. Não faça outra ordem. Toque em “Travou?” no canto superior direito para um diagnóstico ao vivo."
+      ],
+      "situations": {
+        "resting": {"see": "A ordem fica parada e não é executada", "do": "Agora o melhor preço de compra está abaixo do seu. Não faça outra ordem. O diagnóstico ao vivo acima calcula as suas opções com os preços de compra de hoje."},
+        "too-small": {"see": "Diz que a ordem é pequena demais", "do": "A Hyperliquid tem um tamanho mínimo de ordem (cerca de $10). Se o seu USDH valer menos que isso, não dá para vender. Deixe para lá e vá sacar o seu USDC."},
+        "dust-left": {"see": "Sobra um pouquinho de USDH em Balances depois da venda", "do": "As quantidades só vão até duas casas decimais, então é normal sobrar menos de 0.01. Isso não afeta o saque."}
+      }
+    },
+    "transfer": {
+      "title": "Passe o seu USDC do spot para a conta de perps",
+      "note": "Assinatura 2",
+      "whenText": "Só para as contas separadas antigas; contas unificadas pulam isto",
+      "milestone": "Transferir",
+      "items": [
+        "! Primeiro veja a página Account. Se o título disser **Unified Account Summary** e só houver os botões Deposit / Withdraw, você tem uma conta unificada: **pule este passo** e vá direto para o saque."
+      ],
+      "images": [
+        "! Se você vir Unified Account Summary, é uma conta unificada (imagem de exemplo; ignore os números)",
+        "Uma conta unificada só tem Deposit / Withdraw: toque em Withdraw e pule para o próximo passo",
+        "Contas separadas mostram duas linhas, Spot e Perps: dinheiro em duas contas",
+        "① Toque em **Account** embaixo ② Toque em **Perps ⇄ Spot**",
+        "① Toque neste botão do meio para inverter a direção",
+        "① Confira se agora está Spot → Perps ② Toque em **MAX** (a captura foi tirada antes da venda, por isso mostra 0.00; o seu deve ser cerca de {{spotAfter}}) ③ Toque em **Confirm**. A sua carteira pede uma assinatura: compare com o cartão"
+      ],
+      "check": {
+        "title": "Antes de assinar, confira 3 coisas",
+        "lead": "Depois de tocar em Confirm, a sua carteira mostra um pedido de assinatura. Compare com este cartão e marque cada linha conforme for conferindo.",
+        "skip": "Conta unificada (sem Perps ⇄ Spot na página Account)? Pule este passo",
+        "confirm": [
+          {"title": "O pedido vem de app.hyperliquid.xyz", "sub": "Uma letra a mais ou um ponto a menos faz dele outro site"},
+          {"title": "Diz SendAsset, e destination é {{addrShort}}", "sub": "Maiúsculas e minúsculas não importam. Se não for o seu endereço, rejeite"},
+          {"title": "Do spot para perps, cerca de {{spotAfter}} USDC", "sub": "sourceDex é spot e destinationDex está vazio; o token é USDC:0x6d1e…e054"}
+        ],
+        "reject": ["destination não é o seu próprio endereço", "Menciona Permit, ou aprovar (Approve) um token", "Não vem de app.hyperliquid.xyz"],
+        "normal": ["É só uma assinatura, sem taxa"]
+      },
+      "situations": {
+        "no-button": {"see": "Não há Perps ⇄ Spot na página Account", "do": "Se o título disser Unified Account Summary, é uma conta unificada. Não precisa transferir; vá direto para o saque."},
+        "max-zero": {"see": "MAX mostra 0.00", "do": "Primeiro confira se a direção é Spot → Perps (o botão do meio inverte). Se continuar 0, não sobrou USDC no spot; vá direto para o saque."},
+        "wrong-destination": {"see": "O pedido de assinatura mostra um destination que não é o seu endereço", "do": "Toque em “Reject” (Rejeitar) na hora."}
+      }
+    },
+    "withdraw": {
+      "title": "Saque para a Arbitrum",
+      "note": "Última assinatura",
+      "milestone": "Sacar",
+      "images": [
+        "! A Hyperliquid diz que a taxa de 1 USDC é descontada do saque ① Deixe o ativo em USDC e a rede em Arbitrum ② Toque em **MAX**: deve ser cerca de {{withdrawAmt}} (a captura mostra outro número) ③ Toque em **Withdraw to Arbitrum**. A sua carteira pede uma assinatura: compare com o cartão"
+      ],
+      "check": {
+        "title": "Antes de assinar, confira 3 coisas",
+        "lead": "Depois de tocar em Withdraw to Arbitrum, a sua carteira mostra um pedido de assinatura. Compare com este cartão e marque cada linha conforme for conferindo.",
+        "confirm": [
+          {"title": "O pedido vem de app.hyperliquid.xyz", "sub": "Uma letra a mais ou um ponto a menos faz dele outro site"},
+          {"title": "Diz Withdraw, e destination é {{addrShort}}", "sub": "Se não for o seu endereço, rejeite"},
+          {"title": "amount é cerca de {{withdrawAmt}}", "sub": "O que chega = este número menos a taxa de 1 USDC"}
+        ],
+        "reject": ["destination não é o seu próprio endereço", "Menciona Permit, ou aprovar (Approve) um token", "Não vem de app.hyperliquid.xyz"],
+        "normal": ["É só uma assinatura, sem gas: a Hyperliquid envia a transação na Arbitrum por você", "time é um número de 13 dígitos. É um registro de data e hora (timestamp)"]
+      },
+      "situations": {
+        "less-than-expected": {"see": "MAX mostra menos que o número daqui", "do": "Ordens abertas e posições prendem parte do seu saldo. O diagnóstico ao vivo acima lista onde está cada parte do seu dinheiro."},
+        "cannot-click": {"see": "O botão Withdraw não responde", "do": "O saque precisa ser maior que a taxa de 1 USDC. Valores menores não podem ser sacados."},
+        "wrong-destination": {"see": "O pedido de assinatura mostra um destination que não é o seu endereço", "do": "Toque em “Reject” (Rejeitar) na hora."}
+      }
+    },
+    "arrive": {
+      "title": "Confira se chegou",
+      "milestone": "Recebido",
+      "check": {
+        "title": "Conferência do recebimento",
+        "rows": [
+          ["Quanto tempo", "A Hyperliquid diz que chega em até 5 minutos"],
+          ["Onde ver", "App da sua carteira → “Assets” (Ativos) → USDC → a linha da Arbitrum"],
+          ["O que você deve ver", "Cerca de {{arrive}} USDC a mais"],
+          ["Registro na blockchain", "Enviado de 0x2Df1…3dF7 (a ponte oficial da Hyperliquid) para o seu endereço, como USDC nativo da Arbitrum (0xaf88…5831)"],
+          ["Não chegou?", "Depois de 30 minutos, não saque de novo. Tire uma captura de tela e fale com a gente"]
+        ],
+        "foot": "Quando chegar, terminou"
+      },
+      "situations": {
+        "not-in-wallet": {"see": "Você não vê o USDC na sua carteira", "do": "Confira se você está olhando o USDC da rede **Arbitrum**. O diagnóstico ao vivo acima procura este saque direto na Arbitrum."},
+        "one-less": {"see": "Chegou 1 a menos do que você sacou", "do": "É a taxa de saque de 1 USDC. Normal."},
+        "late": {"see": "Já passaram mais de 30 minutos e nada chegou", "do": "Não saque de novo. Veja o diagnóstico ao vivo acima. Se ele não encontrar o recebimento, ou se não bater, leve capturas de tela ao suporte oficial da Hyperliquid (abaixo)."}
+      }
+    }
+  },
+  "sources": [
+    "Documentação da Hyperliquid · How to start trading",
+    "Documentação da Hyperliquid · Bridge / USDC",
+    "Documentação da Hyperliquid · Account abstraction modes",
+    "Documentação da Hyperliquid · Nonces and API wallets",
+    "Comunicado da Bridge · An update on USDH",
+    "Documentação da Hyperliquid · Support"
+  ]
+}

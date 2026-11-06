@@ -1,0 +1,257 @@
+{
+  "title": "O seu staking e o seu cofre na WOOFi, de volta para a sua carteira",
+  "short": "Da WOOFi para a sua carteira",
+  "verified": "Testado em 2026-10-29 com a própria conta do autor na carteira da Binance, seguindo este guia: a coleta das recompensas, a retirada do staking e o saque do cofre foram cada um para o contrato e com os dados mostrados nos cartões de verificação, e os três chegaram. As telas foram conferidas no site oficial em 2026-10-28 com uma carteira de teste somente leitura.",
+  "fieldTests": [
+    "Recuperado com a carteira da Binance seguindo este guia; as três transações chegaram. Depois de conectar, você pode cair na página de trading com o gráfico de preços, e os dois campos que mostram 0 na página do cofre confundem fácil. As duas coisas agora estão cobertas no guia."
+  ],
+  "covers": "WOO em staking na Arbitrum, recompensas não coletadas e ETH já liquidado esperando num cofre",
+  "summary": "WOO em staking na WOOFi (Arbitrum), recompensas em USDC que você nunca coletou, dinheiro no cofre de ETH que foi liquidado mas nunca foi sacado: três toques no site oficial, cada um uma transação comum, e o dinheiro volta direto para a sua carteira.",
+  "facts": [
+    ["Transações", "1–3 (dependendo do que você tem). Transações comuns, sem aprovações"],
+    ["Taxa", "Cerca de 0.00002 ETH pelas três, alguns centavos, paga com o ETH da sua carteira na Arbitrum"],
+    ["Tempo", "Uns 5 minutos, sem esperar nenhuma liquidação"],
+    ["Do que você precisa", "Pelo menos 0.0002 ETH na Arbitrum na sua carteira. Com menos que isso, o site oficial não deixa você continuar"]
+  ],
+  "chips": ["Uns 5 minutos", "1–3 transações, sem aprovações", "Alguns centavos de taxa"],
+  "support": {
+    "label": "Discord oficial da WOOFi",
+    "note": "Os canais oficiais listados no rodapé do site da WOOFi são o Discord e o X (@_WOOFi). A WOOFi nunca manda mensagem privada primeiro. Qualquer “suporte” que mande mensagem privada para você é golpista."
+  },
+  "official": [{"label": "Site oficial da WOOFi"}],
+  "vars": {
+    "addrShort": "o seu próprio endereço",
+    "woo": "o seu WOO em staking",
+    "rewards": "as suas recompensas não coletadas",
+    "eth": "o ETH que você pode sacar do cofre"
+  },
+  "pro": [
+    "**Rota**: woofi.com/stake → **Claim** para coletar as recompensas → **Unstake** para retirar tudo do staking → **Earn**, embaixo → My vaults → o cartão de ETH na Arbitrum → aba WITHDRAW → **WITHDRAW** ao lado de Available for Withdrawals.",
+    "**Três transações**: claimRewards para 0xa9E2…24Fb; unstake (tudo) para 0x2CFa…d8e2; withdraw para 0xE77A…Ad6a. Todas enviam 0 ETH e não precisam de aprovação nem de assinatura de mensagem.",
+    "**Seus números**: colete {{rewards}}, retire do staking {{woo}} WOO e saque {{eth}} ETH do cofre.",
+    "**Armadilhas**: não toque em Compound nem em auto-compound. No cofre, toque no WITHDRAW pequeno, não no botão grande. Com menos de 0.0002 ETH na Arbitrum, o site oficial não deixa você continuar."
+  ],
+  "done": {
+    "where": "na rede Arbitrum da sua carteira",
+    "from": "Enviado pelos contratos oficiais da WOOFi",
+    "look": "Onde ver: app da sua carteira → “Assets” (Ativos), com a rede em Arbitrum."
+  },
+  "screens": {
+    "perps": {"img": "perps-1-en.webp", "name": "Página de trading com gráfico de preços", "features": ["Um gráfico de velas grande ocupa o meio da página", "ETH no canto superior esquerdo, com 100x embaixo", "Três abas acima do gráfico: Chart / Trades / Data"], "do": "Esta é a página de trading de perpétuos da WOOFi, não a página de staking. Siga as duas imagens abaixo para voltar: você chegou quando o canto superior esquerdo mostrar uma chave Spot / Perps e a barra de baixo incluir Stake. Se o seu endereço aparecer no canto superior direito, continue; se disser Connect Wallet, conecte de novo.", "images": [{"src": "perps-1-en.webp", "caption": "① Toque nos três tracinhos no canto superior esquerdo"}, {"src": "perps-2-en.webp", "caption": "② Toque em **Stake**"}]},
+    "home": {"name": "Página de apresentação da WOOFi (com LAUNCH APP)", "features": ["Título grande: SWAP AND EARN ON REAL-WORLD ASSETS", "Um botão laranja LAUNCH APP no meio", "Números grandes mais abaixo, como Spot volume e Perps volume"], "do": "Esta é a página de apresentação da WOOFi, não a página de staking. Siga as três imagens abaixo para voltar: toque em **LAUNCH APP** (primeiro abre a página de trading com o gráfico de preços) e depois nos três tracinhos no canto superior esquerdo → **Stake**. Se o seu endereço aparecer no canto superior direito, continue; se disser Connect Wallet, conecte de novo.", "images": [{"src": "home-launch.webp", "caption": "① Toque no botão laranja **LAUNCH APP** no meio"}, {"src": "perps-1-en.webp", "caption": "① Na página do gráfico de preços, toque nos três tracinhos no canto superior esquerdo"}, {"src": "perps-2-en.webp", "caption": "② Toque em **Stake**"}]},
+    "stake-new": {"name": "Página de staking, carteira não conectada", "features": ["Uma chave Spot / Perps no canto superior esquerdo", "Weekly rewards perto do topo", "Um botão laranja Connect Wallet"], "do": "Esta é a página de staking; só falta conectar. Conecte a sua carteira como no passo 2."},
+    "wallets": {"name": "Pede para você escolher uma carteira", "features": ["O título diz Connect your wallet", "Uma fileira de ícones de carteiras: Detected Wallet, Binance, Coinbase Wallet…", "powered by thirdweb embaixo"], "do": "Este é o seletor de carteiras. Escolha **Detected Wallet**; no app da Binance, **Binance** também funciona. Quando a sua carteira pedir para conectar e o pedido vier de woofi.com, toque em “Connect” (Conectar)."},
+    "networks": {"name": "Pede para você escolher uma rede", "features": ["O título diz Switch Network", "Duas colunas de redes embaixo de Mainnet: Ethereum, Arbitrum, Base…", "Um × no canto superior direito"], "do": "Este é o menu de redes. Escolha **Arbitrum** e confirme a troca de rede na sua carteira."},
+    "stake": {"name": "Página de staking, carteira conectada", "features": ["Abas Stake / Unstake, com Stake em laranja", "USDC reward e XP", "Um botão laranja Claim ao lado de Compound"], "do": "Esta é a página de staking e a sua carteira está conectada. Toque no botão abaixo para ir ao passo de que você precisa, e siga as imagens e o cartão de verificação desse passo. Ainda não toque nos botões desta página."},
+    "unstake": {"name": "Aba Unstake", "features": ["Abas Stake / Unstake, com Unstake em laranja", "Um campo mostrando 0 WOO, com um botão UNSTAKE à direita", "Claim e Compound embaixo, como na aba Stake"], "do": "Esta é a aba Unstake. Toque no botão abaixo para ir ao passo “Retire o seu WOO do staking” e siga as imagens e o cartão de verificação dele."},
+    "earn": {"name": "Página Earn com a lista de cofres", "features": ["My earnings, com Holdings, Monthly Profits e Average APR", "Duas abas: All vaults / My vaults", "Uma busca que diz Try \"USDT\""], "do": "Esta é a página dos cofres. Encontre o cartão de ETH na Arbitrum e siga o passo “Saque o ETH do cofre”."},
+    "vault": {"name": "Aba WITHDRAW do cofre", "features": ["Dois blocos de instruções marcados STEP 1 e STEP 2", "Um botão cinza REQUEST WITHDRAWAL", "A última linha diz Available for Withdrawals, com um WITHDRAW pequeno à direita"], "do": "Esta é a aba de saque do cofre. Toque no botão abaixo para ir ao passo “Saque o ETH do cofre” e siga as imagens e o cartão de verificação dele."},
+    "domain": {"name": "A barra de endereço não diz woofi.com", "do": "Feche a página na hora e não assine nada. Digite `https://woofi.com/stake` por conta própria; não toque em links que outras pessoas mandarem para você."},
+    "sign": {"name": "A sua carteira pede para você assinar uma mensagem, ou aprovar (Approve / Permit)", "do": "Toque em “Reject” (Rejeitar). Cada passo deste guia é uma transação comum: sem assinatura de mensagem, sem aprovação. Feche a página e volte ao passo 1 para conferir o endereço do site."},
+    "blocked": {"name": "Aparece uma mensagem Blocked Address", "do": "A WOOFi bloqueou este endereço com base numa lista de sanções. Este guia não pode ajudar."},
+    "sorry": {"name": "WE'RE SORRY: a sua região não é atendida", "do": "Pare aqui. A WOOFi não atende a sua região, e este guia não vai ajudar você a contornar restrições regionais. Você pode perguntar no Discord oficial da WOOFi."}
+  },
+  "steps": {
+    "open": {
+      "title": "Abra o site oficial no app da sua carteira",
+      "items": [
+        "Primeiro toque neste endereço para copiá-lo: `https://woofi.com/stake`",
+        "Abaixo está como fazer na carteira da Binance, uma imagem por toque. As imagens mostram o app da Binance em chinês; o app em inglês tem o mesmo layout. Em outra carteira, cole este endereço no navegador DApp dela."
+      ],
+      "images": [
+        "① Abra o app da Binance e toque em **Wallet** (Carteira) no topo (o saldo na imagem está oculto)",
+        "② Toque em **Discover** (Descobrir) embaixo. A carteira selecionada no canto superior esquerdo deve ser a que tem este dinheiro (por exemplo, Wallet1). Se não for, toque nela para trocar",
+        "③ Toque na busca no topo (Search DApp or enter URL)",
+        "④ O iPhone pergunta se permite colar: toque em **Allow Paste** (Permitir colar) (no Android este passo não aparece)",
+        "⑤ Toque e segure a busca e depois toque em **Paste** (Colar)",
+        "⑥ Toque na linha que aparece embaixo: **woofi.com/stake**",
+        "✗ Não toque em WOOFi em History (Histórico): ali só ficou salva a página inicial, que abre a página de apresentação e custa três toques a mais",
+        "⑦ Abre direto na página de staking. Confira se no topo está escrito **woofi.com**: uma letra a mais ou um ponto a menos significa parar"
+      ],
+      "situations": {
+        "search-instead": {"see": "Digitar o endereço do site mostra resultados de busca", "do": "Inclua `https://` e digite o endereço completo: `https://woofi.com/stake`."},
+        "restricted": {"see": "Uma mensagem WE'RE SORRY diz que a sua região não é atendida", "do": "Pare aqui. A WOOFi não atende a sua região, e este guia não vai ajudar você a contornar restrições regionais. Você pode perguntar no Discord oficial da WOOFi (veja abaixo)."},
+        "not-sure": {"see": "Você não tem certeza de que é o site oficial", "do": "Olhe a barra de endereço: o domínio deve ser exatamente **woofi.com**. Se não for, feche a página e digite o endereço do site à mão. Não toque em links que outras pessoas mandarem para você."},
+        "old-domain": {"see": "O seu favorito diz fi.woo.org", "do": "É o endereço antigo da WOOFi e agora redireciona para woofi.com. Vale o que a barra de endereço mostrar no fim: woofi.com."},
+        "history": {"see": "Você tocou em WOOFi em History e abriu a página de apresentação (título grande SWAP AND EARN, um botão LAUNCH APP)", "do": "Toque no botão laranja **LAUNCH APP** no meio. Primeiro abre a página de trading com o gráfico de preços; depois toque nos três tracinhos no canto superior esquerdo → **Stake** para chegar à página de staking. Da próxima vez, cole o endereço completo em vez de usar o History."},
+        "no-paste": {"see": "Ao segurar a busca, não aparece Paste (Colar)", "do": "Volte a esta página e toque no endereço de novo para copiá-lo. No iPhone, toque em “Allow Paste” (Permitir colar) quando perguntar. Se ainda não funcionar, digite `https://woofi.com/stake` à mão."}
+      }
+    },
+    "connect": {
+      "title": "Conecte a sua carteira e mude para a Arbitrum",
+      "note": "Só conectar. Sem assinatura, nenhum dinheiro se move",
+      "images": [
+        "① Toque em **Connect Wallet** (o do canto superior direito também serve)",
+        "① Escolha **Detected Wallet**: é a carteira do app que você está usando agora ② No app da Binance, **Binance** também funciona. Quando a sua carteira pedir para conectar e o pedido vier de woofi.com, toque em “Connect” (Conectar)",
+        "① O seu endereço aparece no canto superior direito (oculto na captura). Deve ser {{addrShort}} ② Este ícone é a rede atual. Toque nele",
+        "① Escolha **Arbitrum** e confirme a troca de rede na sua carteira. Se já estiver em Arbitrum (um pontinho depois do nome), feche o menu com o × no canto superior direito"
+      ],
+      "items": ["✗ Se ao conectar aparecer uma mensagem WE'RE SORRY dizendo que a sua região não é atendida, pare aqui. Este guia não vai ajudar você a contornar restrições regionais."],
+      "situations": {
+        "perps-page": {"see": "Depois de conectar, vejo uma página de trading com gráfico de preços, não a página de staking", "do": "É a página de trading de perpétuos da WOOFi. Toque nos três tracinhos no canto superior esquerdo → **Stake** para voltar à página de staking. Se o canto superior direito disser Connect Wallet, conecte de novo."},
+        "no-popup": {"see": "Toquei em Connect Wallet, mas a carteira não pediu para conectar", "do": "Abra a página dentro do próprio navegador DApp do app da sua carteira (passo 1). Se Detected Wallet não fizer nada, abra a página de novo e tente Binance."},
+        "wrong-address": {"see": "O endereço no canto superior direito não é o que tem o dinheiro", "do": "No app da sua carteira, mude para a carteira que tem este dinheiro e conecte de novo. Não continue se o endereço não bater."},
+        "sign-on-connect": {"see": "Ao conectar, a sua carteira pede para você assinar uma mensagem", "do": "Toque em “Reject” (Rejeitar), feche a página e confira o endereço do site de novo. A WOOFi não precisa de assinatura para conectar (o código do site dela não faz nenhum pedido de assinatura)."},
+        "wrong-network": {"see": "A página diz Wrong Network no topo", "do": "Toque no ícone de rede no canto superior direito, escolha **Arbitrum** e confirme a troca na sua carteira."},
+        "blocked-address": {"see": "Aparece uma mensagem Blocked Address", "do": "A WOOFi bloqueou este endereço com base numa lista de sanções. Este guia não pode ajudar."}
+      }
+    },
+    "claim": {
+      "title": "Colete as suas recompensas",
+      "whenText": "Só se você tiver recompensas não coletadas",
+      "note": "Transação 1",
+      "milestone": "Coletar",
+      "detour": {
+        "see": "Está vendo um gráfico de preços (três tracinhos no canto superior esquerdo)? Dois toques para voltar à página de staking",
+        "thumb": "perps-1-en.webp",
+        "images": [
+          {"src": "perps-1-en.webp", "caption": "① Toque nos três tracinhos no canto superior esquerdo"},
+          {"src": "perps-2-en.webp", "caption": "② Toque em **Stake** para voltar à página de staking e depois continue com o que está abaixo"}
+        ]
+      },
+      "images": [
+        "Role para baixo até o quadro Stake / Unstake. ① Toque em **Claim** (USDC reward, acima, é o que você ainda não coletou. Está oculto na captura e deve ser cerca de {{rewards}}) ✗ Não toque em Compound: ele transforma as recompensas em WOO e coloca de novo em staking, o contrário do que você quer"
+      ],
+      "check": {
+        "title": "Antes de confirmar, confira 3 coisas",
+        "lead": "Depois de tocar em Claim, a sua carteira pede para você confirmar uma transação (na carteira da Binance o título é Contract call). Compare com esta lista e toque em cada item quando bater.",
+        "skip": "Já coletou (USDC reward está em 0)? Pule este passo",
+        "confirm": [
+          {"title": "O pedido vem de woofi.com, na Arbitrum", "sub": "A carteira da Binance diz Arbitrum One. Uma letra a mais ou um ponto a menos no site significa parar"},
+          {"title": "O contrato é 0xa9E2…24Fb (o contrato de staking da WOOFi)", "sub": "Na carteira da Binance é a linha do contrato (outras carteiras podem dizer To). Os 6 primeiros e os 4 últimos caracteres precisam bater"},
+          {"title": "Você não paga nada além de uma pequena taxa de rede", "sub": "A carteira da Binance mostra um valor com sinal de mais que você vai receber: as suas recompensas (cerca de {{rewards}}). A taxa de rede é de menos de um centavo"}
+        ],
+        "reject": ["Pede para você enviar qualquer token (um valor com sinal de menos, ou as palavras send ou pay, ou seja, enviar ou pagar)", "Diz Approve ou Permit", "Pede para você assinar uma mensagem (Sign)", "Não vem de woofi.com"],
+        "normal": [
+          "A linha da ação costuma dizer claimRewards",
+          "O valor que você vai receber também lista um pouco de USDC.e e ARB: esta transação paga vários tokens de recompensa de uma vez (o histórico da Binance mostra 3 mudanças de saldo)",
+          "A taxa de rede sai do seu ETH na Arbitrum, menos de um centavo",
+          "A sua carteira pode avisar que é uma chamada de contrato. Se o site e o endereço baterem, pode continuar"
+        ]
+      },
+      "situations": {
+        "perps-page": {"see": "A página é um gráfico de preços e não tem Claim", "do": "Você está na página de trading de perpétuos da WOOFi. Toque nos três tracinhos no canto superior esquerdo → **Stake**. O Claim fica na página de staking."},
+        "cancelled": {"see": "A página mostra Cancelled · User denied transaction signature", "do": "Você tocou em “Reject” na sua carteira, então nada se moveu. Confira de novo e toque em Claim mais uma vez."},
+        "insufficient-gas": {"see": "O botão diz INSUFFICIENT GAS", "do": "O site oficial exige pelo menos 0.0002 ETH na Arbitrum na sua carteira. Primeiro envie um pouco de ETH para esta carteira na Arbitrum (0.0005 é mais que suficiente) e depois volte."},
+        "compound-clicked": {"see": "Toquei em Compound sem querer", "do": "As suas recompensas viraram WOO e foram somadas ao seu staking. Nada se perdeu: elas saem junto com o resto quando você retirar do staking no próximo passo."},
+        "auto-compound": {"see": "A transação falhou com !COMPOUND", "do": "O auto-compound está ligado. Enquanto ele estiver ligado, você não consegue coletar, e ele não pode ser desligado por 7 dias depois de ligado. Toque em “Travou?” no canto superior direito para ver a sua situação. Se tiver dúvida, pergunte no Discord oficial da WOOFi."},
+        "wrong-to": {"see": "O pedido vai para um endereço diferente de 0xa9E2…24Fb", "do": "Toque em “Reject” (Rejeitar) na hora."}
+      }
+    },
+    "unstake": {
+      "title": "Retire o seu WOO do staking",
+      "whenText": "Só se você tiver WOO em staking",
+      "note": "Transação 2",
+      "milestone": "Retirar do staking",
+      "detour": {
+        "see": "Está vendo um gráfico de preços (três tracinhos no canto superior esquerdo)? Dois toques para voltar à página de staking",
+        "thumb": "perps-1-en.webp",
+        "images": [
+          {"src": "perps-1-en.webp", "caption": "① Toque nos três tracinhos no canto superior esquerdo"},
+          {"src": "perps-2-en.webp", "caption": "② Toque em **Stake** para voltar à página de staking e depois continue com o que está abaixo"}
+        ]
+      },
+      "images": [
+        "① Na página de staking, toque na aba **Unstake**",
+        "② Toque no número à direita do campo (todo o seu WOO em staking, oculto na captura). Ele preenche a quantidade total",
+        "③ Com a quantidade preenchida (cerca de {{woo}}; o site oficial mostra algumas casas decimais a mais), toque em **UNSTAKE**",
+        "④ Em Unstake Confirmation, confira a quantidade e toque em **UNSTAKE**. A sua carteira pede para você confirmar uma transação: compare com o cartão abaixo ! Ele diz que o seu XP (pontos) será removido. O XP não pode ser negociado e não afeta o dinheiro que você recebe de volta"
+      ],
+      "check": {
+        "title": "Antes de confirmar, confira 3 coisas",
+        "lead": "Depois de tocar em UNSTAKE, a sua carteira pede para você confirmar uma transação (na carteira da Binance o título é Contract call). Compare com esta lista e toque em cada item quando bater.",
+        "skip": "Não tem WOO em staking? Pule este passo",
+        "confirm": [
+          {"title": "O pedido vem de woofi.com, na Arbitrum", "sub": "A carteira da Binance diz Arbitrum One. Uma letra a mais ou um ponto a menos no site significa parar"},
+          {"title": "O contrato é 0x2CFa…d8e2 (o contrato de staking da WOOFi)", "sub": "É um endereço diferente do passo de coletar. Isso é normal"},
+          {"title": "Você não paga nada além de uma pequena taxa de rede", "sub": "A carteira da Binance mostra um valor com sinal de mais que você vai receber: o seu WOO voltando (cerca de {{woo}}). A taxa de rede é de menos de um centavo"}
+        ],
+        "reject": ["Pede para você enviar qualquer token (um valor com sinal de menos, ou as palavras send ou pay, ou seja, enviar ou pagar)", "Diz Approve ou Permit", "Pede para você assinar uma mensagem (Sign)", "Não vem de woofi.com"],
+        "normal": [
+          "A linha da ação costuma dizer unstake",
+          "Retirar do staking não tem período de bloqueio nem taxa"
+        ]
+      },
+      "situations": {
+        "amount-not-full": {"see": "A quantidade não é o total", "do": "Toque no número à direita do campo para preencher a quantidade total. Digitar à mão costuma deixar um restinho para trás."},
+        "insufficient-balance": {"see": "O botão diz INSUFFICIENT BALANCE", "do": "A quantidade é maior do que você tem em staking. Toque no número à direita do campo para preencher de novo."},
+        "xp": {"see": "A confirmação diz que o seu XP será removido", "do": "XP é o sistema de pontos da WOOFi. Ele não pode ser negociado, e perdê-lo não afeta o dinheiro que você recebe de volta."},
+        "cancelled": {"see": "A página mostra Cancelled · User denied transaction signature", "do": "Você tocou em “Reject” na sua carteira, então nada se moveu. Confira de novo e toque em UNSTAKE mais uma vez."},
+        "wrong-to": {"see": "O pedido vai para um endereço diferente de 0x2CFa…d8e2", "do": "Toque em “Reject” (Rejeitar) na hora."}
+      }
+    },
+    "vault": {
+      "title": "Saque o ETH do cofre",
+      "whenText": "Só se houver dinheiro já liquidado esperando por você no cofre de ETH",
+      "note": "Transação 3",
+      "milestone": "Cofre",
+      "detour": {
+        "see": "Está vendo um gráfico de preços (três tracinhos no canto superior esquerdo)? Dois toques para chegar à página Earn",
+        "thumb": "perps-1-en.webp",
+        "images": [
+          {"src": "perps-1-en.webp", "caption": "① Toque nos três tracinhos no canto superior esquerdo"},
+          {"src": "perps-earn-en.webp", "caption": "② Toque em **Earn**. Quando estiver na página Earn, continue a partir da imagem 2 abaixo"}
+        ]
+      },
+      "images": [
+        "① Bem no fim da página de staking, toque em **Earn**",
+        "② Role um pouco para baixo e toque em **My vaults** (só os cofres em que você colocou dinheiro)",
+        "③ Toque no cartão de **ETH** na Arbitrum (My Deposits é o seu número, oculto na captura)",
+        "④ O cartão abre em DEPOSIT. Toque na aba **WITHDRAW**, ao lado",
+        "⑤ Role até a última linha, Available for Withdrawals (o que você pode sacar, oculto na captura; a página mostra 4 casas decimais, cerca de {{eth}} ETH), e toque em **WITHDRAW**, à direita ✗ Não mexa nos dois campos que mostram 0, no UNSTAKE laranja nem no REQUEST WITHDRAWAL cinza"
+      ],
+      "items": [
+        "! O dinheiro liquidado não é enviado sozinho para a sua carteira. Você precisa tocar aqui, e este é o passo que muita gente esquece."
+      ],
+      "check": {
+        "title": "Antes de confirmar, confira 3 coisas",
+        "lead": "Depois de tocar em WITHDRAW, a sua carteira pede para você confirmar uma transação (na carteira da Binance o título é Contract call). Compare com esta lista e toque em cada item quando bater.",
+        "skip": "Não há nada esperando no cofre? Pule este passo",
+        "confirm": [
+          {"title": "O pedido vem de woofi.com, na Arbitrum", "sub": "A carteira da Binance diz Arbitrum One. Uma letra a mais ou um ponto a menos no site significa parar"},
+          {"title": "O contrato é 0xE77A…Ad6a (o contrato de saque dos cofres da WOOFi)", "sub": "Cada um dos três passos usa um endereço diferente. Isso é normal"},
+          {"title": "Você não paga nada além de uma pequena taxa de rede", "sub": "A carteira da Binance mostra um valor com sinal de mais que você vai receber: o ETH saindo (cerca de {{eth}}). A taxa de rede é de menos de um centavo"}
+        ],
+        "reject": ["Pede para você enviar qualquer token (um valor com sinal de menos, ou as palavras send ou pay, ou seja, enviar ou pagar)", "Diz Approve ou Permit", "Pede para você assinar uma mensagem (Sign)", "Não vem de woofi.com"],
+        "normal": [
+          "A linha da ação diz withdraw, e os dados brutos começam com 0x3ccfd60b",
+          "Você recebe ETH nativo, não WETH. O histórico da Binance chama isso de resgate (redemption)"
+        ]
+      },
+      "situations": {
+        "no-available": {"see": "Available for Withdrawals está em 0", "do": "Ou já foi sacado, ou ainda não foi liquidado. Toque em “Travou?” no canto superior direito para um diagnóstico ao vivo."},
+        "big-button": {"see": "Não dá para tocar no botão grande REQUEST WITHDRAWAL", "do": "É esperado: você não precisa dele. Toque no **WITHDRAW** pequeno, à direita de Available for Withdrawals."},
+        "shares-left": {"see": "My Deposits é maior que Available for Withdrawals", "do": "Parte do seu dinheiro no cofre ainda não foi solicitada. Por enquanto este guia só cobre o dinheiro liquidado esperando para ser sacado. Para o resto, use Instant Withdraw na aba WITHDRAW (chega na hora, taxa de 1%) ou REQUEST WITHDRAWAL (grátis, mas você espera até a próxima terça-feira)."},
+        "cancelled": {"see": "A página mostra Cancelled · User denied transaction signature", "do": "Você tocou em “Reject” na sua carteira, então nada se moveu. Confira de novo e toque em WITHDRAW mais uma vez."},
+        "wrong-to": {"see": "O pedido vai para um endereço diferente de 0xE77A…Ad6a", "do": "Toque em “Reject” (Rejeitar) na hora."}
+      }
+    },
+    "arrive": {
+      "title": "Confira se chegou",
+      "milestone": "Recebido",
+      "check": {
+        "title": "Confira se chegou",
+        "rows": [
+          ["Quanto tempo", "Alguns segundos depois que cada transação for confirmada"],
+          ["Onde ver", "App da sua carteira → “Assets” (Ativos), com a rede em Arbitrum"],
+          ["O que você deve ver", "Cerca de {{woo}} WOO, {{rewards}} e {{eth}} ETH a mais (o que você tiver de cada um)"],
+          ["Registro na blockchain", "O WOO vem do contrato de staking da WOOFi 0x2CFa…d8e2; os tokens de recompensa, dos contratos de recompensa da WOOFi; o ETH, do contrato de saque dos cofres da WOOFi 0xE77A…Ad6a. Tudo é recebido pelo seu endereço"],
+          ["Se não chegou", "Toque em “Travou?” no canto superior direito para um diagnóstico ao vivo. Se a transação deu certo mas você não vê o WOO, adicione o token na sua carteira"]
+        ],
+        "foot": "Quando chegar, terminou. O WOO é um token comum: guarde ou troque na sua carteira"
+      },
+      "situations": {
+        "no-woo": {"see": "Não vejo o WOO na carteira", "do": "Algumas carteiras não mostram tokens novos sozinhas. Procure WOO (Arbitrum) na sua carteira, ou adicione com o endereço do contrato `0xcafcd85d8ca7ad1e1c6f82f651fa15e33aefd07b`."},
+        "eth-not-weth": {"see": "O que chegou é ETH, não WETH", "do": "É normal: o contrato de saque dos cofres converte o WETH em ETH nativo e envia para você."},
+        "want-usdc": {"see": "Quero trocar o WOO por USDC", "do": "O WOO já está na sua própria carteira, então você pode usar a troca integrada da carteira. Este guia não cobre trocas. Confira a cotação e o slippage antes de trocar."}
+      }
+    }
+  },
+  "sources": [
+    "Documentação da WOOFi · Como funcionam os cofres Earn",
+    "Documentação da WOOFi · Endereços de contratos na Arbitrum",
+    "Arquivo da documentação da WOOFi · Staking de WOO (a página original saiu do ar)",
+    "Chainlink · Feed de preço WOO/USD (Arbitrum)",
+    "Discord oficial da WOOFi"
+  ]
+}

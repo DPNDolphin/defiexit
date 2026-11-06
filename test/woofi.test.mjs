@@ -199,3 +199,11 @@ test("诊断:到了几笔,但金库里还有钱(没申请的份额或在等结�
     assert.ok(!d.findings.some((f) => f.level === "done"));
   }
 });
+
+test("WOOFi:别的语言没有自己的译文时用英文那套;一个汉字都没有", async () => {
+  const r = await withNode({ rewards: [[USDCE, 12_000_000n], [USDC, 2_000_000n]] }, () => detect(USER, "es"));
+  const d = await withNode(FULL, () => diagnose(USER, Date.now(), "es"));
+  assert.ok(!/[　-〿一-鿿＀-￯]/.test(JSON.stringify([r, d])));
+  assert.equal(r.vars.rewards, "12.00 USDC.e + 2.00 USDC");
+  assert.equal(d.step, "claim");
+});

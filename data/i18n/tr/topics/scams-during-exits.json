@@ -1,0 +1,102 @@
+{
+  "title": "Kapanışlar ve geçişler sırasında en yaygın dolandırıcılıklar",
+  "summary": "En yaygınları şunlar: size ilk mesajı atan “destek” görevlileri, sahte geçiş ya da airdrop siteleri, birinin tokenlarınızı almasına izin veren “onay” ya da imza istekleri ve ücretli “kurtarma” hizmetleri. Çoğunu tek bir kural durdurur: gerçek projeler size ilk mesajı atmaz, kurtarma ifadenizi ya da özel anahtarlarınızı asla istemez ve önce para göndermenizi asla istemez; güvenilecek bağlantılar yalnızca resmi hesabın kendisinin paylaştıkları ve resmi web sitesidir.",
+  "sections": [
+    {
+      "h": "Bu anlarda dolandırıcılık neden artar",
+      "p": [
+        "Kapanışların ve geçişlerin son tarihleri vardır ve birçok kişi aceleyle herkese açık yerlerde yardım ister. ethereum.org sitesine göre destek dolandırıcıları herkese açık kanallarda soru soran kişileri arar, sonra yardım teklif eden özel bir mesaj gönderir; amaçları özel anahtarlarınızı ya da paranızı ele geçirmektir.",
+        "MetaMask da son tarihler etrafında kurulan zaman baskısını kötü amaçlı bir onay isteğinin tipik bir işareti olarak sayıyor. Son tarih yaklaştıkça daha yavaş hareket edin."
+      ],
+      "list": []
+    },
+    {
+      "h": "En yaygın dolandırıcılıklar",
+      "p": [
+        "Bunların her biri bir proje ya da cüzdan sağlayıcısı tarafından herkese açık şekilde işaretlendi."
+      ],
+      "list": [
+        "Sizi bulan “destek”: X, Discord ya da Telegram'da bir sorundan bahsedersiniz; biri size resmi destek olduğunu söyleyerek özel mesaj atar ya da bir “yardım” bağlantısıyla yanıt verir. Horizen, ekibinin size asla ilk mesajı atmayacağını söylüyor; MetaMask ise destek teklif etmek için asla özel mesaj atmadığını, telefon desteği olmadığını ve bir destek talebi için sizinle asla X üzerinden iletişime geçmediğini söylüyor.",
+        "Gerçeğine benzeyen sahte geçiş ve airdrop siteleri. Sophon şöyle uyardı: “Yalnızca resmi Sophon bağlantılarını kullanın ve sahte geçiş sitelerine karşı dikkatli olun.” Abstract da kendi adını kullanan sahte hesaplar, sahte geçiş siteleri ve kendisi adına geldiğini iddia eden özel mesajlar konusunda uyardı. Sophon belgeleri şunu da ekliyor: istenmeden gelen hiçbir talep (claim), geçiş ya da token takası bağlantısına tıklamayın.",
+        "“Kilidi açmak / geçiş yapmak için onaylayın”: bir onay, bir sitenin ya da sözleşmenin belirli bir tokenı cüzdanınızdan çekmesine izin verir; permit gibi gas gerektirmeyen bir imza da aynı işi yapabilir. MetaMask'ın tavsiyesi: onaylamadan önce sitenin tam olarak ne istediğini kontrol edin ve mümkünse tutarı sınırlayın; bir site airdrop almanız için tüm NFT'lerinizi onaylamanızı istiyorsa kanmayın, çünkü bir şey almak için bu tür bir onaya ihtiyacınız olmamalı.",
+        "Hiç istemediğiniz tokenlar ya da NFT'ler ve sizi bunları almak (claim) için bir web sitesine yönlendiren bir mesaj. MetaMask buna yaygın bir airdrop dolandırıcılığı diyor: site büyük ihtimalle kurtarma ifadenizin ya da bir onayın peşindedir; etkileşime girmeyin, gizleyin. ethereum.org ayrıca bu tür sitelerin cüzdanınızı bağlamanızı ve varlıklarınızı dolandırıcıya veren bir işlemi “onaylamanızı” istediğini ekliyor.",
+        "Ücretli “kurtarma”: biri çalınan ya da takılı kalan paranızı peşin bir ücret karşılığında geri getirebileceğini iddia eder. FBI, bu kişilerin sosyal medyada, yorum bölümlerinde ve arama sonuçlarında ortaya çıktığı konusunda uyarıyor; ilk ödemeyi alıp kaybolurlar ya da eksik veya hatalı bir “izleme raporu” verip daha fazlasını isterler. Bazıları hukuk bürosu ya da devlet kurumu kılığına girer. Özel şirketler el koyma kararı çıkaramaz ve kolluk kuvvetleri soruşturma için mağdurlardan ücret almaz."
+      ]
+    },
+    {
+      "h": "Bir bağlantı nasıl kontrol edilir",
+      "p": [
+        "Dolandırıcı bir bağlantı gerçeğinin tıpatıp aynısı görünebilir; bu yüzden nereden geldiğine göre karar verin."
+      ],
+      "list": [
+        "Bağlantıları yalnızca resmi hesabın kendi gönderilerinden alın ya da resmi ana sayfadan tıklayarak gidin. Abstract'ın tavsiyesi: yalnızca resmi bağlantıyı kullanın ve onu Discord'da ve diğer resmi kanallarda çapraz kontrol edin.",
+        "Hesabın kendisini kontrol edin: profil resmine ve görünen ada göre değil, @kullanıcı adının resmi web sitesinde listelenenle aynı olduğuna bakın.",
+        "Arama sonuçlarından, reklamlardan, yorum dizilerinden ya da özel mesajlardan gelen bağlantıları kullanmayın. FBI, sahte kurtarma hizmetlerinin yorum bölümlerinde ve arama sonuçlarında ortaya çıktığını belirtiyor.",
+        "Cüzdan penceresinde bir kez daha kontrol edin: MetaMask'a göre onay penceresi, kullanmak istediğiniz site olduğunu doğrulayabilmeniz için en üstte sitenin adını ve web adresini gösterir. Sonra bu adımın bir transfer mi, bir onay mı yoksa bir imza mı olduğuna bakın.",
+        "Pencerenin ne yaptığını anlayamıyorsanız onaylamayın; önce resmi Discord sunucusunda sorun."
+      ]
+    },
+    {
+      "h": "Gerçek projelerin yapmadığı şeyler",
+      "p": [
+        "Bunlardan biriyle karşılaşırsanız orada durabilirsiniz."
+      ],
+      "list": [
+        "Size ilk mesajı atmak. (Horizen: ekibi size asla ilk mesajı atmaz. MetaMask: destek teklif etmek için asla özel mesaj atmaz.)",
+        "Kurtarma ifadenizi, özel anahtarlarınızı ya da şifrenizi istemek. ethereum.org sitesine göre hiçbir gerçek hizmet, destek görevlisi ya da web sitesi bunları asla istemez; MetaMask, kurtarma ifadenizi girmeniz gereken tek zamanların bir cüzdan oluştururken ve bir cüzdanı geri yüklerken olduğunu söylüyor.",
+        "Paranızı kendilerine göndermenizi istemek. (Horizen: “Paranızı bize göndermenizi asla istemeyeceğiz.”)",
+        "Sizi aramak ya da bilgisayarınıza uzaktan erişim istemek. (MetaMask'ın telefon desteği yok. ethereum.org: bilgisayarınıza asla kimsenin uzaktan erişmesine izin vermeyin.)",
+        "Paranızı “hızlandırmak”, “kilidini açmak” ya da “kurtarmak” için ücret istemek.",
+        "DeFiExit cüzdanınızdan yalnızca adresini paylaşmasını ister; sizden asla bir şey imzalamanızı, onaylamanızı veya göndermenizi istemez ve size asla ilk mesajı biz atmayız."
+      ]
+    },
+    {
+      "h": "Zaten tıkladıysanız ya da imzaladıysanız",
+      "p": [
+        "Ne kadar hızlı davranırsanız zararı sınırlama şansınız o kadar artar."
+      ],
+      "list": [
+        "Şüpheli bir siteye onay verdiyseniz: MetaMask, para alınmadan önce onayı olabildiğince çabuk iptal etmenizi söylüyor (örneğin MetaMask Portfolio'da inceleyip iptal ederek). Cüzdan boşaltıldıktan sonra yapabileceğiniz pek bir şey yoktur.",
+        "Kurtarma ifadeniz ya da özel anahtarınız sızdıysa veya sizin yapmadığınız işlemler görünüyorsa: MetaMask hemen yeni bir cüzdan oluşturmanızı, kalanları oraya taşımanızı ve eski cüzdanı bırakmanızı öneriyor; bir süpürücü (sweeper) komut dosyasından şüpheleniyorsanız eski cüzdana daha fazla gas göndermeyin.",
+        "Zincir üstü işlemler geri alınamaz. İşlem kayıtlarını saklayın ve yerel polise bildirin; ABD'de FBI'ın IC3 birimine bildirebilirsiniz.",
+        "Size özel mesaj atıp bunu geri getirmeyi teklif edenlerin çıkmasını bekleyin. FBI'ın uyardığı, ardından gelen dolandırıcılık budur; onlara hiçbir para ya da kişisel bilgi vermeyin."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "“Resmi destek” hesabı bana özel mesaj atıp takılı kalan paramı çıkarmayı teklif etti. Gerçek mi?",
+      "a": "Neredeyse kesinlikle dolandırıcılık. Horizen, ekibinin size asla ilk mesajı atmayacağını açıkça belirtiyor; MetaMask da destek teklif etmek için asla özel mesaj atmadığını söylüyor. Yanıt vermeyin ve hiçbir şeye tıklamayın; projenin web sitesinde listelenen resmi kanallardan, örneğin resmi Discord sunucusunda bir ticket açarak kendiniz sorun."
+    },
+    {
+      "q": "Bir geçiş sayfası cüzdanımı bağlamamı ve bir şey imzalamamı istiyor. Yapmalı mıyım?",
+      "a": "Önce bağlantının resmi hesabın kendi gönderisinden geldiğini doğrulayın. Sonra cüzdan penceresini okuyun: düz bir çekim ya da transfer mi, yoksa bir “approve” ya da permit imzası mı? Onaylar ve permit'ler başka birinin tokenlarınızı taşımasına izin verir; biri gerçekten gerekiyorsa yalnızca resmi rehberde adı geçen sözleşmeyi ve yalnızca kullandığınız tutarı onaylayın. Pencereyi anlamıyorsanız imzalamayın; önce resmi Discord sunucusunda sorun."
+    },
+    {
+      "q": "Cüzdanımda hiç satın almadığım tokenlar belirdi; bir web sitesine gitmemi söyleyen bir mesajla birlikte.",
+      "a": "Dokunmayın. MetaMask bunu yaygın bir airdrop dolandırıcılığı olarak tanımlıyor: “almaya” (claim) gittiğinizde imzaladığınız şey tokenlarınızı almalarına izin veren bir onay olabilir ya da kurtarma ifadenizi yazmaya yönlendirilebilirsiniz. Görmezden gelin ve gizleyin."
+    },
+    {
+      "q": "Biri çalınan kriptomu ücret karşılığında geri getirebileceğini söylüyor.",
+      "a": "FBI tam olarak bu konuda uyardı: peşin ücret alıp kaybolurlar ya da eksik veya hatalı bir “izleme raporu” hazırlayıp daha fazlasını isterler. Özel şirketler kripto parayı geri almak için el koyma kararı çıkaramaz ve kolluk kuvvetleri soruşturma için mağdurlardan ücret almaz. Onlara para ya da kişisel bilgi vermeyin."
+    },
+    {
+      "q": "Bir bağlantının resmi olup olmadığını nasıl anlarım?",
+      "a": "Yalnızca iki yere güvenin: resmi hesabın kendi gönderileri ve resmi ana sayfa. Abstract'ın tavsiyesi, yalnızca resmi bağlantıyı kullanmak ve onu Discord'da ve diğer resmi kanallarda çapraz kontrol etmek. Yanıtlardaki, özel mesajlardaki ya da arama reklamlarındaki bağlantılar, ne kadar aynı görünürse görünsün, sayılmaz."
+    }
+  ],
+  "sources": [
+    "Sophon, X'te: yalnızca resmi bağlantılar, sahte geçiş sitelerine dikkat (19 Ekim 2026)",
+    "Sophon belgeleri: Çekim SSS (istenmeden gelen bağlantılara asla tıklamayın)",
+    "Abstract, X'te: “Abstract is Winding Down” (taklit hesaplar, sahte geçiş siteleri, özel mesajlar; 6 Ekim 2026)",
+    "Horizen blogu: güvenlik hatırlatması (asla ilk mesajı atmaz, asla anahtar istemez, asla para istemez; 23 Ekim 2026)",
+    "MetaMask Destek: Temel güvenlik ipuçları (kurtarma ifadesi, özel anahtarlar)",
+    "MetaMask Destek: Resmi destek kanalları (özel mesaj yok, telefon yok, X'te iletişim yok)",
+    "MetaMask Destek: Token onayı nedir? (permit'ler, kötü amaçlı onaylar, iptal)",
+    "MetaMask Destek: Dolandırıcılardan, rug pull'lardan ve airdrop dolandırıcılıklarından kaçının",
+    "MetaMask Destek: Hacklendim ya da dolandırıldım",
+    "ethereum.org: Güvenlik ve dolandırıcılığı önleme (destek dolandırıcılıkları, airdrop dolandırıcılıkları)",
+    "FBI IC3 kamu duyurusu: kaybolan kriptoyu kurtardığını yalan yere iddia eden şirketler (11 Ağustos 2023)",
+    "FBI IC3 kamu duyurusu: para kurtarmayı teklif eden hayali hukuk büroları (13 Ağustos 2025)"
+  ]
+}

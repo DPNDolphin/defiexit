@@ -1,0 +1,134 @@
+{
+  "title": "OKX Boost kilidindeki tokenlarınızı cüzdanınıza çekin",
+  "short": "OKX Boost'tan cüzdanınıza",
+  "verified": "Ekim 2026'da yazarın OKX uygulamasındaki kendi hesabıyla, bu rehber izlenerek test edildi: onay sayfasındaki etkileşim adresi, ağ ve tutar kontrol kartıyla uyuştu ve yerel OKB birkaç saniye sonra ulaştı. Kilit sözleşmesinin kaynak kodu OKX blok gezgininde doğrulanmış durumda. Sözleşmenin yöneticisi yok; tokenları yalnızca onları kilitleyen adres çekebilir ve para yalnızca o adrese geri döner",
+  "covers": "OKX Boost'un Plasma X Launch kampanyası için X Layer ağında kilitlenen OKB, USDT0 ve USDG",
+  "summary": "OKX Boost'un Plasma X Launch kampanyasına katılmak için X Layer ağında token kilitlemeniz gerekiyordu (0.5 OKB, 200 USDT0 veya 200 USDG). Bunlar kendiliğinden geri gelmez; aradan bir yıl geçmesine rağmen binden fazla adres tokenlarını hâlâ çekmedi. OKX uygulamasında kampanya sayfasını açın, stake'ten çıkarma düğmesine bir kez dokunun; para cüzdanınıza geri döner.",
+  "facts": [
+    ["İşlemler", "1 sıradan işlem. Onay yok, imzalanacak mesaj yok"],
+    ["Ücret", "$0.01 altında; cüzdanınızda X Layer ağındaki OKB'den ödenir"],
+    ["Süre", "Yaklaşık 2 dakika. Onayladıktan birkaç saniye sonra ulaşır"],
+    ["Gerekenler", "Tokenları kilitleyen hesaba geçilmiş OKX uygulaması ve ücret için X Layer ağında biraz OKB"]
+  ],
+  "chips": ["Yaklaşık 2 dakika", "1 işlem, onay yok", "Ücret bir sentin altında"],
+  "support": {
+    "label": "OKX Yardım Merkezi",
+    "url": "https://www.okx.com/help",
+    "note": "OKX size asla ilk mesajı atmaz. Size mesaj atıp destek ekibi olduğunu söyleyen herkes dolandırıcıdır."
+  },
+  "official": [{"label": "OKX Boost kampanya sayfası", "url": "https://web3.okx.com/boost/x-launch/plasma"}],
+  "vars": {
+    "addrShort": "kendi adresiniz",
+    "got": "kilitlediğiniz tokenlar (genelde 0.5 OKB)",
+    "sym": "kilitlediğiniz token"
+  },
+  "pro": [
+    "**Rota**: OKX uygulaması, üstte Web3 → alttaki keşfet sekmesi (ikinci simge) → `https://web3.okx.com/boost/x-launch/plasma` adresini arama kutusuna yapıştırın → “üçüncü taraf web sitesi” sonucu → sorulduğunda **uygulamada açın** → aşağı kaydırıp staking ayrıntılarına gelin → stake'ten çıkarma düğmesi → onaylayın.",
+    "**Tek işlem**: OKX Boost kilit sözleşmesi 0xDA63…FD2b adresine `unlock(bytes32 key, address token)`. 0 OKB gönderir; ne onay ne de mesaj imzası gerekir. Anahtar, boşluklarla 32 bayta tamamlanmış `lp:175`; yerel OKB, 0xEeee…EEeE tokenı olarak yazılır.",
+    "**Rakamlarınız**: {{got}}.",
+    "**Dikkat edilecekler**: web sürümü OKX uygulamasının içindeki cüzdana bağlanamaz (cüzdanın desteklenmediğini söyler); bu yüzden sorulduğunda her zaman sayfayı uygulamada açmayı seçin. Ücret için X Layer ağında biraz OKB gerekir. Sözleşmenin son tarihi yok: kilit açıldıktan sonra istediğiniz zaman çekilebilir."
+  ],
+  "done": {
+    "where": "cüzdanınızda, X Layer ağında",
+    "from": "OKX Boost kilit sözleşmesinden gönderildi",
+    "look": "Nereye bakmalı: OKX uygulamasında cüzdanınızda kilitlediğiniz tokenı (genelde OKB) açın ve işlem geçmişine bakın."
+  },
+  "screens": {
+    "web": {"name": "Kampanya sayfasının web sürümü (altta siyah “Connect wallet” düğmesi)", "features": ["Üstteki adres çubuğunda web3.okx.com yazıyor", "Plasma X Launch, altında büyük yazıyla 15,000,000 XPL", "En altta siyah bir “Connect wallet” düğmesi"], "do": "Bu, OKX uygulamasının içindeki cüzdanınıza bağlanamayan web sürümü. “Connect wallet” düğmesine dokunmayın: sol üstteki × ile kapatın, 1. adımdaki gibi bağlantıyı yeniden yapıştırın ve uygulama sürümünü kullanmak isteyip istemediğiniz sorulduğunda ilk, kalın düğmeye dokunun.", "images": [{"src": "ok-web.webp", "caption": "① Sol üstteki **×** işaretine dokunun ✗ “Connect wallet” düğmesine dokunmayın"}]},
+    "jump": {"name": "Uygulama sürümünü öneren açılır pencere", "features": ["Grileşmiş bir sayfanın ortasında beyaz bir açılır pencere", "Daha akıcı bir deneyim için uygulama sürümünü kullanmanızı söylüyor", "İki düğme: üstte kalın bir düğme, altında “Cancel” (İptal)"], "do": "Üstteki kalın düğmeye dokunun. OKX uygulamasının kendi kampanya sayfasını açar. “Cancel” (İptal) düğmesine dokunmayın: sizi cüzdana bağlanamayan web sürümünde bırakır."},
+    "unsupported": {"name": "Cüzdanın desteklenmediğini söyleyen mesaj", "features": ["Altta turuncu uyarı simgeli bir panel", "Kampanyaya katılmak için OKX Wallet eklentisine geçmenizi istiyor", "İki düğme: “Cancel” (İptal) ve yeşil bir cüzdan değiştirme düğmesi"], "do": "Web sürümünde “Connect wallet” düğmesine dokundunuz; bu, OKX uygulamasının içinde çalışmaz. **Cancel** (İptal) düğmesine dokunun, sayfayı sol üstteki × ile kapatın, 1. adımdaki gibi yeniden açın ve sorulduğunda uygulama sürümünü seçin. Cüzdan değiştirme düğmesine dokunmayın.", "images": [{"src": "ok-unsupported.webp", "caption": "① **Cancel** (İptal) düğmesine dokunun ✗ Yeşil cüzdan değiştirme düğmesine dokunmayın"}]},
+    "sign": {"name": "Cüzdanınız bir mesaj imzalamanızı ya da onay vermenizi istiyor (Approve / Permit)", "do": "**Reject** (Reddet) düğmesine dokunun. Bu rehber tek bir sıradan işlemden oluşur: mesaj imzası yok, onay yok. web3.okx.com adresinin web sürümü giriş için imza ister, ama bu rehber web sürümünü kullanmaz: sayfayı kapatın, 1. adımdaki gibi yeniden açın ve sorulduğunda uygulama sürümünü seçin.", "images": [{"src": "ok-sign.webp", "caption": "① **Reject** (Reddet) düğmesine dokunun ✗ Onaylamayın"}]},
+    "wrong-to": {"name": "Etkileşim adresi 0xDA63E89d…2C0795FD2b değil ya da tutarın önünde eksi işareti var", "do": "Reddedin. Bu rehber yalnızca OKX Boost kilit sözleşmesi 0xDA63E89dd0632Db71c89c031de11542C0795FD2b adresine işlem gönderir ve siz para alırsınız (artı işaretli tutar): sizden asla token göndermenizi istemez. Sayfayı kapatın ve 1. adımdan yeniden başlayın."},
+    "domain": {"name": "Adres çubuğunda web3.okx.com yazmıyor", "do": "Sayfayı hemen kapatın ve hiçbir şey imzalamayın. `https://web3.okx.com/boost/x-launch/plasma` adresini kendiniz yapıştırın; başkalarının gönderdiği bağlantılara dokunmayın."}
+  },
+  "steps": {
+    "open": {
+      "title": "Kampanya sayfasını OKX uygulamasında açın",
+      "items": [
+        "Önce kopyalamak için bu bağlantıya dokunun: `https://web3.okx.com/boost/x-launch/plasma`",
+        "Aşağıda bunun OKX uygulamasında nasıl yapıldığını görüyorsunuz; her dokunuş için bir resim. Uygulamayı Çince test ettik, bu yüzden resimler Çince. Uygulamanız başka bir dildeyse her açıklamada anlatılan işi yapan düğmeyi arayın; bulamazsanız ya da gördüğünüz şey uymuyorsa durun."
+      ],
+      "copy": ["https://web3.okx.com/boost/x-launch/plasma"],
+      "images": [
+        "① Bunu OKX uygulamasının içinde mi okuyorsunuz? Bağlantı kopyalanınca sayfayı kapatmak için sol üstteki **×** işaretine dokunun, işiniz bitince geri gelin. Başka bir tarayıcıda mı okuyorsunuz? Doğrudan OKX uygulamasını açın",
+        "② Üstte **Web3** seçin ③ Alt çubuktaki ikinci simge olan keşfet sekmesine dokunun. Resimdeki tutarlar gizlendi; DeFi altındaki OKX Boost X Launch satırı bu kilittir",
+        "④ Üstteki arama kutusuna dokunun",
+        "⑤ Arama kutusuna basılı tutun, sonra **Paste** (Yapıştır) seçeneğine dokunun",
+        "⑥ Altında çıkan “üçüncü taraf web sitesi” sonucuna dokunun. Cüzdan her web adresini böyle etiketler; ardından gelen adres tam olarak **https://web3.okx.com/** ile başlamalı",
+        "⑦ Bir açılır pencere uygulama sürümünü önerir: bu özelliği uygulamada açmak için ilk, kalın düğmeye dokunun. Sarı çerçevedeki adres çubuğunda tam olarak **web3.okx.com** yazmalı, öncesinde ve sonrasında hiçbir şey olmamalı ✗ “Cancel” (İptal) düğmesine dokunmayın: web sürümü uygulamanın içindeki cüzdana bağlanamaz",
+        "⑧ Bu, OKX uygulamasının kendi kampanya sayfası. Sağ üstte geçerli hesap görünür; tokenları kilitleyen hesap olmalı"
+      ],
+      "situations": {
+        "web-page": {"see": "Web sürümü açıldı: üstte web3.okx.com yazan bir adres çubuğu, altta siyah bir “Connect wallet” düğmesi", "do": "Web sürümü OKX uygulamasının içindeki cüzdana bağlanamaz. “Connect wallet” düğmesine dokunmayın: sol üstteki × ile kapatın, bağlantıyı yeniden yapıştırın ve açılır pencere çıkınca kalın **uygulamada aç** düğmesine dokunun."},
+        "no-dialog": {"see": "Uygulama sürümünü öneren açılır pencere çıkmadı", "do": "Testlerimizde her seferinde çıktı. Çıkmazsa sayfayı sol üstteki × ile kapatın ve bağlantıyı yeniden yapıştırın. Yine olmazsa sağ üstteki “Takıldınız mı?” düğmesine dokunun ve raporu bize gönderin."},
+        "unsupported": {"see": "Cüzdanın desteklenmediğini söyleyen ve OKX Wallet eklentisine geçmenizi isteyen bir mesaj", "do": "Web sürümünde “Connect wallet” düğmesine dokundunuz. **Cancel** (İptal) düğmesine dokunun, sayfayı kapatın, yukarıdaki gibi yeniden açın ve sorulduğunda uygulama sürümünü seçin. Cüzdan değiştirme düğmesine dokunmayın."},
+        "sign-login": {"see": "web3.okx.com adresinden gelen, “Welcome to OKX Wallet” ile başlayan bir imza isteği", "do": "Bu, web sürümünün sizden giriş yapmanızı istemesi; bu rehberin buna ihtiyacı yok. **Reject** (Reddet) düğmesine dokunun, sayfayı kapatın, yukarıdaki gibi yeniden açın ve sorulduğunda uygulama sürümünü seçin."},
+        "third-party": {"see": "Arama sonucunda “üçüncü taraf web sitesi” yazıyor", "do": "Bu normal: cüzdan her web adresini böyle etiketler. Ardından gelen adresi kontrol edin: tam olarak **https://web3.okx.com/** ile başlamalı; okx.com kısmından hemen sonra eğik çizgi gelmeli, arada fazladan hiçbir şey olmamalı."},
+        "no-paste": {"see": "Arama kutusuna basılı tutunca “Paste” (Yapıştır) çıkmıyor", "do": "Bu sayfaya dönüp bağlantıyı kopyalamak için yeniden dokunun. iPhone'da sorulursa “Allow Paste” (Yapıştırmaya İzin Ver) seçeneğine dokunun. Yine olmazsa `https://web3.okx.com/boost/x-launch/plasma` adresini elle yazın."},
+        "wrong-account": {"see": "Sağ üstteki hesap, tokenları kilitleyen hesap değil", "do": "Cüzdanın ana ekranına dönün, hesap adının yanındaki küçük üçgene dokunun ve tokenları kilitleyen hesaba geçin (bir OKX cüzdanında birkaç hesap olabilir), sonra sayfayı yeniden açın. Yanlış hesapta staking ayrıntılarını bulamazsınız."},
+        "extension": {"see": "Bilgisayarda OKX Wallet tarayıcı eklentisini kullanıyorum", "do": "Bu rehberi yalnızca OKX telefon uygulamasında test ettik. Eklentinin adımları henüz kontrol edilmedi; bu yüzden şimdilik bu rehberi bilgisayarda uygulamayın. Bu hesap telefonunuzdaki OKX uygulamasında da varsa uygulamayı kullanın; emin değilseniz sağ üstteki “Takıldınız mı?” düğmesine dokunun ve raporu bize gönderin."}
+      }
+    },
+    "unstake": {
+      "title": "Stake'ten çıkarın",
+      "note": "Tek işlem",
+      "milestone": "Stake'ten çıkarma",
+      "images": [
+        "① Aşağı kaydırarak staking ayrıntıları bölümüne gelin (staked satırı kilitlediğiniz miktardır, yaklaşık {{got}}) ve altındaki stake'ten çıkarma düğmesine dokunun",
+        "② Stake'ten çıkarma onayı açılır. Önce aşağıdaki kartla karşılaştırın; sarı çerçevedeki üç yerin hepsi uyuyorsa yeşil onay düğmesine dokunun. Resimde gizlenen kısım kendi adresinizdir"
+      ],
+      "check": {
+        "title": "Onaylamadan önce 3 şeyi kontrol edin",
+        "lead": "Bu, OKX uygulamasının kendi onay sayfası. Bu listeyle karşılaştırın ve uyan her maddeye dokunun.",
+        "confirm": [
+          {"title": "X Layer ağında, stake'ten çıkarma onayı", "sub": "Bir web sitesinden açılan pencere değil, OKX uygulamasının kendi sayfası"},
+          {"title": "Etkileşim adresi 0xDA63E89d…2C0795FD2b (OKX Boost kilit sözleşmesi)", "sub": "Tam adres 0xDA63E89dd0632Db71c89c031de11542C0795FD2b. En azından baştaki 0xDA63E89d ve sondaki 2C0795FD2b karakteri karakterine aynı olmalı"},
+          {"title": "Tutar artı işaretli: +{{got}}", "sub": "Artı, alacağınız para demektir. Alttaki ağ ücreti $0.01 altında"}
+        ],
+        "reject": ["Tutar eksi işaretli ya da sizden herhangi bir token göndermeniz isteniyor", "Approve veya Permit yazıyor", "Bir mesaj imzalamanızı isteyen bir imza isteği", "Etkileşim adresi 0xDA63E89d…2C0795FD2b ile uyuşmuyor"],
+        "normal": [
+          "Geçerli cüzdan satırında kendi adresiniz, altında hesap adınız var",
+          "“Confirm” (Onayla) düğmesine dokunduktan sonra telefon Face ID, parmak izi veya şifrenizi ister",
+          "Önce işlemin onaylandığını, sonra stake'ten çıkarmanın başarılı olduğunu söyleyen bir mesaj çıkar"
+        ]
+      },
+      "situations": {
+        "no-section": {"see": "Aşağı kaydırınca staking ayrıntıları bölümü yok", "do": "Bu hesabın bu kampanyada kilitli bir şeyi yok: ya zaten çekilmiş ya da bu, tokenları kilitleyen hesap değil. Sağ üstteki hesabı kontrol edin ve canlı kontrol için yine sağ üstteki “Takıldınız mı?” düğmesine dokunun."},
+        "low-gas": {"see": "Ücretin ödenemediğini ya da bakiyenin yetersiz olduğunu söylüyor", "do": "Ücret için X Layer ağında biraz OKB gerekir ($0.01 altında). Önce bu adrese X Layer ağında biraz OKB gönderin (0.001 fazlasıyla yeter), sonra geri gelip yeniden dokunun."},
+        "rejected": {"see": "Yanlışlıkla reddettim", "do": "Hiçbir şey hareket etmedi. Kampanya sayfasına dönün ve stake'ten çıkarma düğmesine yeniden dokunun."},
+        "spinning": {"see": "“Confirm” düğmesine dokundum, dönüp duruyor", "do": "Bir dakika bekleyin ve yeniden dokunmayın. Sonra canlı kontrol için sağ üstteki “Takıldınız mı?” düğmesine dokunun: kilit sözleşmesine doğrudan zincir üzerinden bakarız, böylece çıkıp çıkmadığını hemen anlarız."},
+        "sign": {"see": "Stake'ten çıkarma onayı değil, bir imza isteği çıktı", "do": "Reddedin. Stake'ten çıkarma sıradan bir işlemdir, mesaj imzası gerektirmez. Büyük ihtimalle web sürümündesiniz: 1. adıma dönün ve sorulduğunda uygulama sürümünü seçin."},
+        "wrong-to": {"see": "Etkileşim adresi 0xDA63E89d…2C0795FD2b değil", "do": "Hemen reddedin."}
+      }
+    },
+    "arrive": {
+      "title": "Ulaştığını kontrol edin",
+      "milestone": "Ulaştı",
+      "images": [
+        "① Üstte stake'ten çıkarmanın başarılı olduğunu söyleyen bir mesaj çıkar ve staking ayrıntıları bölümü kaybolur: para cüzdanınıza döndü ② Cüzdanınızda görmek için önce kampanya sayfasını kapatmak üzere sol üstteki **‹** işaretine, ardından web sayfasının sol üstündeki × işaretine dokunun",
+        "③ Cüzdanın ana ekranına dönünce (altta OKX) tokenlarınızın listesini açın ④ **OKB** satırına dokunun (kilitlediğiniz USDT0 / USDG ise onu seçin). Resimdeki bakiyeler gizlendi",
+        "⑤ İşlem geçmişinde OKX Boost'tan gelen yeni bir stake'ten çıkarma kaydı var: +{{got}}. Resimdeki bakiye, adres ve tarih gizlendi"
+      ],
+      "check": {
+        "title": "Ulaştığını kontrol edin",
+        "rows": [
+          ["Ne kadar sürer", "Onayladıktan birkaç saniye sonra"],
+          ["Nereye bakmalı", "OKX uygulamasında cüzdanınızda şunu açın: {{sym}}; sonra işlem geçmişine bakın"],
+          ["Ne görmelisiniz", "OKX Boost'tan gelen bir stake'ten çıkarma kaydında {{got}} kadar artış"],
+          ["Zincir üstündeki kayıt", "OKX Boost kilit sözleşmesi 0xDA63…FD2b adresinden gelir ve kendi adresinize gider"],
+          ["Ulaşmadıysa", "Canlı kontrol için sağ üstteki “Takıldınız mı?” düğmesine dokunun: kilit sözleşmesine doğrudan zincir üzerinden bakarız"]
+        ],
+        "foot": "Ulaştığında işiniz biter. OKB kilitlediyseniz geri gelen WOKB değil, OKB'nin kendisidir (X Layer ağının yerel coini)"
+      },
+      "situations": {
+        "not-wokb": {"see": "OKB kilitlemiştim: geri gelen OKB mi, WOKB mi?", "do": "WOKB değil, OKB'nin kendisi (X Layer ağının yerel coini)."},
+        "usdt0": {"see": "USDT0 veya USDG kilitlemiştim", "do": "Aynı tokenı aynı miktarda geri alırsınız. Cüzdanınızın varlık listesinde USDT0 veya USDG arayın."},
+        "no-record": {"see": "İşlem geçmişinde kayıt yok", "do": "Canlı kontrol için sağ üstteki “Takıldınız mı?” düğmesine dokunun: sözleşmedeki kilidiniz 0 ise para çıkmıştır. Kaydın cüzdan geçmişinde görünmesi bazen biraz zaman alır."}
+      }
+    }
+  },
+  "sources": [
+    "OKX blok gezgini · OKX Boost kilit sözleşmesi (doğrulanmış kaynak kod)",
+    "OKX Boost · Plasma X Launch kampanya sayfası"
+  ]
+}

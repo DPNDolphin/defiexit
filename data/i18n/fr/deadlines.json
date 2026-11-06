@@ -1,0 +1,730 @@
+{
+  "meth-cmeth-rewards": {
+    "name": "mETH Protocol : fermeture de la page des récompenses des anciennes campagnes cmETH",
+    "summary": "La page des récompenses des anciennes campagnes cmETH ferme le 7 novembre. Collectez avant cette date les récompenses que vous n'avez pas encore prises.",
+    "deadlineNote": "Le 7 novembre, la page des récompenses des anciennes campagnes cmETH ferme. Le cmETH lui-même peut toujours être retiré du staking en mETH ou transféré via un pont à tout moment ; il n'y a pas de date limite pour cela.",
+    "who": "Toute personne ayant participé à d'anciennes campagnes cmETH et qui a encore des récompenses en attente.",
+    "todo": "Collectez vos récompenses sur le site de mETH Protocol avant le 7 novembre. Votre cmETH peut attendre : vous pouvez le retirer du staking en mETH ou le transférer via un pont à tout moment.",
+    "caution": "mETH Protocol indique que les contrats de retrait du staking et de pont sont « censés » continuer à fonctionner après la période des récompenses, mais qu'il réexaminera ce point en fonction de ce qui reste.",
+    "official": [
+      "Blog de mETH Protocol : calendrier de l'arrêt de cmETH"
+    ]
+  },
+  "gmo-gyen-zusd-redemption": {
+    "name": "GMO Trust : arrêt des stablecoins GYEN et ZUSD",
+    "summary": "GYEN et ZUSD sont en cours d'arrêt. Demandez le rachat à la valeur nominale au plus tard le 11 novembre, ou recevez de l'USDC au taux du 12 novembre d'ici la fin de l'année.",
+    "deadlineNote": "Le rachat à la valeur nominale ferme le 11 novembre à 23:59:59, heure de l'Est des États-Unis, et vos jetons doivent arriver avant. Pour tout ce qui n'aura pas été racheté, GMO Trust enverra l'équivalent en USDC sur la même chaîne d'ici la fin de l'année, au taux fixé le 12 novembre.",
+    "who": "Toute personne détenant des GYEN ou des ZUSD (sur Ethereum, Arbitrum, Stellar et d'autres chaînes).",
+    "todo": "Pour obtenir le rachat à la valeur nominale, ouvrez un compte sur `stablecoin.z.com`, passez les vérifications d'identité (KYC) et associez un compte bancaire en yens (GYEN) ou en dollars américains (ZUSD). Vos jetons doivent arriver avant la date limite. Si vous ne demandez pas le rachat, ils seront convertis en USDC à la fin de l'année. Sur Ethereum et Arbitrum, il existe aussi des pools Uniswap où vous pouvez vendre.",
+    "caution": "Vous ne recevrez pas l'USDC automatique si vos jetons ont été transférés vers une chaîne que GMO Trust ne prend pas en charge, n'ont pas passé le contrôle anti-blanchiment, ou sont en dessous du montant minimal de transfert de cette chaîne. Sur Stellar, ouvrez d'abord une trustline USDC. Pour le GYEN sur Arbitrum, GMO Trust n'a pas dit s'il sera converti automatiquement en USDC après le 11 novembre.",
+    "official": [
+      "Centre d'aide de GMO Trust : comment demander le rachat avant le 11 novembre",
+      "Centre d'aide de GMO Trust : ce qui se passe si vous ne demandez pas le rachat",
+      "GMO Trust sur X : rappel du 20 août",
+      "GMO Trust sur X : avis de rachat obligatoire du 10 septembre"
+    ]
+  },
+  "blur-frontend-blend": {
+    "name": "Blur : blur.io passe hors ligne, Blend arrête les nouveaux prêts",
+    "summary": "Le site de Blur passe hors ligne le 12 novembre, et Blend arrête les nouveaux prêts le même jour. Les emprunteurs doivent rembourser avant.",
+    "deadlineNote": "Le 12 novembre, le site blur.io cesse de fonctionner. Blend arrête le même jour de mettre en relation de nouveaux prêts : les emprunteurs doivent rembourser avant, sinon le prêt passe en défaut selon les règles du protocole. Les contrats de la place de marché continuent de fonctionner sur la blockchain.",
+    "who": "Les emprunteurs de Blend, et toute personne ayant des actifs sur Blur qui dépend du site blur.io.",
+    "todo": "Emprunteurs de Blend : remboursez avant le 12 novembre. Tous les autres : attendez l'outil de retrait de Blend que Blur dit vouloir publier après le 12 novembre, et n'utilisez que les liens publiés par @blur_io.",
+    "caution": "Blur dit de ne faire confiance qu'à @blur_io. Ses publications ne précisent pas à part comment retirer l'ETH du Blur Pool (le pool d'enchères), et il n'y a pas encore de date de sortie pour l'outil de retrait.",
+    "official": [
+      "Blur sur X : annonce de fermeture",
+      "Blur sur X : ce qui arrive à Blend"
+    ]
+  },
+  "universal-uassets-winddown": {
+    "name": "Universal : fin des actifs encapsulés uAssets",
+    "summary": "Les uAssets d'Universal ferment le 17 novembre. Vendez-les ou demandez leur rachat dans l'application Universal avant cette date ; ensuite, il ne restera qu'un contrat de rachat.",
+    "deadlineNote": "Le protocole ferme le 17 novembre. Ensuite, les uAssets restants sont rachetés via un contrat : sur Base, uSOL, uXRP, uDOGE, uADA, uBTC et uLTC deviennent du SOL sur Base, du cbXRP, du cbDOGE, du cbADA, du cbBTC et du cbLTC, et tout le reste devient de l'USDC (Universal précise que cela peut encore changer).",
+    "who": "Toute personne détenant des uAssets (uSOL, uBTC, uXRP et autres).",
+    "todo": "Avant le 17 novembre, vendez-les dans l'application Universal ou échangez-les contre l'actif d'origine sur la page de création et de rachat (mint and redeem). Pour les gros montants, écrivez à Universal à l'adresse indiquée sur sa page d'arrêt.",
+    "caution": "Universal indique qu'il publiera le contrat de rachat et les étapes avant le 17 novembre, et que les rachats peuvent ralentir en cas de forte demande. Il n'a pas dit ce qu'il advient des uAssets détenus dans des pools ou des marchés de prêt tiers.",
+    "official": [
+      "Page d'arrêt d'Universal"
+    ]
+  },
+  "pancakeswap-opbnb-cake": {
+    "name": "PancakeSwap : fin de la route de pont pour le CAKE depuis opBNB",
+    "summary": "Le CAKE sur opBNB doit être ramené vers BNB Chain via le pont avant le 23 novembre, car LayerZero arrête la prise en charge d'opBNB.",
+    "deadlineNote": "À partir du 23 novembre à 00:00 UTC, la route LayerZero qui permet de sortir le CAKE d'opBNB via le pont s'arrête.",
+    "who": "Toute personne détenant du CAKE sur opBNB.",
+    "todo": "Allez sur la page du pont de PancakeSwap, choisissez opBNB → BNB Chain et sortez votre CAKE via le pont. La publication de PancakeSwap détaille les étapes.",
+    "caution": "La cause est la fin de la prise en charge d'opBNB par LayerZero : d'autres jetons sur opBNB qui utilisent LayerZero peuvent donc être concernés aussi. Consultez les annonces de chaque projet.",
+    "official": [
+      "PancakeSwap sur X : annonce",
+      "PancakeSwap sur X : comment passer par le pont"
+    ]
+  },
+  "sophon-chain-shutdown": {
+    "name": "Fermeture de la chaîne Sophon",
+    "summary": "La chaîne Sophon ferme le 30 novembre. Le 25 novembre est le dernier jour pour retirer vos fonds vers Ethereum.",
+    "deadlineNote": "Le 25 novembre est le dernier jour pour retirer. Ensuite, l'infrastructure et les sites associés commencent à fermer, et le mainnet s'arrête définitivement le 30 novembre.",
+    "who": "Toute personne ayant des SOPH, ETH, USDC ou d'autres actifs sur Sophon, des actifs dans la farm de Sophon, ou des récompenses de staking ou Guardian non collectées.",
+    "todo": "Avant le 25 novembre, retirez vos actifs vers Ethereum sur la page officielle (les publications de Sophon indiquent `claim.sophon.com`). Sortez les actifs de la farm sur `farm.sophon.xyz`, et collectez toutes vos récompenses de staking et Guardian. Les récompenses de nœud continuent d'arriver sur votre portefeuille Ethereum.",
+    "caution": "Les publications de Sophon ont utilisé deux domaines : `claim.sophon.com` (19 octobre et 2 novembre) et `claim.sophon.xyz` (22 octobre). Sophon met en garde contre les faux sites de migration.",
+    "official": [
+      "Sophon sur X : calendrier final (19 octobre)",
+      "Sophon sur X : rappel (2 novembre)",
+      "Sophon sur X : première annonce (25 juin)"
+    ]
+  },
+  "recall-staking-readonly": {
+    "name": "Recall : l'application de staking passe en lecture seule le 30 novembre",
+    "summary": "La Recall Foundation cesse ses activités et son application de staking passe en lecture seule le 30 novembre. Retirez vos jetons du staking et retirez vos fonds avant.",
+    "deadlineNote": "Depuis le 30 octobre, les nouvelles demandes de retrait du staking n'ont plus de cooldown (les demandes déjà en cooldown gardent leurs dates d'origine, et les blocages ne sont pas raccourcis). Le 30 novembre, `app.recall.network` passe en lecture seule. Ensuite, les positions dont le blocage a pris fin pourront toujours être retirées en appelant directement le contrat sur BaseScan.",
+    "who": "Toute personne ayant mis des RECALL en staking sur Base.",
+    "todo": "Avant le 30 novembre, retirez vous-même vos jetons du staking et retirez vos fonds sur `app.recall.network`. Ensuite, sur BaseScan, utilisez « Write as Proxy » sur le contrat de staking pour appeler `unstake(tokenId)` et `withdraw(tokenId)`. Il vous faudra un peu d'ETH sur Base pour les frais.",
+    "caution": "Recall indique que les détenteurs ne recevront aucune distribution et qu'il n'y a ni nouveau jeton, ni airdrop, ni migration ; quiconque en propose un est un faux. Son annonce ne donne pas l'adresse du contrat de staking : avant d'appeler un contrat directement, n'utilisez qu'une adresse provenant des canaux officiels. La même publication dit à un endroit que l'accès s'arrête « après 30 jours », et à un autre « en lecture seule le 30 novembre ».",
+    "official": [
+      "Recall sur X : « The Recall Foundation is winding down »",
+      "Recall Labs sur X : fermeture de l'entreprise"
+    ]
+  },
+  "megapot-app-shutdown": {
+    "name": "Megapot : fermeture de l'application",
+    "summary": "Le site de Megapot et sa mini-application Telegram passent hors ligne le 1er décembre. Si votre compte utilise une connexion par e-mail, X ou Telegram, retirez votre solde avant.",
+    "deadlineNote": "Depuis le 29 octobre, la vente de tickets est arrêtée et les retraits ne nécessitent plus de vérification d'identité. Le 1er décembre, `megapot.io` et la mini-application Telegram passent hors ligne. Le protocole lui-même continue de fonctionner.",
+    "who": "Toute personne dont le compte a été créé avec une connexion par e-mail, X ou Telegram, et toute personne ayant un lot de consolation hors blockchain en attente. Si vous avez joué avec votre propre portefeuille, vos tickets et vos gains restent chez vous.",
+    "todo": "Retirez le solde de votre compte avant le 1er décembre, et collectez aussi avant cette date tout lot de consolation hors blockchain. Les gains sur la blockchain et les commissions de parrainage pourront encore être collectés après le 1er décembre via Basescan ou des applications tierces. Les fournisseurs de liquidité peuvent retirer à tout moment.",
+    "official": [
+      "Megapot sur X : « Winding down the Megapot app, going all in on Prizerail »"
+    ]
+  },
+  "thundercore-migration": {
+    "name": "Arrêt de la chaîne ThunderCore : le TT passe sur BNB Chain",
+    "summary": "ThunderCore s'est arrêté et le TT passe sur BNB Chain. Le site de migration est ouvert jusqu'au 1er décembre.",
+    "deadlineNote": "ThunderBridge s'est arrêté le 28 août. Le dernier bloc, 236120709, a été produit le 1er septembre. Le site de migration est ouvert du 1er septembre au 1er décembre.",
+    "who": "Toute personne détenant du TT du mainnet, du veTT, de l'ERC20-TT sur Ethereum, ou des actifs dans ThunderBridge. Si les vôtres sont sur une plateforme d'échange, suivez les instructions de celle-ci.",
+    "todo": "Vérifiez votre statut sur `migration.thundercore.com` et suivez les étapes de migration.",
+    "caution": "Les jetons et NFT de tiers ne sont pas migrés. Ce qui se trouvait encore dans un contrat avant le 1er septembre n'est pas migré automatiquement ; c'est examiné au cas par cas, sans garantie. ThunderCore n'a pas dit ce qui se passera après le 1er décembre.",
+    "official": [
+      "ThunderCore : annonce de migration",
+      "ThunderCore : dernier bloc et site de migration",
+      "ThunderCore sur X : 1er septembre"
+    ]
+  },
+  "zetachain-shutdown": {
+    "name": "Fermeture de ZetaChain : le ZETA passe sur Solana",
+    "summary": "ZetaChain prévoit de s'arrêter vers le 9 décembre et de faire passer le ZETA sur Solana. Avant l'instantané, convertissez vos wZETA en ZETA et sortez des pools et du staking liquide.",
+    "deadlineNote": "Le vote sur la proposition 70 se termine le 7 novembre, et elle ne prend effet que si elle est adoptée. Selon la proposition, un instantané est pris et la chaîne s'arrête au bloc 20 755 000 vers le 9 décembre, et le portail de migration du ZETA ainsi que la page des actifs transférés par pont ouvrent le même jour. Les transferts inter-chaînes sont déjà arrêtés (dépôts en juin, retraits le 1er juillet). Des nœuds d'archive en lecture seule restent en service jusqu'au 31 octobre 2027.",
+    "who": "Toute personne détenant des ZETA ou des wZETA sur ZetaChain, ou ayant des ZETA dans des pools ou en staking liquide, et toute personne ayant des actifs transférés par pont (ZRC-20) bloqués sur ZetaChain. Le ZETA ERC-20 sur Ethereum n'est pas concerné.",
+    "todo": "Avant l'instantané, convertissez vos wZETA en ZETA et sortez des pools et du staking liquide (les ZETA détenus dans des contrats ne peuvent pas être récupérés par adresse). À partir du 9 décembre, signez sur `hub.zetachain.com/migrate` pour recevoir vos ZETA sur Solana (au moins 10 ZETA, pas besoin de SOL). Pour les jetons ZRC-20, signez sur `hub.zetachain.com/bridged-assets` pour les récupérer sur leur chaîne d'origine.",
+    "caution": "La proposition 70 ne prend effet que si elle est adoptée le 7 novembre. Les jetons ZRC-20 valant moins de $5 chacun, ou détenus dans des pools, des coffres ou des portefeuilles de contrat, ne peuvent pas être récupérés. ZetaChain indique que le portail ne demande qu'une signature, jamais une transaction ni votre phrase de récupération.",
+    "official": [
+      "ZetaChain sur X : publication du 4 novembre",
+      "Gouvernance de ZetaChain : proposition 68 (déjà adoptée : passage à Solana)",
+      "Gouvernance de ZetaChain : proposition 70 (mécanisme et dates ; vote jusqu’au 7 novembre)",
+      "Blog de ZetaChain : le ZETA arrive sur Solana"
+    ]
+  },
+  "astralabs-astra-migration": {
+    "name": "AstraLabs : l'ASTRA passe sur un nouveau contrat",
+    "summary": "AstraLabs fait passer l'ASTRA sur un nouveau contrat : instantané le 7 novembre, et les nouveaux jetons doivent être collectés au plus tard le 10 décembre. Les demandes tardives ne seront pas acceptées.",
+    "deadlineNote": "Le 7 novembre, la liquidité passe sur le nouveau contrat et un instantané est pris. Le nouveau contrat entre en service entre le 7 et le 10 novembre, et les échanges reprennent le 10 novembre. La date limite est le 10 décembre ; AstraLabs indique que les demandes tardives ne seront ni acceptées ni remboursées.",
+    "who": "Toute personne détenant d'anciens ASTRA au moment de l'instantané.",
+    "todo": "Gardez vos anciens jetons pendant l'instantané, puis collectez les nouveaux au plus tard le 10 décembre selon la procédure annoncée par AstraLabs sur son compte X.",
+    "caution": "Le ratio d'échange, l'adresse du nouveau contrat et la façon de collecter n'avaient pas encore été annoncés. AstraLabs indique que les liens ne seront publiés que sur son compte X : méfiez-vous des fausses pages.",
+    "official": [
+      "AstraLabs sur X : annonce du 15 octobre"
+    ],
+    "milestones": [
+      "Instantané : détenez les anciens jetons avant cette date"
+    ]
+  },
+  "abstract-chain-shutdown": {
+    "name": "Fermeture de la chaîne Abstract",
+    "summary": "La chaîne Abstract ferme le 15 décembre, et les fonds non sortis via un pont d'ici là deviendront inaccessibles. Sortez d'abord des applications, puis passez par le pont.",
+    "deadlineNote": "Abstract ferme le 15 décembre. Selon ses propres mots, les fonds non sortis via un pont d'ici là « seront inaccessibles ».",
+    "who": "Toute personne ayant des actifs sur Abstract, y compris dans les applications de la chaîne.",
+    "todo": "Retirez d'abord vos fonds des applications de la chaîne, puis sortez-les via le Migration Hub (`migrate.abs.xyz`) ou le pont natif (`native-bridge.abs.xyz`, environ 3 heures). La page de migration cite aussi Stargate, Relay et Jumper.",
+    "caution": "Abstract met en garde contre les faux sites de migration et les messages privés d'usurpateurs.",
+    "official": [
+      "Page de migration d'Abstract",
+      "Abstract sur X : « Abstract is Winding Down »"
+    ]
+  },
+  "stargate-v1-pools": {
+    "name": "Fin des pools Stargate V1",
+    "summary": "Les pools Stargate V1 cessent de fonctionner le 15 décembre. Les fournisseurs de liquidité V1 doivent retirer leurs fonds avant ; les retraits sont actuellement sans frais.",
+    "deadlineNote": "Annoncé le 4 septembre : après une pause d'environ deux semaines de la messagerie V1, les retraits sans frais ont ouvert. Le 15 décembre, le Relayer LayerZero V1 passe hors ligne et les pools V1 cessent définitivement de fonctionner. Stargate V2 et Hydra ne sont pas concernés. Sur Metis, les pools ont pris fin plus tôt, le 23 octobre ; voir l'entrée Metis sur cette page.",
+    "who": "Les fournisseurs de liquidité des pools Stargate V1, sauf sur Metis, où la date limite était le 23 octobre.",
+    "todo": "Retirez votre liquidité des pools V1 avant le 15 décembre.",
+    "official": [
+      "Stargate sur X : annonce du 4 septembre",
+      "Blog de Metis : les pools V1 ferment sur toutes les chaînes le 15 décembre, plus tôt sur Metis"
+    ]
+  },
+  "stargate-stg-zro": {
+    "name": "Stargate : dernier jour pour échanger le STG contre du ZRO",
+    "summary": "L'échange de STG contre le ZRO de LayerZero prend fin le 15 décembre, sans prise en charge ensuite.",
+    "deadlineNote": "L'échange a ouvert le 26 août 2025 et ferme le 15 décembre ; LayerZero indique que les échanges ne seront plus pris en charge ensuite.",
+    "who": "Toute personne détenant encore des STG. Les plateformes d'échange s'occupent des soldes qu'elles détiennent, généralement avec une date limite plus précoce.",
+    "todo": "Échangez vos STG contre des ZRO avant le 15 décembre. Le guide de conversion officiel de Stargate donne le taux fixe : 1 STG = 0.08634 ZRO.",
+    "caution": "La page de conversion officielle de Stargate indique que vos STG doivent être sur Ethereum pour être convertis ; s'ils sont sur un autre réseau, transférez-les d'abord vers Ethereum via un pont. N'utilisez que le point d'entrée indiqué sur les pages officielles.",
+    "official": [
+      "Blog de LayerZero : point sur l'écosystème de septembre",
+      "Stargate sur X : ouverture de l'échange (août 2025)",
+      "Page de conversion officielle de Stargate"
+    ]
+  },
+  "fluxtra-frontend": {
+    "name": "Fermeture du site Fluxtra, les coffres passent sur OMies",
+    "summary": "Le site Fluxtra ferme le 31 décembre. Retirez dès maintenant vos fonds du coffre QuickSwap LP ; les deux autres coffres apparaissent déjà sur OMies.",
+    "deadlineNote": "Le 31 décembre est le dernier jour pour retirer via l'interface Fluxtra ; ensuite, le site ferme complètement. Le coffre QuickSwap LP a été retiré du service, et Fluxtra conseille d'en retirer vos fonds dès maintenant.",
+    "who": "Toute personne ayant utilisé les coffres Fluxtra sur la chaîne MANTRA.",
+    "todo": "Les dépôts dans les coffres wmantraUSD et stMANTRA apparaissent déjà sur `onchainomies.com` : vous pouvez donc les laisser. Retirez dès maintenant vos fonds du coffre QuickSwap LP.",
+    "official": [
+      "Fluxtra sur X : annonce du 30 octobre"
+    ]
+  },
+  "neon-evm-shutdown": {
+    "name": "Fermeture de Neon EVM",
+    "summary": "Neon EVM (une EVM qui tourne sur Solana) ferme. Utilisez NeonPass pour transférer vos actifs vers Solana avant le 31 décembre.",
+    "deadlineNote": "Le développement et le support se sont arrêtés le 1er octobre. Le 31 décembre est la date limite pour migrer et retirer.",
+    "who": "Toute personne ayant des actifs sur Neon EVM.",
+    "todo": "Avant le 31 décembre, utilisez NeonPass pour transférer vos actifs de Neon EVM vers Solana. La documentation officielle détaille les étapes.",
+    "caution": "Neon indique que le jeton NEON sur Solana ne sera pas supprimé. Il n'a pas dit si les retraits fonctionneront encore après le 31 décembre.",
+    "official": [
+      "Avis sur le site de Neon EVM",
+      "Documentation de Neon EVM : retirer avec NeonPass"
+    ]
+  },
+  "quickswap-soneium-frontend": {
+    "name": "QuickSwap : l'interface sur Soneium passe hors ligne",
+    "summary": "L'interface de QuickSwap sur Soneium passe hors ligne le 31 décembre. Retirez votre liquidité avant ; ensuite, il faudrait appeler les contrats via l'explorateur de blocs.",
+    "deadlineNote": "Le vote de gouvernance a été adopté le 21 octobre (99.22% pour). L'interface du déploiement sur Soneium passe hors ligne le 31 décembre. Ensuite, QuickSwap indique que les fonds pourront être retirés en appelant directement les contrats via l'explorateur de blocs officiel de Soneium.",
+    "who": "Toute personne ayant de la liquidité ou des actifs dans QuickSwap sur Soneium.",
+    "todo": "Avant le 31 décembre, retirez votre liquidité et vos actifs sur Soneium via l'interface de QuickSwap. Ensuite, utilisez `soneium.blockscout.com` pour appeler directement les contrats.",
+    "official": [
+      "QuickSwap sur X : annonce du 22 octobre",
+      "Vote de gouvernance de QuickSwap (Snapshot)"
+    ]
+  },
+  "relay-vaults": {
+    "name": "Fermeture des Relay Vaults",
+    "summary": "Les coffres de liquidité de Relay ferment. La page de retrait ferme le 31 décembre : retirez vos fonds sur la page officielle avant.",
+    "deadlineNote": "Les nouveaux dépôts sont arrêtés. La page de retrait ferme le 31 décembre ; ensuite, il ne restera que les appels directs au contrat.",
+    "who": "Toute personne ayant des dépôts dans les Relay Vaults (coffres WETH sur Ethereum et Arbitrum).",
+    "todo": "Retirez vos fonds sur `relay.link/vaults`. Après le 31 décembre, suivez la documentation officielle pour appeler directement `redeem(shares, receiver, owner)` sur le contrat ERC4626, ou utilisez la passerelle native pour obtenir de l'ETH natif.",
+    "caution": "Le montant que vous pouvez retirer d'un coup dépend de la liquidité disponible du coffre. Les contrats acceptent encore les dépôts ; ce qui est déposé par erreur ressort de la même manière.",
+    "official": [
+      "Documentation de Relay : retirer des coffres",
+      "Relay sur X : annonce du 9 octobre"
+    ]
+  },
+  "silicon-network-shutdown": {
+    "name": "Fermeture de Silicon Network (avec le portefeuille Web3 de Korbit)",
+    "summary": "La chaîne Silicon ferme le 31 décembre, et les fonds laissés sur place ne pourront plus être récupérés ensuite. Les actifs venus d'Ethereum par le pont doivent repartir par le pont officiel.",
+    "deadlineNote": "Silicon ferme le 31 décembre à 12:00 UTC+9 (03:00 UTC). L'explorateur de blocs ferme alors et le réseau prend fin. Selon ses propres mots, les fonds non retirés d'ici là « ne pourront pas être récupérés ».",
+    "who": "Toute personne ayant des actifs sur Silicon, y compris les utilisateurs du portefeuille Web3 de Korbit.",
+    "todo": "Actifs venus d'Ethereum par le pont : retirez-les vers Ethereum via le pont officiel avant la date limite, et gardez un peu d'ETH pour les frais. Utilisateurs du portefeuille Web3 de Korbit : suivez la procédure de Korbit. Le jeton natif de Silicon ne peut pas passer directement par le pont : échangez-le d'abord sur la chaîne.",
+    "official": [
+      "Documentation de Silicon : avis de fin de service",
+      "Documentation de Silicon : guide de retrait",
+      "Silicon sur X : le portefeuille Web3 de Korbit s'arrête le 31 décembre"
+    ]
+  },
+  "standx-winddown": {
+    "name": "Arrêt de StandX : dates limites pour l'airdrop de DUSD, les positions et les rachats",
+    "summary": "StandX cesse ses activités. L'airdrop de DUSD se termine le 31 décembre, les positions sont fermées d'office le 15 janvier 2027, et les retraits et rachats ferment le 31 janvier 2027.",
+    "deadlineNote": "Depuis le 15 octobre, le rendement est arrêté et les coffres n'acceptent plus de dépôts ; depuis le 20 octobre, les positions ne peuvent plus qu'être réduites. L'airdrop de DUSD est ouvert du 2 novembre, 00:00, au 31 décembre, 08:00 UTC, et expire ensuite. Toutes les positions sont fermées d'office et les coffres soldés le 15 janvier 2027. Les retraits et les rachats de DUSD ferment le 31 janvier 2027 (le rachat prend 7 jours et se termine au plus tard le 7 février).",
+    "who": "Toute personne ayant des positions, des soldes ou des DUSD sur StandX (BNB Chain ou Solana), et toute personne fournissant de la liquidité DUSD sur PancakeSwap ou Raydium.",
+    "todo": "Collectez l'airdrop → fermez vos positions → transférez les fonds du portefeuille « Perps » vers le portefeuille « Cash » → retirez vers votre propre portefeuille. Pour obtenir de l'USDT, demandez un rachat avant le 31 janvier 2027, et retirez aussi votre liquidité DUSD sur PancakeSwap et Raydium avant le 31 janvier.",
+    "caution": "Le DUSD se rachète contre de l'USDT. Après le 31 janvier 2027, les soldes appartiennent toujours à leurs propriétaires, mais il faudra écrire à support@standx.com.",
+    "official": [
+      "StandX sur X : modalités de l'arrêt",
+      "StandX sur X : mode réduction uniquement (reduce-only)",
+      "StandX sur X : ouverture de l'airdrop"
+    ],
+    "milestones": [
+      "L'airdrop de DUSD expire",
+      "Toutes les positions sont fermées d'office et les coffres soldés"
+    ]
+  },
+  "parasail-pfil": {
+    "name": "Parasail : pool pFIL en retraits uniquement, site en ligne jusqu'à fin janvier 2027",
+    "summary": "Après une attaque, le pool pFIL de Parasail n'autorise plus que les retraits. Dès que les retraits rouvrent, échangez vos pFIL contre des FIL à 1:1. Le site reste en ligne jusqu'au 31 janvier 2027.",
+    "deadlineNote": "Le pool est en pause. Le 4 novembre, Parasail a indiqué que les retraits rouvriraient « plus tard cette semaine ». Le site reste en ligne jusqu'au 31 janvier 2027 ; ensuite, seuls les appels directs au contrat fonctionneront, et Parasail dit qu'il publiera des instructions avant la mise hors ligne du site.",
+    "who": "Toute personne détenant des pFIL.",
+    "todo": "Dès que Parasail annonce la réouverture des retraits, suivez son lien officiel pour échanger vos pFIL contre des FIL à 1:1.",
+    "caution": "Ce pool a été attaqué : Parasail indique que 344 056 FIL ont été volés et que le manque a été couvert par Parasail et plusieurs gros détenteurs. Ne faites confiance qu'aux liens des canaux officiels.",
+    "official": [
+      "Parasail sur X : point sur pFIL du 4 novembre"
+    ]
+  },
+  "derive-chain-rewards": {
+    "name": "Derive Chain abandonnée : passage à Derive V3, date limite des récompenses le 1er février 2027",
+    "summary": "Derive Chain est passée à Derive V3, avec des fonds conservés sur Ethereum. Les récompenses de trading et de staking encore en attente doivent être collectées sur Optimism avant le 1er février 2027.",
+    "deadlineNote": "Instantané le 6 octobre à 18:00 UTC ; la V3 a été lancée le 8 octobre. Les récompenses de trading et de staking encore en attente se collectent depuis un contrat sur Optimism jusqu'au 1er février 2027 ; ensuite, la fondation les reprend.",
+    "who": "Toute personne ayant fait du trading ou du staking sur Derive Chain (anciennement Lyra).",
+    "todo": "Votre solde est passé automatiquement sur la V3 ; vérifiez-le sur `app.derive.xyz`. Recréez vos ordres conditionnels ou TWAP, et collectez vos récompenses en attente sur Optimism avant le 1er février 2027.",
+    "caution": "L'ancienne offre de DRV sur Derive Chain est annulée (« orphaned » dans la proposition) et réémise aux détenteurs sur Ethereum d'après l'instantané.",
+    "official": [
+      "Forum de Derive : proposition Derive V3 (DIP)",
+      "Derive sur X : Derive V3 est en ligne"
+    ]
+  },
+  "quickswap-old-quick": {
+    "name": "QuickSwap : ancien QUICK contre nouveau QUICK, un taux qui baisse chaque mois",
+    "summary": "Chez QuickSwap, le taux d'échange de l'ancien QUICK contre le nouveau baisse chaque mois : 1:750 jusqu'au 5 décembre, puis 1:500 après le 5 décembre. Plus vous échangez tôt, plus vous recevez.",
+    "deadlineNote": "QuickSwap indique que le taux de 1:750 reste disponible jusqu'au 5 décembre 2026, et passe à 1:500 après le 5 décembre. Les étapes suivantes, selon des sources tierces : 1:250 après le 5 janvier 2027, et fin définitive de l'échange le 5 février 2027.",
+    "who": "Toute personne détenant encore de l'ancien QUICK.",
+    "todo": "Échangez avant la fin de chaque palier de taux. Plus vous échangez tôt, plus vous recevez de nouveaux QUICK.",
+    "caution": "Le calendrier complet vient de sources tierces ; ce sont les publications de QuickSwap elles-mêmes qui font foi. QuickSwap organise un vote sur le sort de l'ancien QUICK non échangé (fin le 7 novembre, 12:00 UTC).",
+    "official": [
+      "QuickSwap sur X : rappel du 4 novembre",
+      "QuickSwap sur X : vote sur l'ancien QUICK non échangé"
+    ],
+    "milestones": [
+      "Dernier jour du taux de 1:750 ; il passe ensuite à 1:500",
+      "Dernier jour du taux de 1:500 ; il passe ensuite à 1:250"
+    ]
+  },
+  "kelp-rseth-sunset": {
+    "name": "Kelp : ancien rsETH sur des réseaux abandonnés, procédure manuelle jusqu'en juin 2027",
+    "summary": "L'ancien rsETH sur les réseaux abandonnés par Kelp ne fonctionne plus directement, mais vous pouvez faire une demande via le guide officiel de Kelp pour le retrouver sur Ethereum jusqu'au 15 juin 2027.",
+    "deadlineNote": "L'ancien rsETH a été abandonné sur 22 réseaux le 15 juin. À partir du 5 octobre, l'ancien rsETH sur Base, Mantle et Ink a été abandonné lui aussi (remplacé par une version Chainlink CCIP). La procédure manuelle ferme le 15 juin 2027 à 23:59 UTC.",
+    "who": "Toute personne détenant encore de l'ancien rsETH sur des réseaux abandonnés par Kelp. Arbitrum n'est pas concerné.",
+    "todo": "Suivez uniquement le guide du blog officiel de Kelp. Vérifiez d'abord que vous détenez bien l'ancien contrat rsETH, puis faites votre demande comme le décrit le guide (il vous demande d'envoyer les jetons à une adresse de destruction sur la chaîne d'origine, de payer des frais de 100 USDC et d'envoyer les transactions par e-mail). Kelp renvoie le rsETH sur Ethereum chaque trimestre.",
+    "caution": "Cette procédure (envoyer des jetons à une adresse de destruction, payer des frais, envoyer un e-mail) ressemble beaucoup aux arnaques courantes. Suivez uniquement le texte original du blog officiel de Kelp, et ignorez les messages privés et les autres sites. Convertir (unwrap) du wrsETH sur Base, Mantle, Ink, Linea, Optimism ou Zircuit vous donne la nouvelle version, qui ne nécessite pas cette procédure.",
+    "official": [
+      "Blog de Kelp : guide pour le rsETH sur les réseaux abandonnés",
+      "Kelp sur X : migration CCIP terminée (8 octobre)"
+    ]
+  },
+  "blast-l2-shutdown": {
+    "name": "Le L2 Blast a fermé ; site de retrait officiel ouvert jusqu'en novembre 2027",
+    "summary": "Le L2 Blast a fermé. Connectez votre portefeuille sur blast.io pour rechercher votre adresse et retirer l'ETH, le WETH et l'USDB sur Ethereum, jusqu'au 4 novembre 2027.",
+    "deadlineNote": "L'interface de retrait habituelle a fermé le 26 octobre (date passée). Le 4 novembre, Blast a annoncé la fermeture du L2. Le site de retrait `blast.io` reste ouvert 12 mois, avec le 4 novembre 2027 comme dernier jour pris en charge.",
+    "who": "Toute personne ayant de l'ETH, du WETH ou de l'USDB sur Blast, ou un retrait jamais terminé, y compris les utilisateurs de Blast Mobile et ceux de Safe ou d'autres portefeuilles de contrat.",
+    "todo": "Connectez votre portefeuille sur `blast.io` pour rechercher votre adresse et retirer l'ETH, le WETH et l'USDB sur Ethereum ; les retraits non terminés sont inclus automatiquement. Utilisateurs de Blast Mobile : importez votre phrase de récupération dans MetaMask ou Rabby, puis connectez-vous. Safe et les autres portefeuilles de contrat ont un point d'entrée distinct.",
+    "caution": "Blast n'utilise que @blast (@Blast_L2 ne sert plus qu'à garder le nom). Le site de retrait ne mentionne que l'ETH et les actifs en USD ; Blast n'a pas dit si le jeton BLAST, d'autres jetons ou des positions DeFi sur le L2 peuvent être retirés. Ne saisissez une phrase de récupération que vous-même, dans une application de portefeuille, et jamais sur un site web.",
+    "official": [
+      "Page de retrait de Blast",
+      "Documentation de Blast : retirer vers Ethereum",
+      "Blast sur X : annonce de la fermeture (2 octobre)",
+      "Blast sur X : fermeture du L2 (4 novembre)"
+    ]
+  },
+  "stader-maticx-fixed-rate": {
+    "name": "Stader : taux du MaticX figé, rachat sur la blockchain possible jusqu'en août 2029",
+    "summary": "Depuis le 29 octobre, le MaticX de Stader se rachète à un taux fixe de 1.2002 POL par MaticX. Le rachat passe toujours par le contrat sur Ethereum, et le 3 août 2029 est le dernier jour.",
+    "deadlineNote": "Les dépôts ont fermé en juin, et depuis, le MaticX ne permet plus que le rachat. L'application MaticX a fermé le 3 août, et les rachats continuent via Etherscan. À partir du 29 octobre, le taux est fixé à 1.2002 POL par MaticX. Le 3 août 2029 est le dernier jour pour racheter via le contrat.",
+    "who": "Toute personne détenant encore du MaticX, sur Ethereum ou Polygon PoS.",
+    "todo": "Suivez les étapes du blog officiel de Stader : ouvrez le contrat MaticX sur Ethereum dans Etherscan, demandez un retrait (votre MaticX est détruit), attendez la fin du déblocage (unbonding) des POL, puis retirez les POL vers votre portefeuille. L'annonce indique une période de déblocage de 80 checkpoints, estimée à environ 22 heures au moment de la publication. Le MaticX sur Polygon PoS doit d'abord être transféré vers Ethereum via le pont Polygon. Les retraits déjà demandés ne sont pas concernés ; terminez-les simplement.",
+    "caution": "Le MaticX placé dans un marché de prêt, un pool de liquidité ou un coffre reste où il est ; Stader conseille de demander à ce protocole comment le taux fixe affecte votre position. N'utilisez que l'adresse de contrat indiquée dans l'article du blog officiel de Stader.",
+    "official": [
+      "Blog de Stader : « Redemptions change for NearX, BNBx and MaticX »",
+      "Stader sur X : publication du 28 octobre"
+    ]
+  },
+  "balancer-winddown": {
+    "name": "Arrêt de Balancer : les pools passent en retraits uniquement",
+    "summary": "Balancer cesse ses activités. Les pools n'autorisent plus que les retraits ; les pools v3 restants suivront le 30 novembre. Selon Balancer, les retraits restent ouverts, mais fournisseurs de liquidité et stakers doivent retirer eux-mêmes leurs fonds.",
+    "deadlineNote": "Depuis le 30 octobre, les pools qui peuvent être mis en pause n'autorisent plus que les retraits, et le programme de bug bounty a pris fin. Les pools v3 que des partenaires ont demandé à conserver restent ouverts jusqu'au 30 novembre ; à cette date, le Vault v3 est mis en pause et les pools v3 restants passent en retraits uniquement. Balancer indique que les retraits restent ouverts, sans date de fin. Ensuite, une page de retrait simplifiée reste en ligne jusqu'à l'expiration des blocages veBAL et jusqu'à ce que deux tours de distribution de la trésorerie aient eu lieu (le premier fin mai 2027). Les pools qui ne peuvent pas être mis en pause continuent de fonctionner, avec des frais de protocole fixés à 0.",
+    "who": "Les fournisseurs de liquidité des pools Balancer, toute personne ayant des fonds stakés dans des gauges, et toute personne ayant des parts de buffer v3 ou d'anciennes récompenses de minage v2. Le rappel de Balancer du 23 octobre indique avoir trouvé plus de $500 000 dans d'anciennes positions appartenant à des utilisateurs extérieurs.",
+    "todo": "Allez sur `legacy.balancer.fi` pour retirer votre liquidité et retirer vos fonds du staking des gauges. Vérifiez aussi si vous avez des parts de buffer v3 et d'anciennes récompenses de minage v2, que les outils de suivi de portefeuille comme DeBank n'affichent pas.",
+    "caution": "Balancer indique que les contrats sont non dépositaires : les retraits ne dépendent donc pas de l'équipe.",
+    "official": [
+      "Forum de Balancer : proposition d'arrêt BIP-928",
+      "Forum de Balancer : rappel aux anciens utilisateurs",
+      "Balancer sur X : publication du 30 octobre"
+    ],
+    "milestones": [
+      "Les pools v3 restants passent en retraits uniquement (le Vault v3 est mis en pause) ; les retraits restent ouverts"
+    ]
+  },
+  "compound-scroll-usdc": {
+    "name": "Compound III : clôture du marché USDC sur Scroll",
+    "summary": "Compound prévoit de clôturer le marché USDC abandonné sur Scroll. Une fois la mesure adoptée, les prêts restants pourront être liquidés : les emprunteurs devraient donc rembourser et reprendre leur garantie rapidement.",
+    "deadlineNote": "Ce marché a été abandonné plus tôt cette année. Une proposition publiée sur le forum le 4 novembre indique que la proposition sur la blockchain n'a pas encore été soumise et qu'il n'y a pas encore de date. Une fois celle-ci adoptée, tous les prêts restants pourront être liquidés.",
+    "who": "Toute personne ayant emprunté au marché USDC de Compound III sur Scroll, ou y ayant fourni de l'USDC. La proposition compte 1 959 comptes emprunteurs, tous de petite taille.",
+    "todo": "Emprunteurs : remboursez vite votre USDC et reprenez votre garantie en WETH ou en wstETH. Prêteurs : retirez votre USDC.",
+    "caution": "La proposition rappelle que Scroll a annoncé quitter le modèle de L2 public et conseille aux utilisateurs de fermer toutes leurs positions DeFi (voir l'entrée Scroll sur cette page).",
+    "official": [
+      "Forum de Compound : clôture du marché USDC sur Scroll"
+    ]
+  },
+  "parasail-stpeaq": {
+    "name": "Parasail : pool de staking stPEAQ abandonné, passage en retraits uniquement",
+    "summary": "Le pool de staking stPEAQ de Parasail a été abandonné après une attaque. Parasail indique que la fondation peaq couvre la perte pour que chaque utilisateur puisse tout retirer. Attendez la date de retrait officielle.",
+    "deadlineNote": "Parasail n'a pas encore fixé de date pour l'ouverture du mode retraits uniquement.",
+    "who": "Toute personne détenant des stPEAQ.",
+    "todo": "Attendez que Parasail annonce l'ouverture du mode retraits uniquement et le lien de retrait, puis retirez vos PEAQ.",
+    "caution": "Ce pool a été attaqué : Parasail indique que 1 096 424.06 PEAQ ont été volés. Ne faites confiance qu'aux liens des canaux officiels.",
+    "official": [
+      "Parasail sur X : point sur stPEAQ du 4 novembre"
+    ]
+  },
+  "scroll-transition": {
+    "name": "Scroll passe à un réseau permissionné, le SCR sur le mainnet d'Ethereum (proposition)",
+    "summary": "Scroll a proposé de devenir un réseau permissionné. Les positions DeFi doivent être fermées ou traitées avant le changement : vérifiez d'abord vos avoirs sur la page officielle.",
+    "deadlineNote": "La proposition a été publiée sur le forum le 3 novembre et doit encore être votée par la DAO. Scroll indique que la mise à niveau du réseau est prévue pour « la fin de l'année », sans date précise pour l'instant.",
+    "who": "Toute personne ayant des actifs sur Scroll, en particulier des positions DeFi comme des prêts ou de la liquidité, et les détenteurs de SCR.",
+    "todo": "Vérifiez vos avoirs sur `positions.scroll.io`, et fermez ou traitez vos positions DeFi avant le changement. Le pont officiel reste ouvert, et Scroll indique qu'il fonctionnera encore après la mise à niveau.",
+    "caution": "La proposition n'a pas encore été votée. Scroll indique que l'offre totale et la tokenomics du SCR ne changeront pas. Aave et Compound ferment déjà leurs marchés sur Scroll.",
+    "official": [
+      "Forum de Scroll : proposition de transition",
+      "Scroll sur X : page des avoirs (2 novembre)",
+      "Scroll sur X : proposition publiée (3 novembre)"
+    ]
+  },
+  "compound-deprecated-markets": {
+    "name": "Compound III : marchés abandonnés sur Ethereum, Linea, Ronin, Mantle, Unichain et Polygon",
+    "summary": "Compound III a abandonné une série de marchés : plus de nouveaux emprunts et plus de rendement sur les dépôts. Retirez vos dépôts, et les emprunteurs doivent rembourser pour reprendre leur garantie.",
+    "deadlineNote": "Il n'y a pas de date limite stricte. Le 2 septembre, l'abandon du marché wstETH sur Ethereum a été proposé ; le 25 septembre, les facteurs de garantie pour l'emprunt des marchés abandonnés sur cinq chaînes ont été mis à zéro ; le 30 octobre, l'abandon du marché WBTC sur Ethereum a été proposé. Les retraits du marché USDC sur Linea sont suspendus depuis le 18 septembre, et ceux du marché USDe sur Mantle depuis le 16 octobre.",
+    "who": "Toute personne ayant des dépôts ou des prêts dans ces marchés abandonnés. Les propositions comptent 93 prêteurs restants dans le marché wstETH sur Ethereum et 37 dans le marché WBTC.",
+    "todo": "Retirez les dépôts restants dans les marchés abandonnés ; les emprunteurs doivent rembourser et reprendre leur garantie. Les retraits des marchés USDC sur Linea et USDe sur Mantle sont suspendus pour l'instant : retirez dès qu'ils reprennent.",
+    "caution": "La suspension sur Linea est due à un « problème potentiel » et sera levée une fois celui-ci corrigé ; celle sur Mantle sert à exécuter une proposition de retrait des réserves.",
+    "official": [
+      "Forum de Compound : abandon du marché wstETH sur Ethereum",
+      "Forum de Compound : facteurs de garantie à zéro sur les marchés abandonnés",
+      "Forum de Compound : suspension du marché USDC sur Linea",
+      "Forum de Compound : suspension du marché USDe sur Mantle",
+      "Forum de Compound : abandon du marché WBTC sur Ethereum"
+    ]
+  },
+  "diva-staking-shutdown": {
+    "name": "Fermeture de Diva Staking (sans lancement du mainnet)",
+    "summary": "Diva Staking ferme sans avoir lancé son mainnet. Les pré-dépôts dans ses coffres Enzyme peuvent être retirés dès maintenant ; Diva indique qu'il n'y a « plus rien à attendre ».",
+    "deadlineNote": "Annoncé le 28 octobre, sans date limite.",
+    "who": "Toute personne ayant fait un pré-dépôt dans les Early Staker Vaults de Diva sur Enzyme.",
+    "todo": "Retirez votre pré-dépôt des Early Staker Vaults sur Enzyme.",
+    "official": [
+      "Diva sur X : annonce du 28 octobre"
+    ]
+  },
+  "aero-merger": {
+    "name": "Aerodrome et Velodrome fusionnent en Aero",
+    "summary": "Aerodrome et Velodrome ont fusionné en Aero. Les anciens pools ne versent plus de récompenses : déplacez votre liquidité vers les nouveaux pools, et mettez à niveau vous-même vos jetons et vos blocages sur la page officielle de mise à niveau.",
+    "deadlineNote": "Le xVELO hors d'OP Mainnet et d'Ink devait être ramené sur OP via le pont au plus tard le 15 octobre, et les veNFT devaient être retirés de Relay et d'autres coffres au plus tard le 20 octobre. Le 22 octobre à 00:00 UTC, les récompenses des anciens pools se sont arrêtées et la page de mise à niveau a ouvert. Aero indique qu'il n'y a pas de date limite pour la mise à niveau.",
+    "who": "Les détenteurs d'AERO, de VELO, de veAERO ou de veVELO, et les fournisseurs de liquidité des anciens pools.",
+    "todo": "Faites la mise à niveau sur la page dédiée de `aerodrome.finance` ou `velodrome.finance` : l'AERO se convertit à 1:1 et le VELO à 1:0.044 en nouvel AERO, et le veAERO ou le veVELO deviennent du sAERO. Avant la mise à niveau, collectez vos récompenses et vos rebases, et retirez vos votes. Les anciens pools ne versent pas de récompenses : déplacez votre liquidité vers les nouveaux pools.",
+    "caution": "La mise à niveau est irréversible, et les récompenses non collectées avant la mise à niveau sont perdues. Aero indique que les anciennes interfaces « pourraient fermer plus tard ».",
+    "official": [
+      "Centre de mise à niveau d'Aero",
+      "Article d'Aero : le jour du lancement"
+    ]
+  },
+  "venus-vai-lisusd": {
+    "name": "Venus : abandon progressif du VAI, marchés lisUSD et TRX retirés de la liste",
+    "summary": "Venus abandonne progressivement le VAI et retire de la liste les marchés lisUSD et TRX. Le VAI placé dans le coffre peut être retiré à tout moment ; les emprunteurs doivent se préparer à rembourser.",
+    "deadlineNote": "Tout est parti de l'arrêt du flux de prix du VAI par Chainlink. Il n'y a pas de date limite stricte : la VIP-662 est entrée en vigueur le 21 septembre (le coffre VAI a cessé de verser des récompenses en XVS), et la VIP-663 le 28 septembre (TRX et lisUSD sont passés à la phase suivante). Venus indique que les étapes suivantes seront annoncées séparément.",
+    "who": "Toute personne ayant du VAI dans le coffre VAI, toute personne ayant créé (minté) du VAI, et toute personne ayant des dépôts ou des prêts dans les marchés lisUSD ou TRX.",
+    "todo": "Le VAI dans le coffre peut être retiré à tout moment, et les XVS déjà gagnés peuvent encore être collectés. Si vous avez créé du VAI, préparez-vous à rembourser. Retirez vos dépôts de lisUSD, et remboursez vos prêts en lisUSD avant la hausse des taux de la phase trois.",
+    "official": [
+      "Communauté Venus : proposition sur le VAI",
+      "Communauté Venus : retrait de la liste du marché lisUSD",
+      "Communauté Venus : rapport de septembre"
+    ]
+  },
+  "aave-v3-deprecation": {
+    "name": "Aave V3 : six déploiements abandonnés, actifs peu utilisés retirés de la liste",
+    "summary": "Aave V3 abandonne six déploiements : Sonic, Scroll, zkSync Era, Metis, Soneium et Aptos. Retirez vos dépôts rapidement, et les emprunteurs doivent rembourser avant la baisse des seuils de liquidation.",
+    "deadlineNote": "Il n'y a pas de date limite stricte. Les marchés sont gelés avec un facteur de réserve de 99%, si bien que presque tous les intérêts vont à la trésorerie. Aave indique qu'il pourrait encore augmenter les taux et abaisser progressivement les seuils de liquidation.",
+    "who": "Toute personne ayant des dépôts ou des prêts sur ces six déploiements, et toute personne détenant les actifs retirés de la liste sur d'autres déploiements.",
+    "todo": "Retirez rapidement vos dépôts de ces six déploiements. Emprunteurs : remboursez et reprenez votre garantie pour ne pas être liquidés quand les seuils baisseront.",
+    "official": [
+      "Forum de gouvernance d'Aave : abandon des actifs peu adoptés (ARFC)"
+    ]
+  },
+  "marinus-harmony": {
+    "name": "Marinus : marchés sur Harmony abandonnés, retraits uniquement",
+    "summary": "Marinus a abandonné ses marchés sur Harmony : les dépôts ne peuvent plus qu'être retirés, ou retirés du staking, et la chaîne Harmony elle-même ferme.",
+    "deadlineNote": "Depuis le 14 septembre, vous ne pouvez plus que retirer vos fonds et les retirer du staking. Il n'y a pas de date limite.",
+    "who": "Toute personne ayant déposé des fonds ou fait du staking chez Marinus sur Harmony.",
+    "todo": "Retirez ce que vous avez placé chez Marinus sur Harmony, y compris ce qui est en staking.",
+    "caution": "La chaîne Harmony elle-même ferme ; voir l'entrée Harmony sur cette page.",
+    "official": [
+      "Marinus sur X : annonce du 14 septembre"
+    ]
+  },
+  "harmony-shutdown": {
+    "name": "Fermeture du mainnet d'Harmony, le ONE passe sur Ethereum",
+    "summary": "Le mainnet d'Harmony ferme et le ONE a été distribué par airdrop à la même adresse sur Ethereum d'après l'instantané du 10 septembre. Les anciens portefeuilles doivent signer pour confirmer, et l'explorateur de blocs ferme le 18 novembre.",
+    "deadlineNote": "L'instantané a été pris le 10 septembre à 14:00 UTC (date passée). Depuis le 2 octobre, le ONE ERC-20 est distribué par airdrop à la même adresse sur Ethereum. `explorer.harmony.one` ferme le 18 novembre (il s'agit des données de l'explorateur de blocs, pas d'une date limite pour les jetons).",
+    "who": "Toute personne qui détenait des ONE sur Harmony au moment de l'instantané, les utilisateurs d'anciens portefeuilles, et toute personne ayant besoin de données de l'explorateur de blocs antérieures à 2025.",
+    "todo": "Les soldes des portefeuilles ordinaires sont distribués automatiquement par airdrop à la même adresse sur Ethereum. Anciens portefeuilles : signez sur `migrate.country/confirm` (lien de la publication d'Harmony du 2 octobre). Si vous avez besoin de données de l'explorateur de blocs antérieures à 2025, exportez-les vous-même avant le 18 novembre.",
+    "caution": "Cela fait suite à une attaque par création frauduleuse de jetons (mint) en août 2026, et `bridge.harmony.one` est hors service depuis le 12 août. N'ouvrez `migrate.country` qu'à partir du lien des publications d'Harmony elles-mêmes. Harmony a indiqué que les fonds placés dans des multisigs, des pools de liquidité et des applications sur la blockchain devaient être retirés avant le 10 septembre (date passée).",
+    "official": [
+      "Harmony sur X : « Harmony to Migrate Its ONE Token »",
+      "Harmony sur X : airdrop (2 octobre)",
+      "Harmony sur X : fermeture de l'explorateur de blocs le 18 novembre"
+    ],
+    "milestones": [
+      "L'explorateur de blocs explorer.harmony.one ferme"
+    ]
+  },
+  "bouncebit-chain-retired": {
+    "name": "Chaîne BounceBit abandonnée, le BB réémis sur BNB Chain",
+    "summary": "Après une attaque, la chaîne BounceBit a été abandonnée et le BB réémis à 1:1 sur BNB Chain. Les soldes de 10 BB ou plus sont arrivés automatiquement ; les plus petits doivent être collectés sur le portail officiel.",
+    "deadlineNote": "À partir du 1er septembre à 06:00 UTC, le BB a été envoyé à 1:1 à la même adresse sur BNB Chain, d'après un instantané antérieur à l'attaque. Le 3 septembre, BounceBit a annoncé que la distribution était terminée. Aucune date limite n'a été donnée pour les soldes de moins de 10 BB.",
+    "who": "Toute personne qui détenait des BB sur la chaîne BounceBit au moment de l'instantané, en particulier avec un solde de moins de 10 BB.",
+    "todo": "Les soldes de 10 BB ou plus sont arrivés automatiquement ; vérifiez la même adresse sur BNB Chain. Pour moins de 10 BB, utilisez votre adresse d'origine sur `portal.bouncebit.io`.",
+    "caution": "La chaîne s'est arrêtée à cause d'une attaque : n'utilisez donc que les points d'entrée officiels. BounceBit indique qu'il ne vous écrira jamais en premier en privé. Ses publications ne disent pas ce qu'il advient des autres actifs de la chaîne, comme le BBTC.",
+    "official": [
+      "BounceBit sur X : distribution terminée (3 septembre)",
+      "BounceBit sur X : petits soldes (3 septembre)",
+      "BounceBit sur X : calendrier (31 août)"
+    ]
+  },
+  "stader-bnbx-redemption": {
+    "name": "Stader : les rachats de BNBx passent du contrat aux demandes par e-mail",
+    "summary": "Depuis le 29 octobre, le BNBx de Stader ne se rachète plus via le contrat, mais par demande e-mail selon le blog officiel de Stader : 1 BNBx = 1.1099 BNB, moins 0.2 BNBx de frais par demande, réglé chaque trimestre.",
+    "deadlineNote": "Le BNBx a été arrêté le 29 janvier et ne permet plus que le rachat depuis ; son taux est fixé à 1.1099 BNB par BNBx depuis mars. Le rachat instantané et gratuit via le contrat était possible avant le 29 octobre (date passée). Depuis le 29 octobre, le rachat se fait uniquement par demande par e-mail, avec un règlement trimestriel. L'annonce ne dit pas combien de temps les demandes restent ouvertes.",
+    "who": "Toute personne détenant encore du BNBx sur BNB Chain. Si le vôtre est dans un pool de DEX ou un protocole de prêt, Stader conseille de le retirer d'abord vers votre propre portefeuille.",
+    "todo": "Suivez uniquement les étapes de l'annonce publiée sur le blog officiel de Stader (`staderlabs.com/blog`) : envoyez depuis le portefeuille qui détient les BNBx, uniquement sur BNB Chain, puis envoyez la transaction par e-mail au format décrit dans l'article. Stader ne paie que le portefeuille qui a envoyé les jetons : n'envoyez donc pas depuis un compte de plateforme d'échange. Les frais sont fixes, 0.2 BNBx : ils pèsent donc davantage sur un petit solde.",
+    "caution": "Cette procédure (envoyer des jetons à une adresse, puis envoyer un e-mail) ressemble beaucoup aux arnaques courantes. Ne faites confiance qu'à l'adresse et à l'e-mail de l'article original du blog officiel de Stader ; cette page ne les recopie volontairement pas. Stader indique qu'il ne vous écrira jamais en privé, ne vous demandera jamais votre phrase de récupération ni vos clés privées, et ne vous demandera jamais d'envoyer un paiement. N'utilisez aucune adresse de demande fournie dans des messages privés, des groupes de discussion ou d'autres sites ; vérifiez-les sur le blog de Stader indiqué ci-dessous.",
+    "official": [
+      "Blog de Stader : « Redemptions change for NearX, BNBx and MaticX »",
+      "Stader sur X : publication du 28 octobre"
+    ]
+  },
+  "robin-markets-v1": {
+    "name": "Robin Markets : fermeture de la V1",
+    "summary": "Robin Markets arrête sa V1. Les points, la garantie de rendement et le bonus d'abondement ont cessé de s'accumuler le 3 novembre à 20:00 UTC. L'annonce indique que les retraits restent possibles, sans date limite de retrait.",
+    "deadlineNote": "Annoncé le 3 novembre. Les points, la garantie de rendement et le bonus d'abondement ont cessé de s'accumuler le 3 novembre à 20:00 UTC. Il n'y a pas de date limite de retrait : Robin indique que la prochaine version sera lancée « avant la fin de l'année », que la V1 reste en ligne jusque-là, et que les retraits fonctionneront encore ensuite.",
+    "who": "Toute personne ayant déposé des positions Polymarket dans Robin Markets V1 pour obtenir un rendement.",
+    "todo": "Les points, la garantie de rendement et le bonus d'abondement ont cessé de s'accumuler le 3 novembre à 20:00 UTC ; la documentation indique que tout ce qui a été accumulé avant est versé automatiquement lors de votre prochain retrait. Robin indique que toute personne ayant une position ouverte peut la retirer dès maintenant.",
+    "official": [
+      "Robin Markets sur X : annonce du 3 novembre",
+      "Documentation de Robin Markets : garantie de rendement et bonus d'abondement (terminés)",
+      "Documentation de Robin Markets : contrats déployés sur Polygon"
+    ]
+  },
+  "summerfi-winddown": {
+    "name": "Summer.fi : coffres Lazy Summer en retraits uniquement, un arrêt ordonné en discussion",
+    "summary": "Summer.fi ferme et les coffres Lazy Summer n'autorisent plus que les retraits ; vous pouvez encore retirer vous-même sur le site officiel. Une RFC communautaire du 5 novembre discute d'un arrêt ordonné ; transférer le reste vers Merkl n'est qu'une option.",
+    "deadlineNote": "Après l'attaque du 6 juillet, la fermeture de l'interface d'origine de l'application Summer.fi a été programmée pour le 31 août (le site ne propose plus qu'une page de sortie), et les coffres ont cessé d'accepter des dépôts pour ne plus autoriser que les retraits. Une RFC communautaire du 5 novembre liste des options pour un arrêt ordonné : prendre un instantané, tout retirer et le restituer via Merkl dans le même jeton sur la même chaîne ; annoncer une date limite pour que les utilisateurs retirent eux-mêmes, puis transférer le reste ; ou ne rien transférer du tout. Aucune date n'a été fixée.",
+    "who": "Toute personne ayant encore des dépôts dans les coffres Lazy Summer (Ethereum, Base, Arbitrum, Sonic, HyperEVM). La RFC indique qu'il restait environ $369 000 dans 16 coffres au 5 novembre.",
+    "todo": "Allez sur `summer.fi`, connectez votre portefeuille, puis consultez vos positions, sortez-en et collectez les récompenses en attente. Transférer les actifs pour qu'ils soient récupérables via Merkl est une option ; la méthode et une éventuelle date limite de retrait dépendront de décisions de gouvernance formelles ultérieures.",
+    "caution": "Cette RFC communautaire du 5 novembre comprend des sondages non contraignants et ne déplace pas de fonds par elle-même. Elle indique que les pertes liées à l'attaque du 6 juillet (coffres USDC sur Ethereum) et aux créances irrécouvrables ne seront pas entièrement couvertes. Vérifiez la page de sortie sur `summer.fi` ; ne vous connectez pas et ne signez pas simplement parce qu'un lien apparaît dans une publication du forum ou une proposition sur la blockchain.",
+    "official": [
+      "Site de Summer.fi : retraits uniquement",
+      "Forum de Lazy Summer : RFC sur un arrêt ordonné (5 novembre)",
+      "Forum de Lazy Summer : passage des coffres en retraits uniquement (29 juillet)"
+    ]
+  },
+  "aster-apollox-offline": {
+    "name": "Aster : le site et l'API d'ApolloX passent hors ligne",
+    "summary": "Aster ferme l'ancien site et l'API d'ApolloX, avec une fin prévue vers le 5 novembre. S'il vous reste un solde ou des positions, fermez-les et retirez vos fonds dès maintenant.",
+    "deadlineNote": "À partir du 3 novembre à 10:00 UTC, Aster a commencé à arrêter les anciens contrats APX et a indiqué que cela prendrait environ 48 heures, soit une fin vers le 5 novembre à 10:00 UTC. Le site apollox.finance et l'API passent hors ligne en même temps.",
+    "who": "Toute personne ayant encore un solde ou des positions ouvertes sur ApolloX (`apollox.finance`).",
+    "todo": "Fermez vos positions et retirez vos fonds vers votre propre portefeuille. En cas de problème, Aster conseille de contacter son support sur Discord.",
+    "caution": "Aster n'a pas dit si les contrats pourront encore être utilisés directement une fois l'arrêt terminé.",
+    "official": [
+      "Aster sur X : publication du 3 novembre sur l'arrêt"
+    ]
+  },
+  "lisk-chain-closed": {
+    "name": "La chaîne Lisk a fermé",
+    "summary": "La chaîne Lisk a fermé le 2 novembre. Les retraits en cours au moment de la fermeture sont crédités sur Ethereum ; pour les fonds restés sur la chaîne, Lisk indique qu'une procédure ouvrira en janvier 2027.",
+    "deadlineNote": "La fermeture de la chaîne était d'abord prévue le 31 octobre ; le dernier jour effectif a été le 2 novembre. Le 24 octobre était le dernier jour pour lancer un transfert par le pont (le pont prend environ 8 jours). Lisk indique qu'un contrat dédié aux fonds restés sur la chaîne arrivera en janvier 2027.",
+    "who": "Toute personne qui avait encore des actifs sur Lisk au moment de la fermeture, ou un retrait en cours.",
+    "todo": "Lisk indique que les retraits en cours au moment de la fermeture seront crédités directement à l'adresse de destination sur Ethereum. Pour les fonds restés sur la chaîne, attendez la procédure officielle de janvier 2027 ; il n'y a rien à faire pour l'instant.",
+    "caution": "Lisk indique qu'il ne vous contactera jamais pour vous proposer d'aider à récupérer des fonds, et qu'il ne vous demandera jamais votre phrase de récupération. Environ 5.2 millions de LSK du contrat des récompenses de staking (y compris les récompenses gagnées mais pas encore collectées) seront détruits ; les LSK que les utilisateurs ont eux-mêmes mis en staking ne le seront pas.",
+    "official": [
+      "Blog de Lisk : la chaîne Lisk a fermé",
+      "Lisk sur X : la procédure de janvier (3 novembre)",
+      "Lisk sur X : rappel du dernier jour (1er novembre)",
+      "Blog de Lisk : présentation du nouveau Lisk"
+    ]
+  },
+  "stratex-vaults": {
+    "name": "Fermeture des coffres StratEx (sur QuickSwap)",
+    "summary": "Les coffres de StratEx ont fermé, et StratEx a indiqué le 3 novembre avoir renvoyé les fonds à toutes les personnes qui ne les avaient pas retirés. Vérifiez dans votre portefeuille s'ils sont arrivés.",
+    "deadlineNote": "Les retraits manuels se sont arrêtés le 1er novembre. Le 3 novembre, StratEx a indiqué avoir renvoyé les fonds à toutes les personnes qui ne les avaient pas retirés.",
+    "who": "Toute personne qui avait de l'argent dans les coffres StratEx et ne l'a pas retiré avant le 1er novembre.",
+    "todo": "Vérifiez si les fonds renvoyés sont arrivés dans votre portefeuille.",
+    "official": [
+      "StratEx sur X : fonds renvoyés (3 novembre)",
+      "StratEx sur X : fin des retraits (21 octobre)",
+      "StratEx sur X : dernier avis (17 septembre)"
+    ]
+  },
+  "lista-cdp-winddown": {
+    "name": "Lista DAO : fermeture de Lista CDP, passage à Lista Lending",
+    "summary": "Lista CDP a fermé. Lista indique que les positions des marchés pris en charge sont passées automatiquement sur Lista Lending, sans rien à faire. Vérifiez si votre position était dans un marché pris en charge.",
+    "deadlineNote": "Les positions pouvaient être migrées ou remboursées du 30 septembre au 31 octobre. Les 1er et 2 novembre, Lista a indiqué que les positions des marchés pris en charge avaient été migrées automatiquement.",
+    "who": "Toute personne qui avait une position dans Lista CDP.",
+    "todo": "Le 2 novembre, Lista a indiqué que tous les marchés pris en charge étaient passés automatiquement sur Lista Lending, sans rien à faire. Vérifiez que votre position était bien dans un marché pris en charge.",
+    "caution": "Lista n'a pas dit ce qu'il advient des positions dans les marchés non pris en charge.",
+    "official": [
+      "Blog de Lista : que faire avant la fermeture du CDP",
+      "Lista sur X : aucune action nécessaire (2 novembre)",
+      "Lista sur X : migration terminée (1er novembre)",
+      "Lista sur X : annonce du 1er octobre"
+    ]
+  },
+  "kyan-exchange": {
+    "name": "Fermeture de la plateforme Kyan (anciennement Premia)",
+    "summary": "Kyan (anciennement Premia) a cessé ses activités, et les soldes devaient être retirés au plus tard le 31 octobre. Si vous n'arrivez pas à retirer, Kyan conseille de demander sur son Discord.",
+    "deadlineNote": "Annoncé le 19 octobre : retirer les soldes « d'ici la fin du mois », c'est-à-dire au plus tard le 31 octobre.",
+    "who": "Toute personne ayant encore un solde sur Kyan.",
+    "todo": "Si vous n'arrivez pas à retirer, allez dans #support sur le Discord officiel de Kyan, où l'équipe traite les cas manuellement.",
+    "official": [
+      "Kyan sur X : publication du 19 octobre sur l'arrêt"
+    ]
+  },
+  "stargate-hydra-chains": {
+    "name": "Stargate v2 et Hydra abandonnent une série de chaînes peu actives",
+    "summary": "Stargate v2 et Hydra ont abandonné une série de chaînes peu actives ; le dernier groupe s'est arrêté le 23 octobre.",
+    "deadlineNote": "Vers le 20 septembre, les actifs Hydra se sont arrêtés sur une série de chaînes (dont Sophon, Silicon, Arbitrum Nova, Degen et Superposition). Aurora, Taiko, LightLink et Gnosis se sont arrêtés le 23 septembre, et Gravity, Camp, GOAT et Metis le 23 octobre.",
+    "who": "Les fournisseurs de liquidité des pools Stargate sur ces chaînes, et les détenteurs d'USDC.e ou d'USDT Hydra.",
+    "todo": "Avant chaque date d'arrêt, les fournisseurs de liquidité (y compris des pools ETH) devaient retirer leurs fonds, et les détenteurs d'USDC.e et d'USDT Hydra devaient passer par le pont vers un pool Stargate pour les racheter.",
+    "caution": "Les publications de Stargate ne disent pas si les actifs Hydra peuvent encore être rachetés après la date d'arrêt.",
+    "official": [
+      "Stargate sur X : rappel du 25 septembre",
+      "Stargate sur X : rappel du 10 septembre",
+      "Stargate sur X : annonce du 21 août"
+    ]
+  },
+  "stargate-metis-pools": {
+    "name": "Stargate sur Metis : la liquidité des pools V1 et V2 devait être retirée au plus tard le 23 octobre",
+    "summary": "Stargate a cessé de prendre en charge Metis le 23 octobre ; la liquidité de ses pools V1 et V2 sur Metis devait être retirée avant. Metis prévient que le reste pourrait être difficile, voire impossible, à retirer via l'interface habituelle.",
+    "deadlineNote": "La prise en charge de Metis Andromeda par Stargate a pris fin le 23 octobre, et le DVN et l'Executor de LayerZero Labs ont cessé de desservir Metis le 30 octobre. Pools concernés : les pools USDT, ETH et METIS de Stargate V2, et les pools USDT, METIS et MAI de Stargate V1.",
+    "who": "Les fournisseurs de liquidité des pools Stargate V1 et V2 sur Metis, et toute personne ayant transféré du METIS, du HERA, du QI ou du MTVT vers une autre chaîne via LayerZero V1.",
+    "todo": "Avant la date limite : retirer du staking les jetons LP s'ils étaient stakés, puis retirer la liquidité dans l'application Stargate, et ramener vers Metis, par la même voie, le METIS, le HERA, le QI ou le MTVT partis via LayerZero V1. Si vous l'avez manquée, Metis conseille de contacter l'équipe de Metis.",
+    "caution": "Metis indique que la liquidité laissée dans les pools Stargate sur Metis après la date limite pourrait être difficile, voire impossible, à retirer via l'interface Stargate habituelle. Les m.USDC, m.USDT, WETH et METIS émis par le pont canonique de Metis ne sont pas concernés.",
+    "official": [
+      "Blog de Metis : fin de Stargate et changements LayerZero sur Metis Andromeda"
+    ]
+  },
+  "mint-blockchain-shutdown": {
+    "name": "Fermeture de Mint Blockchain",
+    "summary": "Mint Blockchain a fermé ; la date limite était le 20 octobre. La page de retrait officielle ne ramène vers Ethereum que l'ETH, le WBTC, l'USDC et l'USDT.",
+    "deadlineNote": "La date limite était le 20 octobre.",
+    "who": "Toute personne ayant des actifs sur la chaîne Mint.",
+    "todo": "La page officielle `mintchain.io/withdraw` ne permet de retirer vers Ethereum que l'ETH, le WBTC, l'USDC et l'USDT (l'avis d'imToken indique que les retraits sont traités chaque semaine et arrivent en environ 10 jours).",
+    "caution": "Mint n'a pas dit si quoi que ce soit d'autre est possible après la date limite.",
+    "official": [
+      "Page de retrait de Mint"
+    ]
+  },
+  "coinex-csc-shutdown": {
+    "name": "Fermeture de CoinEx Smart Chain (CSC) et de OneSwap",
+    "summary": "CoinEx cesse ses activités. La chaîne CSC et OneSwap se sont arrêtées le 29 septembre, et l'argent des comptes de la plateforme d'échange doit être retiré au plus tard le 22 décembre.",
+    "deadlineNote": "CSC et OneSwap se sont arrêtés le 29 septembre, et les rachats via le pont ont fermé en même temps. Les retraits depuis la plateforme d'échange CoinEx restent ouverts jusqu'au 22 décembre, 10:00 UTC+8.",
+    "who": "Toute personne ayant des actifs sur CSC ou OneSwap, et toute personne ayant encore de l'argent sur un compte de la plateforme d'échange CoinEx.",
+    "todo": "La date limite sur la blockchain est passée. Retirez l'argent de votre compte de plateforme d'échange avant le 22 décembre. Ensuite, l'USDT passe sous une garde séparée avec des frais de garde de 5% par mois ; pour le récupérer, écrivez à support@coinex.com au plus tard le 22 août 2028.",
+    "caution": "CoinEx indique qu'il s'agit de sa dernière annonce, et que toute « nouvelle annonce » publiée en son nom après celle-ci est fausse.",
+    "official": [
+      "Annonce de CoinEx"
+    ]
+  },
+  "awe-stpt-migration": {
+    "name": "AWE Network : du STPT vers l'AWE (passage sur Base)",
+    "summary": "L'échange de STPT sur Ethereum contre de l'AWE sur Base a fermé le 21 septembre, et AWE indique que les échanges tardifs ne sont pas possibles.",
+    "deadlineNote": "La date limite était le 21 septembre. AWE indique qu'environ 99% ont été migrés.",
+    "who": "Toute personne détenant encore des STPT.",
+    "todo": "AWE indique que les échanges tardifs ne sont pas possibles. Le sort des jetons non échangés sera décidé par une proposition de gouvernance communautaire.",
+    "official": [
+      "Blog d'AWE : fermeture de la période de migration"
+    ]
+  },
+  "tether-alloy": {
+    "name": "Tether : fermeture d'Alloy by Tether et de l'aUSD₮",
+    "summary": "Alloy by Tether et l'aUSD₮ ont fermé le 17 septembre. Avant cette date, les utilisateurs devaient rendre leurs aUSD₮ et reprendre leur garantie en XAU₮.",
+    "deadlineNote": "La date limite était le 17 septembre.",
+    "who": "Toute personne ayant utilisé du XAU₮ comme garantie sur Alloy pour créer (minter) de l'aUSD₮.",
+    "todo": "Avant la date limite, les utilisateurs devaient rendre leurs aUSD₮ et reprendre leur garantie en XAU₮. Tether indique que cela n'est plus possible via la plateforme.",
+    "caution": "Tether n'a pas dit ce qu'il advient de la garantie après la date limite.",
+    "official": [
+      "Annonce de Tether"
+    ]
+  },
+  "trust-wallet-networks": {
+    "name": "Trust Wallet abandonne 24 réseaux",
+    "summary": "Depuis le 15 septembre, Trust Wallet n'affiche plus 24 réseaux, mais les actifs sont toujours sur la blockchain. Pour les chaînes EVM, vous pouvez ajouter vous-même le réseau comme réseau personnalisé.",
+    "deadlineNote": "Le 15 septembre, ces réseaux ont disparu de la liste du portefeuille ; Trust Handle s'était arrêté avant, le 7 septembre.",
+    "who": "Les utilisateurs de Trust Wallet ayant des actifs sur ces réseaux : les 15 chaînes EVM listées ci-dessus et 9 chaînes non EVM (le blog de Trust Wallet en donne la liste).",
+    "todo": "Vos actifs sont toujours sur la blockchain. Pour les chaînes EVM, ajoutez vous-même le réseau comme réseau personnalisé avec un RPC vérifié. Pour les chaînes non EVM, importez votre portefeuille dans un autre portefeuille qui prend en charge cette chaîne.",
+    "caution": "N'utilisez qu'un RPC provenant de la documentation officielle de la chaîne. Ne saisissez une phrase de récupération que vous-même, dans une application de portefeuille réputée, et jamais sur un site web.",
+    "official": [
+      "Blog de Trust Wallet"
+    ]
+  },
+  "vanar-vanry-migration": {
+    "name": "Vanar : le VANRY passe sur Base",
+    "summary": "La période pour faire passer le VANRY sur Base a fermé le 10 septembre, et la page de Vanar indique qu'aucune autre migration ne sera traitée.",
+    "deadlineNote": "La période d'échange allait du 11 août, 13:00 UTC, au 10 septembre, 13:00 UTC. Les jetons encore en cours de retrait du staking ont été distribués par airdrop sur Base le 11 septembre.",
+    "who": "Toute personne détenant du VANRY sur Ethereum, Polygon ou Vanar Chain.",
+    "todo": "La page de Vanar indique qu'il n'y a plus de migration après la fermeture de la période. Si vous avez commencé un retrait du staking avant le 10 septembre et n'avez pas reçu de jetons, écrivez à Vanar.",
+    "official": [
+      "Page d'échange de Vanar"
+    ]
+  },
+  "superposition-shutdown": {
+    "name": "Fermeture de la chaîne Superposition, retour vers Arbitrum One",
+    "summary": "La chaîne Superposition a fermé le 8 septembre. Superposition a indiqué que les actifs restés sur la chaîne ensuite « pourraient ne plus être accessibles ».",
+    "deadlineNote": "La chaîne a fermé le 8 septembre.",
+    "who": "Toute personne qui avait encore des actifs sur Superposition au moment de la fermeture.",
+    "todo": "Avant la date limite, les utilisateurs devaient sortir de Camelot et de leurs autres positions, puis revenir vers Arbitrum One via le pont natif d'Arbitrum ou Relay.",
+    "caution": "Au 5 novembre, aucune solution de repli officielle n'a été annoncée.",
+    "official": [
+      "Superposition sur X : annonce du 4 août"
+    ]
+  },
+  "arbitrum-nova-maintenance": {
+    "name": "Arbitrum Nova en mode maintenance (pas fermé)",
+    "summary": "Depuis le 2 septembre, Arbitrum Nova est en mode maintenance, pas fermé. La recommandation est de passer sur Arbitrum One via le pont officiel.",
+    "deadlineNote": "La période de migration allait du 4 juin au 2 septembre. Depuis le 2 septembre, la chaîne n'est plus qu'en maintenance, et l'accès RPC est plus restreint.",
+    "who": "Toute personne ayant des actifs sur Arbitrum Nova, y compris les détenteurs de MOON.",
+    "todo": "Passez sur Arbitrum One via le pont officiel Arbitrum Portal. Pour les gros montants, retirez d'abord vers Ethereum (il y a une période de contestation de 7 jours). Le MOON n'a pas de route directe et doit d'abord passer par Ethereum.",
+    "caution": "Le pont officiel continue de fonctionner en phase 3. Alchemy a arrêté son RPC Nova.",
+    "official": [
+      "Forum d'Arbitrum : FAQ sur Nova"
+    ]
+  },
+  "ton-old-bridge": {
+    "name": "Ancien pont TON (bridge-v3.ton.org) définitivement fermé",
+    "summary": "L'ancien pont TON a définitivement fermé le 1er septembre. Le Wrapped TON sur Ethereum et BSC, ainsi que le jUSDT et le jUSDC sur TON, devaient être ramenés via le pont avant cette date.",
+    "deadlineNote": "Depuis le 1er septembre, l'ancien pont ne traite plus aucun transfert.",
+    "who": "Toute personne détenant du Wrapped TON sur Ethereum ou BNB Chain, ou du jUSDT, du jUSDC et des jetons similaires sur TON.",
+    "todo": "Avant la date limite, le Wrapped TON sur Ethereum et BSC devait être ramené vers TON via le pont, et le jUSDT, le jUSDC et les jetons similaires sur TON vers Ethereum.",
+    "caution": "Au 5 novembre, le canal officiel n'a publié aucune solution de repli.",
+    "official": [
+      "Canal Telegram officiel TON Status"
+    ]
+  },
+  "dfk-chain-sunset": {
+    "name": "DeFi Kingdoms : fin de DFK Chain",
+    "summary": "La fin de DFK Chain était prévue le 28 août (date passée). DeFi Kingdoms a dit ne pas pouvoir migrer le JEWEL ni les jetons non DFK (BTC, ETH, USDC, AVAX, etc.) : leurs détenteurs devaient les sortir eux-mêmes via un pont avant.",
+    "deadlineNote": "Annoncé le 31 juillet, avec une fin fixée au 28 août.",
+    "who": "Toute personne détenant du JEWEL, ou des jetons non DFK comme le BTC, l'ETH, l'USDC et l'AVAX, sur DFK Chain ; les fournisseurs de liquidité de la chaîne ; et les utilisateurs de portefeuilles intelligents.",
+    "todo": "Ce que DeFi Kingdoms demandait : que les utilisateurs de portefeuilles intelligents transfèrent leurs actifs vers un portefeuille standard avant de passer par le pont, et que toutes les positions LP soient défaites, y compris les pools composés de deux actifs natifs de DFK. À l'époque, l'équipe a indiqué que le JEWEL pouvait être transféré vers Avalanche C-Chain via un pont et que la migration des actifs natifs de DFK était en préparation, avec des détails à venir.",
+    "caution": "DeFi Kingdoms a indiqué ne pas pouvoir migrer, réémettre ni contrôler le JEWEL ou les jetons non DFK. Son annonce du 31 juillet ne dit pas ce qu'il advient de ceux encore sur la chaîne après le 28 août.",
+    "official": [
+      "DeFi Kingdoms sur X : annonce du 31 juillet",
+      "DeFi Kingdoms sur X : ce que vous devez faire"
+    ]
+  },
+  "moonbeam-glmr-base": {
+    "name": "Moonbeam : le GLMR passe sur Base",
+    "summary": "La date limite pour faire passer le GLMR sur Base est passée le 31 juillet. Moonbeam demandait de retirer d'abord les fonds des protocoles de la chaîne, puis de transférer le GLMR à 1:1 vers Base. L'annonce ne dit pas ce que devient le GLMR non transféré.",
+    "deadlineNote": "La date limite était le 31 juillet (sans heure ni fuseau horaire). Moonbeam a indiqué que la chaîne continuerait de fonctionner pendant la période de transition jusqu'au 31 juillet, et qu'une fois la chaîne arrêtée, les fonds laissés dans les protocoles sur la blockchain « pourraient devenir inaccessibles ». L'annonce ne dit pas quand la chaîne s'arrête.",
+    "who": "Les détenteurs de GLMR sur Moonbeam et toute personne ayant des fonds dans des protocoles de cette chaîne (liquidité, prêts, contrats de staking, etc.). Pour le GLMR détenu sur une plateforme d'échange, Moonbeam indique que la plateforme s'occupe automatiquement de la migration.",
+    "todo": "Les étapes étaient : retirer d'abord les fonds des protocoles de la chaîne, puis transférer le GLMR à 1:1 vers Base via le pont, sur la page de migration officielle. L'annonce du 3 juillet ne précise pas si la migration reste possible après la date limite, ni ce qu'il adviendra des jetons non transférés.",
+    "caution": "La page de migration officielle est `migrate.portal.moonbeam.network` ; l'annonce du 3 juillet ne dit pas si elle reste utilisable après la date limite. Ignorez toute personne qui vous écrit en privé pour vous proposer une « migration tardive ».",
+    "official": [
+      "Actualités de Moonbeam : « Moonbeam Network Relaunches on Base »",
+      "Moonbeam sur X : annonce du 3 juillet"
+    ]
+  },
+  "moonriver-movr-base": {
+    "name": "Moonriver : le MOVR passe sur Base",
+    "summary": "La date limite pour passer le MOVR sur Base a expiré le 31 juillet. Moonriver demandait de retirer d'abord les fonds des protocoles de la chaîne, puis de transférer le MOVR à 1:1 vers Base en deux étapes. L'annonce ne dit rien du MOVR non transféré.",
+    "deadlineNote": "La date limite était le 31 juillet (sans heure ni fuseau horaire). Moonriver a indiqué qu'une fois la chaîne arrêtée, les fonds laissés dans les protocoles sur la blockchain « pourraient devenir définitivement inaccessibles ». L'annonce ne dit pas quand la chaîne s'arrête.",
+    "who": "Les détenteurs de MOVR sur Moonriver et toute personne ayant des fonds dans des protocoles de cette chaîne (liquidité, prêts, contrats de staking, etc.). Pour le MOVR détenu sur une plateforme d'échange, Moonriver indique qu'il n'y a rien à faire : la plateforme s'en occupe automatiquement.",
+    "todo": "Les étapes étaient : retirer d'abord les fonds des protocoles de la chaîne, puis passer par le pont en deux sauts sur la page de migration officielle. Le MOVR passe de Moonriver à Moonbeam (sous forme de xcMOVR), puis le pont de migration le transforme en MOVR sur Base, à 1:1 et sans frais. L'annonce du 7 juillet ne dit pas si la migration est encore possible après la date limite.",
+    "caution": "La page de migration officielle est `migrate.portal.moonbeam.network`, où l'on peut aussi vérifier les contrats concernés. L'annonce du 7 juillet ne dit pas si le portail de migration reste utilisable après la date limite. Ignorez toute personne qui vous écrit en privé pour vous proposer une « migration tardive ».",
+    "official": [
+      "Actualités de Moonbeam : « MOVR is Migrating to Base »",
+      "Moonriver sur X : annonce du 7 juillet"
+    ]
+  }
+}

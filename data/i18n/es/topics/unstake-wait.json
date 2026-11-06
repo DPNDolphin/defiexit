@@ -1,0 +1,94 @@
+{
+  "title": "¿Cuánto tarda retirar del staking?",
+  "summary": "Depende del protocolo, y en la mayoría son dos pasos: solicitas, esperas y luego vuelves a retirar. Según la documentación oficial: en EigenLayer son 14 días fijos; Lido normalmente tarda 1–5 días, y más cuando la cola es larga; el cooldown de sUSDe de Ethena es actualmente de 1–7 días y puede cambiar. ether.fi y Rocket Pool no dan un número fijo de días: que recibas ETH al instante depende de cuánto ETH tenga disponible el protocolo.",
+  "sections": [
+    {
+      "h": "Por qué no siempre puedes recuperarlo de inmediato",
+      "p": [
+        "El dinero en staking está en los contratos del protocolo. Para devolvértelo, el protocolo necesita tener monedas disponibles o tiene que cumplir una espera de seguridad que fijan sus reglas. Por eso la mayoría de los protocolos tienen dos pasos: solicitas, esperas y luego vuelves al sitio oficial y retiras; solo entonces el dinero vuelve a tu billetera.",
+        "Abajo está lo que dice la documentación oficial de cada protocolo (revisada el 2026-11-05). Las cifras cambian, así que guíate por lo que muestre el sitio oficial cuando actúes."
+      ],
+      "list": []
+    },
+    {
+      "h": "Cuánto tarda cada protocolo",
+      "p": [
+        "Algunas esperas son de un número fijo de días, otras dependen de una cola y otras de cuánto dinero disponible tenga el protocolo."
+      ],
+      "list": [
+        "EigenLayer: después de tocar Unstake, los fondos entran en la cola de retiros durante 14 días fijos en mainnet (100,800 bloques en el contrato). Luego toca Withdraw en “Available to Withdraw” y firma una vez más para recuperar el dinero. El restaking nativo (EigenPods) además exige salir primero del validador: una cola de salida (normalmente menos de un día según la documentación, pero sin límite en casos de congestión extrema), un retraso fijo de unas 27 horas y un barrido de 0–9.1 días, así que el total es mayor.",
+        "Lido (stETH, wstETH): envía una solicitud en la pestaña Request; en condiciones normales tarda 1–5 días. El tamaño de la cola, la cola de salida de validadores de Ethereum y el modo Bunker pueden alargarlo. Después de enviarla, la pestaña Claim muestra el estimado; cuando esté listo, toca Claim para recibir el ETH.",
+        "Ethena (sUSDe): retirar del staking tiene un cooldown (período de enfriamiento). La documentación lo llama “dinámico (actualmente entre 1 y 7 días)”, lo fija la gobernanza según el estado de las reservas, y el contrato permite hasta 90 días. Durante el cooldown tu USDe queda en un contrato aparte, y lo retiras cuando termina el cooldown. Guíate por el tiempo que se muestre al hacer la solicitud.",
+        "ether.fi (eETH, weETH): dos rutas. El canje instantáneo paga de inmediato, menos una pequeña comisión de salida, cuando el colchón del protocolo tiene suficiente liquidez. Un retiro en cola no tiene comisión: recibes un NFT de solicitud de retiro y reclamas el ETH cuando se procese. La documentación no da un número fijo de días; el tiempo depende de la liquidez del protocolo, de los retiros de validadores de Ethereum y del estado de la red.",
+        "Rocket Pool (rETH): no hay cola. Volver a cambiar a ETH en el sitio oficial es instantáneo, pero solo cuando el pool de depósitos tiene suficiente ETH. Si no lo tiene, el sitio muestra “Insufficient liquidity” y en su lugar enruta por CoW Swap, un servicio de terceros, o puedes cambiarlo en un exchange descentralizado, probablemente con una pequeña prima."
+      ]
+    },
+    {
+      "h": "¿Puedo vender en lugar de esperar?",
+      "p": [
+        "La mayoría de los tokens de staking líquido se pueden cambiar en un exchange, pero el precio no siempre es el valor de canje, y no hay garantía de que haya un comprador en todo momento."
+      ],
+      "list": [
+        "Lido dice que, si no quieres esperar, puedes cambiar stETH o wstETH en exchanges descentralizados o agregadores para salir al instante.",
+        "Ethena dice que puedes vender sUSDe antes del cooldown si existen mercados externos, pero que no planea crear esos mercados y no puede garantizar que haya uno.",
+        "ether.fi dice que un mercado secundario líquido no garantiza que weETH siempre se negocie a su valor de canje.",
+        "Rocket Pool dice que cambiar en un exchange probablemente implique una pequeña prima."
+      ]
+    },
+    {
+      "h": "Mientras esperas",
+      "p": [
+        "Mientras esperas, el dinero sigue en los contratos del protocolo. Ten esto en cuenta."
+      ],
+      "list": [
+        "Puede que recibas menos de lo que solicitaste: Lido dice que el slashing y las penalizaciones pueden hacer que el ETH reclamable sea menor que la cantidad solicitada, y EigenLayer dice que las participaciones en la cola de retiros todavía pueden sufrir slashing.",
+        "El NFT de retiro es el derecho al dinero: Lido dice que el NFT es transferible y que quien lo tenga puede reclamar, mientras que tú pierdes esa posibilidad. Nunca se lo envíes a ningún agente de “soporte”.",
+        "Usa solo los sitios oficiales: stake.lido.fi para Lido, app.eigenlayer.xyz para EigenLayer. No uses enlaces de resultados de búsqueda ni de mensajes privados.",
+        "Si el sitio no carga, revisa primero la cuenta oficial de X o el Discord del proyecto. La documentación de EigenLayer describe cómo terminar un retiro directamente con su contrato Delegation en Etherscan cuando la app tiene problemas. Eso es solo para quienes se manejan con contratos; cuesta gas y falla antes de que se cumplan los 14 días. Si no es tu caso, espera al sitio oficial en lugar de dejar que alguien “lo haga por ti”.",
+        "DeFiExit solo le pide a tu billetera que comparta su dirección: nunca te pide firmar, aprobar ni enviar nada, y nunca escribimos primero."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Hice staking y ahora el sitio no funciona (o dice que hay demasiado tráfico). ¿Mi dinero sigue ahí?",
+      "a": "Los fondos en staking están registrados en contratos en la blockchain, no en el sitio web; el sitio es solo una forma de llegar a ellos. Revisa la cuenta oficial de X o el Discord del proyecto por si hay avisos y vuelve a intentarlo más tarde. La documentación de EigenLayer explica cómo terminar un retiro en Etherscan cuando la app no funciona, pero eso es solo para quienes se manejan con contratos. No busques un “sitio alternativo” y no aceptes ayuda de nadie que te escriba por mensaje privado."
+    },
+    {
+      "q": "Toqué Unstake en EigenLayer. ¿Por qué 14 días?",
+      "a": "Es un retraso de seguridad fijado en los contratos de EigenLayer: 100,800 bloques en mainnet, unos 14 días. EigenLayer dice que el retraso protege el protocolo cuando se encuentra una vulnerabilidad o una actividad inusual. Cuando se cumplen los 14 días, el dinero no vuelve solo: vuelve a la app, toca Withdraw y firma otra vez."
+    },
+    {
+      "q": "Lido dice que tardará varios días. ¿Es normal?",
+      "a": "Sí. Lido dice 1–5 días en condiciones normales, y más cuando la cola es larga, la cola de salida de validadores de Ethereum está saturada o el protocolo está en modo Bunker. Después de enviar la solicitud, la pestaña Claim muestra el tiempo que falta; cuando esté listo, todavía tienes que tocar Claim."
+    },
+    {
+      "q": "El período de espera terminó. ¿Por qué el dinero no está en mi billetera?",
+      "a": "En la mayoría de los protocolos tienes que hacer tú el segundo paso: Withdraw en EigenLayer, Claim en Lido, retirar después del cooldown en Ethena y reclamar un retiro en cola ya procesado en ether.fi. Vuelve al sitio oficial, conecta la misma billetera, busca la solicitud, confirma y firma. Cuesta un poco de gas."
+    },
+    {
+      "q": "Alguien dice que puede saltarse el período de espera a cambio de una comisión.",
+      "a": "Es una estafa. La espera es una regla de los contratos del protocolo, como los 14 días de EigenLayer, y nadie puede saltársela a cambio de una comisión. Si necesitas el dinero ya, usa la ruta instantánea del propio protocolo si la tiene, o vende tú el token en un exchange al precio del momento."
+    }
+  ],
+  "sources": [
+    "Documentación de contratos de EigenLayer: DelegationManager (mainnet: 100,800 bloques = 14 días)",
+    "Documentación de EigenLayer (fuente en GitHub): Unstake y Withdraw",
+    "Documentación de EigenLayer (fuente en GitHub): testnet frente a mainnet (custodia de 14 días en mainnet)",
+    "Documentación de EigenLayer (fuente en GitHub): el retraso de los retiros como medida de seguridad",
+    "Documentación de EigenLayer (fuente en GitHub): retrasos de retiro del restaking nativo de ETH",
+    "Documentación de EigenLayer (fuente en GitHub): retirar con el contrato cuando la app tiene problemas",
+    "Centro de ayuda de Lido: ¿cuánto tarda un retiro de Ethereum? (1–5 días, factores)",
+    "Centro de ayuda de Lido: preguntas frecuentes sobre los retiros de Ethereum (dos pasos, puede ser menos de lo solicitado)",
+    "Centro de ayuda de Lido: ¿cómo retiro mi stETH del staking? (cambiar si no quieres esperar)",
+    "Centro de ayuda de Lido: ¿cómo funcionan los NFT de retiro de Lido? (quien lo tenga puede reclamar)",
+    "Documentación de Ethena: cómo hacer staking de USDe (cooldown actualmente de 1–7 días)",
+    "Documentación de Ethena: staking de USDe (flujo del cooldown; vender antes del cooldown)",
+    "Documentación de Ethena: funciones clave del staking (cooldown con un máximo de 90 días)",
+    "Documentación de ether.fi: weETH / eETH (el tiempo de canje depende de la liquidez, entre otras cosas)",
+    "Documentación de ether.fi: guía de integración (canje instantáneo frente a retiro en cola)",
+    "Documentación de ether.fi: staking de Ethereum (el precio en el mercado secundario no está garantizado)",
+    "Documentación de Rocket Pool: resumen del staking líquido (usar un exchange cuando el pool se queda corto)",
+    "Documentación de Rocket Pool: staking con Rocket Pool (instantáneo; cuando se agota la liquidez)"
+  ]
+}

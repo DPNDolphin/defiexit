@@ -48,7 +48,7 @@
     "**路线**:USDH 已停发 → 现货限价卖成 USDC(价格不低于 {{floorPx}})→ Withdraw 到 Arbitrum,扣 1 USDC,约 5 分钟到。",
     "**账户模式**:统一账户(新默认)直接提;老的分开账户,先用 Perps ⇄ Spot 把现货 USDC 划到 Perps 再提。",
     "**你的数**:卖 {{usdhSell}} USDH,提现 {{withdrawAmt}} USDC,到账约 {{arrive}} USDC。",
-    "**签名**:2~3 次 EIP-712,全部免 gas。只核两样:域名是 app.hyperliquid.xyz;destination 是你自己的 {{addrShort}}。",
+    "**签名**:2~3 次 EIP-712,全部免 gas。只核两样:域名是 app.hyperliquid.xyz;destination 是 {{addrShort}}。",
     "**坑**:搜 USDH 会同时出来 USDHL,别选错;点右侧订单簿会把你填的价格改掉。"
   ],
   "done": {
@@ -216,7 +216,7 @@
         "skip": "统一账户(Account 页没有 Perps ⇄ Spot)?跳过这一步",
         "confirm": [
           {"title": "弹窗来源是 app.hyperliquid.xyz", "sub": "多一个字母、少一个点都不行"},
-          {"title": "写着 SendAsset,destination 是你自己的地址 {{addrShort}}", "sub": "大小写不同没关系;不是你自己的地址,立刻拒绝"},
+          {"title": "写着 SendAsset,destination 是 {{addrShort}}", "sub": "大小写不同没关系;不是你自己的地址,立刻拒绝"},
           {"title": "从现货到合约账户,金额约 {{spotAfter}} USDC", "sub": "sourceDex 是 spot,destinationDex 是空的;token 是 USDC:0x6d1e…e054"}
         ],
         "reject": ["destination 不是你自己的地址", "出现 Permit,或者授权(Approve)某个代币", "来源不是 app.hyperliquid.xyz"],
@@ -242,7 +242,7 @@
         "lead": "点 Withdraw to Arbitrum 后,钱包会弹出签名请求。对照着看,核对完一项就点一下。",
         "confirm": [
           {"title": "弹窗来源是 app.hyperliquid.xyz", "sub": "多一个字母、少一个点都不行"},
-          {"title": "写着 Withdraw,destination 是你自己的地址 {{addrShort}}", "sub": "不是你自己的地址,立刻拒绝"},
+          {"title": "写着 Withdraw,destination 是 {{addrShort}}", "sub": "不是你自己的地址,立刻拒绝"},
           {"title": "amount 约 {{withdrawAmt}}", "sub": "到账 = 这个数减 1 USDC 手续费"}
         ],
         "reject": ["destination 不是你自己的地址", "出现 Permit,或者授权(Approve)某个代币", "来源不是 app.hyperliquid.xyz"],

@@ -1,0 +1,265 @@
+{
+  "title": "Rút thanh khoản DYORSwap về ví của bạn",
+  "short": "Rút từ DYORSwap",
+  "verified": "Vào tháng 11/2026, tác giả đã làm theo hướng dẫn này bằng chính tài khoản của mình trong ứng dụng OKX: với độ trượt giá 1%, lệnh rút thành công ngay lần đầu, gồm 1 chữ ký và 1 giao dịch, số tiền khớp với trang, và phí dưới 1 cent. Mã nguồn của hợp đồng router đã được xác minh trên trình khám phá OKX. Các cửa sổ bật lên của ví chưa có hình: hãy đối chiếu nội dung với các thẻ kiểm tra",
+  "covers": "Thanh khoản (LP) trong pool USDT/OKB của DYORSwap trên X Layer",
+  "summary": "Nếu bạn đã thêm thanh khoản vào pool USDT/OKB của DYORSwap, số tiền đó sẽ không tự quay về. Danh sách trên trang thường không hiện pool này (trang ghi No liquidity found), và rút với cài đặt mặc định sẽ thất bại. Làm theo hướng dẫn này để tìm pool, đặt độ trượt giá 1% rồi rút, và USDT cùng OKB sẽ về lại ví của bạn.",
+  "facts": [
+    ["Chữ ký và giao dịch", "1 chữ ký (chỉ cho phần LP bạn đang rút) và 1 giao dịch"],
+    ["Phí", "Dưới $0.01, trả bằng OKB trong ví của bạn trên X Layer"],
+    ["Thời gian", "Khoảng 5 phút"],
+    ["Bạn cần", "Ứng dụng OKX, đúng tài khoản đã thêm thanh khoản, và một ít OKB trên X Layer để trả phí"]
+  ],
+  "chips": ["Khoảng 5 phút", "1 chữ ký + 1 giao dịch", "Phí dưới 1 cent"],
+  "official": [{ "label": "Trang tìm pool của DYORSwap" }],
+  "vars": { "addrShort": "địa chỉ của chính bạn", "got": "số bạn có thể rút" },
+  "pro": [
+    "**Lộ trình**: trong ứng dụng OKX, chọn Web3 ở trên cùng → tab khám phá ở dưới cùng → dán `https://dyorswap.finance/find/?chainId=196` vào ô tìm kiếm → kết quả trang web bên thứ ba → **Connect** → **OKX Wallet** → **Select a Token**, chọn USDT → **Manage this pool** → **bánh răng**, chọn 1.0% → nhấn USDT/OKB → **Remove** → **Max** → **Enable** (chữ ký) → **Remove** → **Confirm** (giao dịch).",
+    "**Một chữ ký**: một Permit EIP-712 trên hợp đồng DYOR LPs 0x35c185563dFd328256A80Aafc23822200719cD25. Spender là router 0x1E690F24F704672e44255013C2cB22FC04c46036, và số lượng là phần LP bạn đang rút, không phải không giới hạn.",
+    "**Một giao dịch**: `removeLiquidityETHWithPermit` đến router, gửi 0 OKB.",
+    "**Số liệu của bạn**: {{got}}.",
+    "**Dễ vấp**: USDT này là phiên bản cũ của X Layer (USDT_Bridged), và pool này không có trong danh sách mặc định của trang, nên Your Liquidity ghi No liquidity found. Khi rút, hợp đồng sẽ đúc phần LP phí của giao thức trước, nên thực tế bạn nhận ít hơn khoảng 0.5% so với ước tính của trang, vượt quá mức trượt giá mặc định, và router hoàn tác giao dịch với lỗi `INSUFFICIENT_A_AMOUNT`. Vì vậy độ trượt giá phải là 1%. Đừng nhấn Bridge."
+  ],
+  "done": {
+    "where": "trong ví của bạn trên X Layer",
+    "from": "gửi từ hợp đồng router của DYORSwap",
+    "look": "Xem ở đâu: trang chủ ví trong ứng dụng OKX → mở OKB hoặc USDT → lịch sử giao dịch."
+  },
+  "screens": {
+    "nolist": {
+      "name": "Danh sách ghi No liquidity found",
+      "features": ["Tiêu đề Your Liquidity", "Giữa trang ghi No liquidity found", "Bên dưới có nút Find other LP tokens"],
+      "img": "dy-nolist-en.webp",
+      "do": "Tiền của bạn không mất: pool này không có trong danh sách mặc định của trang, nên không hiện ở đây. Nhấn **Find other LP tokens**, rồi chọn USDT như ở bước 2.",
+      "images": [{ "src": "dy-nolist-en.webp", "caption": "① Nhấn **Find other LP tokens**" }]
+    },
+    "import": {
+      "name": "Trang Import Pool",
+      "img": "dy-select-en.webp",
+      "features": ["Tiêu đề Import Pool", "Ô thứ nhất ghi OKB, ô thứ hai ghi Select a Token"],
+      "do": "Đây là trang ở bước 2. Chưa kết nối? Trước tiên nhấn **Connect** ở góc trên bên phải. Đã kết nối? Kiểm tra biểu tượng ở góc trên bên phải là hình bàn cờ đen trắng (X Layer), rồi nhấn **Select a Token** và chọn USDT."
+    },
+    "settings": {
+      "name": "Bảng Settings ở dưới cùng",
+      "img": "dy-slip-en.webp",
+      "features": ["Một bảng trượt lên, tiêu đề Settings", "Dưới Slippage Tolerance có các nút 0.1%, 0.5% và 1.0%"],
+      "do": "Đây là bước 3: nhấn **1.0%** để nút chuyển sang màu xanh dương, rồi nhấn **×** ở góc trên bên phải để đóng. Để Expert Mode tắt."
+    },
+    "remove-page": {
+      "name": "Trang Remove USDT-OKB liquidity",
+      "img": "dy-max-en.webp",
+      "features": ["Tiêu đề Remove USDT-OKB liquidity", "Một con số phần trăm lớn ở giữa", "Bên dưới có bốn nút: 25%, 50%, 75%, Max"],
+      "do": "Đây là bước 4: nhấn **Max**, cuộn xuống cuối trang, kiểm tra Slippage Tolerance ghi 1%, rồi nhấn **Enable**."
+    },
+    "fail": {
+      "name": "Thông báo màu đỏ: This transaction would fail",
+      "img": "dy-fail-en.webp",
+      "features": ["Phía trên hiện chữ Error màu đỏ", "Có ghi This transaction would fail"],
+      "do": "Tiền của bạn chưa bị chuyển. Nhiều khả năng độ trượt giá vẫn là 0.5%: thực tế bạn nhận ít hơn một chút so với ước tính của trang, vượt quá mức trượt giá cho phép, nên giao dịch không thực hiện được. Nhấn **×** để đóng thông báo, đóng cửa sổ bật lên, nhấn mũi tên quay lại ở góc trên bên trái trang rút để về danh sách, đặt 1% như ở bước 3, rồi rút lại (bạn sẽ phải ký lại).",
+      "images": [{ "src": "dy-fail-en.webp", "caption": "✗ Độ trượt giá quá thấp: khung vàng vẫn ghi 0.5%" }]
+    },
+    "wrong-net": {
+      "name": "Cửa sổ bật lên: You are in wrong network",
+      "img": "dy-wrongnet-en.webp",
+      "features": ["Một bảng trượt lên, tiêu đề You are in wrong network", "Bên dưới có nút màu xanh dương: Switch to X Layer mainnet"],
+      "do": "Ví của bạn đang ở mạng khác. Nhấn **Switch to X Layer mainnet**, và xác nhận nếu ví hỏi. Pool của bạn chỉ hiện trên X Layer.",
+      "images": [{ "src": "dy-wrongnet-en.webp", "caption": "① Nhấn **Switch to X Layer mainnet**" }]
+    },
+    "chains": {
+      "name": "Danh sách mạng ở dưới cùng",
+      "img": "dy-chains-en.webp",
+      "features": ["Một bảng trượt lên với tiêu đề về việc chuyển mạng", "Một danh sách tên mạng, trong đó có X Layer mainnet"],
+      "do": "Chọn **X Layer mainnet**. Đừng chọn mạng nào khác, và đừng thêm mạng mới.",
+      "images": [{ "src": "dy-chains-en.webp", "caption": "① Chọn **X Layer mainnet**. Danh sách dài, hãy cuộn lên để tìm" }]
+    },
+    "sign-wrong": {
+      "name": "Chữ ký không dành cho DYOR LPs, hoặc spender không phải 0x1E690F24…FC04c46036",
+      "do": "Nhấn **Reject** (Từ chối). Hướng dẫn này chỉ có một chữ ký: hợp đồng là DYOR LPs 0x35c185563dFd328256A80Aafc23822200719cD25 và spender là router 0x1E690F24F704672e44255013C2cB22FC04c46036. Đừng ký cho bất kỳ token hay địa chỉ nào khác. Đóng trang rồi mở lại như ở bước 1."
+    },
+    "wrong-to": {
+      "name": "Địa chỉ tương tác không phải 0x1E690F24…FC04c46036, hoặc yêu cầu bạn gửi OKB hay USDT",
+      "do": "Nhấn **Reject** (Từ chối). Lệnh rút này chỉ gửi đến router 0x1E690F24F704672e44255013C2cB22FC04c46036. Thứ duy nhất rời khỏi ví của bạn là LP, và bạn nhận về USDT và OKB. Đóng trang rồi mở lại như ở bước 1."
+    },
+    "domain": {
+      "name": "Thanh địa chỉ không phải dyorswap.finance",
+      "do": "Đóng trang này ngay và đừng ký bất cứ thứ gì. Tự dán lại `https://dyorswap.finance/find/?chainId=196`; đừng nhấn vào đường dẫn người khác gửi cho bạn."
+    },
+    "bridge": {
+      "name": "Một trang cầu nối (có nút Send, các tab như Bridge, Deploy, Referral), hoặc yêu cầu thêm mạng mới",
+      "do": "Đừng nhấn Send và đừng ký bất cứ thứ gì. Đây không phải lối ra: rút thanh khoản không cần cầu nối. Đóng trang rồi mở lại từ bước 1. Chỉ cần bạn chưa ký hay xác nhận gì, tiền của bạn chưa bị chuyển. Vào tháng 9/2026, đã có người dùng mất tiền qua một cầu nối giả trên DYORSwap."
+    }
+  },
+  "steps": {
+    "open": {
+      "title": "Mở DYORSwap trong ứng dụng OKX",
+      "items": [
+        "Trước tiên nhấn vào đường dẫn này để sao chép: `https://dyorswap.finance/find/?chainId=196`",
+        "Dưới đây là các bước trong ứng dụng OKX, mỗi lần nhấn một hình. Chúng tôi thử ứng dụng bằng tiếng Trung, nên ảnh chụp là tiếng Trung. Nếu ứng dụng của bạn dùng ngôn ngữ khác, ví dụ tiếng Anh, hãy tìm nút có chức năng đúng như từng chú thích mô tả, và dừng lại nếu không tìm thấy hoặc những gì bạn thấy không khớp."
+      ],
+      "images": [
+        "① Bạn đang đọc trang này trong ứng dụng OKX? Sao chép đường dẫn xong, nhấn **×** ở góc trên bên trái để đóng trang, làm xong thì quay lại. Đang đọc trên trình duyệt khác? Chỉ cần mở ứng dụng OKX",
+        "② Chọn **Web3** ở trên cùng ③ Nhấn tab khám phá, biểu tượng thứ hai ở thanh dưới cùng. Số tiền trong hình đã được che",
+        "④ Nhấn ô tìm kiếm ở trên cùng",
+        "⑤ Nhấn giữ ô tìm kiếm, rồi nhấn **Paste** (Dán)",
+        "⑥ Nhấn vào kết quả trang web bên thứ ba bên dưới. Phần bị che trong hình là một đường dẫn khác từ lúc chúng tôi quay màn hình; đường dẫn của bạn phải bắt đầu đúng chính xác bằng **https://dyorswap.finance/**, và khi trang mở, thanh địa chỉ phải ghi đúng chính xác **dyorswap.finance**, không thừa gì ở trước hay sau"
+      ],
+      "situations": {
+        "third-party": { "see": "Kết quả tìm kiếm ghi đây là trang web bên thứ ba", "do": "Điều đó là bình thường: ví gắn nhãn như vậy cho mọi địa chỉ web. Hãy nhìn địa chỉ phía sau: phải bắt đầu đúng chính xác bằng **https://dyorswap.finance/**, có dấu gạch chéo ngay sau finance và không chen thêm gì ở giữa." },
+        "no-paste": { "see": "Nhấn giữ ô tìm kiếm mà không thấy Paste", "do": "Quay lại trang này và nhấn vào đường dẫn lần nữa để sao chép. Nếu iPhone hỏi có cho phép dán không, hãy cho phép. Vẫn không được? Hãy tự gõ `https://dyorswap.finance/find/?chainId=196`." },
+        "wrong-account": { "see": "Ví đang ở tài khoản khác với tài khoản đã thêm thanh khoản", "do": "Quay về trang chủ ví, nhấn hình tam giác nhỏ cạnh tên tài khoản, chuyển sang tài khoản đã thêm thanh khoản (một ví OKX có thể chứa nhiều tài khoản), rồi làm lại từ đầu. Ở sai tài khoản thì bạn sẽ không tìm thấy pool của mình." },
+        "other-wallet": { "see": "Tôi không dùng ứng dụng OKX, hoặc đang dùng máy tính", "do": "Hướng dẫn này viết cho ứng dụng OKX; chúng tôi chưa kiểm tra các ví khác hay tiện ích mở rộng trình duyệt. Các trang web thì giống nhau, nhưng cửa sổ bật lên của ví trông khác. Nếu không khớp với thẻ kiểm tra, đừng ký: nhấn \"Bị kẹt?\" ở góc trên bên phải và gửi báo cáo cho chúng tôi." }
+      }
+    },
+    "pool": {
+      "title": "Kết nối ví và tìm pool của bạn",
+      "milestone": "Tìm pool",
+      "note": "Kết nối là miễn phí và không thể chuyển tiền của bạn",
+      "items": [
+        "DYORSwap có thể hiển thị bằng tiếng Anh hoặc tiếng Trung. Ảnh chụp là tiếng Anh; muốn đổi ngôn ngữ, hãy nhấn biểu tượng quả địa cầu ở phía trên."
+      ],
+      "images": [
+        { "src": "dy-find-en.webp", "caption": "① Trang Import Pool mở ra. Nhấn **Connect** ở góc trên bên phải ✗ Chỉ nhấn những gì được đóng khung trong hình. Đừng nhấn Bridge ở thanh dưới cùng: rút tiền không cần đến nó, và vào tháng 9/2026 đã có người dùng mất tiền qua một cầu nối giả trên DYORSwap" },
+        { "src": "dy-wallets-en.webp", "caption": "② Nhấn **OKX Wallet**. Khi ví hỏi kết nối, kiểm tra có ghi dyorswap.finance, rồi kết nối" },
+        { "src": "dy-select-en.webp", "caption": "③ Khi đã kết nối, trước tiên xem khung vàng: biểu tượng ở góc trên bên phải phải là hình bàn cờ đen trắng, tức là X Layer. Nếu không phải, xem các tình huống thường gặp bên dưới. Nếu đúng, nhấn **Select a Token**" },
+        { "src": "dy-tokens-en.webp", "caption": "④ Nhấn **USDT** trong danh sách ✗ Đừng nhấn USD₮0 ở bên dưới: đó là token khác, còn pool này dùng USDT. Số dư trong hình đã được che" },
+        { "src": "dy-found-en.webp", "caption": "⑤ Hiện ra một khối USDT-OKB LP: đó là thanh khoản của bạn. Nhấn **Manage this pool**. Các con số trong hình đã được che" }
+      ],
+      "situations": {
+        "connected": { "see": "Không có nút Connect, chỉ có biểu tượng ví", "do": "Bạn đã kết nối rồi. Kiểm tra biểu tượng bên trái nó là hình bàn cờ đen trắng (X Layer), rồi nhấn **Select a Token**." },
+        "wrong-network": { "see": "Hiện cửa sổ You are in wrong network, hoặc biểu tượng ở góc trên bên phải không phải hình bàn cờ", "do": "Ví của bạn đang ở mạng khác, nên pool sẽ không hiện. Nhấn **Switch to X Layer mainnet**. Nếu không có gì bật lên, nhấn vào biểu tượng đó và chọn **X Layer mainnet** trong danh sách mạng." },
+        "switch-network": { "see": "Ví yêu cầu bạn chuyển mạng", "do": "Chuyển sang **X Layer**. Đó là chuyển mạng, không phải thêm mạng mới. Nếu ví yêu cầu thêm bất kỳ mạng nào khác, hãy từ chối: DYORSwap từng có sự cố chuỗi giả vào tháng 9." },
+        "not-found": { "see": "Chọn USDT rồi mà không hiện khối USDT-OKB LP", "do": "Kiểm tra biểu tượng ở góc trên bên phải là hình bàn cờ (X Layer) và ví đang ở đúng tài khoản đã thêm thanh khoản, rồi chờ vài giây để trang đọc dữ liệu từ chuỗi. Vẫn không có? Nhấn \"Bị kẹt?\" ở góc trên bên phải: chúng tôi kiểm tra trực tiếp LP của địa chỉ này trên chuỗi." },
+        "wrong-token": { "see": "Tôi lỡ chọn USD₮0", "do": "Nhấn vào ô thứ hai và chọn **USDT**." },
+        "no-pool": { "see": "Trang ghi No pool found, bên dưới có Create pool", "do": "Sai token: cặp đó không có pool. Đừng nhấn Create pool. Nhấn vào ô thứ hai và chọn **USDT**." },
+        "nolist": { "see": "Trang ghi No liquidity found", "do": "Tiền của bạn không mất: pool này không có trong danh sách mặc định của trang. Nhấn **Find other LP tokens**, rồi Select a Token, và chọn USDT." },
+        "bridge-page": { "see": "Tôi bị đưa đến một trang cầu nối: có nút Send và các tab như Bridge, Deploy, Referral", "do": "Đừng nhấn Send và đừng ký bất cứ thứ gì. Đây không phải lối ra. Đóng trang rồi mở lại từ bước 1. Chỉ cần bạn chưa ký hay xác nhận gì, tiền của bạn chưa bị chuyển." }
+      }
+    },
+    "slippage": {
+      "title": "Đặt độ trượt giá 1%",
+      "milestone": "Trượt giá",
+      "note": "Bỏ qua bước này thì lát nữa lệnh rút sẽ thất bại",
+      "items": [
+        "Khi bạn rút từ pool này, pool sẽ tất toán phí giao thức trước, nên thực tế bạn nhận ít hơn một chút so với ước tính của trang. Độ trượt giá mặc định 0.5% không đủ và giao dịch sẽ thất bại, nên trước tiên hãy đổi thành 1%. Điều này đến từ một lần mô phỏng trên chuỗi, không phải phỏng đoán."
+      ],
+      "images": [
+        { "src": "dy-gear-en.webp", "caption": "① Quay về Your Liquidity, giờ USDT/OKB đã có trong danh sách. Nhấn **bánh răng** ở góc trên bên phải. Các con số trong hình đã được che" },
+        { "src": "dy-slip-en.webp", "caption": "② Nhấn **1.0%** để nút chuyển sang màu xanh dương ③ Nhấn **×** ở góc trên bên phải để đóng" }
+      ],
+      "situations": {
+        "safe": { "see": "1% có an toàn không?", "do": "Độ trượt giá là mức bạn chấp nhận nhận ít hơn so với ước tính của trang. Ở mức 1%, ít hơn tối đa 1% là chấp nhận được; lần rút này ít hơn khoảng 0.5%. Tệ hơn mức đó thì giao dịch chỉ đơn giản là thất bại, và tiền của bạn vẫn nằm yên." },
+        "expert": { "see": "Bên dưới có công tắc Expert Mode", "do": "Để tắt. Hướng dẫn này không cần đến nó." },
+        "no-gear": { "see": "Tôi không tìm thấy bánh răng", "do": "Trang rút không có bánh răng. Quay về Your Liquidity bằng mũi tên quay lại ở góc trên bên trái trang rút." }
+      }
+    },
+    "enable": {
+      "title": "Chọn Max và ký",
+      "milestone": "Ký",
+      "note": "Ký là miễn phí và chỉ áp dụng cho phần LP bạn đang rút",
+      "grantsText": "Sau khi bạn ký, hợp đồng router của DYORSwap có thể lấy token thanh khoản (LP) của bạn: đúng bằng số bạn đang rút lúc này, không phải số lượng không giới hạn. Hãy đối chiếu thẻ từng dòng, và nhấn Reject (Từ chối) nếu có gì không khớp.",
+      "images": [
+        { "src": "dy-row-en.webp", "caption": "① Nhấn dòng **USDT/OKB** để mở rộng. Các con số trong hình đã được che" },
+        { "src": "dy-expand-en.webp", "caption": "② Nhấn **Remove** ✗ Đừng nhấn nhầm Add liquidity. Các con số trong hình đã được che" },
+        { "src": "dy-max-en.webp", "caption": "③ Nhấn **Max**: 0% chuyển thành 100%" },
+        { "src": "dy-enable-en.webp", "caption": "④ Cuộn xuống cuối và xem khung vàng trước: Slippage Tolerance phải ghi **1%**. Sau đó nhấn **Enable**. Ví sẽ hiện yêu cầu chữ ký: hãy so với thẻ kiểm tra bên dưới. Các con số trong hình đã được che" }
+      ],
+      "check": {
+        "title": "Trước khi xác nhận, kiểm tra 3 điều",
+        "lead": "Đây là yêu cầu chữ ký từ ví của bạn. Hiện chưa có hình của cửa sổ này: hãy dựa vào nội dung hiển thị, và nhấn vào từng mục khi đã kiểm tra.",
+        "confirm": [
+          { "title": "Nguồn yêu cầu là dyorswap.finance", "sub": "Tên trang hiện trong cửa sổ bật lên, không thừa gì ở trước hay sau" },
+          { "title": "Hợp đồng là DYOR LPs: 0x35c18556…200719cD25", "sub": "Địa chỉ đầy đủ 0x35c185563dFd328256A80Aafc23822200719cD25. Đây là LP của bạn, không phải USDT hay OKB. Chữ hoa hay chữ thường không quan trọng; ít nhất phải khớp phần đầu 0x35c18556 và phần cuối 200719cD25" },
+          { "title": "Spender là 0x1E690F24…FC04c46036", "sub": "Địa chỉ đầy đủ 0x1E690F24F704672e44255013C2cB22FC04c46036, hợp đồng router của DYORSwap. Ít nhất phải khớp phần đầu 0x1E690F24 và phần cuối FC04c46036" }
+        ],
+        "reject": [
+          "Chữ ký cấp quyền cho USDT, OKB hay một token khác thay vì LP",
+          "Spender không khớp với 0x1E690F24…FC04c46036",
+          "Số lượng ghi là không giới hạn (unlimited)",
+          "Nguồn yêu cầu không phải dyorswap.finance",
+          "Có ghi transfer, hoặc yêu cầu bạn gửi token",
+          "Ví hiện cảnh báo màu đỏ: rủi ro cao hoặc trang độc hại"
+        ],
+        "normal": [
+          "Ký không mất phí và không chuyển tiền",
+          "Số lượng là một con số ngắn và nhỏ: đơn vị LP rất nhỏ",
+          "Nếu ví chỉ hiện vài ký tự đầu và cuối, hãy khớp các ký tự đó; nếu được, mở phần chi tiết để xem đầy đủ"
+        ]
+      },
+      "situations": {
+        "still-05": { "see": "Khung vàng vẫn ghi 0.5%", "do": "Khoan nhấn Enable. Dùng mũi tên quay lại ở góc trên bên trái trang rút để về danh sách, đặt 1% như ở bước 3, rồi quay lại." },
+        "approve-tx": { "see": "Nhấn Enable thì hiện một giao dịch thay vì chữ ký", "do": "Nhấn Reject (Từ chối). Một số ví không hỗ trợ loại chữ ký này, nên trang gửi một giao dịch cấp quyền thay thế. Chúng tôi chưa kiểm tra cách đó. Nhấn \"Bị kẹt?\" ở góc trên bên phải và gửi báo cáo cho chúng tôi." },
+        "rejected": { "see": "Tôi lỡ nhấn Reject", "do": "Tiền của bạn chưa bị chuyển. Nhấn **Enable** lần nữa." },
+        "wrong-sign": { "see": "Chữ ký cấp quyền cho token khác hoặc địa chỉ khác", "do": "Nhấn Reject (Từ chối) ngay." }
+      }
+    },
+    "remove": {
+      "title": "Rút",
+      "milestone": "Rút",
+      "note": "Đây là giao dịch duy nhất",
+      "images": [
+        { "src": "dy-remove-en.webp", "caption": "① Nút bên trái chuyển sang màu xám và ghi Enabled. Nhấn **Remove** ở bên phải" },
+        { "src": "dy-confirm-en.webp", "caption": "② Cửa sổ You will receive mở ra. Khung vàng phải ghi **1%**. Nhấn **Confirm**, ví sẽ hiện giao dịch: hãy so với thẻ kiểm tra bên dưới. Các con số trong hình đã được che" }
+      ],
+      "check": {
+        "title": "Trước khi xác nhận, kiểm tra 3 điều",
+        "lead": "Đây là giao dịch từ ví của bạn. Hiện chưa có hình của cửa sổ này: hãy dựa vào nội dung hiển thị, và nhấn vào từng mục khi đã kiểm tra.",
+        "confirm": [
+          { "title": "Nguồn yêu cầu là dyorswap.finance và mạng là X Layer", "sub": "Tên trang và tên mạng hiện trong cửa sổ bật lên" },
+          { "title": "Địa chỉ tương tác là router 0x1E690F24…FC04c46036", "sub": "Địa chỉ đầy đủ 0x1E690F24F704672e44255013C2cB22FC04c46036. Ít nhất phải khớp phần đầu 0x1E690F24 và phần cuối FC04c46036. Sai một ký tự là dừng lại" },
+          { "title": "Bạn nhận khoảng {{got}}, và không gửi OKB hay USDT", "sub": "Chỉ có LP rời khỏi ví của bạn; gửi 0 OKB là đúng. Phí mạng bên dưới thấp hơn $0.01" }
+        ],
+        "reject": [
+          "Yêu cầu bạn gửi OKB, USDT hay một token khác",
+          "Địa chỉ tương tác không khớp với 0x1E690F24…FC04c46036",
+          "Nguồn yêu cầu không phải dyorswap.finance",
+          "Có ghi Approve",
+          "Ví hiện cảnh báo màu đỏ: rủi ro cao hoặc trang độc hại"
+        ],
+        "normal": [
+          "Bạn nhận ít hơn khoảng 0.5% so với con số trên trang: điều đó là bình thường, pool này tất toán phí trước và ước tính của trang không tính phần đó",
+          "Nếu ví chỉ hiện vài ký tự đầu và cuối, hãy khớp các ký tự đó; nếu được, mở phần chi tiết để xem đầy đủ",
+          "Trang quay vòng và ghi Waiting For Confirmation: trang đang chờ bạn xác nhận trong ví",
+          "Sau khi xác nhận, bạn sẽ cần Face ID, vân tay hoặc mật khẩu"
+        ]
+      },
+      "situations": {
+        "fail": { "see": "Thông báo Error màu đỏ ghi This transaction would fail", "do": "Tiền của bạn chưa bị chuyển. Nhiều khả năng độ trượt giá vẫn là 0.5%: nhấn ×, dùng mũi tên quay lại ở góc trên bên trái trang rút để về danh sách, đặt 1% như ở bước 3, rồi rút lại (bạn sẽ phải ký lại). Đã là 1% rồi? Nhấn \"Bị kẹt?\" ở góc trên bên phải." },
+        "rejected": { "see": "Tôi lỡ nhấn Reject", "do": "Tiền của bạn chưa bị chuyển. Nhấn **Confirm** lần nữa." },
+        "spinning": { "see": "Tôi đã xác nhận mà trang cứ quay vòng mãi", "do": "Chờ một phút và đừng nhấn lại. Sau đó nhấn \"Bị kẹt?\" ở góc trên bên phải: chúng tôi sẽ kiểm tra trên chuỗi các lệnh rút trong vài phút gần đây." },
+        "low-gas": { "see": "Báo phí hoặc số dư không đủ", "do": "Bạn cần một ít OKB trên X Layer để trả phí (dưới $0.01). Trước tiên hãy gửi một ít OKB vào địa chỉ này trên X Layer (0.001 là dư), rồi quay lại." },
+        "wrong-to": { "see": "Địa chỉ tương tác không phải 0x1E690F24…FC04c46036", "do": "Nhấn Reject (Từ chối) ngay." },
+        "send-out": { "see": "Yêu cầu bạn gửi OKB hay USDT", "do": "Nhấn Reject (Từ chối) ngay. Rút tiền nghĩa là bạn nhận tiền; bạn không gửi các token này đi." }
+      }
+    },
+    "arrive": {
+      "title": "Kiểm tra tiền đã về",
+      "milestone": "Đã về",
+      "images": [
+        "① Quay về trang chủ ví (biểu tượng OKX ở dưới cùng), nhấn tab token: OKB đã tăng, và USDT của bạn đã về. Số dư trong hình đã được che",
+        "② Cuối cùng, nhấn tab cấp quyền, tab cuối cùng trong hàng đó, tìm quyền USDT đã cấp cho DYORSwap (0x1E69…6036) và hủy nó. Bạn đã cấp quyền này khi thêm thanh khoản và giờ không cần nữa. Việc hủy tốn một khoản phí nhỏ, và dù hủy hay không thì tiền của bạn vẫn an toàn"
+      ],
+      "check": {
+        "title": "Kiểm tra tiền đã về",
+        "rows": [
+          ["Mất bao lâu", "Vài giây sau khi bạn xác nhận"],
+          ["Xem ở đâu", "Trang chủ ví trong ứng dụng OKX → OKB và USDT → lịch sử giao dịch"],
+          ["Bạn sẽ thấy", "Thêm {{got}}"],
+          ["Trên chuỗi", "Từ hợp đồng router của DYORSwap 0x1E69…6036, về đúng địa chỉ của bạn"],
+          ["Nếu chưa về", "Nhấn \"Bị kẹt?\" ở góc trên bên phải: chúng tôi sẽ kiểm tra trên chuỗi các lệnh rút trong vài phút gần đây"]
+        ],
+        "foot": "Tiền về là xong. Bạn nhận chính OKB (token gốc của X Layer), không phải WOKB"
+      },
+      "situations": {
+        "not-wokb": { "see": "Là OKB hay WOKB?", "do": "Là chính OKB (token gốc của X Layer), không phải WOKB." },
+        "old-usdt": { "see": "Đây là USDT nào?", "do": "Đó là USDT cũ của X Layer (USDT_Bridged), loại mà OKX đang dần loại bỏ. Muốn chuyển sang USDT0 mới, hãy nạp lên sàn OKX rồi rút ra lại." },
+        "less": { "see": "Ít hơn một chút so với trang ghi", "do": "Điều đó là bình thường: ít hơn khoảng 0.5%. Pool này tất toán phí trước và ước tính của trang không tính phần đó." },
+        "no-approval": { "see": "Tôi không tìm thấy quyền đã cấp này", "do": "Danh sách trong ví không phải lúc nào cũng đầy đủ, nên không thấy chưa chắc là quyền đã hết. Nhấn \"Bị kẹt?\" ở góc trên bên phải: phần kiểm tra trực tiếp đọc dữ liệu trên chuỗi và cho biết quyền đó còn hiệu lực không. Nếu đã hết thì không cần làm gì." }
+      }
+    }
+  },
+  "sources": [
+    "Trình khám phá OKX · Hợp đồng router của DYORSwap (mã nguồn đã xác minh)",
+    "Trình khám phá OKX · Pool USDT/OKB (DYOR LPs)",
+    "DYORSwap · Trang tìm pool"
+  ]
+}

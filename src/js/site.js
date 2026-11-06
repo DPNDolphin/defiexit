@@ -1,4 +1,5 @@
 // 每一页都加载:深浅色切换;换语言时记住选择,并带上 # 后面的地址(地址只在 # 后面,不会发给服务器);
+// 语言菜单是 <details>,不靠脚本也能开关;这里只补上按 Esc 收起(焦点回到菜单按钮)、点菜单外面收起;
 // 打开的是 #owner:记成管理员自己的浏览器,在这里体检不计数(见 lib/count.js)。
 import { takeOwnerHash } from "./lib/count.js";
 import { toast } from "./lib/ui.js";
@@ -32,6 +33,22 @@ for (const a of document.querySelectorAll("a[data-lang]")) {
       e.preventDefault();
       location.href = a.getAttribute("href") + location.hash;
     }
+  });
+}
+
+// 语言菜单:按 Esc、点外面都收起来(页面上没有菜单就不挂)
+const menus = [...document.querySelectorAll("details.lang-menu")];
+if (menus.length) {
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    for (const m of menus) {
+      if (!m.open) continue;
+      m.open = false;
+      m.querySelector("summary")?.focus();
+    }
+  });
+  document.addEventListener("click", (e) => {
+    for (const m of menus) if (m.open && !m.contains(e.target)) m.open = false;
   });
 }
 

@@ -1,0 +1,257 @@
+{
+  "title": "WOOFi 스테이킹과 볼트의 돈을 내 지갑으로 되찾기",
+  "short": "WOOFi에서 내 지갑으로",
+  "verified": "2026-10-29에 제작자 본인 계정으로 Binance 지갑에서 이 가이드대로 테스트했어요. 보상 받기, 스테이킹 해제, 볼트 출금은 각각 확인 카드에 나온 컨트랙트로 갔고 확인 카드에 나온 데이터를 담고 있었으며, 세 건 모두 들어왔어요. 화면은 2026-10-28에 읽기 전용 테스트 지갑으로 공식 사이트에서 확인했어요.",
+  "fieldTests": [
+    "Binance 지갑으로 이 가이드대로 되찾았고, 거래 세 건 모두 들어왔어요. 연결한 뒤 가격 차트 거래 페이지로 갈 수 있다는 점, 볼트 페이지에서 0으로 표시된 칸 두 개를 잘못 읽기 쉽다는 점은 이제 가이드에 반영했어요."
+  ],
+  "covers": "Arbitrum에 스테이킹한 WOO, 받지 않은 보상, 볼트에서 정산을 마치고 기다리는 ETH",
+  "summary": "WOOFi(Arbitrum)에 스테이킹한 WOO, 받지 않은 USDC 보상, ETH 볼트에서 정산은 끝났지만 받아 가지 않은 돈: 공식 사이트에서 세 번만 누르면 돼요. 하나하나가 일반 거래이고, 돈은 곧바로 내 지갑으로 돌아와요.",
+  "facts": [
+    ["거래 수", "1–3건(가진 자산에 따라 달라요). 모두 일반 거래이고, 승인은 없어요"],
+    ["수수료", "세 건 합쳐 약 0.00002 ETH(몇 센트)이고, 지갑에 있는 Arbitrum의 ETH에서 나가요"],
+    ["시간", "약 5분. 정산을 기다릴 필요가 없어요"],
+    ["필요한 것", "지갑에 Arbitrum의 ETH가 0.0002 ETH 이상 있어야 해요. 그보다 적으면 공식 사이트에서 다음으로 넘어갈 수 없어요"]
+  ],
+  "chips": ["약 5분", "거래 1–3건, 승인 없음", "수수료 몇 센트"],
+  "support": {
+    "label": "WOOFi 공식 Discord",
+    "note": "WOOFi 사이트 맨 아래에 나온 공식 채널은 Discord와 X(@_WOOFi)예요. WOOFi는 먼저 DM을 보내지 않아요. DM을 보내는 \"고객 지원\"은 모두 사기꾼이에요."
+  },
+  "official": [{"label": "WOOFi 공식 사이트"}],
+  "vars": {
+    "addrShort": "내 주소",
+    "woo": "내가 스테이킹한 WOO",
+    "rewards": "아직 받지 않은 보상",
+    "eth": "볼트에서 받을 수 있는 ETH"
+  },
+  "pro": [
+    "**경로**: woofi.com/stake → 보상 **Claim** → 전부 **Unstake** → 맨 아래 **Earn** → My vaults → Arbitrum의 ETH 카드 → WITHDRAW 탭 → Available for Withdrawals 옆의 **WITHDRAW**.",
+    "**거래 세 건**: claimRewards → 0xa9E2…24Fb, unstake(전부) → 0x2CFa…d8e2, withdraw → 0xE77A…Ad6a. 모두 전송 금액이 0 ETH이고, 승인도 메시지 서명도 필요 없어요.",
+    "**내 숫자**: 보상 받기 {{rewards}}, 스테이킹 해제 {{woo}} WOO, 볼트에서 받기 {{eth}} ETH.",
+    "**주의할 점**: ‘Compound’나 ‘auto-compound’는 누르지 마세요. 볼트에서는 큰 버튼 말고 작은 ‘WITHDRAW’를 누르세요. Arbitrum의 ETH가 0.0002 ETH보다 적으면 공식 사이트에서 다음으로 넘어갈 수 없어요."
+  ],
+  "done": {
+    "where": "내 지갑의 Arbitrum 네트워크에",
+    "from": "보낸 곳은 WOOFi의 공식 컨트랙트",
+    "look": "어디서 보나요: 지갑 앱 → Assets(자산), 네트워크는 Arbitrum으로."
+  },
+  "screens": {
+    "perps": {"img": "perps-1-en.webp", "name": "가격 차트 거래 페이지", "features": ["페이지 가운데를 큰 캔들 가격 차트가 채우고 있어요", "왼쪽 위에 ETH, 그 아래에 100x", "차트 위에 탭 세 개: Chart / Trades / Data"], "do": "여기는 스테이킹 페이지가 아니라 WOOFi의 무기한 선물 거래 페이지예요. 아래 그림 두 장을 따라 돌아가세요. 왼쪽 위에 Spot / Perps 전환 버튼이 있고 아래쪽 막대에 Stake가 있으면 제대로 온 거예요. 오른쪽 위에 내 주소가 보이면 계속하고, Connect Wallet이 보이면 다시 연결하세요.", "images": [{"src": "perps-1-en.webp", "caption": "① 왼쪽 위의 세 줄 아이콘을 누르세요"}, {"src": "perps-2-en.webp", "caption": "② **Stake**를 누르세요"}]},
+    "home": {"name": "WOOFi 소개 페이지(LAUNCH APP 버튼이 있음)", "features": ["큰 제목: SWAP AND EARN ON REAL-WORLD ASSETS", "가운데에 주황색 LAUNCH APP 버튼", "더 아래에 Spot volume, Perps volume 같은 큰 숫자"], "do": "여기는 스테이킹 페이지가 아니라 WOOFi의 소개 페이지예요. 아래 그림 세 장을 따라 돌아가세요. **LAUNCH APP**을 누르고(먼저 가격 차트 거래 페이지가 열려요), 왼쪽 위의 세 줄 아이콘 → **Stake**를 누르세요. 오른쪽 위에 내 주소가 보이면 계속하고, Connect Wallet이 보이면 다시 연결하세요.", "images": [{"src": "home-launch.webp", "caption": "① 가운데의 주황색 **LAUNCH APP**을 누르세요"}, {"src": "perps-1-en.webp", "caption": "① 가격 차트 페이지에서 왼쪽 위의 세 줄 아이콘을 누르세요"}, {"src": "perps-2-en.webp", "caption": "② **Stake**를 누르세요"}]},
+    "stake-new": {"name": "스테이킹 페이지, 지갑 연결 전", "features": ["왼쪽 위에 Spot / Perps 전환 버튼", "위쪽에 Weekly rewards", "주황색 Connect Wallet 버튼"], "do": "스테이킹 페이지가 맞아요. 아직 연결만 안 했을 뿐이에요. 2단계대로 지갑을 연결하세요."},
+    "wallets": {"name": "지갑을 고르라고 해요", "features": ["제목이 Connect your wallet", "지갑 아이콘이 한 줄로: Detected Wallet, Binance, Coinbase Wallet…", "맨 아래에 powered by thirdweb"], "do": "지갑 선택 화면이에요. **Detected Wallet**을 고르세요. Binance 앱에서는 **Binance**를 골라도 돼요. 지갑이 연결을 요청하고 그 요청이 woofi.com에서 온 것이면 ‘Connect’(연결)를 누르세요."},
+    "networks": {"name": "네트워크를 고르라고 해요", "features": ["제목이 Switch Network", "Mainnet 아래에 네트워크가 두 열로: Ethereum, Arbitrum, Base…", "오른쪽 위에 ×"], "do": "네트워크 메뉴예요. **Arbitrum**을 고르고 지갑에서 네트워크 전환을 확인하세요."},
+    "stake": {"name": "스테이킹 페이지, 지갑 연결됨", "features": ["Stake / Unstake 탭, Stake가 주황색", "USDC reward와 XP", "Compound 옆에 주황색 Claim 버튼"], "do": "스테이킹 페이지이고 지갑도 연결됐어요. 아래 버튼을 눌러 필요한 단계로 가서, 그 단계의 그림과 확인 카드를 따라 하세요. 이 페이지의 버튼은 아직 누르지 마세요."},
+    "unstake": {"name": "Unstake 탭", "features": ["Stake / Unstake 탭, Unstake가 주황색", "0 WOO가 표시된 입력칸, 그 오른쪽에 UNSTAKE 버튼", "Stake 탭처럼 아래에 Claim과 Compound"], "do": "Unstake 탭이에요. 아래 버튼을 눌러 \"WOO 스테이킹 해제하기\" 단계로 가서, 그 단계의 그림과 확인 카드를 따라 하세요."},
+    "earn": {"name": "볼트 목록이 있는 Earn 페이지", "features": ["My earnings와 Holdings, Monthly Profits, Average APR", "탭 두 개: All vaults / My vaults", "Try \"USDT\"라고 적힌 검색창"], "do": "볼트 페이지예요. Arbitrum의 ETH 카드를 찾아 \"볼트에서 ETH 받기\" 단계를 따라 하세요."},
+    "vault": {"name": "볼트의 WITHDRAW 탭", "features": ["STEP 1, STEP 2라고 적힌 안내 두 덩어리", "회색 REQUEST WITHDRAWAL 버튼", "마지막 줄에 Available for Withdrawals, 그 오른쪽에 작은 WITHDRAW"], "do": "볼트의 출금 탭이에요. 아래 버튼을 눌러 \"볼트에서 ETH 받기\" 단계로 가서, 그 단계의 그림과 확인 카드를 따라 하세요."},
+    "domain": {"name": "주소창이 woofi.com이 아니에요", "do": "바로 페이지를 닫고 아무것도 서명하지 마세요. `https://woofi.com/stake`를 직접 입력하세요. 다른 사람이 보낸 링크는 누르지 마세요."},
+    "sign": {"name": "지갑이 메시지 서명이나 승인(Approve / Permit)을 요청해요", "do": "‘Reject’(거절)를 누르세요. 이 가이드의 모든 단계는 일반 거래예요. 메시지 서명도, 승인도 없어요. 페이지를 닫고 1단계로 돌아가 주소를 확인하세요."},
+    "blocked": {"name": "Blocked Address 메시지가 떠요", "do": "WOOFi가 제재 명단에 따라 이 주소를 막았어요. 이 가이드로는 도와드릴 수 없어요."},
+    "sorry": {"name": "WE'RE SORRY: 내 지역은 지원하지 않는다고 해요", "do": "여기서 멈추세요. WOOFi는 내 지역에서 서비스하지 않고, 이 가이드는 지역 제한을 우회하는 방법을 알려 드리지 않아요. WOOFi 공식 Discord에 문의할 수 있어요."}
+  },
+  "steps": {
+    "open": {
+      "title": "지갑 앱에서 공식 사이트 열기",
+      "items": [
+        "먼저 이 주소를 눌러 복사하세요: `https://woofi.com/stake`",
+        "아래는 Binance 지갑에서 하는 방법이에요. 한 번 누를 때마다 그림이 한 장씩 있어요. 그림은 중국어 Binance 앱 화면이지만, 영어 앱도 배치가 같아요. 다른 지갑이라면 그 지갑의 DApp 브라우저에 이 주소를 붙여 넣으세요."
+      ],
+      "images": [
+        "① Binance 앱을 열고 위쪽의 **Wallet**(지갑)을 누르세요(그림의 잔액은 가렸어요)",
+        "② 아래쪽의 **Discover**(탐색)를 누르세요. 왼쪽 위에 선택된 지갑이 이 돈이 들어 있는 지갑이어야 해요(예: Wallet1). 아니면 눌러서 바꾸세요",
+        "③ 위쪽의 검색창(Search DApp or enter URL)을 누르세요",
+        "④ iPhone에서는 붙여 넣기를 허용할지 물어요. **Allow Paste**(붙여넣기 허용)를 누르세요(Android 휴대폰은 이 단계가 없어요)",
+        "⑤ 검색창을 길게 누른 뒤 **Paste**(붙여넣기)를 누르세요",
+        "⑥ 아래에 나타나는 줄을 누르세요: **woofi.com/stake**",
+        "✗ History(방문 기록) 아래의 WOOFi는 누르지 마세요. 홈페이지만 저장돼 있어서 소개 페이지가 열리고, 세 번을 더 눌러야 해요",
+        "⑦ 바로 스테이킹 페이지가 열려요. 맨 위가 **woofi.com**인지 확인하세요. 글자가 하나 더 있거나 점이 빠졌다면 멈추세요"
+      ],
+      "situations": {
+        "search-instead": {"see": "주소를 입력하면 검색 결과가 나와요", "do": "`https://`까지 넣어 전체 주소를 입력하세요: `https://woofi.com/stake`."},
+        "restricted": {"see": "WE'RE SORRY 메시지가 내 지역은 지원하지 않는다고 해요", "do": "여기서 멈추세요. WOOFi는 내 지역에서 서비스하지 않고, 이 가이드는 지역 제한을 우회하는 방법을 알려 드리지 않아요. WOOFi 공식 Discord(아래 참고)에 문의할 수 있어요."},
+        "not-sure": {"see": "공식 사이트가 맞는지 확실하지 않아요", "do": "주소창을 보세요. 도메인이 정확히 **woofi.com**이어야 해요. 아니면 페이지를 닫고 주소를 직접 입력하세요. 다른 사람이 보낸 링크는 누르지 마세요."},
+        "old-domain": {"see": "북마크에 fi.woo.org가 저장돼 있어요", "do": "WOOFi의 예전 주소이고, 지금은 woofi.com으로 넘어가요. 주소창에 마지막으로 보이는 주소를 기준으로 하세요: woofi.com."},
+        "history": {"see": "History 아래의 WOOFi를 눌렀더니 소개 페이지가 나왔어요(큰 SWAP AND EARN 제목, LAUNCH APP 버튼)", "do": "가운데의 주황색 **LAUNCH APP**을 누르세요. 먼저 가격 차트 거래 페이지가 열리면, 왼쪽 위의 세 줄 아이콘 → **Stake**를 눌러 스테이킹 페이지로 가세요. 다음에는 History 대신 전체 주소를 붙여 넣으세요."},
+        "no-paste": {"see": "검색창을 길게 눌러도 Paste가 안 나와요", "do": "이 페이지로 돌아와 주소를 다시 눌러 복사하세요. iPhone에서는 물어보면 ‘Allow Paste’를 누르세요. 그래도 안 되면 `https://woofi.com/stake`를 손으로 입력하세요."}
+      }
+    },
+    "connect": {
+      "title": "지갑을 연결하고 Arbitrum으로 전환하기",
+      "note": "연결만 해요. 서명도 없고, 돈도 움직이지 않아요",
+      "images": [
+        "① **Connect Wallet**을 누르세요(오른쪽 위의 버튼도 돼요)",
+        "① **Detected Wallet**을 고르세요. 지금 쓰고 있는 앱의 지갑이에요 ② Binance 앱에서는 **Binance**를 골라도 돼요. 지갑이 연결을 요청하고 그 요청이 woofi.com에서 온 것이면 ‘Connect’를 누르세요",
+        "① 오른쪽 위에 내 주소가 보여요(스크린샷에서는 가렸어요). {{addrShort}} 그대로여야 해요 ② 이 아이콘이 현재 네트워크예요. 누르세요",
+        "① **Arbitrum**을 고르고 지갑에서 네트워크 전환을 확인하세요. 이미 Arbitrum이면(이름 뒤에 작은 점) 오른쪽 위의 ×로 메뉴를 닫으세요"
+      ],
+      "items": ["✗ 연결할 때 WE'RE SORRY 메시지가 내 지역은 지원하지 않는다고 하면 여기서 멈추세요. 이 가이드는 지역 제한을 우회하는 방법을 알려 드리지 않아요."],
+      "situations": {
+        "perps-page": {"see": "연결한 뒤 스테이킹 페이지가 아니라 가격 차트 거래 페이지가 보여요", "do": "WOOFi의 무기한 선물 거래 페이지예요. 왼쪽 위의 세 줄 아이콘 → **Stake**를 눌러 스테이킹 페이지로 돌아가세요. 오른쪽 위에 Connect Wallet이 보이면 다시 연결하세요."},
+        "no-popup": {"see": "Connect Wallet을 눌렀는데 지갑이 연결을 묻지 않아요", "do": "지갑 앱 자체의 DApp 브라우저에서 페이지를 여세요(1단계). Detected Wallet을 눌러도 반응이 없으면 페이지를 다시 열고 Binance를 눌러 보세요."},
+        "wrong-address": {"see": "오른쪽 위의 주소가 돈이 들어 있는 주소가 아니에요", "do": "지갑 앱에서 이 돈이 들어 있는 지갑으로 바꾼 뒤 다시 연결하세요. 주소가 맞지 않으면 계속하지 마세요."},
+        "sign-on-connect": {"see": "연결하는 중에 지갑이 메시지 서명을 요청해요", "do": "‘Reject’(거절)를 누르고 페이지를 닫은 뒤 주소를 다시 확인하세요. WOOFi는 연결할 때 서명이 필요 없어요(사이트 코드에 서명 요청이 없어요)."},
+        "wrong-network": {"see": "페이지 위쪽에 Wrong Network라고 나와요", "do": "오른쪽 위의 네트워크 아이콘을 누르고 **Arbitrum**을 고른 뒤 지갑에서 전환을 확인하세요."},
+        "blocked-address": {"see": "Blocked Address 메시지가 떠요", "do": "WOOFi가 제재 명단에 따라 이 주소를 막았어요. 이 가이드로는 도와드릴 수 없어요."}
+      }
+    },
+    "claim": {
+      "title": "보상 받기",
+      "whenText": "받지 않은 보상이 있을 때만 필요해요",
+      "note": "거래 1",
+      "milestone": "보상 받기",
+      "detour": {
+        "see": "가격 차트가 보이나요(왼쪽 위에 세 줄 아이콘)? 두 번만 누르면 스테이킹 페이지로 돌아가요",
+        "thumb": "perps-1-en.webp",
+        "images": [
+          {"src": "perps-1-en.webp", "caption": "① 왼쪽 위의 세 줄 아이콘을 누르세요"},
+          {"src": "perps-2-en.webp", "caption": "② **Stake**를 눌러 스테이킹 페이지로 돌아간 뒤 아래를 이어서 하세요"}
+        ]
+      },
+      "images": [
+        "Stake / Unstake 칸까지 아래로 내리세요. ① **Claim**을 누르세요(위의 USDC reward가 아직 받지 않은 보상이에요. 스크린샷에서는 가렸고, 약 {{rewards}} 정도여야 해요) ✗ ‘Compound’는 누르지 마세요. 보상을 WOO로 바꿔 다시 스테이킹해서, 원하는 것과 반대가 돼요"
+      ],
+      "check": {
+        "title": "확정하기 전에 3가지를 확인하세요",
+        "lead": "‘Claim’을 누르면 지갑이 거래 확인을 요청해요(Binance 지갑에서는 제목이 Contract call이에요). 이 목록과 비교해, 맞는 항목을 하나씩 누르세요.",
+        "skip": "이미 받았나요(USDC reward가 0)? 이 단계는 건너뛰세요",
+        "confirm": [
+          {"title": "요청이 woofi.com에서 왔고, 네트워크는 Arbitrum이에요", "sub": "Binance 지갑에는 Arbitrum One으로 표시돼요. 사이트 주소에 글자가 하나 더 있거나 점이 빠졌다면 멈추세요"},
+          {"title": "컨트랙트가 0xa9E2…24Fb(WOOFi의 스테이킹 컨트랙트)예요", "sub": "Binance 지갑에서는 contract 줄에 있어요(다른 지갑에서는 To일 수 있어요). 앞 6자리와 뒤 4자리가 같아야 해요"},
+          {"title": "작은 네트워크 수수료 말고는 나가는 게 없어요", "sub": "Binance 지갑에는 받을 금액이 플러스로 표시돼요: 내 보상(약 {{rewards}}). 네트워크 수수료는 한 센트도 안 돼요"}
+        ],
+        "reject": ["어떤 토큰이든 보내라고 해요(마이너스 금액, 또는 send나 pay라는 말)", "Approve나 Permit이라고 나와요", "메시지 서명(Sign)을 요청해요", "woofi.com에서 온 요청이 아니에요"],
+        "normal": [
+          "동작 줄에는 보통 claimRewards라고 나와요",
+          "받을 금액에 약간의 USDC.e와 ARB도 함께 나와요. 여러 보상 토큰을 한 번에 지급하기 때문이에요(Binance 기록에는 잔액 변동이 3건 표시돼요)",
+          "네트워크 수수료는 Arbitrum의 ETH에서 나가고, 한 센트도 안 돼요",
+          "지갑이 컨트랙트 호출이라고 경고할 수 있어요. 사이트와 주소가 둘 다 맞으면 계속해도 괜찮아요"
+        ]
+      },
+      "situations": {
+        "perps-page": {"see": "가격 차트 페이지이고 Claim이 없어요", "do": "WOOFi의 무기한 선물 거래 페이지에 있어요. 왼쪽 위의 세 줄 아이콘 → **Stake**를 누르세요. Claim은 스테이킹 페이지에 있어요."},
+        "cancelled": {"see": "페이지에 Cancelled · User denied transaction signature가 나와요", "do": "지갑에서 ‘Reject’를 눌러서 아무것도 움직이지 않았어요. 다시 확인한 뒤 ‘Claim’을 한 번 더 누르세요."},
+        "insufficient-gas": {"see": "버튼에 INSUFFICIENT GAS라고 나와요", "do": "공식 사이트를 쓰려면 지갑에 Arbitrum의 ETH가 0.0002 ETH 이상 있어야 해요. 먼저 Arbitrum 네트워크로 이 지갑에 ETH를 조금 보낸 뒤(0.0005면 충분해요) 돌아오세요."},
+        "compound-clicked": {"see": "실수로 Compound를 눌렀어요", "do": "보상이 WOO로 바뀌어 스테이킹에 더해졌어요. 잃은 건 없어요. 다음 단계에서 스테이킹을 해제할 때 나머지와 함께 나와요."},
+        "auto-compound": {"see": "거래가 !COMPOUND로 실패했어요", "do": "자동 복리(Auto-compound)가 켜져 있어요. 켜져 있는 동안에는 보상을 받을 수 없고, 켠 뒤 7일 동안은 끌 수 없어요. 오른쪽 위의 ‘막혔나요?’를 눌러 내 상황을 확인하세요. 확실하지 않으면 WOOFi 공식 Discord에 문의하세요."},
+        "wrong-to": {"see": "요청이 0xa9E2…24Fb가 아닌 다른 주소로 가요", "do": "바로 ‘Reject’(거절)를 누르세요."}
+      }
+    },
+    "unstake": {
+      "title": "WOO 스테이킹 해제하기",
+      "whenText": "스테이킹한 WOO가 있을 때만 필요해요",
+      "note": "거래 2",
+      "milestone": "스테이킹 해제",
+      "detour": {
+        "see": "가격 차트가 보이나요(왼쪽 위에 세 줄 아이콘)? 두 번만 누르면 스테이킹 페이지로 돌아가요",
+        "thumb": "perps-1-en.webp",
+        "images": [
+          {"src": "perps-1-en.webp", "caption": "① 왼쪽 위의 세 줄 아이콘을 누르세요"},
+          {"src": "perps-2-en.webp", "caption": "② **Stake**를 눌러 스테이킹 페이지로 돌아간 뒤 아래를 이어서 하세요"}
+        ]
+      },
+      "images": [
+        "① 스테이킹 페이지에서 **Unstake** 탭을 누르세요",
+        "② 입력칸 오른쪽의 숫자(스테이킹한 WOO 전부, 스크린샷에서는 가렸어요)를 누르세요. 전체 수량이 채워져요",
+        "③ 수량이 채워지면(약 {{woo}}, 공식 사이트에는 소수점 아래가 몇 자리 더 나와요) **UNSTAKE**를 누르세요",
+        "④ Unstake Confirmation에서 수량을 확인하고 **UNSTAKE**를 누르세요. 지갑이 거래 확인을 요청하면 아래 카드와 비교하세요 ! XP(포인트)가 사라진다고 나와요. XP는 거래할 수 없고, 돌려받는 돈에는 영향이 없어요"
+      ],
+      "check": {
+        "title": "확정하기 전에 3가지를 확인하세요",
+        "lead": "‘UNSTAKE’를 누르면 지갑이 거래 확인을 요청해요(Binance 지갑에서는 제목이 Contract call이에요). 이 목록과 비교해, 맞는 항목을 하나씩 누르세요.",
+        "skip": "스테이킹한 WOO가 없나요? 이 단계는 건너뛰세요",
+        "confirm": [
+          {"title": "요청이 woofi.com에서 왔고, 네트워크는 Arbitrum이에요", "sub": "Binance 지갑에는 Arbitrum One으로 표시돼요. 사이트 주소에 글자가 하나 더 있거나 점이 빠졌다면 멈추세요"},
+          {"title": "컨트랙트가 0x2CFa…d8e2(WOOFi의 스테이킹 컨트랙트)예요", "sub": "보상 받기 단계와는 다른 주소예요. 정상이에요"},
+          {"title": "작은 네트워크 수수료 말고는 나가는 게 없어요", "sub": "Binance 지갑에는 받을 금액이 플러스로 표시돼요: 돌아오는 WOO(약 {{woo}}). 네트워크 수수료는 한 센트도 안 돼요"}
+        ],
+        "reject": ["어떤 토큰이든 보내라고 해요(마이너스 금액, 또는 send나 pay라는 말)", "Approve나 Permit이라고 나와요", "메시지 서명(Sign)을 요청해요", "woofi.com에서 온 요청이 아니에요"],
+        "normal": [
+          "동작 줄에는 보통 unstake라고 나와요",
+          "스테이킹 해제에는 잠금 기간도 수수료도 없어요"
+        ]
+      },
+      "situations": {
+        "amount-not-full": {"see": "수량이 전부가 아니에요", "do": "입력칸 오른쪽의 숫자를 눌러 전체 수량을 채우세요. 직접 입력하면 조금 남기 쉬워요."},
+        "insufficient-balance": {"see": "버튼에 INSUFFICIENT BALANCE라고 나와요", "do": "스테이킹한 수량보다 많이 입력했어요. 입력칸 오른쪽의 숫자를 눌러 다시 채우세요."},
+        "xp": {"see": "확인 화면에 XP가 사라진다고 나와요", "do": "XP는 WOOFi의 포인트 제도예요. 거래할 수 없고, 사라져도 돌려받는 돈에는 영향이 없어요."},
+        "cancelled": {"see": "페이지에 Cancelled · User denied transaction signature가 나와요", "do": "지갑에서 ‘Reject’를 눌러서 아무것도 움직이지 않았어요. 다시 확인한 뒤 ‘UNSTAKE’를 한 번 더 누르세요."},
+        "wrong-to": {"see": "요청이 0x2CFa…d8e2가 아닌 다른 주소로 가요", "do": "바로 ‘Reject’(거절)를 누르세요."}
+      }
+    },
+    "vault": {
+      "title": "볼트에서 ETH 받기",
+      "whenText": "ETH 볼트에 정산된 돈이 기다리고 있을 때만 필요해요",
+      "note": "거래 3",
+      "milestone": "볼트",
+      "detour": {
+        "see": "가격 차트가 보이나요(왼쪽 위에 세 줄 아이콘)? 두 번만 누르면 Earn 페이지로 가요",
+        "thumb": "perps-1-en.webp",
+        "images": [
+          {"src": "perps-1-en.webp", "caption": "① 왼쪽 위의 세 줄 아이콘을 누르세요"},
+          {"src": "perps-earn-en.webp", "caption": "② **Earn**을 누르세요. Earn 페이지에 들어가면 아래 그림 2부터 이어서 하세요"}
+        ]
+      },
+      "images": [
+        "① 스테이킹 페이지 맨 아래에서 **Earn**을 누르세요",
+        "② 조금 아래로 내려 **My vaults**(돈을 넣은 볼트만 보여요)를 누르세요",
+        "③ Arbitrum의 **ETH** 카드를 누르세요(My Deposits가 내 금액이에요. 스크린샷에서는 가렸어요)",
+        "④ 카드가 DEPOSIT 탭으로 열려요. 그 옆의 **WITHDRAW** 탭을 누르세요",
+        "⑤ 마지막 줄 Available for Withdrawals까지 내려가서(받을 수 있는 금액, 스크린샷에서는 가렸어요. 페이지에는 소수점 4자리까지, 약 {{eth}} ETH로 나와요) 그 오른쪽의 **WITHDRAW**를 누르세요 ✗ 0으로 표시된 칸 두 개, 주황색 UNSTAKE, 회색 REQUEST WITHDRAWAL은 건드리지 마세요"
+      ],
+      "items": [
+        "! 정산된 돈은 지갑으로 자동으로 오지 않아요. 직접 눌러야 하고, 많은 사람이 놓치는 단계가 바로 여기예요."
+      ],
+      "check": {
+        "title": "확정하기 전에 3가지를 확인하세요",
+        "lead": "‘WITHDRAW’를 누르면 지갑이 거래 확인을 요청해요(Binance 지갑에서는 제목이 Contract call이에요). 이 목록과 비교해, 맞는 항목을 하나씩 누르세요.",
+        "skip": "볼트에 기다리는 돈이 없나요? 이 단계는 건너뛰세요",
+        "confirm": [
+          {"title": "요청이 woofi.com에서 왔고, 네트워크는 Arbitrum이에요", "sub": "Binance 지갑에는 Arbitrum One으로 표시돼요. 사이트 주소에 글자가 하나 더 있거나 점이 빠졌다면 멈추세요"},
+          {"title": "컨트랙트가 0xE77A…Ad6a(WOOFi의 볼트 출금 컨트랙트)예요", "sub": "세 단계가 각각 다른 주소를 써요. 정상이에요"},
+          {"title": "작은 네트워크 수수료 말고는 나가는 게 없어요", "sub": "Binance 지갑에는 받을 금액이 플러스로 표시돼요: 나오는 ETH(약 {{eth}}). 네트워크 수수료는 한 센트도 안 돼요"}
+        ],
+        "reject": ["어떤 토큰이든 보내라고 해요(마이너스 금액, 또는 send나 pay라는 말)", "Approve나 Permit이라고 나와요", "메시지 서명(Sign)을 요청해요", "woofi.com에서 온 요청이 아니에요"],
+        "normal": [
+          "동작 줄에는 withdraw라고 나오고, 원본 데이터는 0x3ccfd60b로 시작해요",
+          "받는 것은 WETH가 아니라 네이티브 ETH예요. Binance 기록에는 redemption(상환)으로 나와요"
+        ]
+      },
+      "situations": {
+        "no-available": {"see": "Available for Withdrawals가 0이에요", "do": "이미 받았거나, 아직 정산되지 않았어요. 오른쪽 위의 ‘막혔나요?’를 눌러 실시간으로 확인하세요."},
+        "big-button": {"see": "큰 REQUEST WITHDRAWAL 버튼이 눌리지 않아요", "do": "원래 그래요. 그 버튼은 필요 없어요. Available for Withdrawals 오른쪽의 작은 **WITHDRAW**를 누르세요."},
+        "shares-left": {"see": "My Deposits가 Available for Withdrawals보다 많아요", "do": "볼트에 있는 돈 중 일부는 아직 출금 요청을 하지 않았어요. 지금 이 가이드는 정산돼서 받기만 하면 되는 돈만 다뤄요. 나머지는 WITHDRAW 탭의 Instant Withdraw(바로 들어오고 수수료 1%)나 REQUEST WITHDRAWAL(무료지만 다음 화요일까지 기다려야 해요)을 쓰세요."},
+        "cancelled": {"see": "페이지에 Cancelled · User denied transaction signature가 나와요", "do": "지갑에서 ‘Reject’를 눌러서 아무것도 움직이지 않았어요. 다시 확인한 뒤 ‘WITHDRAW’를 한 번 더 누르세요."},
+        "wrong-to": {"see": "요청이 0xE77A…Ad6a가 아닌 다른 주소로 가요", "do": "바로 ‘Reject’(거절)를 누르세요."}
+      }
+    },
+    "arrive": {
+      "title": "입금 확인하기",
+      "milestone": "입금",
+      "check": {
+        "title": "입금 확인하기",
+        "rows": [
+          ["걸리는 시간", "거래가 하나씩 확정되고 몇 초 뒤"],
+          ["어디서 보나요", "지갑 앱 → Assets(자산), 네트워크는 Arbitrum으로"],
+          ["무엇이 보여야 하나요", "약 {{woo}} WOO, {{rewards}}, {{eth}} ETH만큼 늘어나요(이 중 가지고 있던 것만)"],
+          ["온체인 기록", "WOO는 WOOFi의 스테이킹 컨트랙트 0x2CFa…d8e2에서, 보상 토큰은 WOOFi의 보상 컨트랙트에서, ETH는 WOOFi의 볼트 출금 컨트랙트 0xE77A…Ad6a에서 와요. 받는 쪽은 모두 내 주소예요"],
+          ["들어오지 않았다면", "오른쪽 위의 ‘막혔나요?’를 눌러 실시간으로 확인하세요. 거래는 성공했는데 WOO가 안 보이면 지갑에서 토큰을 추가하세요"]
+        ],
+        "foot": "들어왔으면 끝이에요. WOO는 일반 토큰이라, 그대로 두거나 지갑에서 교환하면 돼요"
+      },
+      "situations": {
+        "no-woo": {"see": "지갑에 WOO가 안 보여요", "do": "새 토큰을 알아서 보여 주지 않는 지갑도 있어요. 지갑에서 WOO(Arbitrum)를 검색하거나, 컨트랙트 주소 `0xcafcd85d8ca7ad1e1c6f82f651fa15e33aefd07b`로 추가하세요."},
+        "eth-not-weth": {"see": "들어온 게 WETH가 아니라 ETH예요", "do": "정상이에요. 볼트 출금 컨트랙트가 WETH를 풀어 네이티브 ETH로 보내 줘요."},
+        "want-usdc": {"see": "WOO를 USDC로 바꾸고 싶어요", "do": "WOO는 이미 내 지갑에 있으니 지갑에 들어 있는 스왑 기능을 쓰면 돼요. 이 가이드는 교환 방법을 다루지 않아요. 교환하기 전에 시세와 슬리피지를 확인하세요."}
+      }
+    }
+  },
+  "sources": [
+    "WOOFi 문서 · Earn 볼트의 작동 방식",
+    "WOOFi 문서 · Arbitrum의 컨트랙트 주소",
+    "WOOFi 문서 보관본 · WOO 스테이킹(원래 페이지는 내려갔어요)",
+    "Chainlink · WOO/USD 가격 피드(Arbitrum)",
+    "WOOFi 공식 Discord"
+  ]
+}

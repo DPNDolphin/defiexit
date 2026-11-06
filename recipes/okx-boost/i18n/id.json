@@ -1,0 +1,134 @@
+{
+  "title": "Ambil kembali dana terkunci OKX Boost ke dompet Anda",
+  "short": "OKX Boost ke dompet Anda",
+  "verified": "Diuji pada Oktober 2026 dengan akun penulis sendiri di aplikasi OKX, mengikuti panduan ini: alamat interaksi, jaringan, dan jumlah di halaman konfirmasi semuanya cocok dengan kartu periksa, dan OKB asli masuk beberapa detik kemudian. Kode sumber kontrak penguncian sudah terverifikasi di explorer OKX. Kontrak ini tidak punya admin, hanya alamat yang mengunci token yang bisa menariknya, dan dana hanya kembali ke alamat itu",
+  "covers": "OKB, USDT0, dan USDG yang dikunci di X Layer untuk Plasma X Launch OKX Boost",
+  "summary": "Untuk ikut Plasma X Launch OKX Boost, Anda harus mengunci token di X Layer (0.5 OKB, 200 USDT0, atau 200 USDG). Token itu tidak kembali dengan sendirinya, dan setahun kemudian lebih dari seribu alamat masih belum menariknya. Buka halaman kampanye di aplikasi OKX, ketuk Unstake sekali, dan dana kembali ke dompet Anda.",
+  "facts": [
+    ["Transaksi", "1 transaksi biasa. Tanpa izin, tanpa pesan yang perlu ditandatangani"],
+    ["Biaya", "Di bawah $0.01, dibayar dari OKB di dompet Anda di X Layer"],
+    ["Waktu", "Sekitar 2 menit. Dana masuk beberapa detik setelah Anda konfirmasi"],
+    ["Yang Anda perlukan", "Aplikasi OKX, sudah diganti ke akun yang mengunci token, dan sedikit OKB di X Layer untuk biaya"]
+  ],
+  "chips": ["Sekitar 2 menit", "1 transaksi, tanpa izin", "Biaya di bawah satu sen"],
+  "support": {
+    "label": "Pusat Bantuan OKX",
+    "url": "https://www.okx.com/help",
+    "note": "OKX tidak pernah DM Anda lebih dulu. Siapa pun yang mengirimi Anda pesan dan mengaku sebagai CS adalah penipu."
+  },
+  "official": [{"label": "Halaman kampanye OKX Boost", "url": "https://web3.okx.com/boost/x-launch/plasma"}],
+  "vars": {
+    "addrShort": "alamat Anda sendiri",
+    "got": "token yang Anda kunci (biasanya 0.5 OKB)",
+    "sym": "token yang Anda kunci"
+  },
+  "pro": [
+    "**Rute**: aplikasi OKX, Web3 di bagian atas → tab jelajah di bagian bawah (ikon kedua) → tempel `https://web3.okx.com/boost/x-launch/plasma` di kotak pencarian → hasil situs web pihak ketiga → **buka di aplikasi** saat diminta → gulir ke bawah ke detail staking → tombol unstake → konfirmasi.",
+    "**Satu transaksi**: `unlock(bytes32 key, address token)` ke kontrak penguncian OKX Boost 0xDA63…FD2b. Mengirim 0 OKB, tanpa izin dan tanpa tanda tangan pesan. Key-nya `lp:175` yang diisi spasi sampai 32 byte; OKB asli ditulis sebagai token 0xEeee…EEeE.",
+    "**Angka Anda**: {{got}}.",
+    "**Jebakan**: versi web tidak bisa terhubung ke dompet di dalam aplikasi OKX (muncul pesan dompet tidak didukung), jadi selalu pilih membuka halaman di aplikasi saat diminta. Anda perlu sedikit OKB di X Layer untuk biaya. Kontraknya tidak punya tenggat: dana bisa ditarik kapan saja setelah unlock."
+  ],
+  "done": {
+    "where": "di jaringan X Layer di dompet Anda",
+    "from": "Dikirim dari kontrak penguncian OKX Boost",
+    "look": "Tempat melihat: di aplikasi OKX, buka token yang Anda kunci (biasanya OKB) di dompet dan cek riwayat transaksinya."
+  },
+  "screens": {
+    "web": {"name": "Versi web halaman kampanye (tombol Connect wallet hitam di bagian bawah)", "features": ["Bilah alamat di atas bertuliskan web3.okx.com", "Plasma X Launch, dengan 15,000,000 XPL dalam huruf besar di bawahnya", "Tombol Connect wallet hitam di paling bawah"], "do": "Ini versi web, yang tidak bisa terhubung ke dompet Anda di dalam aplikasi OKX. Jangan ketuk Connect wallet: ketuk × di kiri atas untuk menutupnya, tempel lagi tautannya seperti di langkah 1, dan saat ditanya apakah memakai versi aplikasi, ketuk tombol pertama yang tebal.", "images": [{"src": "ok-web.webp", "caption": "① Ketuk **×** di kiri atas ✗ Jangan ketuk Connect wallet"}]},
+    "jump": {"name": "Pop-up yang menawarkan versi aplikasi", "features": ["Pop-up putih di tengah halaman yang menjadi abu-abu", "Isinya menyarankan memakai versi aplikasi agar lebih lancar", "Dua tombol: yang tebal di atas, Cancel di bawahnya"], "do": "Ketuk tombol tebal di atas. Tombol itu membuka halaman kampanye milik aplikasi OKX sendiri. Jangan ketuk Cancel: Anda akan tetap di versi web, yang tidak bisa terhubung ke dompet."},
+    "unsupported": {"name": "Pesan bahwa dompet tidak didukung", "features": ["Panel di bagian bawah dengan ikon peringatan oranye", "Isinya meminta Anda beralih ke ekstensi OKX Wallet untuk ikut kampanye", "Dua tombol: Cancel dan tombol hijau untuk ganti dompet"], "do": "Anda mengetuk Connect wallet di versi web, yang tidak berfungsi di dalam aplikasi OKX. Ketuk **Cancel**, tutup halaman dengan × di kiri atas, buka lagi seperti di langkah 1, dan pilih versi aplikasi saat diminta. Jangan ketuk tombol ganti dompet.", "images": [{"src": "ok-unsupported.webp", "caption": "① Ketuk **Cancel** ✗ Jangan ketuk tombol hijau ganti dompet"}]},
+    "sign": {"name": "Dompet meminta Anda menandatangani pesan, atau memberi izin (Approve / Permit)", "do": "Ketuk **Reject** (Tolak). Panduan ini hanya satu transaksi biasa: tanpa tanda tangan pesan, tanpa izin. Versi web web3.okx.com meminta tanda tangan untuk login, tapi panduan ini tidak memakai versi web: tutup halaman, buka lagi seperti di langkah 1, dan pilih versi aplikasi saat diminta.", "images": [{"src": "ok-sign.webp", "caption": "① Ketuk **Reject** (Tolak) ✗ Jangan konfirmasi"}]},
+    "wrong-to": {"name": "Alamat interaksi bukan 0xDA63E89d…2C0795FD2b, atau jumlahnya bertanda minus", "do": "Tolak. Panduan ini hanya pernah mengirim ke kontrak penguncian OKX Boost 0xDA63E89dd0632Db71c89c031de11542C0795FD2b, dan Anda yang menerima dana (jumlah plus): panduan ini tidak pernah meminta Anda mengirim token keluar. Tutup halaman dan mulai lagi dari langkah 1."},
+    "domain": {"name": "Bilah alamat tidak bertuliskan web3.okx.com", "do": "Segera tutup halaman dan jangan tanda tangani apa pun. Tempel sendiri `https://web3.okx.com/boost/x-launch/plasma`; jangan ketuk tautan yang dikirim orang lain."}
+  },
+  "steps": {
+    "open": {
+      "title": "Buka halaman kampanye di aplikasi OKX",
+      "items": [
+        "Pertama, ketuk tautan ini untuk menyalinnya: `https://web3.okx.com/boost/x-launch/plasma`",
+        "Di bawah ini langkah-langkahnya di aplikasi OKX, satu gambar untuk setiap ketukan. Kami menguji aplikasinya dalam bahasa Mandarin, jadi gambarnya berbahasa Mandarin. Jika aplikasi Anda memakai bahasa lain, misalnya bahasa Inggris, cari tombol yang fungsinya sesuai keterangan tiap gambar, dan berhenti jika Anda tidak menemukannya atau yang Anda lihat tidak cocok."
+      ],
+      "copy": ["https://web3.okx.com/boost/x-launch/plasma"],
+      "images": [
+        "① Membaca ini di dalam aplikasi OKX? Setelah tautan tersalin, ketuk **×** di kiri atas untuk menutup halaman, dan kembali setelah selesai. Membaca di browser lain? Cukup buka aplikasi OKX",
+        "② Pilih **Web3** di bagian atas ③ Ketuk tab jelajah, ikon kedua di bilah bawah. Jumlah di gambar disembunyikan; baris OKX Boost X Launch di bawah DeFi adalah dana terkunci ini",
+        "④ Ketuk kotak pencarian di bagian atas",
+        "⑤ Tekan lama kotak pencarian, lalu ketuk **Paste** (Tempel)",
+        "⑥ Ketuk hasil situs web pihak ketiga di bawahnya. Dompet melabeli setiap alamat web seperti ini; alamat sesudahnya harus diawali persis dengan **https://web3.okx.com/**",
+        "⑦ Muncul pop-up yang menawarkan versi aplikasi: ketuk tombol pertama yang tebal untuk membuka fitur ini di aplikasi. Bilah alamat di kotak kuning harus bertuliskan persis **web3.okx.com**, tanpa apa pun di depan atau belakangnya ✗ Jangan ketuk Cancel: versi web tidak bisa terhubung ke dompet di dalam aplikasi",
+        "⑧ Ini halaman kampanye milik aplikasi OKX sendiri. Kanan atas menampilkan akun saat ini, yang harus akun yang mengunci token"
+      ],
+      "situations": {
+        "web-page": {"see": "Yang terbuka versi web: bilah alamat bertuliskan web3.okx.com di atas dan tombol Connect wallet hitam di bawah", "do": "Versi web tidak bisa terhubung ke dompet di dalam aplikasi OKX. Jangan ketuk Connect wallet: tutup dengan × di kiri atas, tempel lagi tautannya, dan ketuk tombol tebal **buka di aplikasi** saat pop-up muncul."},
+        "no-dialog": {"see": "Pop-up yang menawarkan versi aplikasi tidak muncul", "do": "Dalam pengujian kami, pop-up itu selalu muncul. Jika tidak muncul, tutup halaman dengan × di kiri atas dan tempel lagi tautannya. Jika masih tidak berhasil, ketuk \"Ada kendala?\" di kanan atas dan kirimkan laporannya kepada kami."},
+        "unsupported": {"see": "Muncul pesan dompet tidak didukung dan Anda diminta beralih ke ekstensi OKX Wallet", "do": "Anda mengetuk Connect wallet di versi web. Ketuk **Cancel**, tutup halaman, buka lagi seperti di atas, dan pilih versi aplikasi saat diminta. Jangan ketuk tombol ganti dompet."},
+        "sign-login": {"see": "Permintaan tanda tangan dari web3.okx.com yang diawali Welcome to OKX Wallet", "do": "Itu versi web yang meminta Anda login, dan panduan ini tidak memerlukannya. Ketuk **Reject** (Tolak), tutup halaman, buka lagi seperti di atas, dan pilih versi aplikasi saat diminta."},
+        "third-party": {"see": "Hasil pencarian menyebutnya situs web pihak ketiga", "do": "Itu normal: dompet melabeli setiap alamat web seperti ini. Periksa alamat sesudahnya: harus diawali persis dengan **https://web3.okx.com/**, dengan garis miring tepat setelah okx.com dan tanpa sisipan apa pun di antaranya."},
+        "no-paste": {"see": "Menekan lama kotak pencarian tidak memunculkan Paste", "do": "Kembali ke halaman ini dan ketuk tautannya lagi untuk menyalin. Di iPhone, ketuk Allow Paste (Izinkan Tempel) jika diminta. Jika masih tidak bisa, ketik `https://web3.okx.com/boost/x-launch/plasma` secara manual."},
+        "wrong-account": {"see": "Akun di kanan atas bukan akun yang mengunci token", "do": "Kembali ke beranda dompet, ketuk segitiga kecil di samping nama akun dan ganti ke akun yang mengunci token (satu dompet OKX bisa berisi beberapa akun), lalu buka halamannya lagi. Di akun yang salah, Anda tidak akan menemukan detail staking."},
+        "extension": {"see": "Saya memakai ekstensi browser OKX Wallet di komputer", "do": "Kami baru menguji panduan ini di aplikasi OKX di ponsel. Langkah-langkah di ekstensi belum dicek, jadi untuk sementara jangan ikuti panduan ini di komputer. Jika akun ini ada di aplikasi OKX di ponsel Anda, pakai aplikasinya; jika ragu, ketuk \"Ada kendala?\" di kanan atas dan kirimkan laporannya kepada kami."}
+      }
+    },
+    "unstake": {
+      "title": "Unstake",
+      "note": "Satu-satunya transaksi",
+      "milestone": "Unstake",
+      "images": [
+        "① Gulir ke bawah sampai detail staking (baris staked adalah yang Anda kunci, sekitar {{got}}) lalu ketuk tombol unstake di bawahnya",
+        "② Konfirmasi unstake terbuka. Cocokkan dulu dengan kartu di bawah, dan hanya setelah ketiga kotak kuning cocok, ketuk tombol konfirmasi hijau. Bagian yang disembunyikan di gambar adalah alamat Anda sendiri"
+      ],
+      "check": {
+        "title": "Sebelum konfirmasi, periksa 3 hal",
+        "lead": "Ini halaman konfirmasi milik aplikasi OKX sendiri. Cocokkan dengan daftar ini dan ketuk setiap poin setelah cocok.",
+        "confirm": [
+          {"title": "Ini konfirmasi unstake, di X Layer", "sub": "Ini halaman milik aplikasi OKX sendiri, bukan pop-up dari situs web"},
+          {"title": "Alamat interaksinya 0xDA63E89d…2C0795FD2b (kontrak penguncian OKX Boost)", "sub": "Alamat lengkapnya 0xDA63E89dd0632Db71c89c031de11542C0795FD2b. Minimal awalan 0xDA63E89d dan akhiran 2C0795FD2b harus cocok persis, karakter demi karakter"},
+          {"title": "Jumlahnya bertanda plus: +{{got}}", "sub": "Plus berarti dana yang Anda terima. Biaya jaringan di bawahnya kurang dari $0.01"}
+        ],
+        "reject": ["Jumlahnya bertanda minus, atau Anda diminta mengirim token apa pun", "Tertulis Approve atau Permit", "Ini permintaan tanda tangan yang meminta Anda menandatangani pesan", "Alamat interaksi tidak cocok dengan 0xDA63E89d…2C0795FD2b"],
+        "normal": [
+          "Baris dompet saat ini adalah alamat Anda sendiri, dengan nama akun Anda di bawahnya",
+          "Setelah Anda mengetuk Confirm, ponsel meminta Face ID, sidik jari, atau kata sandi",
+          "Mula-mula muncul pesan transaksi terkonfirmasi, lalu pesan bahwa unstake berhasil"
+        ]
+      },
+      "situations": {
+        "no-section": {"see": "Saat menggulir ke bawah, tidak ada blok detail staking", "do": "Akun ini tidak punya dana terkunci di kampanye ini: entah sudah ditarik, atau ini bukan akun yang mengunci token. Periksa akun di kanan atas, dan ketuk \"Ada kendala?\" di kanan atas untuk pemeriksaan langsung."},
+        "low-gas": {"see": "Tertulis biaya tidak bisa dibayar atau saldo terlalu rendah", "do": "Anda perlu sedikit OKB di X Layer untuk biaya (di bawah $0.01). Kirim dulu sedikit OKB ke alamat ini di X Layer (0.001 sudah lebih dari cukup), lalu kembali dan ketuk lagi."},
+        "rejected": {"see": "Tidak sengaja menolak", "do": "Tidak ada yang berpindah. Kembali ke halaman kampanye dan ketuk tombol unstake lagi."},
+        "spinning": {"see": "Sudah mengetuk Confirm dan halaman terus berputar", "do": "Tunggu satu menit dan jangan ketuk lagi. Lalu ketuk \"Ada kendala?\" di kanan atas untuk pemeriksaan langsung: kami melihat kontrak penguncian di chain, jadi kami langsung tahu apakah dananya sudah keluar."},
+        "sign": {"see": "Ini permintaan tanda tangan, bukan konfirmasi unstake", "do": "Tolak. Unstake adalah transaksi biasa dan tidak butuh tanda tangan pesan. Kemungkinan besar Anda berada di versi web: kembali ke langkah 1 dan pilih versi aplikasi saat diminta."},
+        "wrong-to": {"see": "Alamat interaksi bukan 0xDA63E89d…2C0795FD2b", "do": "Langsung tolak."}
+      }
+    },
+    "arrive": {
+      "title": "Cek apakah dana sudah masuk",
+      "milestone": "Masuk",
+      "images": [
+        "① Pesan di atas menyebut unstake berhasil, dan blok detail staking sudah hilang: dana sudah kembali ke dompet Anda ② Untuk melihatnya di dompet, ketuk **‹** di kiri atas untuk menutup halaman kampanye, lalu × di kiri atas halaman web",
+        "③ Kembali di beranda dompet (OKX di bagian bawah), buka daftar token Anda ④ Ketuk **OKB** (atau USDT0 / USDG jika itu yang Anda kunci). Saldo di gambar disembunyikan",
+        "⑤ Riwayat transaksi punya entri unstake baru dari OKX Boost, +{{got}}. Saldo, alamat, dan tanggal di gambar disembunyikan"
+      ],
+      "check": {
+        "title": "Cek apakah dana sudah masuk",
+        "rows": [
+          ["Berapa lama", "Beberapa detik setelah Anda konfirmasi"],
+          ["Tempat melihat", "Di aplikasi OKX, buka {{sym}} di dompet dan cek riwayat transaksinya"],
+          ["Yang seharusnya terlihat", "Bertambah {{got}}, dalam entri unstake dari OKX Boost"],
+          ["Catatan on-chain", "Datang dari kontrak penguncian OKX Boost 0xDA63…FD2b dan masuk ke alamat Anda sendiri"],
+          ["Jika belum masuk", "Ketuk \"Ada kendala?\" di kanan atas untuk pemeriksaan langsung: kami melihat kontrak penguncian di chain"]
+        ],
+        "foot": "Begitu dana masuk, selesai. Jika Anda mengunci OKB, yang kembali adalah OKB itu sendiri (koin asli X Layer), bukan WOKB"
+      },
+      "situations": {
+        "not-wokb": {"see": "Saya mengunci OKB: yang kembali OKB atau WOKB?", "do": "OKB itu sendiri (koin asli X Layer), bukan WOKB."},
+        "usdt0": {"see": "Saya mengunci USDT0 atau USDG", "do": "Anda menerima kembali token yang sama dengan jumlah yang sama. Cari USDT0 atau USDG di daftar aset dompet Anda."},
+        "no-record": {"see": "Entrinya tidak ada di riwayat transaksi", "do": "Ketuk \"Ada kendala?\" di kanan atas untuk pemeriksaan langsung: jika dana terkunci Anda di kontrak sudah 0, berarti sudah keluar. Riwayat dompet kadang butuh sedikit waktu untuk menampilkannya."}
+      }
+    }
+  },
+  "sources": [
+    "Explorer OKX · Kontrak penguncian OKX Boost (kode sumber terverifikasi)",
+    "OKX Boost · Halaman kampanye Plasma X Launch"
+  ]
+}

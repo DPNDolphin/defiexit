@@ -1,0 +1,107 @@
+{
+  "title": "Una cadena va a cerrar: ¿cómo saco mi dinero?",
+  "summary": "Primero busca el “último día para retirar” oficial: muchas veces es anterior a la fecha de cierre. Luego ve en orden: sal de tus posiciones en las apps de esa cadena y reclama las recompensas, sácalo por el puente con la ruta que indica la guía oficial y deja un poco de gas en ambos lados. Después de una fecha límite, algunos proyectos abren una vía oficial de recuperación y otros dicen que los fondos quedan inaccesibles, así que no cuentes con una segunda oportunidad.",
+  "sections": [
+    {
+      "h": "Paso 1: ten claras las fechas",
+      "p": [
+        "Los avisos de cierre suelen traer dos fechas: el último día en que puedes retirar y el día en que la cadena se detiene de verdad. Actúa según la primera y no esperes al último día. Fíate solo de las fechas de la cuenta y el sitio web oficiales, no de lo que cuenten otros."
+      ],
+      "list": [
+        "Sophon: el 25 de noviembre es la fecha límite para retirar; después empiezan a cerrarse la infraestructura clave y los sitios web relacionados, antes del cierre definitivo de la mainnet el 30 de noviembre. En palabras de Sophon: “El 25 de noviembre es la fecha para actuar, no el 30 de noviembre”.",
+        "Abstract: la cadena cierra el 15 de diciembre de 2026, y los fondos que no se hayan sacado por el puente para entonces quedarán inaccesibles.",
+        "Horizen L3: el corte del puente (4 de noviembre, 13:00 UTC) se fijó un día antes del cierre definitivo, para que la instantánea (snapshot) quedara limpia y no hubiera nada en tránsito cuando la cadena se detuviera."
+      ]
+    },
+    {
+      "h": "Paso 2: sal de tus posiciones y reclama las recompensas antes de usar el puente",
+      "p": [
+        "El dinero que está en staking, farms, pools de liquidez o préstamos no forma parte del saldo de tu billetera. Primero devuélvelo a tu billetera en la app original; solo entonces puedes pasarlo por el puente."
+      ],
+      "list": [
+        "Horizen: primero retira tu stake en la página de staking, luego reclama las recompensas y después pasa por el puente a Base.",
+        "Sophon: además de retirar SOPH, ETH, USDC y otros activos, reclama las recompensas pendientes de staking o de Guardian, y retira lo que todavía tengas en la Sophon Farm.",
+        "Algunas posiciones se gestionan por ti, así que no las toques por tu cuenta: Sophon dice que los Guardian NFT, el vSOPH y el SOPH en staking pasan a Ethereum automáticamente. Lee la guía oficial completa antes de actuar."
+      ]
+    },
+    {
+      "h": "Paso 3: usa la ruta que indica la guía oficial y deja gas en ambos lados",
+      "p": [
+        "La guía oficial suele detallar la ruta, cuánto gas dejar y qué tokens quedan fuera del plan oficial."
+      ],
+      "list": [
+        "Usa solo los puentes o páginas de migración que indica la guía oficial. Por ejemplo, Abstract señaló su Migration Hub (migrate.abs.xyz) y su puente nativo (native-bridge.abs.xyz, que según dice tiene unas 3 horas de retraso); Sophon remite a claim.sophon.com.",
+        "Volver a Ethereum por un puente nativo oficial normalmente implica una espera, y la mayoría de las cadenas necesitan un Claim más en Ethereum. Consulta “Retirar de una L2 a Ethereum” para más detalles.",
+        "Deja gas: deja un poco de la moneda nativa en la cadena que cierra para las comisiones, y un poco de ETH en Ethereum para el último paso. Horizen indicó a quienes no tenían gas que depositaran una cantidad mínima de ETH desde Base por el puente nativo, solo el mínimo que permite el puente.",
+        "Los tokens emitidos por otros pueden quedar fuera del plan oficial: Horizen dijo que USDC.e lo opera Stargate, no Horizen, así que no estaba incluido en la devolución de la DAO y los usuarios tenían que sacarlo por el puente por su cuenta.",
+        "Billeteras de contrato inteligente y multifirma: comprueba si el proyecto tiene una vía o un contacto aparte. El sitio de recuperación de Blast permite que el dueño de una Safe u otra billetera inteligente reclame por ella; Horizen pidió a los usuarios de billeteras de contrato inteligente que escribieran a su dirección oficial de seguridad antes de la fecha límite."
+      ]
+    },
+    {
+      "h": "Después de la fecha límite: ¿todavía hay una salida?",
+      "p": [
+        "Depende del proyecto. Estas son medidas que anunciaron los propios proyectos (revisado el 2026-11-05); no se aplican a otras cadenas."
+      ],
+      "list": [
+        "Blast: la L2 cerró el 4 de noviembre de 2026. El sitio oficial de recuperación, blast.io, sigue abierto durante 12 meses, con fecha final de soporte el 4 de noviembre de 2027. El ETH, el WETH y el USDB que tenías en Blast, además de los retiros que nunca terminaron, se reclaman en la mainnet de Ethereum. A los usuarios de Blast Mobile se les indica importar la frase semilla de esa billetera en una app de billetera como MetaMask o Rabby y conectarla; escribe una frase semilla solo en una app de billetera, nunca en un sitio web.",
+        "Lisk: la Lisk Chain cerró el 2 de noviembre de 2026, y su portal y su puente están cerrados. Lisk dice que está construyendo un contrato inteligente dedicado y planea un proceso manual de reclamos en enero de 2027, con detalles por anunciar; los retiros en curso en el momento del cierre se acreditarán en su dirección de destino en Ethereum. El LSK en Ethereum o en exchanges no se ve afectado.",
+        "Horizen L3: se tomó una instantánea el 4 de noviembre a las 13:00 UTC. Tras una revisión pública de la instantánea durante una semana, la Horizen DAO enviará el ZEN restante (incluidas las recompensas de staking sin reclamar) y los saldos de ETH superiores a 0.001 ETH a la misma dirección en Base, lo que se espera para la segunda mitad de noviembre. El ETH por debajo de 0.001 no se devuelve, y USDC.e no está incluido.",
+        "Otros proyectos dicen claramente que no cumplir la fecha límite significa perder el acceso: Abstract dice que los fondos que no se saquen por el puente antes de la fecha quedarán inaccesibles, y Sophon dice que los activos que queden después de la fecha límite corren el riesgo de quedar inaccesibles para siempre.",
+        "Cualquier solución oficial se anuncia en la cuenta y el sitio web oficiales. Si alguien te escribe por mensaje privado sobre un “canal de recuperación”, trátalo como una estafa."
+      ]
+    },
+    {
+      "h": "Las estafas que aparecen alrededor de los cierres",
+      "p": [
+        "Cuanto más cerca está la fecha límite, más estafadores hay. Los propios proyectos han advertido públicamente sobre cada una de estas."
+      ],
+      "list": [
+        "Sitios de migración falsos: Sophon advirtió a los usuarios que “usen solo enlaces oficiales de Sophon y tengan cuidado con los sitios de migración falsos”; Abstract advirtió sobre suplantaciones, sitios de migración falsos y mensajes privados que dicen representar a Abstract.",
+        "Mensajes privados de “soporte”: Horizen dice que su equipo nunca te escribirá primero por mensaje privado, nunca te pedirá claves privadas ni frases semilla y nunca te pedirá que le envíes fondos.",
+        "“Aprueba para desbloquear”: una aprobación permite que otra persona saque un token de tu billetera. MetaMask señala la presión de tiempo armada en torno a fechas límite como una señal típica de una solicitud de aprobación maliciosa.",
+        "DeFiExit solo le pide a tu billetera que comparta su dirección: nunca te pide firmar, aprobar ni enviar nada, y nunca escribimos primero."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "¿Tengo que mover los tokens de mi billetera fría?",
+      "a": "Depende de en qué cadena estén los tokens, no del tipo de billetera. Una billetera fría solo guarda tus claves; solo hay que sacar los activos que están en la cadena que cierra. Por ejemplo, Lisk dijo que el LSK en Ethereum o en exchanges no se veía afectado por el cierre de su cadena, y Sophon dice que SOPH es nativo de Ethereum, así que solo hay que retirar la parte que está en la Sophon Chain. Comprueba en tu billetera o en un explorador de bloques en qué cadena está el saldo."
+    },
+    {
+      "q": "Ya pasó la fecha límite. ¿Perdí mi dinero?",
+      "a": "No necesariamente, pero no cuentes con ello. Busca en el sitio web oficial y en la cuenta de X de la cadena si hay medidas posteriores al cierre: Blast abrió un sitio oficial de recuperación por 12 meses, Lisk planea un proceso de reclamos en enero de 2027 y la Horizen DAO está devolviendo saldos en Base. Otros proyectos dicen que no cumplir la fecha límite significa perder el acceso. Nunca confíes en un “canal de recuperación” que el propio proyecto no haya anunciado."
+    },
+    {
+      "q": "¿Tengo que “verificar mi billetera” o pagar una comisión antes de poder migrar?",
+      "a": "Pagarle a alguien primero: no. Horizen dice que su equipo nunca te pedirá que le envíes fondos; el único costo es el gas que paga tu propia billetera para enviar una transacción. “Verificar tu billetera”: MetaMask dice que los mensajes urgentes que te piden seguir un enlace para “verificar” tu cuenta son una estafa común. Si la guía oficial de verdad te pide firmar una confirmación, hazlo solo en la página indicada en la publicación oficial, y lee con atención la ventana emergente de la billetera."
+    },
+    {
+      "q": "No tengo gas en la cadena que cierra, así que no puedo sacar mis fondos por el puente.",
+      "a": "Primero consulta la guía oficial. Algunas cadenas detienen los depósitos durante el cierre: Sophon desactivó los nuevos depósitos el 25 de junio de 2026, mientras que Horizen mantuvo abiertos los depósitos de ETH desde Base solo para que los usuarios pudieran pagar el gas, y recomendó depositar el mínimo. Si la guía no lo cubre, pregunta en el Discord oficial, no a alguien que se ofrezca en privado a “cubrirte el gas”."
+    },
+    {
+      "q": "Ya empecé en el puente oficial. ¿Por qué no ha llegado?",
+      "a": "Los puentes nativos oficiales de vuelta a Ethereum implican una espera, y la mayoría también necesita que hagas un Claim más en Ethereum. Abstract, por ejemplo, dice que su puente nativo tiene unas 3 horas de retraso, mientras que OP Mainnet suele tardar 7 días. Consulta “Retirar de una L2 a Ethereum” para más detalles."
+    }
+  ],
+  "sources": [
+    "Sophon en X: cronograma del cierre 1/4, cierre de la mainnet el 30 de noviembre (19 de octubre de 2026)",
+    "Sophon en X: 2/4, fecha límite de retiro el 25 de noviembre (19 de octubre de 2026)",
+    "Sophon en X: 3/4, retiros, recompensas y activos de la Farm (19 de octubre de 2026)",
+    "Sophon en X: 4/4, usa solo enlaces oficiales, cuidado con los sitios de migración falsos (19 de octubre de 2026)",
+    "Sophon en X: recordatorio del 2 de noviembre (el propio SOPH sigue existiendo)",
+    "Documentación de Sophon: guía de migración de la cadena (posiciones que se mueven automáticamente, depósitos desactivados desde el 25 de junio)",
+    "Abstract en X: “Abstract is Winding Down” (6 de octubre de 2026)",
+    "Blog de Horizen: cambios en Horizen (cierre de la L3, devolución de la DAO, recordatorio de seguridad; 23 de octubre de 2026)",
+    "Horizen en X: el puente cierra el 4 de noviembre a las 13:00 UTC (4 de noviembre de 2026)",
+    "Blast en X: la L2 ya cerró; sitio de recuperación abierto 12 meses (4 de noviembre de 2026)",
+    "Sitio oficial de recuperación de Blast (ETH, WETH, USDB; Blast Mobile; Safe)",
+    "Blog de Lisk: la Lisk Chain ha cerrado",
+    "Soporte de Lisk: reclamos de la Lisk Chain (proceso manual de reclamos en enero de 2027)",
+    "Lisk en X: contrato dedicado; los retiros en curso se acreditan en Ethereum (3 de noviembre de 2026)",
+    "Documentación de OP: retiros del Standard Bridge en 7 días en OP Mainnet",
+    "Soporte de MetaMask: ¿qué es una aprobación de token? (señales de una aprobación maliciosa)",
+    "Soporte de MetaMask: canales oficiales de soporte (mensajes de estafa del tipo “verifica tu cuenta”)"
+  ]
+}

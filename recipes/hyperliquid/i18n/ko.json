@@ -1,0 +1,244 @@
+{
+  "title": "Hyperliquid 잔액을 내 지갑으로 출금하기",
+  "short": "Hyperliquid에서 내 지갑으로",
+  "verified": "2026-10-27에 실제 계정으로 테스트했어요. 이 가이드대로 했더니 들어온 금액이 예상 금액과 0.01 USDC 이내로 맞았어요.",
+  "fieldTests": [
+    "Binance 지갑으로 이 가이드대로 출금했고, 들어온 금액이 예상과 맞았어요. 중간에 Account Type Update(Unified Account) 창이 떴어요. 확인한 뒤에는 이체가 필요 없었고, 이제 가이드에 그 경우도 넣었어요."
+  ],
+  "covers": "계정에 있는 USDC, 그리고 더 이상 발행되지 않는 USDH",
+  "summary": "Hyperliquid에 아직 USDC가 있거나, 더 이상 발행되지 않는 스테이블코인 USDH가 남아 있나요? USDH를 팔아 USDC로 바꾼 뒤, 전부 한 번에 Arbitrum의 내 지갑으로 출금하세요.",
+  "movesBy": "Hyperliquid",
+  "facts": [
+    ["서명", "2–3번. 모두 서명뿐이고 가스비는 없어요"],
+    ["수수료", "출금액에서 1 USDC가 빠져요"],
+    ["시간", "단계를 따라 하는 데 약 10분, 출금은 약 5분 뒤 들어와요"],
+    ["필요한 것", "없어요. Arbitrum의 ETH도 필요 없어요"]
+  ],
+  "chips": ["약 10분", "서명 2–3번", "가스비 없음, 출금 수수료 1 USDC"],
+  "support": {
+    "label": "Hyperliquid 공식 지원",
+    "note": "Hyperliquid 문서에 따르면 지원은 공식 Discord의 open-ticket 채널에서 티켓을 열거나, 공식 이메일 양식으로만 받을 수 있어요. DM을 보내는 \"고객 지원\"은 모두 사기꾼이에요."
+  },
+  "official": [{"label": "Hyperliquid 공식 사이트"}],
+  "vars": {
+    "addrShort": "내 주소",
+    "usdhSell": "내 USDH 수량(소수점 2자리)",
+    "orderMin": "수량 × 0.995",
+    "spotAfter": "판매 대금",
+    "withdrawAmt": "전체 잔액",
+    "arrive": "출금액에서 1을 뺀 금액"
+  },
+  "pro": [
+    "**경로**: USDH는 더 이상 발행되지 않아요 → 현물(spot)에서 {{floorPx}} 이상의 지정가 주문으로 팔아 USDC로 → Arbitrum으로 출금(Withdraw). 수수료 1 USDC, 약 5분 뒤 들어와요.",
+    "**계정 모드**: 통합 계정(새 기본값)은 바로 출금해요. 예전의 분리 계정은 먼저 Perps ⇄ Spot으로 현물 USDC를 Perps로 옮겨요.",
+    "**내 숫자**: {{usdhSell}} USDH 판매, {{withdrawAmt}} USDC 출금, 약 {{arrive}} USDC 입금.",
+    "**서명**: EIP-712 서명 2–3번, 가스비 없음. 두 가지를 확인하세요: 도메인이 app.hyperliquid.xyz인지, destination이 {{addrShort}}인지.",
+    "**주의할 점**: USDH를 검색하면 USDHL도 나오니 맞는 것을 고르세요. 오른쪽 호가창을 누르면 입력한 가격이 덮어써져요."
+  ],
+  "done": {
+    "where": "내 지갑의 Arbitrum 네트워크에",
+    "from": "보낸 곳은 Hyperliquid의 공식 브릿지 0x2Df1…3dF7",
+    "look": "어디서 보나요: 지갑 앱 → Assets(자산) → USDC → Arbitrum 줄."
+  },
+  "steps": {
+    "open": {
+      "title": "지갑 앱에서 공식 사이트 열기",
+      "items": [
+        "지갑 앱을 열고(예: Binance 앱의 Wallet 탭) 이 자금이 들어 있는 지갑이 선택돼 있는지 확인하세요.",
+        "지갑에 들어 있는 DApp 브라우저에서 `https://app.hyperliquid.xyz`를 여세요. https://까지 넣지 않으면 검색어로 처리돼요.",
+        "페이지가 열리면 주소창을 확인하세요. 도메인이 정확히 **app.hyperliquid.xyz**여야 해요. 글자가 하나 더 있거나 점이 빠졌다면 진짜 사이트가 아니에요.",
+        "✗ 내 지역에서는 쓸 수 없다고(restricted jurisdiction) 나오면 여기서 멈추세요. 이 가이드는 지역 제한을 우회하는 방법을 다루지 않아요."
+      ],
+      "situations": {
+        "search-instead": {"see": "주소를 입력하면 검색 결과가 나와요", "do": "앞에 https://를 붙여 전체 주소를 입력하세요: `https://app.hyperliquid.xyz`."},
+        "restricted": {"see": "내 지역에서는 쓸 수 없다고 나와요(restricted jurisdiction)", "do": "여기서 멈추세요. 이 가이드는 지역 제한을 우회하는 방법을 다루지 않아요."},
+        "not-sure": {"see": "공식 사이트가 맞는지 확실하지 않아요", "do": "주소창을 확인하세요. 도메인이 정확히 **app.hyperliquid.xyz**여야 해요. 아니면 페이지를 닫고 주소를 직접 입력하세요. 누군가 보내 준 링크는 절대 쓰지 마세요."}
+      }
+    },
+    "connect": {
+      "title": "지갑 연결하기",
+      "note": "연결만 해요. 서명도 없고, 돈도 움직이지 않아요",
+      "images": [
+        "① 오른쪽 위의 **Connect**를 누르세요",
+        "① **Default Wallet**을 고르세요. 지갑이 연결을 요청하면, 그 요청이 app.hyperliquid.xyz에서 온 것일 때 ‘Connect’를 누르세요",
+        "① 오른쪽 위에 내 주소가 나타나요(여기서는 흐리게 가렸어요). {{addrShort}} 그대로여야 해요 ② 왼쪽의 마켓 이름을 눌러 목록을 여세요"
+      ],
+      "situations": {
+        "no-popup": {"see": "Connect를 눌렀는데 지갑이 연결을 묻지 않아요", "do": "지갑 앱에 들어 있는 DApp 브라우저에서 페이지를 여세요(1단계). 휴대폰의 일반 브라우저로는 지갑에 연결할 수 없어요."},
+        "wrong-address": {"see": "오른쪽 위의 주소가 자금이 들어 있는 주소가 아니에요", "do": "지갑 앱에서 맞는 지갑으로 바꾼 뒤 다시 연결하세요. 주소가 맞지 않으면 더 진행하지 마세요."},
+        "wrong-origin": {"see": "연결 요청이 app.hyperliquid.xyz에서 온 것이 아니에요", "do": "‘Reject’(거절)를 누르고 페이지를 닫으세요. 공식 사이트가 아닐 수 있어요."}
+      }
+    },
+    "search": {
+      "title": "USDH 마켓 찾기",
+      "whenText": "USDH가 있을 때만 필요해요(이 단계부터 6단계까지)",
+      "images": [
+        "① 검색창에 USDH를 입력하세요 ② **USDH/USDC**(아래에 SPOT 표시)를 누르세요 ✗ USDHL/USDC는 누르지 마세요. 글자 하나 차이인 다른 코인이에요"
+      ],
+      "situations": {
+        "two-results": {"see": "USDH와 USDHL이 둘 다 나와요", "do": "SPOT 표시가 있는 **USDH/USDC**를 고르세요. USDHL은 다른 코인이고, 이름이 글자 하나 달라요."},
+        "not-found": {"see": "USDH가 안 나와요", "do": "철자(U-S-D-H)를 확인하세요. 그래도 안 나오나요? 검색창 오른쪽의 **All**을 누르고 다시 검색하세요."}
+      }
+    },
+    "panel": {
+      "title": "매도 창을 열고 지정가 주문으로 바꾸기",
+      "images": [
+        "! 노란 상자는 Hyperliquid 자체 공지예요. USDH는 더 이상 발행되지 않아서 이 마켓의 매수자는 계속 줄어들 거예요. 빨리 팔수록 좋아요",
+        "① 아래쪽의 **Trade**를 누르세요",
+        "① 왼쪽 위 **Market** 옆의 작은 화살표를 누르세요",
+        "① **Limit**을 고르세요(지정가 주문은 내가 정한 가격이나 그보다 좋은 가격에만 체결돼요)"
+      ],
+      "situations": {
+        "no-limit": {"see": "드롭다운에 Limit이 없어요", "do": "위 스크린샷의 빨간 상자 자리, 왼쪽 위 Market 옆의 작은 화살표를 누르세요."}
+      }
+    },
+    "fill": {
+      "title": "매도 주문 채우기",
+      "note": "지금 채워 두고, 다음 단계에서 거래를 활성화해요",
+      "images": [
+        "① **Sell**을 누르세요 ② Price(가격): {{floorPx}} ③ Amount(수량): {{usdhSell}}(스크린샷은 예시 숫자예요) ④ Order Value를 확인하세요: 약 {{orderMin}} USDC, 최소로 받는 금액이에요 ⑤ **Enable Trading**을 누르세요"
+      ],
+      "items": [
+        "! 오른쪽의 초록색 숫자는 다른 사람들의 매수 주문이에요. 내 주문은 거기에 팔리고, 보통 0.995보다 좋은 가격에 체결돼요. **누르지 마세요**: 누르면 입력한 가격이 덮어써져요."
+      ],
+      "situations": {
+        "value-off": {"see": "Order Value가 여기 숫자와 많이 달라요", "do": "가격이나 수량이 틀렸을 가능성이 커요: 가격 {{floorPx}}, 수량 {{usdhSell}}. 오른쪽의 초록색 숫자를 눌렀다면 가격이 덮어써졌으니 다시 입력하세요."},
+        "not-enough": {"see": "그 수량에 비해 잔액이 부족하다고 나와요", "do": "USDH 일부가 이미 미체결 매도 주문에 묶여 있을 수 있어요. 위의 실시간 확인에서 실제로 팔 수 있는 수량을 볼 수 있어요. 주소를 아직 넣지 않았다면 먼저 위에 넣으세요."},
+        "place-order": {"see": "버튼이 Enable Trading이 아니라 이미 Place Order로 나와요", "do": "예전에 이미 거래를 활성화했어요. \"거래 활성화하기\"는 건너뛰고 바로 \"매도 주문 넣기\"로 가세요."}
+      }
+    },
+    "enable": {
+      "title": "거래 활성화하기",
+      "note": "서명 1",
+      "grantsText": "서명하면 이 주문 키가 지갑 팝업 없이 Hyperliquid에서 대신 주문을 넣을 수 있어요. 카드를 한 줄씩 확인하고, 하나라도 맞지 않으면 ‘Reject’(거절)를 누르세요.",
+      "images": [
+        "① **Stay Connected**는 체크하지 말고 그대로 두세요 ② **Establish Connection**을 누르세요. 지갑이 서명을 요청하면 아래 카드와 비교하세요"
+      ],
+      "check": {
+        "title": "서명하기 전에 3가지를 확인하세요",
+        "lead": "‘Establish Connection’을 누르면 지갑에 서명 요청이 떠요. 이 카드와 비교하며, 확인한 줄을 하나씩 체크하세요.",
+        "skip": "이미 거래가 활성화돼 있고 버튼이 Place Order인가요? 이 단계는 건너뛰세요",
+        "confirm": [
+          {"title": "요청이 app.hyperliquid.xyz에서 왔어요", "sub": "글자가 하나 더 있거나 점이 빠졌다면 다른 사이트예요"},
+          {"title": "ApproveAgent와 Mainnet이 적혀 있어요", "sub": "주문만 넣을 수 있는 키를 만드는 거예요. Hyperliquid 문서에 따르면 이 키로는 누구에게도 돈을 보내거나 출금할 수 없어요"},
+          {"title": "서명만 해요: 금액도, 받는 사람도 없어요", "sub": "아무것도 쓰지 않고, 수수료도 없어요"}
+        ],
+        "reject": ["돈을 보내라고 하거나 금액이 표시돼요", "Permit이 나오거나, 토큰 승인(Approve)을 요청해요", "app.hyperliquid.xyz에서 온 요청이 아니에요"],
+        "normal": [
+          "agentAddress는 매번 바뀌는 무작위 주소예요. 페이지가 만드는 임시 주문 키예요",
+          "chainId는 42161이나 56으로 나올 수 있어요. 둘 다 괜찮아요. 지갑의 현재 네트워크를 따라가요",
+          "verifyingContract는 전부 제로예요. 이것도 괜찮아요"
+        ]
+      },
+      "situations": {
+        "no-approve-agent": {"see": "서명 요청에 ApproveAgent가 없어요", "do": "‘Reject’(거절)를 누르세요. 카드와 맞지 않으면 서명하지 마세요."},
+        "no-change": {"see": "서명했는데 페이지에 아무 변화가 없어요", "do": "몇 초 기다리세요. 그래도 버튼이 Place Order로 바뀌지 않으면 페이지를 새로고침하고 지갑을 다시 연결한 뒤 ‘Establish Connection’을 다시 누르세요. 두 번 서명하게 되는 건 정상이에요."},
+        "chain-id": {"see": "요청에 chainId 42161이나 56이 나와요", "do": "정상이에요. 지갑의 현재 네트워크를 따라갈 뿐, 아무것도 바꾸지 않아요."}
+      }
+    },
+    "order": {
+      "title": "매도 주문 넣기",
+      "note": "이번에는 지갑 팝업이 뜨지 않아요",
+      "milestone": "USDH 판매",
+      "movesText": "Hyperliquid의 이 매도 주문은 앞에서 승인한 주문 키가 서명하므로 지갑 팝업이 뜨지 않아요. DeFiExit는 돈에 절대 손대지 않아요.",
+      "items": [
+        "서명하고 나면 페이지에 Established connection이 나오고, Enable Trading 버튼이 **Place Order**로 바뀌어요.",
+        "한 번 더 확인하세요: Sell / 가격 {{floorPx}} / 수량 {{usdhSell}}(지워졌으면 다시 입력하세요).",
+        "‘Place Order’를 누르세요. Confirm Order 창이 나오면 같은 세 가지를 확인하고 확정하세요. 이 주문은 페이지의 주문 키가 서명하므로 지갑은 조용해요.",
+        "체결되면 Order filled 메시지가 보여야 해요. Balances에서 USDH는 0.01 미만으로 줄고, USDC는 약 {{spotAfter}}만큼 늘어나요. Open Orders는 비어 있어요.",
+        "! 주문이 Open Orders에 그대로 남아 있다면 매수 호가가 {{floorPx}} 아래로 내려간 거예요. 주문을 또 넣지 마세요. 오른쪽 위의 ‘막혔나요?’를 눌러 실시간으로 확인하세요."
+      ],
+      "situations": {
+        "resting": {"see": "주문이 체결되지 않고 그대로 있어요", "do": "지금 매수 호가가 내 가격보다 낮아요. 주문을 또 넣지 마세요. 위의 실시간 확인이 오늘의 매수 호가를 바탕으로 할 수 있는 방법을 계산해 줘요."},
+        "too-small": {"see": "주문이 너무 작다고 나와요", "do": "Hyperliquid에는 최소 주문 금액(약 $10)이 있어요. USDH가 그보다 적으면 팔 수 없어요. 그대로 두고 USDC를 출금하러 가세요."},
+        "dust-left": {"see": "판매한 뒤 Balances에 USDH가 아주 조금 남아 있어요", "do": "수량은 소수점 둘째 자리까지만 들어가므로 0.01 미만이 남는 건 정상이에요. 출금에는 영향이 없어요."}
+      }
+    },
+    "transfer": {
+      "title": "현물 USDC를 Perps 계정으로 옮기기",
+      "note": "서명 2",
+      "whenText": "예전의 분리 계정만 해당해요. 통합 계정은 건너뛰어요",
+      "milestone": "이체",
+      "items": [
+        "! 먼저 Account 페이지를 확인하세요. 제목이 **Unified Account Summary**이고 Deposit / Withdraw 버튼만 있다면 통합 계정이에요: **이 단계는 건너뛰고** 바로 출금으로 가세요."
+      ],
+      "images": [
+        "! Unified Account Summary가 보이면 통합 계정이에요(예시 이미지예요. 숫자는 무시하세요)",
+        "통합 계정에는 Deposit / Withdraw만 있어요. ‘Withdraw’를 누르고 다음 단계로 넘어가세요",
+        "분리 계정에는 Spot과 Perps 두 줄이 보여요. 돈이 두 계정에 나뉘어 있어요",
+        "① 아래쪽의 **Account**를 누르세요 ② **Perps ⇄ Spot**을 누르세요",
+        "① 가운데 버튼을 눌러 방향을 바꾸세요",
+        "① 이제 Spot → Perps로 바뀌었는지 확인하세요 ② **MAX**를 누르세요(스크린샷은 판매 전에 찍어서 0.00이지만, 내 화면에는 약 {{spotAfter}} 정도가 나와야 해요) ③ **Confirm**을 누르세요. 지갑이 서명을 요청하면 카드와 비교하세요"
+      ],
+      "check": {
+        "title": "서명하기 전에 3가지를 확인하세요",
+        "lead": "‘Confirm’을 누르면 지갑에 서명 요청이 떠요. 이 카드와 비교하며, 확인한 줄을 하나씩 체크하세요.",
+        "skip": "통합 계정인가요(Account 페이지에 Perps ⇄ Spot이 없음)? 이 단계는 건너뛰세요",
+        "confirm": [
+          {"title": "요청이 app.hyperliquid.xyz에서 왔어요", "sub": "글자가 하나 더 있거나 점이 빠졌다면 다른 사이트예요"},
+          {"title": "SendAsset이 적혀 있고, destination이 {{addrShort}} 맞아요", "sub": "대소문자는 상관없어요. 내 주소가 아니면 거절하세요"},
+          {"title": "현물(spot)에서 perps로, 약 {{spotAfter}} USDC", "sub": "sourceDex는 spot, destinationDex는 비어 있고, 토큰은 USDC:0x6d1e…e054예요"}
+        ],
+        "reject": ["destination이 내 주소가 아니에요", "Permit이 나오거나, 토큰 승인(Approve)을 요청해요", "app.hyperliquid.xyz에서 온 요청이 아니에요"],
+        "normal": ["서명만 하고, 수수료는 없어요"]
+      },
+      "situations": {
+        "no-button": {"see": "Account 페이지에 Perps ⇄ Spot이 없어요", "do": "제목이 Unified Account Summary라면 통합 계정이에요. 이체할 필요 없이 바로 출금으로 가세요."},
+        "max-zero": {"see": "MAX가 0.00으로 나와요", "do": "먼저 방향이 Spot → Perps인지 확인하세요(가운데 버튼으로 바꿔요). 그래도 0이면 현물에 남은 USDC가 없는 거예요. 바로 출금으로 가세요."},
+        "wrong-destination": {"see": "서명 요청의 destination이 내 주소가 아니에요", "do": "바로 ‘Reject’(거절)를 누르세요."}
+      }
+    },
+    "withdraw": {
+      "title": "Arbitrum으로 출금하기",
+      "note": "마지막 서명",
+      "milestone": "출금",
+      "images": [
+        "! Hyperliquid에 따르면 수수료 1 USDC는 출금액에서 빠져요 ① 자산은 USDC, 체인은 Arbitrum 그대로 두세요 ② **MAX**를 누르세요. 약 {{withdrawAmt}} 정도여야 해요(스크린샷의 숫자는 달라요) ③ **Withdraw to Arbitrum**을 누르세요. 지갑이 서명을 요청하면 카드와 비교하세요"
+      ],
+      "check": {
+        "title": "서명하기 전에 3가지를 확인하세요",
+        "lead": "‘Withdraw to Arbitrum’을 누르면 지갑에 서명 요청이 떠요. 이 카드와 비교하며, 확인한 줄을 하나씩 체크하세요.",
+        "confirm": [
+          {"title": "요청이 app.hyperliquid.xyz에서 왔어요", "sub": "글자가 하나 더 있거나 점이 빠졌다면 다른 사이트예요"},
+          {"title": "Withdraw가 적혀 있고, destination이 {{addrShort}} 맞아요", "sub": "내 주소가 아니면 거절하세요"},
+          {"title": "amount가 약 {{withdrawAmt}} 정도예요", "sub": "들어오는 금액 = 이 숫자에서 수수료 1 USDC를 뺀 금액"}
+        ],
+        "reject": ["destination이 내 주소가 아니에요", "Permit이 나오거나, 토큰 승인(Approve)을 요청해요", "app.hyperliquid.xyz에서 온 요청이 아니에요"],
+        "normal": ["서명만 하고 가스비는 없어요. Arbitrum 거래는 Hyperliquid가 대신 보내요", "time은 13자리 숫자예요. 타임스탬프예요"]
+      },
+      "situations": {
+        "less-than-expected": {"see": "MAX가 여기 숫자보다 적게 나와요", "do": "미체결 주문과 포지션이 잔액 일부를 묶고 있어요. 위의 실시간 확인에서 돈이 어디에 얼마씩 있는지 모두 볼 수 있어요."},
+        "cannot-click": {"see": "Withdraw 버튼이 반응하지 않아요", "do": "출금액은 수수료 1 USDC보다 많아야 해요. 그보다 적은 금액은 출금할 수 없어요."},
+        "wrong-destination": {"see": "서명 요청의 destination이 내 주소가 아니에요", "do": "바로 ‘Reject’(거절)를 누르세요."}
+      }
+    },
+    "arrive": {
+      "title": "입금 확인하기",
+      "milestone": "입금",
+      "check": {
+        "title": "입금 확인",
+        "rows": [
+          ["걸리는 시간", "Hyperliquid에 따르면 5분 이내"],
+          ["어디서 보나요", "지갑 앱 → Assets(자산) → USDC → Arbitrum 줄"],
+          ["무엇이 보여야 하나요", "약 {{arrive}} USDC가 늘어나요"],
+          ["온체인 기록", "0x2Df1…3dF7(Hyperliquid의 공식 브릿지)에서 내 주소로, Arbitrum의 네이티브 USDC(0xaf88…5831)로 보내져요"],
+          ["안 들어왔나요?", "30분이 지났다면 다시 출금하지 말고, 스크린샷을 찍어 저희에게 물어보세요"]
+        ],
+        "foot": "들어왔으면 끝이에요"
+      },
+      "situations": {
+        "not-in-wallet": {"see": "지갑에서 USDC가 안 보여요", "do": "**Arbitrum** 네트워크의 USDC를 보고 있는지 확인하세요. 위의 실시간 확인은 Arbitrum에서 이 출금을 직접 조회해요."},
+        "one-less": {"see": "출금한 것보다 1 적게 들어왔어요", "do": "출금 수수료 1 USDC예요. 정상이에요."},
+        "late": {"see": "30분이 넘었는데 아무것도 안 들어왔어요", "do": "다시 출금하지 마세요. 위의 실시간 확인을 보세요. 입금을 찾지 못하거나 내용이 맞지 않으면 스크린샷을 찍어 Hyperliquid 공식 지원(아래)에 문의하세요."}
+      }
+    }
+  },
+  "sources": [
+    "Hyperliquid 문서 · 거래 시작하기",
+    "Hyperliquid 문서 · Bridge / USDC",
+    "Hyperliquid 문서 · 계정 추상화 모드",
+    "Hyperliquid 문서 · Nonce와 API 지갑",
+    "브릿지 공지 · USDH에 관한 업데이트",
+    "Hyperliquid 문서 · 지원"
+  ]
+}
