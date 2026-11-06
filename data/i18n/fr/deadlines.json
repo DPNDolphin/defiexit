@@ -507,5 +507,112 @@
       "Forum de Lazy Summer : RFC sur un arrêt ordonné (5 novembre)",
       "Forum de Lazy Summer : passage des coffres en retraits uniquement (29 juillet)"
     ]
+  },
+  "aster-apollox-offline": {
+    "name": "Aster : le site et l'API d'ApolloX passent hors ligne",
+    "summary": "Aster ferme l'ancien site et l'API d'ApolloX, avec une fin prévue vers le 5 novembre. S'il vous reste un solde ou des positions, fermez-les et retirez vos fonds dès maintenant.",
+    "deadlineNote": "À partir du 3 novembre à 10:00 UTC, Aster a commencé à arrêter les anciens contrats APX et a indiqué que cela prendrait environ 48 heures, soit une fin vers le 5 novembre à 10:00 UTC. Le site apollox.finance et l'API passent hors ligne en même temps.",
+    "who": "Toute personne ayant encore un solde ou des positions ouvertes sur ApolloX (`apollox.finance`).",
+    "todo": "Fermez vos positions et retirez vos fonds vers votre propre portefeuille. En cas de problème, Aster conseille de contacter son support sur Discord.",
+    "caution": "Aster n'a pas dit si les contrats pourront encore être utilisés directement une fois l'arrêt terminé.",
+    "official": [
+      "Aster sur X : publication du 3 novembre sur l'arrêt"
+    ]
+  },
+  "lisk-chain-closed": {
+    "name": "La chaîne Lisk a fermé",
+    "summary": "La chaîne Lisk a fermé le 2 novembre. Les retraits en cours au moment de la fermeture sont crédités sur Ethereum ; pour les fonds restés sur la chaîne, Lisk indique qu'une procédure ouvrira en janvier 2027.",
+    "deadlineNote": "La fermeture de la chaîne était d'abord prévue le 31 octobre ; le dernier jour effectif a été le 2 novembre. Le 24 octobre était le dernier jour pour lancer un transfert par le pont (le pont prend environ 8 jours). Lisk indique qu'un contrat dédié aux fonds restés sur la chaîne arrivera en janvier 2027.",
+    "who": "Toute personne qui avait encore des actifs sur Lisk au moment de la fermeture, ou un retrait en cours.",
+    "todo": "Lisk indique que les retraits en cours au moment de la fermeture seront crédités directement à l'adresse de destination sur Ethereum. Pour les fonds restés sur la chaîne, attendez la procédure officielle de janvier 2027 ; il n'y a rien à faire pour l'instant.",
+    "caution": "Lisk indique qu'il ne vous contactera jamais pour vous proposer d'aider à récupérer des fonds, et qu'il ne vous demandera jamais votre phrase de récupération. Environ 5.2 millions de LSK du contrat des récompenses de staking (y compris les récompenses gagnées mais pas encore collectées) seront détruits ; les LSK que les utilisateurs ont eux-mêmes mis en staking ne le seront pas.",
+    "official": [
+      "Blog de Lisk : la chaîne Lisk a fermé",
+      "Lisk sur X : la procédure de janvier (3 novembre)",
+      "Lisk sur X : rappel du dernier jour (1er novembre)",
+      "Blog de Lisk : présentation du nouveau Lisk"
+    ]
+  },
+  "stratex-vaults": {
+    "name": "Fermeture des coffres StratEx (sur QuickSwap)",
+    "summary": "Les coffres de StratEx ont fermé, et StratEx a indiqué le 3 novembre avoir renvoyé les fonds à toutes les personnes qui ne les avaient pas retirés. Vérifiez dans votre portefeuille s'ils sont arrivés.",
+    "deadlineNote": "Les retraits manuels se sont arrêtés le 1er novembre. Le 3 novembre, StratEx a indiqué avoir renvoyé les fonds à toutes les personnes qui ne les avaient pas retirés.",
+    "who": "Toute personne qui avait de l'argent dans les coffres StratEx et ne l'a pas retiré avant le 1er novembre.",
+    "todo": "Vérifiez si les fonds renvoyés sont arrivés dans votre portefeuille.",
+    "official": [
+      "StratEx sur X : fonds renvoyés (3 novembre)",
+      "StratEx sur X : fin des retraits (21 octobre)",
+      "StratEx sur X : dernier avis (17 septembre)"
+    ]
+  },
+  "lista-cdp-winddown": {
+    "name": "Lista DAO : fermeture de Lista CDP, passage à Lista Lending",
+    "summary": "Lista CDP a fermé. Lista indique que les positions des marchés pris en charge sont passées automatiquement sur Lista Lending, sans rien à faire. Vérifiez si votre position était dans un marché pris en charge.",
+    "deadlineNote": "Les positions pouvaient être migrées ou remboursées du 30 septembre au 31 octobre. Les 1er et 2 novembre, Lista a indiqué que les positions des marchés pris en charge avaient été migrées automatiquement.",
+    "who": "Toute personne qui avait une position dans Lista CDP.",
+    "todo": "Le 2 novembre, Lista a indiqué que tous les marchés pris en charge étaient passés automatiquement sur Lista Lending, sans rien à faire. Vérifiez que votre position était bien dans un marché pris en charge.",
+    "caution": "Lista n'a pas dit ce qu'il advient des positions dans les marchés non pris en charge.",
+    "official": [
+      "Blog de Lista : que faire avant la fermeture du CDP",
+      "Lista sur X : aucune action nécessaire (2 novembre)",
+      "Lista sur X : migration terminée (1er novembre)",
+      "Lista sur X : annonce du 1er octobre"
+    ]
+  },
+  "kyan-exchange": {
+    "name": "Fermeture de la plateforme Kyan (anciennement Premia)",
+    "summary": "Kyan (anciennement Premia) a cessé ses activités, et les soldes devaient être retirés au plus tard le 31 octobre. Si vous n'arrivez pas à retirer, Kyan conseille de demander sur son Discord.",
+    "deadlineNote": "Annoncé le 19 octobre : retirer les soldes « d'ici la fin du mois », c'est-à-dire au plus tard le 31 octobre.",
+    "who": "Toute personne ayant encore un solde sur Kyan.",
+    "todo": "Si vous n'arrivez pas à retirer, allez dans #support sur le Discord officiel de Kyan, où l'équipe traite les cas manuellement.",
+    "official": [
+      "Kyan sur X : publication du 19 octobre sur l'arrêt"
+    ]
+  },
+  "stargate-hydra-chains": {
+    "name": "Stargate v2 et Hydra abandonnent une série de chaînes peu actives",
+    "summary": "Stargate v2 et Hydra ont abandonné une série de chaînes peu actives ; le dernier groupe s'est arrêté le 23 octobre.",
+    "deadlineNote": "Vers le 20 septembre, les actifs Hydra se sont arrêtés sur une série de chaînes (dont Sophon, Silicon, Arbitrum Nova, Degen et Superposition). Aurora, Taiko, LightLink et Gnosis se sont arrêtés le 23 septembre, et Gravity, Camp, GOAT et Metis le 23 octobre.",
+    "who": "Les fournisseurs de liquidité des pools Stargate sur ces chaînes, et les détenteurs d'USDC.e ou d'USDT Hydra.",
+    "todo": "Avant chaque date d'arrêt, les fournisseurs de liquidité (y compris des pools ETH) devaient retirer leurs fonds, et les détenteurs d'USDC.e et d'USDT Hydra devaient passer par le pont vers un pool Stargate pour les racheter.",
+    "caution": "Les publications de Stargate ne disent pas si les actifs Hydra peuvent encore être rachetés après la date d'arrêt.",
+    "official": [
+      "Stargate sur X : rappel du 25 septembre",
+      "Stargate sur X : rappel du 10 septembre",
+      "Stargate sur X : annonce du 21 août"
+    ]
+  },
+  "stargate-metis-pools": {
+    "name": "Stargate sur Metis : la liquidité des pools V1 et V2 devait être retirée au plus tard le 23 octobre",
+    "summary": "Stargate a cessé de prendre en charge Metis le 23 octobre ; la liquidité de ses pools V1 et V2 sur Metis devait être retirée avant. Metis prévient que le reste pourrait être difficile, voire impossible, à retirer via l'interface habituelle.",
+    "deadlineNote": "La prise en charge de Metis Andromeda par Stargate a pris fin le 23 octobre, et le DVN et l'Executor de LayerZero Labs ont cessé de desservir Metis le 30 octobre. Pools concernés : les pools USDT, ETH et METIS de Stargate V2, et les pools USDT, METIS et MAI de Stargate V1.",
+    "who": "Les fournisseurs de liquidité des pools Stargate V1 et V2 sur Metis, et toute personne ayant transféré du METIS, du HERA, du QI ou du MTVT vers une autre chaîne via LayerZero V1.",
+    "todo": "Avant la date limite : retirer du staking les jetons LP s'ils étaient stakés, puis retirer la liquidité dans l'application Stargate, et ramener vers Metis, par la même voie, le METIS, le HERA, le QI ou le MTVT partis via LayerZero V1. Si vous l'avez manquée, Metis conseille de contacter l'équipe de Metis.",
+    "caution": "Metis indique que la liquidité laissée dans les pools Stargate sur Metis après la date limite pourrait être difficile, voire impossible, à retirer via l'interface Stargate habituelle. Les m.USDC, m.USDT, WETH et METIS émis par le pont canonique de Metis ne sont pas concernés.",
+    "official": [
+      "Blog de Metis : fin de Stargate et changements LayerZero sur Metis Andromeda"
+    ]
+  },
+  "mint-blockchain-shutdown": {
+    "name": "Fermeture de Mint Blockchain",
+    "summary": "Mint Blockchain a fermé ; la date limite était le 20 octobre. La page de retrait officielle ne ramène vers Ethereum que l'ETH, le WBTC, l'USDC et l'USDT.",
+    "deadlineNote": "La date limite était le 20 octobre.",
+    "who": "Toute personne ayant des actifs sur la chaîne Mint.",
+    "todo": "La page officielle `mintchain.io/withdraw` ne permet de retirer vers Ethereum que l'ETH, le WBTC, l'USDC et l'USDT (l'avis d'imToken indique que les retraits sont traités chaque semaine et arrivent en environ 10 jours).",
+    "caution": "Mint n'a pas dit si quoi que ce soit d'autre est possible après la date limite.",
+    "official": [
+      "Page de retrait de Mint"
+    ]
+  },
+  "coinex-csc-shutdown": {
+    "name": "Fermeture de CoinEx Smart Chain (CSC) et de OneSwap",
+    "summary": "CoinEx cesse ses activités. La chaîne CSC et OneSwap se sont arrêtées le 29 septembre, et l'argent des comptes de la plateforme d'échange doit être retiré au plus tard le 22 décembre.",
+    "deadlineNote": "CSC et OneSwap se sont arrêtés le 29 septembre, et les rachats via le pont ont fermé en même temps. Les retraits depuis la plateforme d'échange CoinEx restent ouverts jusqu'au 22 décembre, 10:00 UTC+8.",
+    "who": "Toute personne ayant des actifs sur CSC ou OneSwap, et toute personne ayant encore de l'argent sur un compte de la plateforme d'échange CoinEx.",
+    "todo": "La date limite sur la blockchain est passée. Retirez l'argent de votre compte de plateforme d'échange avant le 22 décembre. Ensuite, l'USDT passe sous une garde séparée avec des frais de garde de 5% par mois ; pour le récupérer, écrivez à support@coinex.com au plus tard le 22 août 2028.",
+    "caution": "CoinEx indique qu'il s'agit de sa dernière annonce, et que toute « nouvelle annonce » publiée en son nom après celle-ci est fausse.",
+    "official": [
+      "Annonce de CoinEx"
+    ]
   }
 }
