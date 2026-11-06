@@ -526,7 +526,7 @@
   },
   "moonbeam-glmr-base": {
     "name": "Moonbeam: GLMR pindah ke Base",
-    "summary": "Tenggat memindahkan GLMR ke Base sudah lewat pada 31 Juli. Moonbeam meminta pemegang menarik dana dari protokol di chain itu dulu, lalu memindahkan GLMR lewat bridge 1:1 ke Base. Pengumumannya tidak menjelaskan apa yang terjadi pada GLMR yang tidak dipindahkan.",
+    "summary": "Tenggat migrasi GLMR ke Base lewat pada 31 Juli. Moonbeam meminta pemegang menarik dana dari protokol di chain itu dulu, lalu mem-bridge GLMR 1:1 ke Base. Pengumumannya tidak menyebut nasib GLMR yang tak dipindahkan.",
     "deadlineNote": "Tenggatnya 31 Juli (tanpa jam atau zona waktu). Moonbeam menyatakan chain tetap berjalan selama masa transisi sampai 31 Juli, dan begitu chain dihentikan, dana yang tersisa di protokol on-chain \"mungkin tidak bisa diakses\". Pengumumannya tidak menyebut kapan chain berhenti.",
     "who": "Pemegang GLMR di Moonbeam dan siapa pun yang punya dana di protokol di chain itu (likuiditas, pinjaman, kontrak staking, dan sebagainya). Untuk GLMR di exchange, Moonbeam menyatakan exchange akan menangani migrasinya secara otomatis.",
     "todo": "Langkahnya: tarik dana dari protokol di chain itu dulu, lalu pindahkan GLMR lewat bridge 1:1 ke Base di halaman migrasi resmi. Pengumuman 3 Juli tidak menjelaskan apakah migrasi masih tersedia setelah tenggat atau bagaimana token yang tidak dipindahkan akan ditangani.",
@@ -535,7 +535,7 @@
   },
   "moonriver-movr-base": {
     "name": "Moonriver: MOVR pindah ke Base",
-    "summary": "Tenggat memindahkan MOVR ke Base sudah lewat pada 31 Juli. Moonriver meminta pemegang menarik dana dari protokol di chain itu dulu, lalu memindahkan MOVR lewat bridge 1:1 ke Base dalam dua langkah. Pengumumannya tidak menjelaskan apa yang terjadi pada MOVR yang tidak dipindahkan.",
+    "summary": "Tenggat migrasi MOVR ke Base lewat pada 31 Juli. Moonriver meminta pemegang menarik dana dari protokol di chain itu dulu, lalu mem-bridge MOVR 1:1 ke Base dalam dua langkah. Pengumumannya tidak menyebut nasib MOVR yang tak dipindahkan.",
     "deadlineNote": "Tenggatnya 31 Juli (tanpa jam atau zona waktu). Moonriver menyatakan begitu chain dihentikan, dana yang tersisa di protokol on-chain \"mungkin tidak bisa diakses selamanya\". Pengumumannya tidak menyebut kapan chain berhenti.",
     "who": "Pemegang MOVR di Moonriver dan siapa pun yang punya dana di protokol di chain itu (likuiditas, pinjaman, kontrak staking, dan sebagainya). Untuk MOVR di exchange, Moonriver menyatakan tidak perlu melakukan apa pun; exchange menanganinya secara otomatis.",
     "todo": "Langkahnya: tarik dana dari protokol di chain itu dulu, lalu pindahkan lewat bridge dalam dua tahap di halaman migrasi resmi. MOVR pindah dari Moonriver ke Moonbeam (sebagai xcMOVR), lalu bridge migrasi mengubahnya menjadi MOVR di Base, 1:1 tanpa biaya. Pengumuman 7 Juli tidak menyebut apakah migrasi masih bisa dilakukan setelah tenggat.",

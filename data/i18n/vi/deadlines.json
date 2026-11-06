@@ -517,7 +517,7 @@
   },
   "dfk-chain-sunset": {
     "name": "DeFi Kingdoms: DFK Chain ngừng hoạt động",
-    "summary": "DFK Chain được lên lịch ngừng hoạt động vào ngày 28/8 (đã qua). DeFi Kingdoms cho biết không thể chuyển đổi JEWEL hay các token không thuộc DFK như BTC, ETH, USDC và AVAX, nên người nắm giữ phải tự chuyển chúng ra qua cầu nối trước thời điểm đó.",
+    "summary": "DFK Chain theo lịch ngừng hoạt động ngày 28/8 (đã qua). DeFi Kingdoms cho biết không thể chuyển đổi JEWEL hay token ngoài DFK như BTC, ETH, USDC, AVAX, nên người giữ phải tự chuyển chúng ra qua cầu nối trước đó.",
     "deadlineNote": "Thông báo ngày 31/7, với ngày ngừng hoạt động được ấn định là 28/8.",
     "who": "Những ai nắm giữ JEWEL, hoặc các token không thuộc DFK như BTC, ETH, USDC và AVAX, trên DFK Chain; nhà cung cấp thanh khoản ở đó; và người dùng ví thông minh.",
     "todo": "Những gì DeFi Kingdoms yêu cầu: người dùng ví thông minh chuyển tài sản sang một ví thông thường trước khi chuyển qua cầu nối, và rút toàn bộ LP, kể cả pool gồm hai tài sản gốc của DFK. Lúc đó, đội ngũ cho biết JEWEL có thể chuyển qua cầu nối sang Avalanche C-Chain và việc chuyển đổi các tài sản gốc của DFK đang được chuẩn bị, chi tiết sẽ thông báo sau.",
@@ -526,7 +526,7 @@
   },
   "moonbeam-glmr-base": {
     "name": "Moonbeam: GLMR chuyển sang Base",
-    "summary": "Hạn chót chuyển GLMR sang Base đã qua vào ngày 31/7. Moonbeam đề nghị người nắm giữ rút tiền khỏi các giao thức trên chuỗi trước, rồi chuyển GLMR qua cầu nối sang Base theo tỷ lệ 1:1. Thông báo không nói điều gì xảy ra với GLMR chưa được chuyển.",
+    "summary": "Hạn chót chuyển GLMR sang Base đã qua ngày 31/7. Moonbeam đề nghị người giữ rút tiền khỏi giao thức trên chuỗi trước, rồi chuyển GLMR 1:1 sang Base qua cầu nối. Thông báo không nói GLMR chưa chuyển sẽ ra sao.",
     "deadlineNote": "Hạn chót là ngày 31/7 (không ghi giờ hay múi giờ). Moonbeam cho biết chuỗi vẫn tiếp tục chạy trong giai đoạn chuyển tiếp đến ngày 31/7, và khi chuỗi ngừng hoạt động, tiền còn lại trong các giao thức trên chuỗi \"có thể không còn truy cập được\". Thông báo không nói khi nào chuỗi dừng.",
     "who": "Người nắm giữ GLMR trên Moonbeam và những ai có tiền trong các giao thức trên chuỗi đó (thanh khoản, cho vay, hợp đồng staking, v.v.). Với GLMR trên sàn, Moonbeam cho biết sàn sẽ tự động xử lý việc chuyển đổi.",
     "todo": "Các bước là: rút tiền khỏi các giao thức trên chuỗi trước, rồi chuyển GLMR qua cầu nối sang Base theo tỷ lệ 1:1 trên trang chuyển đổi chính thức. Thông báo ngày 3/7 không nêu rõ việc chuyển đổi có còn khả dụng sau hạn chót hay không, cũng như token chưa được chuyển sẽ được xử lý thế nào.",
@@ -535,7 +535,7 @@
   },
   "moonriver-movr-base": {
     "name": "Moonriver: MOVR chuyển sang Base",
-    "summary": "Hạn chót chuyển MOVR sang Base đã qua vào ngày 31/7. Moonriver đề nghị người nắm giữ rút tiền khỏi các giao thức trên chuỗi trước, rồi chuyển MOVR qua cầu nối sang Base theo tỷ lệ 1:1 qua hai bước. Thông báo không nói điều gì xảy ra với MOVR chưa được chuyển.",
+    "summary": "Hạn chót chuyển MOVR sang Base đã qua ngày 31/7. Moonriver đề nghị người giữ rút tiền khỏi giao thức trên chuỗi trước, rồi chuyển MOVR 1:1 sang Base qua cầu nối hai bước. Thông báo không nói MOVR chưa chuyển sẽ ra sao.",
     "deadlineNote": "Hạn chót là ngày 31/7 (không ghi giờ hay múi giờ). Moonriver cho biết khi chuỗi ngừng hoạt động, tiền còn lại trong các giao thức trên chuỗi \"có thể vĩnh viễn không truy cập được\". Thông báo không nói khi nào chuỗi dừng.",
     "who": "Người nắm giữ MOVR trên Moonriver và những ai có tiền trong các giao thức trên chuỗi đó (thanh khoản, cho vay, hợp đồng staking, v.v.). Với MOVR trên sàn, Moonriver cho biết không cần làm gì; sàn sẽ tự động xử lý.",
     "todo": "Các bước là: rút tiền khỏi các giao thức trên chuỗi trước, rồi chuyển qua cầu nối theo hai chặng trên trang chuyển đổi chính thức. MOVR đi từ Moonriver sang Moonbeam (dưới dạng xcMOVR), rồi cầu nối chuyển đổi biến nó thành MOVR trên Base, tỷ lệ 1:1, không mất phí. Thông báo ngày 7/7 không nói việc chuyển đổi có còn thực hiện được sau hạn chót hay không.",
