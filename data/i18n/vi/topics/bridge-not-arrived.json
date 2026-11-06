@@ -1,0 +1,188 @@
+{
+  "title": "Chuyển tiền xuyên chuỗi mà chưa thấy về? Hãy xác định bạn đã dùng cầu nối nào, rồi kiểm tra trên trang chính thức của cầu nối đó",
+  "summary": "Một lệnh chuyển xuyên chuỗi chưa về thường là vẫn đang trên đường, hoặc đang chờ bạn làm thêm một bước. Hãy xác định bạn đã dùng cầu nối nào, rồi xem trang trạng thái chính thức của cầu nối đó. Với những cầu nối có công bố thời gian: phần lớn lệnh chuyển qua Across mất khoảng 2 giây, phần lớn lệnh chuyển qua cBridge mất 5–20 phút; còn rút chính thức từ opBNB về BNB Smart Chain thì bạn phải tự tay gửi bằng chứng (proof), rồi chờ 7 ngày. Chỉ một số trường hợp mới cần bạn làm thêm một bước. Đừng gửi thêm lần nữa để \"gỡ kẹt\", và đừng trả tiền cho bất kỳ ai tự xưng là nhân viên hỗ trợ.",
+  "sections": [
+    {
+      "h": "Trước hết, xác định bạn đã dùng cầu nối nào",
+      "p": [
+        "Có rất nhiều dịch vụ chuyển tiền giữa các chuỗi. Xem trạng thái ở đâu, mất bao lâu, và gặp trục trặc thì làm gì — mỗi nơi một khác. Vì vậy bước đầu tiên là xác định bạn đã dùng dịch vụ nào."
+      ],
+      "list": [
+        "Xem lại trang web nơi bạn đã bấm gửi. Địa chỉ của trang sẽ cho bạn biết, ví dụ stargate.finance, across.to, relay.link hoặc portalbridge.com.",
+        "Mở giao dịch đó trên trình khám phá khối (block explorer) của chuỗi nguồn (chuỗi bạn gửi tiền đi) và xem tên hợp đồng ở mục `Interacted With (To)`. Tên đó thường cho biết đó là cầu nối nào.",
+        "Nếu bạn dùng tính năng cầu nối có sẵn trong ví, hoặc một trang tổng hợp (aggregator) đưa ra nhiều tuyến trên cùng một trang, thì đằng sau có thể là bất kỳ cầu nối nào dưới đây. Hãy quay lại đúng ví hoặc trang web bạn đã dùng và xem lịch sử ở đó để biết đã đi tuyến nào. Relay cho biết nếu bạn bắt đầu từ bên trong một ứng dụng khác, bạn phải tìm bằng địa chỉ mà ứng dụng đó đã dùng để gửi tiền; Wormhole cho biết nếu một ứng dụng bên thứ ba đã bắt đầu lệnh chuyển USDC và giữ lại quyền hoàn tất cho mình, thì chỉ ứng dụng đó mới hoàn tất được.",
+        "Rút từ sàn giao dịch sang một chuỗi khác? Tiền là do sàn gửi đi, nên hãy hỏi chính sàn đó. Relay cũng nói như vậy: nếu một sàn giao dịch hoặc dịch vụ khác gửi tiền thay bạn, hãy liên hệ dịch vụ đó, vì ví gửi tiền nằm trong tay họ.",
+        "Nếu bạn dùng cầu nối L2 chính thức để rút từ OP Mainnet, Base, Arbitrum, zkSync Era, Linea hoặc Scroll về Ethereum, đó là trường hợp khác, phải chờ từ vài giờ đến 7 ngày; xem chủ đề của chúng tôi về rút tiền từ L2, có đường dẫn ở mục Liên quan cuối trang này.",
+        "Trang này chỉ nói về việc chuyển tiền giữa các chuỗi EVM. Solana và các chuỗi không phải EVM khác nằm ngoài phạm vi trang này."
+      ]
+    },
+    {
+      "h": "Xem trạng thái ở đâu",
+      "p": [
+        "Chỉ dùng trang chính thức của từng cầu nối. Các địa chỉ dưới đây chỉ là chữ thường: hãy kiểm tra chúng trên thanh địa chỉ trước khi mở. Thông thường bạn sẽ cần mã hash của giao dịch trên chuỗi nguồn."
+      ],
+      "list": [
+        "Stargate: xem trên stargate.finance, hoặc trên LayerZero Scan (layerzeroscan.com). Nếu bạn chọn chế độ Economy (Bus) rẻ hơn, lệnh chuyển chỉ hiện trên LayerZero Scan sau khi \"chuyến xe\" (bus) đã xuất phát.",
+        "Across: công cụ theo dõi trạng thái trong tài liệu của Across, docs.across.to/tools/status-tracker, tra bằng mã hash giao dịch hoặc mã khoản nạp (deposit ID).",
+        "Wormhole / Portal: cầu nối ở portalbridge.com, còn lịch sử giao dịch nằm trên Wormholescan (wormholescan.io).",
+        "Circle CCTP (USDC): đây là tuyến nền tảng mà nhiều ứng dụng sử dụng, trong đó có Across, Portal và cầu nối Linea khi chuyển USDC. Chúng tôi không tìm thấy trang tra trạng thái nào của Circle dành cho người dùng thông thường, nên hãy kiểm tra trong ứng dụng bạn đã dùng.",
+        "Chainlink CCIP: CCIP Explorer (ccip.chain.link), tra được bằng mã thông điệp (message ID).",
+        "Axelar / Squid: các lệnh chuyển đi qua Axelar có thể theo dõi trên Axelarscan (axelarscan.io).",
+        "Celer cBridge: mục Pending và lịch sử chuyển tiền ở góc trên bên phải của cbridge.celer.network.",
+        "deBridge: deExplorer (app.debridge.com/orders), tra bằng mã lệnh (order ID), địa chỉ ví hoặc mã hash giao dịch. Các trạng thái gồm Created, Fulfilled, Canceling và Canceled.",
+        "Relay: mỗi lệnh chuyển có một trang riêng, đường dẫn được đưa ra khi chuyển xong. Nếu bạn làm mất đường dẫn, hãy vào relay.link/transactions và lọc theo địa chỉ ví, tên ENS hoặc mã hash giao dịch.",
+        "Orbiter: tab Search tại orbiter.finance/history.",
+        "Synapse: tab Activity trên synapseprotocol.com. Menu thả xuống của thanh tiến trình có đường dẫn đến block explorer của cả hai chuỗi.",
+        "Hop: trang tra cứu mà tài liệu của Hop nhắc đến, explorer.hop.exchange, báo lỗi 404 khi chúng tôi thử vào ngày 6/11/2026, và chúng tôi không tìm thấy trang tra trạng thái chính thức nào khác. Đừng vội rút thủ công chỉ vì đã chờ lâu; hãy xem các điều kiện để rút thủ công ở phần nói về việc tự làm thêm một bước, bên dưới.",
+        "Cầu nối chính thức của opBNB (từ opBNB về BNB Smart Chain): opbnb-bridge.bnbchain.org, chuyển sang tab \"official bridge\". Tài liệu cho biết trang này mặc định mở ở cầu nối cộng đồng, nên hãy kiểm tra xem lúc đó bạn đã dùng tab nào.",
+        "Cầu nối Polygon PoS: lịch sử giao dịch trong Polygon Portal (portal.polygon.technology)."
+      ]
+    },
+    {
+      "h": "Bình thường mất bao lâu",
+      "p": [
+        "Cầu nối nào có công bố con số thì chúng tôi ghi con số kèm điều kiện; cầu nối nào không công bố thì chúng tôi cũng ghi rõ (kiểm tra ngày 6/11/2026). Đây là ước tính của chính các cầu nối, không phải cam kết."
+      ],
+      "list": [
+        "Across: trên mainnet, phần lớn lệnh chuyển đến chuỗi đích trong khoảng 2 giây, lâu hơn khi mạng tắc nghẽn. Khoản nạp không có ai thực hiện (fill) trước hạn chót sẽ được hoàn tiền tự động, nhưng không phải ngay lập tức. Trang câu hỏi thường gặp (FAQ) ước tính khoảng 120–150 phút tính từ lúc nạp, và con số này đã bao gồm hạn thực hiện (fill deadline) khoảng 90 phút, tức không phải hết hạn rồi mới chờ thêm chừng đó; trang về hoàn tiền thì cho biết việc thanh toán sau khi hết hạn có thể mất thêm vài giờ nữa.",
+        "Orbiter: theo tài liệu của Orbiter, lệnh chuyển giữa hai địa chỉ ví thông thường hoàn tất trong 10 đến 20 giây.",
+        "deBridge: theo deBridge, thường xong trong vài giây; trong một số ít trường hợp (do điều kiện thị trường hoặc sự cố kỹ thuật) sẽ lâu hơn. Lệnh không ai nhận sẽ tiếp tục treo cho đến khi điều kiện phù hợp.",
+        "Celer cBridge: phần lớn lệnh chuyển mất 5–20 phút. Vì lý do bảo mật có đặt hạn mức (rate limit), nên số tiền lớn sẽ mất thêm thời gian.",
+        "Hop: tùy tuyến, và hai trang chính thức nói không khớp nhau. Một trang FAQ ghi lệnh chuyển thông thường giữa L1 và L2 mất tối đa 15 phút, giữa hai L2 tối đa 5 phút; trang liệt kê theo từng tuyến thì ước tính khoảng 25 phút nếu đi từ Optimism hoặc Base, khoảng 12 phút từ Arbitrum và khoảng 60 phút từ Polygon. Vì vậy, quá 5 hay 15 phút chưa có nghĩa là bạn cần rút thủ công; điều kiện để rút thủ công nằm ở phần tiếp theo.",
+        "Circle CCTP: tài liệu dành cho nhà phát triển của Circle liệt kê thời gian chứng thực (attestation) theo từng chuỗi nguồn. Chế độ tiêu chuẩn (Standard): khoảng 15–19 phút từ Ethereum, Arbitrum, Base hoặc OP Mainnet, khoảng 2 giây từ BNB Smart Chain, khoảng 8 giây từ Polygon PoS. Chế độ nhanh (Fast): khoảng 20 giây từ Ethereum, khoảng 8 giây từ Arbitrum, Base, OP Mainnet hoặc Linea. Sau khi có chứng thực, USDC vẫn còn phải được chuyển đến bạn trên chuỗi đích; xem phần tiếp theo.",
+        "Lệnh chuyển USDC ở chế độ tiêu chuẩn đi ra từ Linea thì chậm, và hai nguồn chính thức nói khác nhau: tài liệu nhà phát triển của Circle ghi khoảng 6–32 giờ, còn tài liệu cầu nối Linea ghi khoảng 2–12 giờ cho USDC về Ethereum. Hãy dựa theo những gì cầu nối bạn đã dùng hiển thị.",
+        "Chainlink CCIP: thời gian phụ thuộc vào việc chuỗi nguồn mất bao lâu để đạt trạng thái hoàn tất cuối cùng (finality). Bảng của Chainlink ước tính finality khoảng 12.8 phút với Ethereum, 17 phút với Arbitrum, 18 phút với Base, 20 phút với OP Mainnet, 17 phút với Polygon và 5 giây với BNB Chain, đồng thời cho biết các con số này có thể thay đổi.",
+        "Squid: không có một mốc thời gian chung; hãy dựa vào thời gian ước tính hiển thị lúc bạn thực hiện lệnh chuyển. Squid khuyên nên liên hệ bộ phận hỗ trợ khi đã quá 15 phút hoặc quá gấp đôi thời gian ước tính, tùy mốc nào dài hơn.",
+        "Wormhole: không có một mốc thời gian chung. Hướng dẫn khôi phục của Wormhole cho lệnh chuyển token bọc (wrapped token transfers, WTT) cho biết với lệnh chuyển đi từ Ethereum, bạn chờ tối đa khoảng 20 phút để Ethereum đạt finality, rồi mới coi lệnh đó là bị kẹt.",
+        "Cầu nối chính thức của opBNB về BNB Smart Chain: có thời gian khiếu nại (challenge period) 7 ngày sau khi bạn gửi bằng chứng (proof). Trang này còn có các cầu nối cộng đồng nhanh hơn, nhưng tài liệu cảnh báo chúng có thể không an toàn bằng cầu nối chính thức.",
+        "Stargate: không có một mốc thời gian chung. Ở chế độ Economy (Bus), \"xe\" xuất phát khi đã đầy chỗ hoặc khi đạt thời gian chờ tối đa, và trang sẽ hiện thời gian chờ ước tính; chế độ Fast (Taxi) thì không phải chờ xe.",
+        "Relay, Synapse và cầu nối Polygon PoS: không có một mốc thời gian chung. Synapse cho biết thời gian ước tính của họ dựa trên thời gian tạo khối của chuỗi đích, và đôi khi giao dịch rơi vào một khối muộn hơn dự kiến."
+      ]
+    },
+    {
+      "h": "Khi nào bạn cần tự làm thêm một bước",
+      "p": [
+        "Trong các trường hợp dưới đây, bạn có thể phải tự thao tác. Hãy kiểm tra trạng thái trước, và chỉ làm khi đã thật sự đến bước đó; mở công cụ từ trang web chính thức hoặc tài liệu chính thức. Ký không giống với gửi giao dịch: ví dụ trên Relay, bước ký là miễn phí, đến khi gửi giao dịch ở bước sau bạn mới trả gas. Có tốn tiền hay không, và tốn bao nhiêu, sẽ hiện ngay trong bước đó và trên màn hình xác nhận của ví."
+      ],
+      "list": [
+        "Cầu nối chính thức của opBNB (rút từ opBNB về BNB Smart Chain): lệnh rút nào cũng cần. Khi trạng thái hiện Waiting for Proof, bạn phải tự bấm Submit Proof; thời gian khiếu nại 7 ngày chỉ bắt đầu tính từ sau bước này; sau 7 ngày, bạn bấm Claim. Trang FAQ cho biết một lý do có thể khiến tiền chưa về sau 7 ngày là bằng chứng chưa bao giờ được ký, nên hãy kiểm tra lịch sử giao dịch trước.",
+        "Cầu nối Polygon PoS (về Ethereum): khi tiền đã sẵn sàng, bạn phải xác nhận thêm một lần nữa trên Ethereum, từ lịch sử giao dịch trong Polygon Portal, thì tiền mới về (trong hướng dẫn chính thức, các nút là Initiate Claim và Claim Tokens). Trung tâm trợ giúp cho biết lệnh rút bị kẹt có thể hoàn tất tại portal.polygon.technology/withdraw-tool bằng cách dán mã hash giao dịch và bấm Confirm Exit; còn giao dịch bị rớt vì gas đặt quá thấp hoặc lý do tương tự sẽ hiện nút Try Again khi đã kẹt hơn một giờ. Không có giới hạn thời gian để hoàn tất, và tiền vẫn nằm trong hợp đồng cầu nối.",
+        "Wormhole / Portal: các điểm về tự động, thủ công và 24 giờ ở đây chỉ áp dụng cho lệnh chuyển token bọc (WTT) của Wormhole. Lệnh chuyển tự động do một bên chuyển tiếp (relayer) hoàn tất; bạn không phải làm gì. Lệnh chuyển thủ công phải chờ đến khi chứng thực (attestation) của lệnh chuyển được ký, sau đó cần gửi một lần trên chuỗi đích (gọi là redeem). Tài liệu dành cho nhà phát triển nói hãy hoàn tất trong vòng 24 giờ; quá thời gian đó, chữ ký Guardian của cầu nối có thể đã thay đổi và phải được cập nhật trước khi bạn gửi được. Đây là chữ ký của cầu nối, không phải các quyền bạn đã cấp trong ví. Nếu lệnh chuyển tự động chưa chạy xong, hãy kiểm tra ứng dụng ban đầu trước; Wormhole cũng có mô tả một script khôi phục dành cho nhà phát triển. Với lệnh chuyển USDC (CCTP) bắt đầu trong ứng dụng bên thứ ba, nếu ứng dụng đó giữ lại quyền hoàn tất cho mình, Portal không thể hoàn tất giúp bạn và bạn phải quay lại ứng dụng đó; đây là một lý do có thể khiến Portal không hoàn tất được lệnh chuyển.",
+        "Hop: chỉ khi không có Bonder nào nhận lệnh chuyển của bạn kịp thời, ví dụ vì phí đặt quá thấp, hoặc Bonder đang ngoại tuyến hay hết thanh khoản. Trước hết, Transfer Root chứa lệnh chuyển của bạn phải đến được chuỗi đích, việc này theo Hop có thể mất vài giờ hoặc vài ngày, nên vừa gửi xong mà rút ngay thì không được. Sau đó, dán mã hash giao dịch trên chuỗi nguồn vào trang Withdraw của Hop và bấm withdraw. Nếu chuỗi đích là L2, bạn nhận được hToken (ví dụ hUSDC), cần đổi sang token gốc ở trang Convert; nếu về Ethereum, bạn nhận thẳng token gốc.",
+        "Hop và USDC.e: đây là một quy trình thủ công riêng, và chỉ chờ 7 ngày là không đủ. Từ khi cầu nối USDC chuyển sang dùng CCTP và Bonder cho USDC.e ngừng hoạt động, các lệnh chuyển liên quan đến USDC.e đều phải xử lý thủ công. Để chuyển hUSDC.e về L1 theo hướng dẫn chính thức về USDC.e: chỉ khi bạn chưa bắt đầu thì mới bắt đầu ở trang Convert, chọn \"via Hop Bridge\". Nếu bạn đã bắt đầu rồi và lệnh đang bị kẹt, đừng gửi thêm một lệnh nữa: lấy mã hash giao dịch trên chuỗi nguồn của lệnh chuyển ban đầu, vào trang Relay của Hop và làm nốt các bước còn thiếu, theo đúng thứ tự: Commit Transfers trước, rồi đến Prove Withdrawal. Sau khi chứng minh (proof) thành công, chờ 7 ngày, gửi Finalize Withdrawal ở trang Relay khi bước này đã mở, rồi nhập đúng mã hash giao dịch trên chuỗi nguồn của lệnh chuyển ban đầu đó vào trang Withdraw và bấm Withdraw.",
+        "Celer cBridge: chỉ khi lệnh chuyển thất bại, ví dụ vì chuỗi đích thiếu thanh khoản hoặc mức trượt giá (slippage) đặt quá chặt. Một cửa sổ bật lên sẽ giải thích lý do, sau đó bạn bấm Request Refund trong lịch sử chuyển tiền.",
+        "deBridge: việc hủy chỉ áp dụng cho lệnh chưa có ai nhận và vẫn đang treo. Mở lệnh đó trong deExplorer, kết nối địa chỉ Order Authority trên chuỗi đích, bấm Cancel, nhập địa chỉ trên chuỗi nguồn để nhận tiền hoàn, bấm Send Cancel và xác nhận trong ví. deBridge cho biết toàn bộ số tiền bị khóa sẽ được hoàn lại, kể cả phí; bạn chỉ trả gas cho giao dịch hủy.",
+        "Relay: khi lệnh chuyển không hoàn tất được, hệ thống sẽ tự động thử hoàn tiền. Chỉ khi việc đó cũng thất bại, trang giao dịch mới hiện \"Automatic refund failed\" và nút Withdraw funds, và chỉ khi đó bạn mới vào relay.link/withdraw: xác minh khoản nạp, ký (miễn phí), chờ vài phút để mọi thứ được chuẩn bị, rồi bấm Submit trong vòng khoảng một giờ (tốn một ít gas). Lệnh chuyển vẫn đang xử lý hoặc đã về thì không cần và cũng không rút được, và chỉ ví đã gửi tiền mới rút được.",
+        "Axelar / Squid: chỉ khi Axelarscan hiện Pay Gas, Insufficient Fee hoặc Not Enough Gas, ví dụ vì gas trên chuỗi đích tăng và lệnh chuyển bị tạm dừng. Khi đó hãy mở thông điệp (message) đó trên Axelarscan, kết nối ví trên chuỗi nguồn và bấm Add gas; số tiền sẽ được tính sẵn. Lệnh chuyển sẽ tiếp tục, và phần không dùng hết sẽ được hoàn lại.",
+        "Lệnh đổi token qua Squid không thành công có vài trường hợp. Với tuyến đi qua Axelar, nếu giao dịch trên chuỗi nguồn thành công nhưng bước đổi token trên chuỗi đích thất bại (trạng thái PARTIAL_SUCCESS), bạn sẽ nhận axlUSDC trên chuỗi đích; hãy kiểm tra chắc chắn là đã nhận được, rồi tự đổi nó trên chuỗi đó. Nếu giao dịch trên chuỗi nguồn chưa từng thực hiện được thì không thuộc trường hợp này: Squid cho biết token vẫn nằm trong ví của bạn, dù có thể đã tốn một ít cho gas. Tuyến Squid Intents bị lỗi sẽ được tự động hoàn tiền về chuỗi nguồn, theo Squid thường mất khoảng 10 phút.",
+        "Chainlink CCIP: bộ thực thi mặc định sẽ tự động thử thực thi thông điệp. Chỉ khi CCIP Explorer hiện \"Ready for manual execution\" thì mới có nút Trigger Manual Execution, và bấm nút đó nghĩa là bạn tự gửi một giao dịch trên chuỗi đích và tự trả gas. Nút đó xuất hiện không có nghĩa là sự cố đã được giải quyết: nếu trước đó đã thực thi thất bại, tài liệu nói chỉ thử lại sau khi nguyên nhân đã được khắc phục, nên hãy để ứng dụng ban đầu xác nhận đã khắc phục xong trước, và đừng gửi lại nhiều lần.",
+        "Circle CCTP: bước cuối chuyển USDC đến bạn trên chuỗi đích thì có ứng dụng làm giúp bạn (với tính năng Forwarding của Circle, bước này được gửi tự động), có ứng dụng để bạn tự làm; ví dụ, USDC trên cầu nối Linea luôn cần Claim thủ công: khi lịch sử hiện \"Ready to claim\", bạn mới gửi Claim trên chuỗi đích. Tài liệu nhà phát triển của Circle cho biết thông điệp có thời hạn hiệu lực 24 giờ và phải được ký lại sau thời hạn đó, đồng thời lệnh chuyển nhanh đã hết hạn không bị kẹt vĩnh viễn và có thể được chứng thực lại bất cứ lúc nào. Việc này do ứng dụng thực hiện, nên hãy tìm đến ứng dụng bạn đã dùng.",
+        "Synapse: nếu trượt giá tăng vọt trong lúc đổi token, Synapse sẽ giao cho bạn tài sản trung gian thay vì cố đổi trong tình trạng lỗ, và bạn có thể tự đổi nó trên chuỗi đích. Synapse cho biết các lệnh chuyển không hoàn tất sẽ không bị mất; đội hỗ trợ của họ xử lý thủ công."
+      ]
+    },
+    {
+      "h": "Nhờ chính cầu nối đó hỗ trợ",
+      "p": [
+        "Chuẩn bị sẵn mã hash giao dịch trên chuỗi nguồn. Chỉ tìm đến bộ phận hỗ trợ qua trang web chính thức hoặc tài liệu chính thức; bỏ qua mọi đường dẫn \"hỗ trợ\" từ kết quả tìm kiếm, tin nhắn riêng hay bình luận trả lời."
+      ],
+      "list": [
+        "Across: nếu đã quá 3 giờ, trang FAQ liệt kê Telegram, mục hỗ trợ ngay trong ứng dụng trên across.to, và Slack.",
+        "Celer cBridge: kẹt ở Submitting? Kiểm tra xem giao dịch trên chuỗi nguồn đã được xác nhận chưa; nếu chưa, bạn có thể tăng giá gas để tăng tốc, còn nếu rồi thì liên hệ bộ phận hỗ trợ. Kẹt ở \"Waiting for SGN confirmation\" hoặc \"Waiting for fund release\"? Chờ thêm ít nhất 2 giờ nữa, và liên hệ bộ phận hỗ trợ sau 3 giờ. Dùng đường dẫn customer support trong FAQ chính thức và gửi kèm mã hash giao dịch trên chuỗi nguồn. Ngoài ra còn có cộng đồng Discord và Telegram chính thức.",
+        "Relay: khung chat trên relay.link, hoặc email support@relay.link ghi trong trung tâm trợ giúp của Relay. Gửi đường dẫn đầy đủ của trang giao dịch là nhanh nhất.",
+        "Orbiter: tìm lệnh chuyển đó trên trang History trước, rồi dùng Create Ticket trong Discord chính thức của Orbiter, ghi rõ hai chuỗi và mã hash giao dịch.",
+        "Synapse và Squid: tài liệu của họ đều chỉ đến server Discord riêng của mỗi bên.",
+        "deBridge: mục Contact trên trang web của deBridge liệt kê trung tâm trợ giúp, debridge.com/support, và Discord.",
+        "Chainlink CCIP: tài liệu nói nếu bạn cho rằng trạng thái trên Explorer bị sai, hãy gửi yêu cầu hỗ trợ (ticket) kèm mã thông điệp CCIP (message ID), nhưng không nói gửi ở đâu.",
+        "Circle CCTP: đường dẫn Support ở chân trang tài liệu nhà phát triển của Circle dẫn đến trang gửi yêu cầu hỗ trợ của Circle Help Center (help.circle.com). Nếu lệnh chuyển bắt đầu trong một ứng dụng khác, hãy tìm đến ứng dụng đó trước.",
+        "Cầu nối Polygon PoS: trung tâm trợ giúp tại support.polygon.technology. Khi chưa đăng nhập, chúng tôi chỉ thấy các bài viết trong kho kiến thức, không thấy chỗ nào để gửi yêu cầu hỗ trợ.",
+        "Stargate: mục Support → Help Center trên trang web mở ra Discord chính thức, và trang web cũng liệt kê Telegram. Chúng tôi không tìm thấy biểu mẫu gửi yêu cầu hỗ trợ riêng trên web.",
+        "Wormhole / Portal, Hop và opBNB: chúng tôi không tìm thấy kênh hỗ trợ rõ ràng nào trong tài liệu của họ."
+      ]
+    },
+    {
+      "h": "Những điều không nên làm",
+      "p": [
+        "Chờ một khoản tiền mãi chưa về rất dễ sốt ruột, và đó chính là lúc người ta trả thừa tiền hoặc bị lừa."
+      ],
+      "list": [
+        "Đừng gửi thêm lần nữa để \"gỡ kẹt\". Làm vậy chỉ là gửi thêm một khoản khác, không đẩy được khoản trước đi tiếp. Polygon cho biết lệnh rút đã bắt đầu thì không hủy được, nhưng cũng không có hạn chót phải hoàn tất, và tiền vẫn nằm trong hợp đồng cầu nối.",
+        "Chưa đến lúc thì đừng bấm hoàn tiền, hủy hay rút. Relay cho biết lệnh chuyển vẫn đang xử lý thì không cần và cũng không rút được, còn Across sẽ tự động hoàn tiền cho khoản nạp không ai thực hiện sau khi quá hạn chót.",
+        "Đừng trả tiền cho bất kỳ ai đề nghị \"tăng tốc\", \"gỡ đóng băng\" hay \"lấy lại\" khoản tiền đó. Trang hỗ trợ về lừa đảo của ethereum.org nói rằng ai liên hệ bạn và tự nhận có thể lấy lại tiền cho bạn nếu trả phí thì gần như chắc chắn đang thực hiện một vụ lừa đảo thứ hai, và quản trị viên (moderator) thật sẽ không bao giờ nhắn tin riêng cho bạn trước. (Đây là lời khuyên chung của ethereum.org, không phải quy định riêng của cầu nối nào.)",
+        "Không bao giờ nhập cụm từ khôi phục hay khóa riêng tư vào bất kỳ trang web nào. ethereum.org nói: không bao giờ nhập cụm từ khôi phục trên bất kỳ trang web nào, vì ứng dụng chính đáng không bao giờ yêu cầu điều đó. Relay nói: chỉ rút tiền tại relay.link/withdraw, và không bao giờ đưa cụm từ khôi phục hay khóa riêng tư cho bất kỳ ai, kể cả người tự xưng là từ Relay.",
+        "DeFiExit chỉ đề nghị ví của bạn chia sẻ địa chỉ — không bao giờ yêu cầu bạn ký, cấp quyền hay gửi bất cứ thứ gì, và chúng tôi không bao giờ nhắn tin cho bạn trước."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Giao dịch trên chuỗi nguồn đã báo thành công. Sao tiền vẫn chưa về?",
+      "a": "Thành công trên chuỗi nguồn chỉ có nghĩa là tiền đã được gửi đi. Ở phía chuỗi đích, lệnh chuyển có thể vẫn đang xếp hàng, đang chờ xác nhận, hoặc đang chờ bạn làm một bước. Hãy xác định đó là cầu nối nào và xem trang trạng thái chính thức của nó: xem trạng thái trước, rồi mới xem thời gian. Nếu trang yêu cầu bằng chứng (proof) hoặc báo tiền đã sẵn sàng để nhận (như Waiting for Proof của opBNB, Ready to claim của Linea), hãy làm theo các bước chính thức. Nếu vẫn đang xác nhận hoặc đang xử lý và không có gì yêu cầu bạn làm, hãy tiếp tục chờ, và đối chiếu với phần \"Bình thường mất bao lâu\" trên trang này."
+    },
+    {
+      "q": "Cầu nối báo đã hoàn tất, nhưng tôi không thấy tiền trong ví.",
+      "a": "Trước hết, chuyển ví sang chuỗi đích. Celer cBridge cho biết lý do thường gặp là token đó chưa được thêm vào ví, và bấm biểu tượng MetaMask ở dòng giao dịch đó trong lịch sử là thêm được. Synapse cho biết gas airdrop và tiền hoàn phí (rebate) được gửi tự động, nhưng trang của họ chỉ hiện các tài sản có thể chuyển qua cầu nối, nên hãy xem trong ví của bạn trên chuỗi đích. Cũng có thể bạn đã nhận một loại token khác; xem câu hỏi tiếp theo."
+    },
+    {
+      "q": "Token tôi nhận được không phải loại tôi mong đợi.",
+      "a": "Khi lệnh chuyển có kèm đổi token và giá biến động quá mạnh giữa chừng, một số cầu nối sẽ đưa bạn token trung gian thay thế. Trên các tuyến Axelar của Squid, nếu giao dịch trên chuỗi nguồn thành công nhưng bước đổi token trên chuỗi đích thất bại (PARTIAL_SUCCESS), bạn sẽ nhận axlUSDC; nếu giao dịch trên chuỗi nguồn thất bại, token vẫn nằm trong ví ban đầu của bạn. Synapse sẽ đưa tài sản trung gian, còn Hop đôi khi đưa hToken (ví dụ hUSDC), cần đổi sang token gốc ở trang Convert của Hop. Hãy kiểm tra xem các token đó đã về ví chưa, rồi tự đổi chúng trên chuỗi đích."
+    },
+    {
+      "q": "Tôi có thể hủy để lấy lại tiền không?",
+      "a": "Tùy cầu nối và tùy lệnh đang ở giai đoạn nào. Trên deBridge, lệnh chưa có ai nhận có thể hủy và được hoàn tiền toàn bộ. Across tự động hoàn tiền cho khoản nạp không ai thực hiện sau khi quá hạn chót. Trên cBridge, lệnh chuyển thất bại có nút Request Refund trong lịch sử. Trên Relay, nếu hoàn tiền tự động thất bại, bạn rút tại relay.link/withdraw. Polygon cho biết lệnh rút từ Polygon đã gửi đi thì không hủy được, nhưng không có hạn chót và có thể hoàn tất bất cứ lúc nào."
+    },
+    {
+      "q": "Tôi rút từ sàn giao dịch sang một chuỗi khác, nhưng mãi không thấy về.",
+      "a": "Trường hợp này tiền do sàn gửi đi, nên hãy liên hệ bộ phận hỗ trợ của chính sàn đó, qua ứng dụng hoặc trang web chính thức của sàn. Relay cũng nói như vậy: nếu sàn giao dịch hoặc dịch vụ khác gửi tiền thay bạn, chỉ ví đã gửi tiền mới thao tác được với khoản đó, nên hãy liên hệ dịch vụ đó."
+    },
+    {
+      "q": "Có người trong phần bình luận trả lời nói có thể gỡ kẹt lệnh chuyển của tôi nếu trả một khoản phí nhỏ.",
+      "a": "Hãy phớt lờ họ. Trang hỗ trợ về lừa đảo của ethereum.org nói rằng ai đề nghị lấy lại tiền để đổi lấy phí thì gần như chắc chắn là kẻ lừa đảo, và quản trị viên thật không bao giờ nhắn tin riêng cho bạn trước. Lệnh chuyển bị kẹt chỉ có thể xử lý qua trang chính thức và các bước chính thức của chính cầu nối đó. Không bao giờ đưa cụm từ khôi phục hay khóa riêng tư cho bất kỳ ai."
+    }
+  ],
+  "sources": [
+    "Tài liệu Stargate: Chuyển tiền (hai chế độ Bus và Taxi, theo dõi trên LayerZero Scan)",
+    "Tài liệu Stargate: Câu hỏi thường gặp (xe xuất phát khi đầy chỗ hoặc khi đạt thời gian chờ tối đa)",
+    "Tài liệu LayerZero: Stargate (theo dõi lệnh chuyển trên LayerZero Scan)",
+    "Trang web Stargate (Support → Help Center mở ra Discord chính thức; có liệt kê cả Telegram)",
+    "Tài liệu Across: Tính năng chính (khoảng 2 giây trên mainnet)",
+    "Tài liệu Across: Hoàn tiền (tự động, có thể mất vài giờ)",
+    "Tài liệu Across: FAQ kỹ thuật (hoàn tiền khoảng 120–150 phút sau khi nạp, quá 3 giờ thì liên hệ ai)",
+    "Tài liệu Across: Công cụ theo dõi trạng thái",
+    "Blog Wormhole: Bản nâng cấp Portal (lịch sử trên Wormholescan, redeem tự động)",
+    "Tài liệu Wormhole: Quy trình chuyển token bọc (WTT) (tự động và thủ công; lệnh chuyển thủ công cần hoàn tất trong 24 giờ)",
+    "Tài liệu Wormhole: Chuyển tài sản bọc (WTT; script khôi phục cho nhà phát triển, tối đa 20 phút để Ethereum đạt finality)",
+    "Tài liệu Wormhole: Câu hỏi thường gặp về Portal (lệnh chuyển CCTP mà ứng dụng bên thứ ba giữ lại quyền hoàn tất: chỉ ứng dụng đó hoàn tất được)",
+    "Tài liệu nhà phát triển Circle: Finality và số khối xác nhận (thời gian chứng thực theo chuỗi nguồn)",
+    "Tài liệu nhà phát triển Circle: Hướng dẫn kỹ thuật CCTP (hết hạn sau 24 giờ, chứng thực lại)",
+    "Circle: Cross-Chain Transfer Protocol (với Forwarding, chứng thực được gửi tự động)",
+    "Tài liệu Linea: Chuyển token qua cầu nối (USDC đi qua CCTP, Claim thủ công khi hiện Ready to claim, khoảng 2–12 giờ về Ethereum)",
+    "Tài liệu Chainlink: CCIP Explorer",
+    "Tài liệu Chainlink: Độ trễ thực thi của CCIP (phụ thuộc vào finality)",
+    "Tài liệu Chainlink: Finality của từng chuỗi trong CCIP",
+    "Tài liệu Chainlink: Thực thi thủ công CCIP (Ready for manual execution, thất bại thì chỉ thử lại sau khi đã khắc phục nguyên nhân, yêu cầu hỗ trợ)",
+    "Tài liệu Squid: Theo dõi trạng thái (NEEDS_GAS, 15 phút, axlUSDC khi PARTIAL_SUCCESS, hoàn tiền trong khoảng 10 phút)",
+    "Tài liệu Squid: Thông tin cho bên tích hợp (token vẫn ở trong ví nếu bước đổi token trên chuỗi nguồn chưa bắt đầu, thêm gas trên Axelarscan khi bị tạm dừng, Discord)",
+    "Tài liệu Axelar: Khôi phục thông điệp (Add gas trên Axelarscan)",
+    "Tài liệu Celer cBridge: Câu hỏi thường gặp (5–20 phút, lệnh chuyển bị kẹt, hỗ trợ khách hàng)",
+    "Tài liệu Celer cBridge: Hướng dẫn chuyển xuyên chuỗi (Pending, Request Refund)",
+    "Trung tâm hỗ trợ deBridge (vài giây, deExplorer, Contact)",
+    "Hỗ trợ deBridge: Điều gì xảy ra nếu giao dịch qua cầu nối bị chậm hoặc đang treo?",
+    "Hỗ trợ deBridge: Làm sao để hủy lệnh?",
+    "Hỗ trợ deBridge: Nếu hủy giao dịch, tôi có được hoàn phí không?",
+    "Trung tâm hỗ trợ Relay: Làm sao tìm giao dịch của tôi?",
+    "Trung tâm hỗ trợ Relay: Cách rút tiền (sau khi hoàn tiền tự động thất bại; chỉ tại relay.link/withdraw)",
+    "Tài liệu Orbiter: Câu hỏi thường gặp (tìm trong History, Create Ticket)",
+    "Tài liệu Orbiter: Tổng quan (10 đến 20 giây)",
+    "Tài liệu Synapse: Câu hỏi thường gặp về hỗ trợ giao dịch",
+    "Tài liệu Hop: Tôi đã gửi token nhưng chưa thấy đến (15 phút, 5 phút, hToken)",
+    "Tài liệu Hop: Một lệnh chuyển mất bao lâu? (thời gian theo chuỗi nguồn; có nhắc đến trang tra cứu của Hop)",
+    "Tài liệu Hop: Rút thủ công (vài giờ hoặc vài ngày)",
+    "Tài liệu Hop: Rút USDC.e thủ công (7 ngày sau Commit và Prove, rồi Finalize và Withdraw)",
+    "Tài liệu BNB Chain: Rút từ opBNB (thời gian khiếu nại 7 ngày, tự gửi bằng chứng)",
+    "Tài liệu BNB Chain: Câu hỏi thường gặp về cầu nối opBNB (sau 7 ngày chưa nhận được: kiểm tra xem đã gửi bằng chứng chưa)",
+    "Tài liệu Polygon: Hướng dẫn dùng Polygon Portal (Initiate Claim, Claim Tokens)",
+    "Hỗ trợ Polygon: Giao dịch của tôi treo quá lâu (Try Again, Confirm Exit)",
+    "Hỗ trợ Polygon: Lệnh rút không hủy được, nhưng không có giới hạn thời gian",
+    "ethereum.org: Hỗ trợ và báo cáo lừa đảo (lời khuyên chung)"
+  ]
+}

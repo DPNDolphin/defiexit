@@ -1,0 +1,188 @@
+{
+  "title": "Ağlar arası transferiniz ulaşmadı mı? Hangi köprüyü kullandığınızı bulun, sonra o köprünün resmi sayfasına bakın",
+  "summary": "Ulaşmayan bir ağlar arası transfer genelde ya hâlâ yoldadır ya da sizin bir adım daha atmanızı bekliyordur. Hangi köprüyü kullandığınızı bulun, sonra o köprünün resmi durum sayfasına bakın. Süre yayımlayan köprülere göre: Across transferlerinin çoğu yaklaşık 2 saniye, cBridge transferlerinin çoğu 5–20 dakika sürer; opBNB'den BNB Smart Chain'e resmi bir çekimde önce bir kanıtı (proof) elle göndermeniz, ardından 7 gün beklemeniz gerekir. Sizin bir adım daha atmanız yalnızca bazı durumlarda gerekir. “Takılanı çözmek” için yeniden göndermeyin ve destek olduğunu söyleyen kimseye para ödemeyin.",
+  "sections": [
+    {
+      "h": "Önce hangi köprüyü kullandığınızı bulun",
+      "p": [
+        "Parayı ağlar arasında taşıyan pek çok farklı hizmet var. Durumu nereden kontrol edeceğiniz, ne kadar süreceği ve bir şey ters gidince ne yapacağınız hizmetten hizmete değişir. Bu yüzden ilk adım hangisini kullandığınızı bulmaktır."
+      ],
+      "list": [
+        "Gönder düğmesine bastığınız web sitesine bakın. Adresi size cevabı verir; örneğin stargate.finance, across.to, relay.link ya da portalbridge.com.",
+        "İşlemi kaynak ağın blok gezgininde açın ve `Interacted With (To)` altındaki sözleşme adına bakın. Çoğu zaman hangi köprü olduğunu buradan anlarsınız.",
+        "Bir cüzdanın yerleşik köprüsünü ya da tek sayfada birkaç rota sunan bir toplayıcıyı kullandıysanız, arkasında aşağıdaki köprülerden herhangi biri olabilir. Kullandığınız cüzdana ya da siteye dönün ve rotayı onun geçmişinde kontrol edin. Relay'e göre başka bir uygulamanın içinden başladıysanız, o uygulamanın parayı gönderdiği adresle arama yaparsınız; Wormhole'a göre de üçüncü taraf bir uygulama bir USDC transferini başlattıysa ve tamamlama hakkını kendine ayırdıysa, transferi yalnızca o uygulama tamamlayabilir.",
+        "Bir borsadan başka bir ağa çekim mi yaptınız? Parayı borsa gönderdi, bu yüzden borsaya sorun. Relay de aynısını söylüyor: parayı sizin için bir borsa ya da başka bir hizmet gönderdiyse o hizmetle iletişime geçin, çünkü gönderen cüzdanı o kontrol eder.",
+        "OP Mainnet, Base, Arbitrum, zkSync Era, Linea ya da Scroll'dan Ethereum'a geri çekmek için resmi bir L2 köprüsü kullandıysanız bu ayrı bir durumdur ve bekleme birkaç saatten 7 güne kadar sürer; bağlantısı bu sayfanın altındaki “İlgili” bölümünde olan L2 çekimleri konumuza bakın.",
+        "Bu sayfa yalnızca EVM ağları arasındaki transferleri kapsar. Solana ve EVM dışı diğer ağlar kapsam dışındadır."
+      ]
+    },
+    {
+      "h": "Durum nereden kontrol edilir",
+      "p": [
+        "Yalnızca her köprünün resmi sayfalarını kullanın. Aşağıdaki adresler düz metin olarak verildi: açmadan önce adres çubuğunuzda kontrol edin. Genelde kaynak ağdaki işlem hash'ine ihtiyacınız olur."
+      ],
+      "list": [
+        "Stargate: stargate.finance üzerinden ya da LayerZero Scan'de (layerzeroscan.com) kontrol edin. Daha ucuz Economy (Bus) modunu seçtiyseniz transfer LayerZero Scan'de ancak “otobüs” yola çıktıktan sonra görünür.",
+        "Across: belgelerindeki durum takip aracı, docs.across.to/tools/status-tracker; işlem hash'i ya da deposit ID ile arayın.",
+        "Wormhole / Portal: köprünün kendisi portalbridge.com, işlem geçmişi ise Wormholescan'de (wormholescan.io).",
+        "Circle CCTP (USDC): Across, Portal ve Linea köprüsünün USDC transferleri dahil pek çok uygulamanın kullandığı bir altyapı rotası. Circle'ın sıradan kullanıcılar için bir durum sayfasını bulamadık; bu yüzden kullandığınız uygulamada kontrol edin.",
+        "Chainlink CCIP: CCIP Explorer (ccip.chain.link), mesaj ID'siyle (message ID) arama yapılabilir.",
+        "Axelar / Squid: Axelar üzerinden geçen transferler Axelarscan'de (axelarscan.io) takip edilebilir.",
+        "Celer cBridge: cbridge.celer.network sayfasının sağ üstündeki Pending ve transfer geçmişi.",
+        "deBridge: deExplorer (app.debridge.com/orders); emir (order) ID'si, cüzdan adresi ya da işlem hash'iyle. Durumlar şunlardır: Created, Fulfilled, Canceling ve Canceled.",
+        "Relay: her transferin kendi sayfası vardır; transfer bitince bağlantısı verilir. Bağlantıyı kaybettiyseniz relay.link/transactions adresine gidin ve cüzdan adresi, ENS adı ya da işlem hash'iyle filtreleyin.",
+        "Orbiter: orbiter.finance/history adresindeki Search sekmesi.",
+        "Synapse: synapseprotocol.com üzerindeki Activity sekmesi. İlerleme açılır menüsünde her iki ağın blok gezginlerine bağlantılar var.",
+        "Hop: belgelerinin andığı gezgin explorer.hop.exchange, 2026-11-06 tarihinde denediğimizde 404 döndürdü ve başka bir resmi durum sayfası bulamadık. Sırf zaman geçti diye elle çekime girişmeyin; bunun koşullarını aşağıda, bir adımı sizin atmanız gereken durumları anlatan bölümde kontrol edin.",
+        "Resmi opBNB köprüsü (opBNB'den BNB Smart Chain'e geri): opbnb-bridge.bnbchain.org, “official bridge” sekmesine geçilmiş hâlde. Belgelere göre sayfa varsayılan olarak topluluk köprüsünde (community bridge) açılır; bu yüzden hangi sekmeyi kullandığınızı kontrol edin.",
+        "Polygon PoS köprüsü: Polygon Portal'daki (portal.polygon.technology) işlem geçmişi."
+      ]
+    },
+    {
+      "h": "Normalde ne kadar sürer",
+      "p": [
+        "Bir köprü rakam yayımlıyorsa bunları koşullarıyla birlikte veriyoruz; yayımlamıyorsa bunu belirtiyoruz (2026-11-06 tarihinde kontrol edildi). Bunlar köprülerin kendi tahminleridir, garanti değildir."
+      ],
+      "list": [
+        "Across: ana ağda transferlerin çoğu hedef ağa yaklaşık 2 saniyede ulaşır, ağ yoğunken daha uzun sürer. Süre sınırı dolmadan kimsenin karşılamadığı (fill) bir yatırma otomatik olarak iade edilir, ama hemen değil. SSS bunu yatırmadan itibaren yaklaşık 120–150 dakika olarak tahmin ediyor ve bu süreye yaklaşık 90 dakikalık karşılama süre sınırı zaten dahil; yani süre dolduktan sonra ayrıca bu kadar beklenmez. İadeler sayfasına göre süre dolduktan sonraki mutabakat birkaç saat daha sürebilir.",
+        "Orbiter: belgelerine göre iki normal cüzdan adresi arasındaki transferler 10 ila 20 saniyede tamamlanır.",
+        "deBridge: kendi söylediğine göre genelde saniyeler içinde tamamlanır; nadir durumlarda (piyasa koşulları ya da teknik sorunlar yüzünden) daha uzun sürer. Kimsenin almadığı bir emir, koşullar uygun hâle gelene kadar açık kalır.",
+        "Celer cBridge: transferlerin çoğu 5–20 dakika sürer. Güvenlik için hız sınırları (rate limits) uygulanır, bu yüzden büyük tutarlar daha uzun sürer.",
+        "Hop: rotaya göre değişir ve iki resmi sayfa birbirini tutmuyor. Bir SSS, L1 ile L2 arasındaki normal bir transfer için en fazla 15 dakika, iki L2 arasında en fazla 5 dakika diyor; rota rota süre veren sayfa ise Optimism ya da Base'den yaklaşık 25 dakika, Arbitrum'dan yaklaşık 12, Polygon'dan yaklaşık 60 dakika tahmin ediyor. Yani 5 ya da 15 dakikanın geçmesi elle çekim yapmanız gerektiği anlamına gelmez; bunun koşulları bir sonraki bölümde.",
+        "Circle CCTP: Circle'ın geliştirici belgeleri tasdikin (attestation) ne kadar sürdüğünü kaynak ağa göre listeliyor. Standard: Ethereum, Arbitrum, Base ya da OP Mainnet'ten yaklaşık 15–19 dakika, BNB Smart Chain'den yaklaşık 2 saniye, Polygon PoS'tan yaklaşık 8 saniye. Fast: Ethereum'dan yaklaşık 20 saniye; Arbitrum, Base, OP Mainnet ya da Linea'dan yaklaşık 8 saniye. Tasdikten sonra USDC'nin hâlâ hedef ağda teslim edilmesi gerekir; bir sonraki bölüme bakın.",
+        "Linea'dan çıkan Standard USDC transferleri yavaştır ve iki resmi kaynak birbirini tutmuyor: Circle'ın geliştirici belgeleri yaklaşık 6–32 saat derken Linea köprüsü belgeleri Ethereum'a geri dönen USDC için yaklaşık 2–12 saat diyor. Kullandığınız köprünün gösterdiğine göre hareket edin.",
+        "Chainlink CCIP: süre, kaynak ağın kesinliğe (finality) ulaşmasının ne kadar sürdüğünden etkilenir. Tablosu kesinliği Ethereum için yaklaşık 12.8 dakika, Arbitrum için 17 dakika, Base için 18 dakika, OP Mainnet için 20 dakika, Polygon için 17 dakika ve BNB Chain için 5 saniye olarak tahmin ediyor ve bu değerlerin değişebileceğini söylüyor.",
+        "Squid: tek bir süre yok; transferi yaptığınızda gösterilen tahmine göre hareket edin. Squid, 15 dakika ya da tahmini sürenin iki katı (hangisi daha uzunsa) geçtiğinde desteğe başvurmayı öneriyor.",
+        "Wormhole: tek bir süre yok. Sarılmış (wrapped) token transferleri (WTT) için kurtarma rehberine göre, Ethereum'dan yapılan transferlerde birini takılmış saymadan önce Ethereum kesinliği için yaklaşık 20 dakikaya kadar beklersiniz.",
+        "opBNB'den BNB Smart Chain'e resmi köprü: kanıtı gönderdikten sonra 7 günlük itiraz süresi. Sayfada daha hızlı topluluk köprüleri de sunuluyor; belgeler bunların resmi köprü kadar güvenli olmayabileceği konusunda uyarıyor.",
+        "Stargate: tek bir süre yok. Economy (Bus) modunda “otobüs” dolduğunda ya da azami bekleme süresine ulaşıldığında yola çıkar ve sayfa tahmini beklemeyi gösterir; Fast (Taxi) modu otobüs beklemez.",
+        "Relay, Synapse ve Polygon PoS köprüsü: tek bir süre yok. Synapse, tahminlerinin hedef ağdaki blok sürelerine dayandığını ve bir işlemin bazen beklenenden daha sonraki bir bloğa girdiğini söylüyor."
+      ]
+    },
+    {
+      "h": "Bir adımı sizin atmanız gerektiğinde",
+      "p": [
+        "Aşağıdaki durumlarda kendiniz bir işlem yapmanız gerekebilir. Önce durumu kontrol edin ve yalnızca gerçekten o adıma geldiğinizde harekete geçin; aracı resmi siteden ya da belgelerden açın. İmza, işlemle aynı şey değildir: örneğin Relay'de imza ücretsizdir ve gas'ı yalnızca daha sonra işlemi gönderdiğinizde ödersiniz. Bir adımın para tutup tutmadığı ve ne kadar tuttuğu, adımın kendisinde ve cüzdanınızın onay ekranında gösterilir."
+      ],
+      "list": [
+        "Resmi opBNB köprüsü (opBNB'den BNB Smart Chain'e çekim): her çekimde. Durum Waiting for Proof gösterdiğinde Submit Proof adımını kendiniz yapmanız gerekir; 7 günlük itiraz süresi ancak bundan sonra başlar; 7 gün sonra Claim yaparsınız. SSS'ye göre 7 gün sonra hiçbir şey gelmemesinin olası nedenlerinden biri hiç imzalanmamış bir kanıttır; bu yüzden önce işlem geçmişini kontrol edin.",
+        "Polygon PoS köprüsü (Ethereum'a geri): para hazır olduğunda, ulaşmadan önce Polygon Portal'daki işlem geçmişinden Ethereum'da bir kez daha onay verirsiniz (resmi rehberdeki düğmeler Initiate Claim ve Claim Tokens). Yardım merkezine göre takılan bir çekim portal.polygon.technology/withdraw-tool adresinde işlem hash'i yapıştırılıp Confirm Exit düğmesine basılarak tamamlanabilir; düşük gas ya da benzeri bir nedenle düşen bir işlemde ise bir saatten uzun süre takılı kaldıktan sonra Try Again düğmesi görünür. Tamamlamak için bir süre sınırı yoktur ve para köprü sözleşmesinde kalır.",
+        "Wormhole / Portal: buradaki otomatik, elle ve 24 saatle ilgili söylenenler yalnızca Wormhole'un sarılmış token transferleri (WTT) için geçerlidir. Otomatik transferleri bir aktarıcı (relayer) tamamlar; yapmanız gereken bir şey yok. Elle yapılan bir transfer, transferin tasdiki (attestation) imzalanana kadar bekler, sonra hedef ağda bir kez gönderim yapmanız gerekir (buna redeem denir). Geliştirici belgeleri bunu 24 saat içinde tamamlamanızı söylüyor; bundan sonra köprünün Guardian imzaları değişmiş olabilir ve gönderebilmeniz için önce güncellenmeleri gerekir. Bu, köprünün imzalarıyla ilgilidir, cüzdanınızdaki onaylarla (approve) değil. Otomatik bir transfer tamamlanmadıysa önce asıl uygulamaya bakın; Wormhole ayrıca geliştiriciler için bir kurtarma betiğini belgeliyor. Üçüncü taraf bir uygulamada başlatılan bir USDC (CCTP) transferinde, o uygulama tamamlama hakkını kendine ayırdıysa Portal transferi sizin yerinize tamamlayamaz ve o uygulamaya geri dönersiniz; bu, Portal'ın bir transferi tamamlayamamasının olası nedenlerinden biridir.",
+        "Hop: yalnızca hiçbir Bonder transferinizi zamanında almadığında; örneğin ücret çok düşük ayarlandığı için ya da Bonder çevrim dışı olduğu veya likiditesi bittiği için. Önce transferinizi içeren Transfer Root'un hedef ağa ulaşması gerekir; Hop bunun birkaç saat ya da gün sürebileceğini söylüyor, yani gönderir göndermez çekmeye çalışmak işe yaramaz. Sonra kaynak ağdaki işlem hash'ini Hop'un Withdraw sayfasına yapıştırın ve withdraw düğmesine basın. Bir L2'de hToken (örneğin hUSDC) alırsınız ve bunu Convert sayfasında yerel tokena dönüştürürsünüz; Ethereum'da doğrudan yerel tokenı alırsınız.",
+        "Hop ve USDC.e: bu kendine özgü bir elle işlem sürecidir ve 7 gün beklemek yetmez. USDC köprüsü CCTP'ye geçtiğinden ve USDC.e Bonder'ı devreden çıkarıldığından beri USDC.e içeren transferler elle işlem gerektirir. Resmi USDC.e rehberine göre hUSDC.e'yi L1'e taşımak için: yalnızca henüz başlatmadıysanız Convert sayfasında “via Hop Bridge” ile başlatın. Zaten başlattıysanız ve takıldıysa yeni bir transfer göndermeyin: ilk transferin kaynak ağdaki işlem hash'ini Hop'un Relay sayfasına götürün ve hâlâ yapılmamış adımları sırayla tamamlayın: önce Commit Transfers, sonra Prove Withdrawal. Kanıt başarılı olduktan sonra 7 gün bekleyin, Finalize Withdrawal kullanılabilir olduğunda onu Relay sayfasında gönderin, sonra aynı ilk kaynak ağ işlem hash'ini Withdraw sayfasına girin ve Withdraw düğmesine basın.",
+        "Celer cBridge: yalnızca transfer başarısız olduğunda; örneğin hedef ağda likidite düşük olduğu ya da kayma (slippage) ayarı çok dar olduğu için. Açılan bir pencere nedenini açıklar ve transfer geçmişinde Request Refund düğmesine basarsınız.",
+        "deBridge: iptal yalnızca kimsenin almadığı ve hâlâ açık olan bir emir için geçerlidir. Emri deExplorer'da açın, hedef ağdaki Order Authority adresini bağlayın, Cancel düğmesine basın, iadeyi alacak kaynak ağdaki adresi girin, Send Cancel düğmesine basın ve cüzdanınızda onaylayın. deBridge'e göre kilitlenen her şey, ücretler dahil, iade edilir; yalnızca iptal işleminin gas'ını ödersiniz.",
+        "Relay: bir transfer tamamlanamadığında otomatik olarak iade denenir. Ancak bu da başarısız olursa işlem sayfasında “Automatic refund failed” ve bir Withdraw funds düğmesi görünür ve ancak o zaman relay.link/withdraw adresine gidersiniz: yatırmayı doğrulayın, imzalayın (ücretsiz), hazırlanması için birkaç dakika bekleyin, sonra yaklaşık bir saat içinde Submit düğmesine basın (biraz gas). Hâlâ işlenmekte olan ya da ulaşmış bir transferin buna ihtiyacı yoktur ve çekilemez; parayı da yalnızca onu gönderen cüzdan çekebilir.",
+        "Axelar / Squid: yalnızca Axelarscan'de Pay Gas, Insufficient Fee ya da Not Enough Gas görünüyorsa; örneğin hedef ağda gas yükseldiği ve transfer duraklatıldığı için. O zaman mesajı Axelarscan'de açın, kaynak ağda bir cüzdan bağlayın ve Add gas düğmesine basın; tutarı kendisi hesaplar. Transfer devam eder ve kullanılmayan kısım iade edilir.",
+        "Gerçekleşmeyen bir Squid takası birkaç türlü olabilir. Axelar rotalarında kaynak işlem başarılı olduğu hâlde hedef ağdaki takas başarısız olduysa (durum PARTIAL_SUCCESS), hedef ağda axlUSDC alırsınız; ulaştığını doğrulayın, sonra orada kendiniz takas edin. Kaynak işlem hiç gerçekleşmediyse bu geçerli değildir: Squid'e göre tokenlarınız hâlâ cüzdanınızdadır, ancak biraz gas harcanmış olabilir. Başarısız bir Squid Intents rotası, Squid'in söylediğine göre, kaynak ağda otomatik olarak iade edilir; bu genelde yaklaşık 10 dakika sürer.",
+        "Chainlink CCIP: varsayılan yürütücü (executor) mesajları otomatik olarak yürütmeye çalışır. CCIP Explorer yalnızca “Ready for manual execution” gösterdiğinde bir Trigger Manual Execution düğmesi çıkar; ona basmak, hedef ağda bir işlem gönderip gas'ını sizin ödemeniz demektir. Düğme sorunun çözüldüğü anlamına gelmez: yürütme daha önce başarısız olduysa belgeler ancak neden giderildikten sonra yeniden denemeyi söylüyor; bu yüzden önce asıl uygulamanın sorunun giderildiğini doğrulamasını bekleyin ve tekrar tekrar göndermeyin.",
+        "Circle CCTP: USDC'yi hedef ağda teslim eden son adımı bazı uygulamalar sizin yerinize yapar (Circle'ın Forwarding özelliğiyle otomatik gönderilir), bazıları size bırakır; örneğin Linea köprüsünde USDC her zaman elle Claim gerektirir ve geçmişte “Ready to claim” göründüğünde bunu hedef ağda gönderirsiniz. Circle'ın geliştirici belgelerine göre mesajın 24 saatlik bir geçerlilik süresi vardır ve bundan sonra yeniden imzalanması gerekir; süresi dolmuş hızlı bir transfer kalıcı olarak takılmış değildir ve her zaman yeniden tasdik edilebilir. Bunu uygulama yapar, bu yüzden kullandığınız uygulamaya başvurun.",
+        "Synapse: takas sırasında kayma (slippage) aniden artarsa Synapse zararına takas yapmak yerine ara varlığı teslim eder ve onu hedef ağda kendiniz takas edebilirsiniz. Synapse, tamamlanamayan transferlerin kaybolmadığını söylüyor; destek ekibi bunları elle ele alıyor."
+      ]
+    },
+    {
+      "h": "Köprünün kendisinden yardım almak",
+      "p": [
+        "Kaynak ağdaki işlem hash'ini hazır tutun. Desteğe yalnızca resmi site ya da belgeler üzerinden ulaşın; arama sonuçlarından, özel mesajlardan ya da yanıtlardan gelen “destek” bağlantılarını dikkate almayın."
+      ],
+      "list": [
+        "Across: üzerinden 3 saatten fazla geçtiyse SSS'de Telegram, across.to üzerindeki uygulama içi destek ve Slack listeleniyor.",
+        "Celer cBridge: Submitting aşamasında mı takıldı? Kaynak ağdaki işlemin onaylanıp onaylanmadığını kontrol edin; onaylanmadıysa hızlandırmak için gas fiyatını artırabilirsiniz, onaylandıysa desteğe başvurun. “Waiting for SGN confirmation” ya da “Waiting for fund release” aşamasında mı takıldı? En az iki saat daha bekleyin ve 3 saat geçince desteğe başvurun. Resmi SSS'deki müşteri desteği bağlantısını kullanın ve kaynak ağdaki işlem hash'ini ekleyin. Ayrıca resmi bir Discord ve Telegram topluluğu da var.",
+        "Relay: relay.link üzerindeki sohbet penceresi ya da yardım merkezinde listelenen support@relay.link e-posta adresi. En hızlısı işlem sayfasının tam URL'sini göndermektir.",
+        "Orbiter: önce transferi History sayfasında bulun, sonra resmi Discord sunucusunda her iki ağı ve işlem hash'ini belirterek Create Ticket ile bir talep açın.",
+        "Synapse ve Squid: belgeleri kendi Discord sunucularını gösteriyor.",
+        "deBridge: sitesinin Contact bölümünde yardım merkezi, debridge.com/support, ve Discord listeleniyor.",
+        "Chainlink CCIP: belgeler, Explorer'daki durumun yanlış olduğunu düşünüyorsanız CCIP mesaj ID'siyle bir destek talebi göndermenizi söylüyor, ama bunun nereye gönderileceğini söylemiyor.",
+        "Circle CCTP: Circle'ın geliştirici belgelerinin alt kısmındaki Support bağlantısı Circle Help Center'ın (help.circle.com) talep sayfasına gider. Transfer başka bir uygulamada başladıysa önce o uygulamaya başvurun.",
+        "Polygon PoS köprüsü: support.polygon.technology adresindeki yardım merkezi. Giriş yapmadan orada yalnızca bilgi bankası makaleleri gördük, talep göndermenin bir yolunu görmedik.",
+        "Stargate: web sitesindeki Support → Help Center resmi Discord sunucusunu açıyor; sitede ayrıca Telegram da listeleniyor. Ayrı bir web destek formu bulamadık.",
+        "Wormhole / Portal, Hop ve opBNB: belgelerinde açık bir destek kanalı bulamadık."
+      ]
+    },
+    {
+      "h": "Ne yapmamalı",
+      "p": [
+        "Ulaşmayan parayı beklemek insanı strese sokar; insanlar tam da bu anlarda fazla öder ya da dolandırılır."
+      ],
+      "list": [
+        "“Takılanı çözmek” için yeniden göndermeyin. Bu yalnızca bir miktar daha gönderir ve ilkini ilerletmez. Polygon'a göre başlatılmış bir çekim iptal edilemez, ama tamamlamak için bir süre sınırı da yoktur ve para köprü sözleşmesinde kalır.",
+        "Zamanı gelmeden iade, iptal ya da çekim düğmesine basmayın. Relay'e göre hâlâ işlenmekte olan bir transferin buna ihtiyacı yoktur ve çekilemez; Across da karşılanmamış bir yatırmayı süre sınırı dolduktan sonra otomatik olarak iade eder.",
+        "Transferi “hızlandırmayı”, “dondurmayı kaldırmayı” ya da “kurtarmayı” teklif eden kimseye para ödemeyin. ethereum.org sitesinin dolandırıcılık yardım sayfasına göre size ulaşıp paranızı bir ücret karşılığında kurtarabileceğini iddia eden biri neredeyse kesinlikle ikinci bir dolandırıcılık yapıyordur ve gerçek moderatörler size asla ilk mesajı atmaz. (Bu, ethereum.org sitesinin genel bir tavsiyesidir, herhangi bir köprünün kendi politikası değildir.)",
+        "Kurtarma ifadeniz ve özel anahtarlarınız hiçbir web sitesine girilmez. ethereum.org sitesine göre kurtarma ifadenizi asla hiçbir web sitesine girmeyin, çünkü meşru uygulamalar onu asla istemez. Relay, çekimi yalnızca relay.link/withdraw adresinde yapmanızı ve kurtarma ifadenizi ya da özel anahtarınızı, Relay'den olduğunu söyleyenler dahil, asla kimseyle paylaşmamanızı söylüyor.",
+        "DeFiExit cüzdanınızdan yalnızca adresini paylaşmasını ister; sizden asla bir şey imzalamanızı, onaylamanızı veya göndermenizi istemez ve size asla ilk mesajı biz atmayız."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Kaynak ağdaki işlem başarılı oldu. Para neden ulaşmadı?",
+      "a": "Kaynak ağdaki başarı yalnızca paranın gönderildiği anlamına gelir. Hedef tarafta transfer hâlâ sırada olabilir, onay bekliyor olabilir ya da sizin bir adım atmanızı bekliyor olabilir. Hangi köprü olduğunu bulun ve resmi durum sayfasına bakın: önce duruma, sonra süreye bakın. Sizden bir kanıt istiyorsa ya da paranın alınmaya hazır olduğunu söylüyorsa (opBNB'de Waiting for Proof, Linea'da Ready to claim), resmi adımları izleyin. Hâlâ onaylanıyor ya da işleniyorsa ve sizden bir şey istenmiyorsa beklemeye devam edin ve bu sayfadaki “Normalde ne kadar sürer” bölümüyle karşılaştırın."
+    },
+    {
+      "q": "Köprü tamamlandı diyor ama parayı cüzdanımda göremiyorum.",
+      "a": "Önce cüzdanınızı hedef ağa geçirin. Celer cBridge'e göre olağan neden, tokenın cüzdanınıza eklenmemiş olmasıdır; geçmişteki kaydın yanındaki MetaMask simgesi onu ekler. Synapse, gas airdrop'larının ve geri ödemelerin (rebates) otomatik geldiğini, ama kendi sayfasının yalnızca köprülenebilir varlıkları gösterdiğini söylüyor; bu yüzden hedef ağda cüzdanınızı kontrol edin. Farklı bir token almış da olabilirsiniz; bir sonraki soruya bakın."
+    },
+    {
+      "q": "Beklediğimden farklı bir token geldi.",
+      "a": "Bir transferin içinde takas varsa ve fiyat yolda çok fazla oynarsa, bazı köprüler size bunun yerine aradaki tokenı verir. Squid'in Axelar rotalarında başarılı bir kaynak işleminin ardından hedefteki takas başarısız olursa (PARTIAL_SUCCESS) axlUSDC alırsınız; kaynak işlem başarısız olduysa tokenlarınız hâlâ asıl cüzdanınızdadır. Synapse ara varlığı verir; Hop da ara sıra hToken (örneğin hUSDC) verir, bunu Hop'un Convert sayfasında yerel tokena dönüştürürsünüz. Tokenların cüzdanınıza ulaştığını kontrol edin, sonra hedef ağda kendiniz takas edin."
+    },
+    {
+      "q": "İptal edip paramı geri alabilir miyim?",
+      "a": "Köprüye ve aşamaya bağlı. deBridge'de kimsenin almadığı bir emir iptal edilip tamamen iade edilebilir. Across, karşılanmamış bir yatırmayı süre sınırı dolduktan sonra otomatik olarak iade eder. cBridge'de başarısız bir transferin geçmişte Request Refund düğmesi olur. Relay'de otomatik iade başarısız olursa çekimi relay.link/withdraw adresinde yaparsınız. Polygon'a göre Polygon'dan bir çekim gönderildikten sonra iptal edilemez, ama süre sınırı yoktur ve istediğiniz zaman tamamlanabilir."
+    },
+    {
+      "q": "Bir borsadan başka bir ağa çekim yaptım ve hiç ulaşmadı.",
+      "a": "Bu durumda parayı borsa gönderdi; bu yüzden uygulaması ya da resmi sitesi üzerinden borsanın kendi desteğine başvurun. Relay de aynısını söylüyor: parayı sizin için bir borsa ya da başka bir hizmet gönderdiyse onun üzerinde yalnızca gönderen cüzdan işlem yapabilir; bu yüzden o hizmetle iletişime geçin."
+    },
+    {
+      "q": "Yanıtlarda biri, küçük bir ücret karşılığında takılan transferimi çözebileceğini söylüyor.",
+      "a": "Dikkate almayın. ethereum.org sitesinin dolandırıcılık yardım sayfasına göre parayı ücret karşılığında kurtarmayı teklif eden herkes neredeyse kesinlikle dolandırıcıdır ve gerçek moderatörler size asla ilk mesajı atmaz. Takılan bir transfer yalnızca köprünün kendi resmi sayfası ve adımlarıyla çözülebilir. Kurtarma ifadenizi ya da özel anahtarınızı asla kimseye vermeyin."
+    }
+  ],
+  "sources": [
+    "Stargate belgeleri: Transfer (Bus ve Taxi modları, LayerZero Scan'de takip)",
+    "Stargate belgeleri: SSS (otobüs dolunca ya da azami bekleme süresi dolunca yola çıkar)",
+    "LayerZero belgeleri: Stargate (transferleri LayerZero Scan'de takip etme)",
+    "Stargate web sitesi (Support → Help Center resmi Discord sunucusunu açar; Telegram da listelenmiş)",
+    "Across belgeleri: Key features (ana ağda yaklaşık 2 saniye)",
+    "Across belgeleri: Refunds (otomatik, birkaç saat sürebilir)",
+    "Across belgeleri: Technical FAQ (iade, yatırmadan yaklaşık 120–150 dakika sonra; 3 saat sonra kime başvurulur)",
+    "Across belgeleri: Status tracker",
+    "Wormhole blogu: The Portal upgrade (geçmiş Wormholescan'de, otomatik redeem)",
+    "Wormhole belgeleri: Wrapped token transfer (WTT) flow (otomatik ve elle; elle transferleri 24 saat içinde tamamlayın)",
+    "Wormhole belgeleri: Transfer wrapped assets (WTT; geliştirici kurtarma betiği, Ethereum kesinliği için en fazla 20 dakika)",
+    "Wormhole belgeleri: Portal FAQs (üçüncü taraf bir uygulamanın tamamlama hakkını kendine ayırdığı CCTP transferlerini yalnızca o uygulama tamamlayabilir)",
+    "Circle geliştirici belgeleri: Finality and block confirmations (kaynak ağa göre tasdik süreleri)",
+    "Circle geliştirici belgeleri: CCTP technical guide (24 saatlik geçerlilik süresi, yeniden tasdik)",
+    "Circle: Cross-Chain Transfer Protocol (Forwarding ile tasdik otomatik gönderilir)",
+    "Linea belgeleri: Bridge tokens (USDC CCTP kullanır, Ready to claim olunca elle Claim, Ethereum'a yaklaşık 2–12 saat)",
+    "Chainlink belgeleri: CCIP Explorer",
+    "Chainlink belgeleri: CCIP yürütme gecikmesi (kesinlikten etkilenir)",
+    "Chainlink belgeleri: Ağlara göre CCIP kesinliği",
+    "Chainlink belgeleri: CCIP elle yürütme (Ready for manual execution, başarısız olanları ancak neden giderildikten sonra yeniden deneyin, destek talebi)",
+    "Squid belgeleri: Track status (NEEDS_GAS, 15 dakika, PARTIAL_SUCCESS durumunda axlUSDC, yaklaşık 10 dakikada iade)",
+    "Squid belgeleri: Information for integrators (kaynak takas başlamadıysa tokenlar cüzdanda kalır, duraklatıldığında Axelarscan'de gas ekleme, Discord)",
+    "Axelar belgeleri: Recover a message (Axelarscan'de Add gas)",
+    "Celer cBridge belgeleri: SSS (5–20 dakika, takılan transferler, müşteri desteği)",
+    "Celer cBridge belgeleri: Ağlar arası transfer rehberi (Pending, Request Refund)",
+    "deBridge destek merkezi (saniyeler, deExplorer, Contact)",
+    "deBridge destek: Bir köprü işlemi gecikirse ya da beklemede kalırsa ne olur?",
+    "deBridge destek: Bir emri nasıl iptal edebilirim?",
+    "deBridge destek: Bir işlemi iptal edersem ücretlerimi geri alır mıyım?",
+    "Relay Destek Merkezi: İşlemimi nasıl bulurum?",
+    "Relay Destek Merkezi: Para nasıl çekilir (otomatik iade başarısız olduktan sonra; yalnızca relay.link/withdraw adresinde)",
+    "Orbiter belgeleri: SSS (History'de arama, Create Ticket)",
+    "Orbiter belgeleri: Genel bakış (10 ila 20 saniye)",
+    "Synapse belgeleri: Transaction Support FAQ",
+    "Hop belgeleri: Token gönderdim ama ulaşmıyor (15 dakika, 5 dakika, hToken)",
+    "Hop belgeleri: Bir transfer ne kadar sürer? (kaynak ağa göre süreler; gezginini anıyor)",
+    "Hop belgeleri: Elle çekimler (birkaç saat ya da gün)",
+    "Hop belgeleri: USDC.e elle çekimleri (Commit ve Prove'dan 7 gün sonra Finalize ve Withdraw)",
+    "BNB Chain belgeleri: opBNB'den çekim (7 günlük itiraz süresi, kanıtı elle gönderme)",
+    "BNB Chain belgeleri: opBNB köprüsü SSS (7 gün sonra ulaşmadıysa: kanıtın gönderilip gönderilmediğini kontrol edin)",
+    "Polygon belgeleri: Polygon Portal rehberi (Initiate Claim, Claim Tokens)",
+    "Polygon Destek: İşlemim çok uzun süredir beklemede (Try Again, Confirm Exit)",
+    "Polygon Destek: Çekimler iptal edilemez, ama süre sınırı yoktur",
+    "ethereum.org: Dolandırıcılık yardımı ve bildirme (genel tavsiye)"
+  ]
+}

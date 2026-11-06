@@ -1,0 +1,725 @@
+{
+  "slug": "bridge-not-arrived",
+  "checked": "2026-11-06",
+  "title": {
+    "zh": "跨链转账没到账怎么办？先认出是哪座桥，再去它的官方页面查",
+    "en": "Cross-chain transfer hasn't arrived? Work out which bridge you used, then check its official page"
+  },
+  "summary": {
+    "zh": "跨链转账没到，多半是还在路上，或者在等你补一步。先认出你用的是哪座桥，再去那家的官方页面查状态。官方给过时间的：Across 大多约 2 秒，cBridge 大多 5–20 分钟；从 opBNB 走官方桥提回 BNB Smart Chain，要先手动提交证明，再等 7 天。只有少数情况要你自己再操作一次。不要为了「解卡」再发一次，也不要付钱给自称客服的人。",
+    "en": "A cross-chain transfer that hasn't arrived is usually still on its way, or waiting for you to take one more step. Work out which bridge you used, then check that bridge's official status page. Where bridges publish times: most Across transfers take about 2 seconds and most cBridge transfers 5–20 minutes; an official withdrawal from opBNB to BNB Smart Chain needs you to submit a proof by hand and then wait 7 days. Only some cases need another step from you. Don't send again to 'unstick' it, and don't pay anyone who says they're support."
+  },
+  "sections": [
+    {
+      "h": {
+        "zh": "先认出你用的是哪座桥",
+        "en": "First, work out which bridge you used"
+      },
+      "p": [
+        {
+          "zh": "做跨链转账的有很多家。去哪查状态、要等多久、出了问题怎么办，各家都不一样。所以第一步是认出你用的是哪一家。",
+          "en": "Many different services move money between chains. Where to check the status, how long it takes and what to do when it goes wrong all differ from one to the next. So the first step is to work out which one you used."
+        }
+      ],
+      "list": [
+        {
+          "zh": "看你是在哪个网站上点的「发送」。网址就是答案，比如 stargate.finance、across.to、relay.link、portalbridge.com。",
+          "en": "Look at the website where you pressed send. Its address tells you, for example stargate.finance, across.to, relay.link or portalbridge.com."
+        },
+        {
+          "zh": "在区块浏览器里打开出发那条链上的这笔交易，看 `Interacted With (To)`（交互对象）那一栏的合约名字，很多时候能看出是哪家的桥。",
+          "en": "Open the transaction on the source chain's block explorer and look at the contract name under `Interacted With (To)`. It often tells you which bridge it was."
+        },
+        {
+          "zh": "用的是钱包里自带的「跨链」，或者一个页面给你好几条路线的聚合器：背后可能是下面任何一家。回到你操作的那个钱包或网站，在它的交易记录里看走的是哪条路线。Relay 官方说，在别的应用里发起的，要用那个应用发出钱的地址去查；Wormhole 官方说，第三方应用发起的 USDC 转账，如果那个应用把领取权限留给了自己，就只有它能完成。",
+          "en": "If you used a wallet's built-in bridge, or an aggregator that offers several routes on one page, any of the bridges below could be behind it. Go back to the wallet or site you used and check its history for the route. Relay says that if you started inside another app, you search by the address that app sent from; Wormhole says that if a third-party app started a USDC transfer and kept the right to finalize it, only that app can complete it."
+        },
+        {
+          "zh": "从交易所提现到另一条链：钱是交易所发出的，查进度、问到账都找交易所。Relay 官方也说，交易所或别的服务替你发出的，要找那家的客服，因为发款的钱包在他们手里。",
+          "en": "Withdrew from an exchange to another chain? The exchange sent the money, so ask the exchange about it. Relay says the same: if an exchange or another service sent the funds for you, contact that service, because it controls the sending wallet."
+        },
+        {
+          "zh": "用 OP Mainnet、Base、Arbitrum、zkSync Era、Linea、Scroll 的官方桥提回以太坊的：那是另一回事，要等几个小时到 7 天，见本站专题「从 L2 提回以太坊为什么要等？」（本页底部「相关」里有链接）。",
+          "en": "If you used an official L2 bridge to withdraw from OP Mainnet, Base, Arbitrum, zkSync Era, Linea or Scroll back to Ethereum, that's a different case with a wait of a few hours to 7 days; see our topic on L2 withdrawals, linked under Related at the bottom of this page."
+        },
+        {
+          "zh": "本页只讲 EVM 链之间的转账，Solana 等非 EVM 链不在本页范围。",
+          "en": "This page only covers transfers between EVM chains. Solana and other non-EVM chains are out of scope."
+        }
+      ]
+    },
+    {
+      "h": {
+        "zh": "去哪查状态",
+        "en": "Where to check the status"
+      },
+      "p": [
+        {
+          "zh": "只用各家官方的页面。下面的网址都只是文字，自己在地址栏核对后再打开。查的时候一般要用出发那条链上的交易哈希。",
+          "en": "Use only each bridge's official pages. The addresses below are plain text: check them in your address bar before you open them. You'll usually need the transaction hash from the source chain."
+        }
+      ],
+      "list": [
+        {
+          "zh": "Stargate：在 stargate.finance 页面里看，或者去 LayerZero Scan（layerzeroscan.com）查。选了省钱的 Economy（Bus）模式的，要等这一「车」发出后，LayerZero Scan 上才查得到。",
+          "en": "Stargate: check on stargate.finance, or on LayerZero Scan (layerzeroscan.com). If you picked the cheaper Economy (Bus) mode, the transfer only shows up on LayerZero Scan once the bus has been dispatched."
+        },
+        {
+          "zh": "Across：官方文档里的状态查询工具 docs.across.to/tools/status-tracker，用交易哈希或 Deposit ID 查。",
+          "en": "Across: the status tracker in its docs, docs.across.to/tools/status-tracker, by transaction hash or deposit ID."
+        },
+        {
+          "zh": "Wormhole / Portal：桥在 portalbridge.com，交易记录在 Wormholescan（wormholescan.io）。",
+          "en": "Wormhole / Portal: the bridge is portalbridge.com, and the transaction history is on Wormholescan (wormholescan.io)."
+        },
+        {
+          "zh": "Circle CCTP（USDC）：这是很多应用在用的底层通道，比如 Across、Portal、Linea 官方桥的 USDC 转账。我们没找到 Circle 给普通用户的统一查询页，回你用的那个应用查。",
+          "en": "Circle CCTP (USDC): an underlying route that many apps use, including Across, Portal and the Linea bridge for USDC. We found no Circle status page for ordinary users, so check in the app you used."
+        },
+        {
+          "zh": "Chainlink CCIP：CCIP Explorer（ccip.chain.link），可以按消息编号（Message ID）查。",
+          "en": "Chainlink CCIP: CCIP Explorer (ccip.chain.link), searchable by message ID."
+        },
+        {
+          "zh": "Axelar / Squid：走 Axelar 的转账，在 Axelarscan（axelarscan.io）上看。",
+          "en": "Axelar / Squid: transfers that go through Axelar can be followed on Axelarscan (axelarscan.io)."
+        },
+        {
+          "zh": "Celer cBridge：cbridge.celer.network 右上角的 Pending 和交易记录。",
+          "en": "Celer cBridge: Pending and the transfer history at the top right of cbridge.celer.network."
+        },
+        {
+          "zh": "deBridge：deExplorer（app.debridge.com/orders），可以按订单编号、钱包地址或交易哈希查。状态有 Created、Fulfilled、Canceling、Canceled 几种。",
+          "en": "deBridge: deExplorer (app.debridge.com/orders), by order ID, wallet address or transaction hash. The statuses are Created, Fulfilled, Canceling and Canceled."
+        },
+        {
+          "zh": "Relay：每笔都有自己的交易页，转完时页面会给链接。链接丢了，就去 relay.link/transactions，用钱包地址、ENS 或交易哈希筛出来。",
+          "en": "Relay: every transfer has its own page, linked when it finishes. If you lost the link, go to relay.link/transactions and filter by wallet address, ENS name or transaction hash."
+        },
+        {
+          "zh": "Orbiter：orbiter.finance/history 的 Search 页签。",
+          "en": "Orbiter: the Search tab at orbiter.finance/history."
+        },
+        {
+          "zh": "Synapse：synapseprotocol.com 的 Activity 页签；进度条的下拉菜单里有两边区块浏览器的链接。",
+          "en": "Synapse: the Activity tab on synapseprotocol.com. The progress dropdown links to the block explorers on both chains."
+        },
+        {
+          "zh": "Hop：官方文档提到的查询站 explorer.hop.exchange，我们 2026-11-06 打开是 404，没找到别的官方查询页。别只看等了多久就去手动提款，先看下一节里手动提款的条件。",
+          "en": "Hop: the explorer its docs mention, explorer.hop.exchange, returned 404 when we tried it on 2026-11-06, and we found no other official status page. Don't go for a manual withdrawal just because time has passed; check the conditions for it in the section on taking another step below."
+        },
+        {
+          "zh": "opBNB 官方桥（opBNB 回 BNB Smart Chain）：opbnb-bridge.bnbchain.org，切到「official bridge」页签看交易记录。官方文档说，这个页面默认打开的是第三方社区桥，先认清你当时用的是哪个页签。",
+          "en": "Official opBNB bridge (opBNB back to BNB Smart Chain): opbnb-bridge.bnbchain.org, switched to the 'official bridge' tab. The docs say the page opens on the community bridge by default, so check which tab you used."
+        },
+        {
+          "zh": "Polygon PoS 桥：Polygon Portal（portal.polygon.technology）的交易记录。",
+          "en": "Polygon PoS bridge: the transaction history in Polygon Portal (portal.polygon.technology)."
+        }
+      ]
+    },
+    {
+      "h": {
+        "zh": "正常要等多久",
+        "en": "How long it normally takes"
+      },
+      "p": [
+        {
+          "zh": "官方给了数字的，写上数字和条件；没给统一时间的，也写明（查于 2026-11-06）。这些是各家自己的估计，不是保证。",
+          "en": "Where a bridge publishes numbers, they're listed with their conditions; where it doesn't, we say so (checked 2026-11-06). These are the bridges' own estimates, not guarantees."
+        }
+      ],
+      "list": [
+        {
+          "zh": "Across：官方说主网上大多数转账约 2 秒就送到目标链，网络拥堵时会更久。过了成交期限还没人接的，会自动退款，但不是马上到。官方常见问题估计从存款算起约 120–150 分钟，里面已经包括约 90 分钟的成交期限，不是到期以后再等这么久；退款说明页写，到期以后的结算可能还要几个小时。",
+          "en": "Across: most transfers reach the destination chain in about 2 seconds on mainnet, longer when the network is congested. A deposit nobody fills before its deadline is refunded automatically, but not instantly. The FAQ estimates about 120–150 minutes counted from the deposit, and that already includes a fill deadline of about 90 minutes, so it isn't a further wait after expiry; the refunds page says settlement after expiry can take several more hours."
+        },
+        {
+          "zh": "Orbiter：官方说两个普通钱包地址之间的转账，10–20 秒完成。",
+          "en": "Orbiter: transfers between two regular wallet addresses complete in 10 to 20 seconds, its docs say."
+        },
+        {
+          "zh": "deBridge：官方说通常几秒完成；少数情况下（行情变化或技术问题）会更久。没人接的订单会一直挂着，等条件合适。",
+          "en": "deBridge: usually done in seconds, it says; in rare cases (market conditions or technical issues) it takes longer. An order nobody takes stays open until conditions suit."
+        },
+        {
+          "zh": "Celer cBridge：大多数 5–20 分钟。为了安全设了限额，金额大的要多等一段时间。",
+          "en": "Celer cBridge: most transfers take 5–20 minutes. Rate limits are in place for security, so larger amounts take extra time."
+        },
+        {
+          "zh": "Hop：要看路线，官方两处说法对不上。一篇常见问题写普通的 L1 和 L2 之间最多 15 分钟、L2 和 L2 之间最多 5 分钟；按路线列的说明页写，从 Optimism、Base 出发约 25 分钟，从 Arbitrum 约 12 分钟，从 Polygon 约 60 分钟。所以过了 5 分钟或 15 分钟还没到，不等于要手动提款；手动提款的条件见下一节。",
+          "en": "Hop: it depends on the route, and two official pages disagree. One FAQ says up to 15 minutes for a normal transfer between L1 and L2 and up to 5 minutes between two L2s; the route-by-route page estimates about 25 minutes from Optimism or Base, about 12 from Arbitrum and about 60 from Polygon. So passing 5 or 15 minutes doesn't mean you need a manual withdrawal; the conditions for that are in the next section."
+        },
+        {
+          "zh": "Circle CCTP：Circle 开发文档按出发的链，给了「签发」要多久。标准模式：从以太坊、Arbitrum、Base、OP Mainnet 出发约 15–19 分钟，从 BNB Smart Chain 约 2 秒，从 Polygon PoS 约 8 秒。快速模式：从以太坊约 20 秒，从 Arbitrum、Base、OP Mainnet、Linea 约 8 秒。签发以后，还要在目标链上把 USDC 发到你手里，见下一节。",
+          "en": "Circle CCTP: Circle's developer docs list how long the attestation takes, by source chain. Standard: about 15–19 minutes from Ethereum, Arbitrum, Base or OP Mainnet, about 2 seconds from BNB Smart Chain, about 8 seconds from Polygon PoS. Fast: about 20 seconds from Ethereum, about 8 seconds from Arbitrum, Base, OP Mainnet or Linea. After the attestation, the USDC still has to be delivered on the destination chain; see the next section."
+        },
+        {
+          "zh": "从 Linea 出发的 USDC 标准转账特别慢，两处官方说法不一样：Circle 开发文档写约 6–32 小时，Linea 官方桥文档写 USDC 回以太坊约 2–12 小时。以你用的那个桥页面显示的为准。",
+          "en": "Standard USDC transfers out of Linea are slow, and two official sources disagree: Circle's developer docs say about 6–32 hours, while the Linea bridge docs say about 2–12 hours for USDC back to Ethereum. Go by what the bridge you used shows."
+        },
+        {
+          "zh": "Chainlink CCIP：官方说到账时间受出发那条链的「最终确认」影响。官方表里各链最终确认的估计：以太坊约 12.8 分钟，Arbitrum 约 17 分钟，Base 约 18 分钟，OP Mainnet 约 20 分钟，Polygon 约 17 分钟，BNB Chain 约 5 秒。官方说这些数会变。",
+          "en": "Chainlink CCIP: the time is affected by how long the source chain takes to reach finality. Its table estimates finality at about 12.8 minutes for Ethereum, 17 minutes for Arbitrum, 18 minutes for Base, 20 minutes for OP Mainnet, 17 minutes for Polygon and 5 seconds for BNB Chain, and says these values can change."
+        },
+        {
+          "zh": "Squid：没有统一时间，以下单时页面显示的预计时间为准。官方建议：过了 15 分钟或预计时间的两倍（取更长的那个）还没完成，再找客服。",
+          "en": "Squid: no single time; go by the estimate shown when you made the transfer. It recommends contacting support once 15 minutes or twice the estimated time has passed, whichever is longer."
+        },
+        {
+          "zh": "Wormhole：官方没给统一时间。官方的封装代币（WTT）恢复指南说，从以太坊发出的，要先等以太坊最终确认，最多约 20 分钟，之后才谈得上处理卡住的问题。",
+          "en": "Wormhole: no single time. Its recovery guide for wrapped token transfers (WTT) says that for transfers from Ethereum you wait up to about 20 minutes for Ethereum finality before treating one as stuck."
+        },
+        {
+          "zh": "opBNB 官方桥回 BNB Smart Chain：提交证明以后，有 7 天挑战期。官方页面上另有第三方社区桥，快一些，官方提醒它们可能没有官方桥安全。",
+          "en": "Official opBNB bridge back to BNB Smart Chain: a 7-day challenge period after you submit the proof. The page also offers faster community bridges, which the docs warn may not be as secure as the official one."
+        },
+        {
+          "zh": "Stargate：官方没给统一时间。Economy（Bus）模式要等这一车坐满，或者到了最长等待时间才出发，页面上会显示预计等待多久；Fast（Taxi）模式不用等车。",
+          "en": "Stargate: no single time. In Economy (Bus) mode the bus leaves when it's full or when the maximum waiting time is reached, and the page shows the estimated wait; Fast (Taxi) mode doesn't wait for a bus."
+        },
+        {
+          "zh": "Relay、Synapse、Polygon PoS 桥：官方没给统一时间。Synapse 说它的预计时间按目标链出块时间算，偶尔会晚几个块。",
+          "en": "Relay, Synapse and the Polygon PoS bridge: no single time. Synapse says its estimates are based on destination block times, and a transaction sometimes lands in a later block than expected."
+        }
+      ]
+    },
+    {
+      "h": {
+        "zh": "哪些情况要你自己再操作一次",
+        "en": "When you need to take another step yourself"
+      },
+      "p": [
+        {
+          "zh": "下面这些情况，可能要你自己再动手。先对照状态，确实到了那一步再做；入口只从官网或官方文档里点进去。签名和发交易不一样：比如 Relay 那一步签名免费，后面提交交易才付 gas。要不要付钱、付多少，看具体步骤和钱包的确认页。",
+          "en": "In the cases below you may need to act yourself. Check the status first and only act once you're at that step, opening the tool from the official site or docs. A signature isn't the same as a transaction: on Relay, for example, the signature is free and you pay gas only when you submit the transaction later. Whether something costs money, and how much, is shown in the step itself and on your wallet's confirmation screen."
+        }
+      ],
+      "list": [
+        {
+          "zh": "opBNB 官方桥（从 opBNB 提回 BNB Smart Chain）：每一笔都要。状态显示 Waiting for Proof 时，要你手动 Submit Proof；7 天挑战期从这之后才开始算；7 天后再 Claim。官方常见问题说，过了 7 天还没到，一种可能是忘了在交易记录里签证明，先去交易记录看看。",
+          "en": "Official opBNB bridge (withdrawing from opBNB to BNB Smart Chain): every withdrawal. When the status shows Waiting for Proof, you have to Submit Proof yourself; the 7-day challenge period only starts after that; after 7 days you Claim. The FAQ says one possible reason for nothing arriving after 7 days is a proof that was never signed, so check the transaction history first."
+        },
+        {
+          "zh": "Polygon PoS 桥（回以太坊）：钱准备好以后，要在 Polygon Portal 的交易记录里，在以太坊上再确认一次，钱才到（官方指南里的按钮是 Initiate Claim、Claim Tokens）。帮助中心说，卡着的提款可以到 portal.polygon.technology/withdraw-tool，贴上交易哈希，点 Confirm Exit 完成；交易因为 gas 设得太低等原因掉了、卡了一个多小时的，页面会出现 Try Again 按钮。完成没有时间限制，钱一直在桥合约里。",
+          "en": "Polygon PoS bridge (back to Ethereum): once the funds are ready, you confirm once more on Ethereum from the transaction history in Polygon Portal before they arrive (the official guide's buttons are Initiate Claim and Claim Tokens). The help center says a stuck withdrawal can be finished at portal.polygon.technology/withdraw-tool by pasting the transaction hash and pressing Confirm Exit, and that a transaction dropped because of low gas or similar shows a Try Again button once it has been stuck for more than an hour. There's no time limit to complete it, and the funds stay in the bridge contract."
+        },
+        {
+          "zh": "Wormhole / Portal：下面说的自动、手动和 24 小时，只针对 Wormhole 的封装代币（WTT）路线。自动模式由中继替你完成，不用管。手动模式要等转账凭证签好，再在目标链上提交一次（叫 redeem）；官方开发文档说要在 24 小时内完成，拖久了，桥守护者（Guardian）的签名可能已经换了，要先更新签名才能提交。这说的是桥的签名，不是你钱包的授权。自动模式没走完的，先回原来的应用看；官方另给了一个开发者用的恢复脚本。第三方应用发起的 USDC（CCTP）转账，如果那个应用把领取权限留给了自己，Portal 就没法替你完成，要回那个应用去完成；这只是 Portal 完成不了的一种可能原因。",
+          "en": "Wormhole / Portal: the automatic, manual and 24-hour points here apply only to Wormhole's wrapped token transfers (WTT). Automatic transfers are completed by a relayer; nothing to do. A manual transfer waits until the transfer's attestation is signed, then needs one submission on the destination chain (called redeem). The developer docs say to complete it within 24 hours; after that the bridge's Guardian signatures may have changed and must be updated before you can submit. That's about the bridge's signatures, not your wallet's approvals. If an automatic transfer didn't finish, check the original app first; Wormhole also documents a recovery script for developers. For a USDC (CCTP) transfer started in a third-party app, if that app kept the right to finalize it, Portal can't complete it for you and you go back to that app; that's one possible reason Portal can't complete a transfer."
+        },
+        {
+          "zh": "Hop：只有做市方（Bonder）没及时接单时才要手动提款，比如手续费设得太低、Bonder 掉线或者没钱了。要先等包含你这笔的 Transfer Root 传到目标链，官方说可能要几个小时到几天，刚发出就去提是不行的。到了以后，在 Hop 的 Withdraw 页贴上源链交易哈希，点 withdraw。目标链是 L2 的，拿到的是 hToken（比如 hUSDC），要在 Convert 页换成原生币；到以太坊的，直接就是原生币。",
+          "en": "Hop: only when no Bonder takes your transfer in time, for example because the fee was set too low, or the Bonder is offline or out of liquidity. First the Transfer Root containing your transfer has to reach the destination chain, which Hop says can take a few hours or days, so withdrawing right after sending won't work. Then paste the source-chain transaction hash on Hop's Withdraw page and press withdraw. On an L2 you get hTokens (such as hUSDC), which you convert to the native token on the Convert page; on Ethereum you get the native token directly."
+        },
+        {
+          "zh": "Hop 的 USDC.e：这是一套单独的手动流程，光等 7 天不够。官方说 USDC 桥改用 CCTP、USDC.e 的 Bonder 停用后，涉及 USDC.e 的转账都要手动处理。按官方 USDC.e 指南把 hUSDC.e 转回 L1：还没发起的，才在 Convert 页选 via Hop Bridge 发起；已经发起、卡住了的，别再发一笔，拿原来那笔的源链交易哈希，到 Hop 的 Relay 页按顺序把还没做的补上：先 Commit Transfers，再 Prove Withdrawal。证明成功后等 7 天，到时在 Relay 页提交 Finalize Withdrawal，最后到 Withdraw 页填同一笔原转账的源链交易哈希，点 Withdraw。",
+          "en": "Hop and USDC.e: this is its own manual process, and waiting 7 days isn't enough. Since the USDC bridge moved to CCTP and the USDC.e Bonder was retired, transfers involving USDC.e need manual processing. To move hUSDC.e to L1 per the official USDC.e guide: only if you haven't started yet, start it on the Convert page with 'via Hop Bridge'. If you already started and it's stuck, don't send another one: take the original transfer's source-chain transaction hash to Hop's Relay page and finish the steps still outstanding, in order: Commit Transfers first, then Prove Withdrawal. After the proof succeeds, wait 7 days, submit Finalize Withdrawal on the Relay page when it's available, then enter that same original source-chain transaction hash on the Withdraw page and press Withdraw."
+        },
+        {
+          "zh": "Celer cBridge：只有转账失败时才要，比如目标链流动性不够，或者滑点设得太小。页面会弹出原因，然后在交易记录里点 Request Refund。",
+          "en": "Celer cBridge: only when the transfer fails, for example because of low liquidity on the destination chain or a slippage setting that's too tight. A popup explains why, and you press Request Refund in the transfer history."
+        },
+        {
+          "zh": "deBridge：只有订单一直没人接、还挂着时，才谈得上取消。在 deExplorer 打开这个订单，连接目标链上的 Order Authority 地址，点 Cancel，填上源链收退款的地址，点 Send Cancel，在钱包里确认。官方说锁着的钱全额退回，连手续费也退，你只付取消这一笔的 gas。",
+          "en": "deBridge: cancelling only applies to an order nobody has taken and that is still open. Open it in deExplorer, connect the Order Authority address on the destination chain, press Cancel, enter the address on the source chain to receive the refund, press Send Cancel and confirm in your wallet. deBridge says everything locked is refunded, fees included; you only pay gas for the cancel transaction."
+        },
+        {
+          "zh": "Relay：转账没完成时，会先自动退款。只有自动退款也失败了，交易页才会显示 Automatic refund failed 和 Withdraw funds 按钮，这时才去 relay.link/withdraw：先验证这笔存款，再签名（免费），等几分钟准备好，然后在约一小时内点 Submit（付一点 gas）。还在 Processing 的、已经到账的，不需要也提不了；只有当初发款的那个钱包能提。",
+          "en": "Relay: when a transfer can't complete, a refund is tried automatically. Only if that also fails does the transaction page show 'Automatic refund failed' and a Withdraw funds button, and only then do you go to relay.link/withdraw: verify the deposit, sign (free), wait a few minutes for it to be prepared, then press Submit within about an hour (a little gas). A transfer that is still processing or has arrived doesn't need it and can't be withdrawn, and only the wallet that sent the funds can withdraw."
+        },
+        {
+          "zh": "Axelar / Squid：只有 Axelarscan 上显示 Pay Gas、Insufficient Fee 或 Not Enough Gas 时，比如目标链 gas 涨了、交易暂停了，才要补 gas：在 Axelarscan 打开这条消息，连接源链上的钱包，点 Add gas，金额它会算好。补上后会接着往下走，多出来的会退回。",
+          "en": "Axelar / Squid: only when Axelarscan shows Pay Gas, Insufficient Fee or Not Enough Gas, for example because gas rose on the destination chain and the transfer paused. Then open the message on Axelarscan, connect a wallet on the source chain and press Add gas; it works out the amount. The transfer continues, and the unused part is refunded."
+        },
+        {
+          "zh": "Squid 换币没成，分几种：走 Axelar 的，源链那笔成功、目标链换币失败（状态 PARTIAL_SUCCESS）时，你在目标链收到的是 axlUSDC，先确认到账，再自己在目标链换成想要的币。源链那笔根本没发起成功的不是这种情况：官方说币还在你原来的钱包里，可能已经花掉了一点 gas。走 Squid Intents 的失败了，会自动退回源链，官方说通常约 10 分钟。",
+          "en": "A Squid swap that didn't go through comes in a few kinds. On Axelar routes, if the source transaction succeeded but the destination swap failed (status PARTIAL_SUCCESS), you receive axlUSDC on the destination chain; confirm it has arrived, then swap it yourself there. If the source transaction never went through, that doesn't apply: Squid says your tokens are still in your wallet, though a little may have been spent on gas. A failed Squid Intents route is refunded automatically on the source chain, typically in about 10 minutes, Squid says."
+        },
+        {
+          "zh": "Chainlink CCIP：默认的执行服务会自动去执行。只有 CCIP Explorer 显示 Ready for manual execution 时，才会有 Trigger Manual Execution 按钮；点了就是你自己在目标链上发一笔交易、付 gas。按钮出现不代表问题已经解决：之前执行失败过的，官方说要等原因修好再重试，先让原来的应用确认修好了，别反复提交。",
+          "en": "Chainlink CCIP: the default executor tries to execute messages automatically. Only when CCIP Explorer shows 'Ready for manual execution' is there a Trigger Manual Execution button, and pressing it means you send a transaction on the destination chain and pay the gas. The button doesn't mean the problem is solved: if execution failed before, the docs say to retry only after the cause is fixed, so have the original app confirm the fix first and don't keep resubmitting."
+        },
+        {
+          "zh": "Circle CCTP：最后在目标链发出 USDC 这一步，有的应用替你做（Circle 的 Forwarding 功能会自动提交），有的要你自己点，比如 Linea 官方桥的 USDC 一律要手动 Claim：交易记录里显示 Ready to claim 以后，才在目标链上点 Claim。Circle 开发文档说，签发带着 24 小时的有效期，过了要重新签；过期的快速转账也不是永久卡住，随时可以重新签发。这一步是应用做的，去找你用的应用。",
+          "en": "Circle CCTP: the final step that delivers USDC on the destination chain is done for you by some apps (with Circle's Forwarding, it's submitted automatically) and left to you by others; for example, USDC on the Linea bridge always needs a manual Claim, which you submit on the destination chain once the history shows 'Ready to claim'. Circle's developer docs say the message carries a 24-hour expiry and has to be re-signed after that, and that an expired fast transfer isn't permanently stuck and can be re-attested at any time. The app does that, so go to the app you used."
+        },
+        {
+          "zh": "Synapse：换币时滑点突然变大，会先把中间资产发给你，不硬换；这个币可以在目标链上自己换。没完成的转账，官方说不会丢，由 Synapse 客服人工处理。",
+          "en": "Synapse: if slippage jumps during the swap, Synapse delivers the intermediate asset instead of swapping at a loss, and you can swap it yourself on the destination chain. Transfers that fail to complete are not lost, it says; its support team handles them by hand."
+        }
+      ]
+    },
+    {
+      "h": {
+        "zh": "找官方求助",
+        "en": "Getting help from the bridge itself"
+      },
+      "p": [
+        {
+          "zh": "先准备好出发那条链上的交易哈希。求助入口只从官网或官方文档里点进去；搜索结果、私信、评论区给的「客服」链接一律不用。",
+          "en": "Have the source-chain transaction hash ready. Reach support only through the official site or docs; ignore 'support' links from search results, DMs or replies."
+        }
+      ],
+      "list": [
+        {
+          "zh": "Across：超过 3 小时还没好，官方常见问题列了 Telegram、across.to 网站里的在线客服，还有 Slack。",
+          "en": "Across: if it's been more than 3 hours, the FAQ lists Telegram, the in-app support on across.to, and Slack."
+        },
+        {
+          "zh": "Celer cBridge：卡在 Submitting 的，先看源链上确认了没有，没确认可以提高 gas 加速，确认了就找客服；卡在 Waiting for SGN confirmation 或 Waiting for fund release 的，再等至少 2 小时，超过 3 小时找客服。客服入口是官方常见问题里的 customer support 链接，带上源链交易哈希。官方另有 Discord 和 Telegram 社区。",
+          "en": "Celer cBridge: stuck at Submitting? Check whether the source-chain transaction is confirmed; if not, you can raise the gas price to speed it up, and if it is, contact support. Stuck at 'Waiting for SGN confirmation' or 'Waiting for fund release'? Wait at least two more hours, and contact support after 3 hours. Use the customer support link in the official FAQ and include the source-chain transaction hash. There's also an official Discord and Telegram community."
+        },
+        {
+          "zh": "Relay：relay.link 网站上的聊天窗口，或者帮助中心写的邮箱 support@relay.link。把这笔的交易页完整网址发过去最省事。",
+          "en": "Relay: the chat widget on relay.link, or the email support@relay.link listed in its help center. Sending the full URL of the transaction page is the quickest."
+        },
+        {
+          "zh": "Orbiter：先在 History 页搜到这笔，再到官方 Discord 里 Create Ticket，写上两边的链和交易哈希。",
+          "en": "Orbiter: find the transfer on the History page first, then use Create Ticket in its official Discord with both chains and the transaction hash."
+        },
+        {
+          "zh": "Synapse、Squid：官方文档列的都是各自的 Discord。",
+          "en": "Synapse and Squid: their docs point to their own Discord servers."
+        },
+        {
+          "zh": "deBridge：官网 Contact 里列的是帮助中心 debridge.com/support 和 Discord。",
+          "en": "deBridge: the Contact section of its site lists the help center, debridge.com/support, and Discord."
+        },
+        {
+          "zh": "Chainlink CCIP：官方文档说，觉得 CCIP Explorer 显示的状态不对，就带上消息编号（Message ID）提交支持工单；但文档没写工单从哪里提交。",
+          "en": "Chainlink CCIP: the docs say to submit a support ticket with the CCIP message ID if you think the Explorer status is wrong, but they don't say where to submit it."
+        },
+        {
+          "zh": "Circle CCTP：Circle 开发文档页脚的 Support 链接，是 Circle 帮助中心的提交工单页（help.circle.com）。转账是在别的应用里发起的，先找那个应用。",
+          "en": "Circle CCTP: the Support link in the footer of Circle's developer docs goes to the ticket page of the Circle Help Center (help.circle.com). If the transfer started in another app, go to that app first."
+        },
+        {
+          "zh": "Polygon PoS 桥：官方帮助中心 support.polygon.technology。不登录时我们只看到知识库文章，没看到提交工单的入口。",
+          "en": "Polygon PoS bridge: the help center at support.polygon.technology. Without logging in, we saw only knowledge-base articles there and no way to submit a ticket."
+        },
+        {
+          "zh": "Stargate：官网的 Support → Help Center 链到官方 Discord，另列了 Telegram；我们没核到单独的网页工单入口。",
+          "en": "Stargate: Support → Help Center on its website opens the official Discord, and the site also lists Telegram. We didn't find a separate web ticket form."
+        },
+        {
+          "zh": "Wormhole / Portal、Hop、opBNB：官方文档里没找到明确的求助入口。",
+          "en": "Wormhole / Portal, Hop and opBNB: we found no clear support channel in their docs."
+        }
+      ]
+    },
+    {
+      "h": {
+        "zh": "不要做的事",
+        "en": "What not to do"
+      },
+      "p": [
+        {
+          "zh": "钱没到的时候最着急，也最容易多花钱，或者被骗。",
+          "en": "Waiting for money that hasn't arrived is stressful, and that's when people overpay or get scammed."
+        }
+      ],
+      "list": [
+        {
+          "zh": "不要为了「解卡」再发一次。再发只是又转出去一笔，不会推动前面那一笔。Polygon 官方说，提款发起后不能取消，但也没有完成期限，钱一直在桥合约里。",
+          "en": "Don't send again to 'unstick' it. That just sends another amount and doesn't move the first one along. Polygon says a withdrawal can't be cancelled once started, but there's no deadline to complete it, and the funds stay in the bridge contract."
+        },
+        {
+          "zh": "没到那一步，不要乱点退款、取消、提现。Relay 官方说，还在处理中的不需要、也提不了；Across 过了期限没人接的，会自动退款。",
+          "en": "Don't press refund, cancel or withdraw before it's time. Relay says a transfer that is still processing doesn't need it and can't be withdrawn, and Across refunds an unfilled deposit automatically after its deadline."
+        },
+        {
+          "zh": "不要付钱给说能「加速」「解冻」「追回」的人。以太坊官网的防骗页说：有人联系你，说收一笔钱就能把钱追回来，几乎可以肯定是第二次诈骗；真正的版主从不先私信你。（这是以太坊官网的通用提醒，不是哪一家桥的规定。）",
+          "en": "Don't pay anyone who offers to 'speed up', 'unfreeze' or 'recover' it. ethereum.org's scam help page says that someone who contacts you claiming they can recover your funds for a fee is almost certainly running a second scam, and that real moderators will never DM you first. (That's general advice from ethereum.org, not any bridge's own policy.)"
+        },
+        {
+          "zh": "助记词和私钥不进任何网站。以太坊官网说：不要在任何网站上输入助记词，正规应用从来不要。Relay 官方说：只在 relay.link/withdraw 提现，恢复短语和私钥不给任何人，包括自称来自 Relay 的人。",
+          "en": "Your seed phrase and private keys never go into a website. ethereum.org says never to enter your seed phrase on any website, because legitimate apps never ask for it. Relay says to withdraw only at relay.link/withdraw and never share your recovery phrase or private key with anyone, including anyone who says they're from Relay."
+        },
+        {
+          "zh": "DeFiExit 网站只会请钱包共享地址，从不让你签名、批准或发交易；我们不会主动找你。",
+          "en": "DeFiExit only asks your wallet to share its address — it never asks you to sign, approve or send anything, and we never message first."
+        }
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": {
+        "zh": "出发那条链上已经显示成功了，钱怎么还没到？",
+        "en": "The transaction succeeded on the source chain. Why hasn't the money arrived?"
+      },
+      "a": {
+        "zh": "源链成功，只说明钱已经发出去了。目标链那一头可能还在排队、在等确认，或者在等你补一步。先认出是哪座桥，去它的官方页面看状态：先看状态，再看时间。显示要你提交证明，或者已经可以 Claim 了（比如 opBNB 的 Waiting for Proof、Linea 的 Ready to claim），就按官方步骤做；还在确认、处理中，又没有要你做的事，再接着等，对照本页「正常要等多久」。",
+        "en": "Success on the source chain only means the money has been sent. On the destination side it may still be queued, waiting for confirmation, or waiting for you to take a step. Work out which bridge it was and check its official status page: look at the status before the time. If it asks for a proof or says the funds are ready to claim (opBNB's Waiting for Proof, Linea's Ready to claim), follow the official steps. If it's still confirming or processing and nothing is asked of you, keep waiting, and compare with 'How long it normally takes' on this page."
+      }
+    },
+    {
+      "q": {
+        "zh": "桥的页面说完成了，钱包里却看不到？",
+        "en": "The bridge says it's complete, but I can't see the money in my wallet."
+      },
+      "a": {
+        "zh": "先把钱包切到目标链。Celer cBridge 官方说，常见原因是钱包里还没添加这个币，在交易记录那一条上点 MetaMask 图标就能加；Synapse 官方说，gas 空投和返还会自动到账，但它的页面只显示能跨链的资产，要连到目标链、在钱包里看。也可能到账的是另一种币，见下一问。",
+        "en": "First switch your wallet to the destination chain. Celer cBridge says the usual reason is that the token hasn't been added to your wallet, and the MetaMask icon on the history item adds it. Synapse says gas airdrops and rebates arrive automatically, but its page only shows bridgeable assets, so check your wallet on the destination chain. You may also have received a different token; see the next question."
+      }
+    },
+    {
+      "q": {
+        "zh": "到账的币不是我要的那种？",
+        "en": "I received a different token from the one I expected."
+      },
+      "a": {
+        "zh": "跨链时顺便换币，中途价格变化太大的话，有的桥会把中间的币先给你。Squid 走 Axelar 的，源链那笔成功、目标链换币失败（PARTIAL_SUCCESS）时会给 axlUSDC；源链那笔没成功的，币还在你原来的钱包里。Synapse 会给中间资产；Hop 偶尔会给 hToken（比如 hUSDC），要在 Hop 的 Convert 页换回原生币。先确认这些币到了你钱包里，再在目标链上自己换成想要的币。",
+        "en": "When a transfer includes a swap and the price moves too much along the way, some bridges hand you the in-between token instead. On Squid's Axelar routes, a successful source transaction followed by a failed destination swap (PARTIAL_SUCCESS) gives you axlUSDC; if the source transaction failed, your tokens are still in your original wallet. Synapse gives the intermediate asset, and Hop occasionally gives hTokens (such as hUSDC), which you convert to the native token on Hop's Convert page. Check that the tokens have arrived in your wallet, then swap them yourself on the destination chain."
+      }
+    },
+    {
+      "q": {
+        "zh": "能不能取消，把钱退回来？",
+        "en": "Can I cancel and get my money back?"
+      },
+      "a": {
+        "zh": "看是哪家、到了哪一步。deBridge 没人接的订单可以取消，钱全额退回；Across 过了期限没人接的会自动退款；cBridge 失败的可以在交易记录里点 Request Refund；Relay 自动退款失败后，可以去 relay.link/withdraw 提。Polygon 官方说，从 Polygon 发起的提款一旦发出就不能取消，但没有期限，随时可以完成。",
+        "en": "It depends on the bridge and the stage. On deBridge, an order nobody has taken can be cancelled and fully refunded. Across refunds an unfilled deposit automatically after its deadline. On cBridge, a failed transfer has a Request Refund button in the history. On Relay, if the automatic refund fails, you withdraw at relay.link/withdraw. Polygon says a withdrawal from Polygon can't be cancelled once sent, but it has no deadline and can be completed at any time."
+      }
+    },
+    {
+      "q": {
+        "zh": "我是从交易所提现到另一条链的，一直没到？",
+        "en": "I withdrew from an exchange to another chain, and it never arrived."
+      },
+      "a": {
+        "zh": "这种情况钱是交易所发出的，查进度、问到账都要找交易所的客服，从交易所自己的 App 或官网进去。Relay 官方也说，交易所或别的服务替你发出的，只有发款的那个钱包能操作，要找那一家。",
+        "en": "In that case the exchange sent the money, so go to the exchange's own support, through its app or official site. Relay says the same: if an exchange or another service sent the funds for you, only the sending wallet can act on them, so contact that service."
+      }
+    },
+    {
+      "q": {
+        "zh": "有人在评论区说能帮我把卡住的跨链转账弄出来，要先交一点手续费？",
+        "en": "Someone in the replies says they can unstick my transfer for a small fee."
+      },
+      "a": {
+        "zh": "别理。以太坊官网的防骗页说，说收费就能追回的，几乎可以肯定是骗局；真正的版主从不先私信你。卡住的转账，只能按那座桥自己的官方页面和官方步骤处理。助记词和私钥不给任何人。",
+        "en": "Ignore them. ethereum.org's scam help page says anyone offering to recover funds for a fee is almost certainly a scammer, and real moderators never DM you first. A stuck transfer can only be handled through the bridge's own official page and steps. Never give anyone your seed phrase or private key."
+      }
+    }
+  ],
+  "related": [
+    "l2-withdrawal-wait",
+    "scams-during-exits",
+    "pancakeswap-opbnb-cake",
+    "stargate-v1-pools",
+    "stargate-hydra-chains"
+  ],
+  "sources": [
+    {
+      "label": {
+        "zh": "Stargate 官方文档：转账（Bus / Taxi 两种模式，用 LayerZero Scan 查）",
+        "en": "Stargate docs: Transfer (Bus and Taxi modes, tracking on LayerZero Scan)"
+      },
+      "url": "https://stargateprotocol.gitbook.io/stargate/v2-user-docs/stargate-features/transfer"
+    },
+    {
+      "label": {
+        "zh": "Stargate 官方文档：常见问题（车满或到最长等待时间才出发）",
+        "en": "Stargate docs: FAQ (the bus leaves when full or at the maximum waiting time)"
+      },
+      "url": "https://stargateprotocol.gitbook.io/stargate/v2-user-docs/faq"
+    },
+    {
+      "label": {
+        "zh": "LayerZero 官方文档：Stargate（LayerZero Scan 查转账）",
+        "en": "LayerZero docs: Stargate (track transfers on LayerZero Scan)"
+      },
+      "url": "https://docs.layerzero.network/v2/concepts/applications/stargate-finance"
+    },
+    {
+      "label": {
+        "zh": "Stargate 官网（Support → Help Center 指向官方 Discord，另有 Telegram）",
+        "en": "Stargate website (Support → Help Center opens the official Discord; Telegram also listed)"
+      },
+      "url": "https://stargate.finance/"
+    },
+    {
+      "label": {
+        "zh": "Across 官方文档：主要功能（主网约 2 秒到账）",
+        "en": "Across docs: Key features (about 2 seconds on mainnet)"
+      },
+      "url": "https://docs.across.to/introduction/features"
+    },
+    {
+      "label": {
+        "zh": "Across 官方文档：退款（自动退款、可能要几个小时）",
+        "en": "Across docs: Refunds (automatic, can take several hours)"
+      },
+      "url": "https://docs.across.to/introduction/refunds"
+    },
+    {
+      "label": {
+        "zh": "Across 官方文档：常见问题（从存款算起约 120–150 分钟退款、超过 3 小时找谁）",
+        "en": "Across docs: Technical FAQ (refund about 120–150 minutes after the deposit, who to contact after 3 hours)"
+      },
+      "url": "https://docs.across.to/introduction/faq"
+    },
+    {
+      "label": {
+        "zh": "Across 官方文档：状态查询工具",
+        "en": "Across docs: Status tracker"
+      },
+      "url": "https://docs.across.to/tools/status-tracker"
+    },
+    {
+      "label": {
+        "zh": "Wormhole 官方博客：Portal 升级（交易记录在 Wormholescan、自动到账）",
+        "en": "Wormhole blog: The Portal upgrade (history on Wormholescan, automatic redemptions)"
+      },
+      "url": "https://wormhole.com/blog/the-portal-upgrade-is-now-live"
+    },
+    {
+      "label": {
+        "zh": "Wormhole 官方文档：封装代币（WTT）转账流程（自动与手动、手动要在 24 小时内完成）",
+        "en": "Wormhole docs: Wrapped token transfer (WTT) flow (automatic vs manual; complete manual transfers within 24 hours)"
+      },
+      "url": "https://wormhole.com/docs/products/token-transfers/wrapped-token-transfers/concepts/transfer-flow/"
+    },
+    {
+      "label": {
+        "zh": "Wormhole 官方文档：封装代币（WTT）转账指南（开发者恢复脚本、以太坊最终确认最多约 20 分钟）",
+        "en": "Wormhole docs: Transfer wrapped assets (WTT; developer recovery script, up to 20 minutes for Ethereum finality)"
+      },
+      "url": "https://wormhole.com/docs/products/token-transfers/wrapped-token-transfers/guides/transfer-wrapped-assets/"
+    },
+    {
+      "label": {
+        "zh": "Wormhole 官方文档：Portal 常见问题（第三方应用留了领取权限的 CCTP 转账，只能回原应用完成）",
+        "en": "Wormhole docs: Portal FAQs (CCTP transfers where a third-party app kept the right to finalize: only that app can complete them)"
+      },
+      "url": "https://wormhole.com/docs/products/token-transfers/wrapped-token-transfers/portal/faqs/"
+    },
+    {
+      "label": {
+        "zh": "Circle 开发文档：最终确认与区块确认数（按源链的签发时间）",
+        "en": "Circle developer docs: Finality and block confirmations (attestation times by source chain)"
+      },
+      "url": "https://developers.circle.com/cctp/concepts/finality-and-block-confirmations"
+    },
+    {
+      "label": {
+        "zh": "Circle 开发文档：CCTP 技术指南（24 小时有效期、过期可重新签发）",
+        "en": "Circle developer docs: CCTP technical guide (24-hour expiration, re-attestation)"
+      },
+      "url": "https://developers.circle.com/cctp/references/technical-guide"
+    },
+    {
+      "label": {
+        "zh": "Circle 官网：CCTP（开了 Forwarding 自动提交）",
+        "en": "Circle: Cross-Chain Transfer Protocol (with Forwarding, the attestation is submitted automatically)"
+      },
+      "url": "https://www.circle.com/cross-chain-transfer-protocol"
+    },
+    {
+      "label": {
+        "zh": "Linea 官方文档：跨链（USDC 走 CCTP、显示 Ready to claim 后手动 Claim、回以太坊约 2–12 小时）",
+        "en": "Linea docs: Bridge tokens (USDC uses CCTP, manual claim once Ready to claim, about 2–12 hours to Ethereum)"
+      },
+      "url": "https://docs.linea.build/network/how-to/bridge"
+    },
+    {
+      "label": {
+        "zh": "Chainlink 官方文档：CCIP Explorer",
+        "en": "Chainlink docs: CCIP Explorer"
+      },
+      "url": "https://docs.chain.link/ccip/tools-resources/ccip-explorer"
+    },
+    {
+      "label": {
+        "zh": "Chainlink 官方文档：CCIP 执行延迟（受最终确认影响）",
+        "en": "Chainlink docs: CCIP execution latency (affected by finality)"
+      },
+      "url": "https://docs.chain.link/ccip/concepts/execution-latency"
+    },
+    {
+      "label": {
+        "zh": "Chainlink 官方文档：CCIP 各链最终确认时间",
+        "en": "Chainlink docs: CCIP finality by chain"
+      },
+      "url": "https://docs.chain.link/ccip/concepts/execution-latency/finality-by-chain"
+    },
+    {
+      "label": {
+        "zh": "Chainlink 官方文档：CCIP 手动执行（Ready for manual execution、失败的要修好原因再重试、支持工单）",
+        "en": "Chainlink docs: CCIP manual execution (Ready for manual execution, retry failures only after the cause is fixed, support ticket)"
+      },
+      "url": "https://docs.chain.link/ccip/concepts/manual-execution"
+    },
+    {
+      "label": {
+        "zh": "Squid 官方文档：查状态（NEEDS_GAS、15 分钟、PARTIAL_SUCCESS 时的 axlUSDC、约 10 分钟退款）",
+        "en": "Squid docs: Track status (NEEDS_GAS, 15 minutes, axlUSDC on PARTIAL_SUCCESS, refunds in about 10 minutes)"
+      },
+      "url": "https://docs.squidrouter.com/api-and-sdk-integration/key-concepts/track-status"
+    },
+    {
+      "label": {
+        "zh": "Squid 官方文档：给接入方的说明（源链没发起成功时币还在钱包、暂停时在 Axelarscan 补 gas、Discord）",
+        "en": "Squid docs: Information for integrators (tokens stay in the wallet if the source swap didn't start, add gas on Axelarscan when paused, Discord)"
+      },
+      "url": "https://docs.squidrouter.com/widget-integration/add-a-widget/widget/information-for-integrators"
+    },
+    {
+      "label": {
+        "zh": "Axelar 官方文档：处理卡住的消息（在 Axelarscan 点 Add gas）",
+        "en": "Axelar docs: Recover a message (Add gas on Axelarscan)"
+      },
+      "url": "https://docs.axelar.dev/gmp/track-and-recover/recover-transactions"
+    },
+    {
+      "label": {
+        "zh": "Celer cBridge 官方文档：常见问题（5–20 分钟、卡住怎么办、客服）",
+        "en": "Celer cBridge docs: FAQ (5–20 minutes, stuck transfers, customer support)"
+      },
+      "url": "https://cbridge-docs.celer.network/reference/faq"
+    },
+    {
+      "label": {
+        "zh": "Celer cBridge 官方文档：跨链转账教程（Pending、Request Refund）",
+        "en": "Celer cBridge docs: Cross-chain transfer tutorial (Pending, Request Refund)"
+      },
+      "url": "https://cbridge-docs.celer.network/tutorial/cross-chain-transfer"
+    },
+    {
+      "label": {
+        "zh": "deBridge 官方帮助中心（几秒完成、deExplorer、Contact）",
+        "en": "deBridge support center (seconds, deExplorer, Contact)"
+      },
+      "url": "https://debridge.com/support/"
+    },
+    {
+      "label": {
+        "zh": "deBridge 帮助中心：交易延迟或挂着怎么办",
+        "en": "deBridge support: What happens if a bridge transaction is delayed or pending?"
+      },
+      "url": "https://debridge.com/support/what-happens-if-a-bridge-transaction-is-delayed-or-pending/"
+    },
+    {
+      "label": {
+        "zh": "deBridge 帮助中心：怎么取消订单",
+        "en": "deBridge support: How can I cancel an order?"
+      },
+      "url": "https://debridge.com/support/how-can-i-cancel-an-order/"
+    },
+    {
+      "label": {
+        "zh": "deBridge 帮助中心：取消后手续费退不退",
+        "en": "deBridge support: If I cancel a transaction, will I get my fees back?"
+      },
+      "url": "https://debridge.com/support/if-i-cancel-a-transaction-will-i-get-my-fees-back/"
+    },
+    {
+      "label": {
+        "zh": "Relay 帮助中心：怎么找到我的交易",
+        "en": "Relay Support Center: How do I find my transaction?"
+      },
+      "url": "https://support.relay.link/en/articles/9260724-how-do-i-find-my-transaction"
+    },
+    {
+      "label": {
+        "zh": "Relay 帮助中心：怎么提现（自动退款失败后、只在 relay.link/withdraw）",
+        "en": "Relay Support Center: How to withdraw funds (after a failed automatic refund; only at relay.link/withdraw)"
+      },
+      "url": "https://support.relay.link/en/articles/15100985-how-to-withdraw-funds"
+    },
+    {
+      "label": {
+        "zh": "Orbiter 官方文档：常见问题（History 搜索、Create Ticket）",
+        "en": "Orbiter docs: FAQ (History search, Create Ticket)"
+      },
+      "url": "https://docs.orbiter.finance/faq"
+    },
+    {
+      "label": {
+        "zh": "Orbiter 官方文档：概览（10–20 秒）",
+        "en": "Orbiter docs: Overview (10 to 20 seconds)"
+      },
+      "url": "https://docs.orbiter.finance/welcome/overview"
+    },
+    {
+      "label": {
+        "zh": "Synapse 官方文档：交易求助常见问题",
+        "en": "Synapse docs: Transaction Support FAQ"
+      },
+      "url": "https://docs.synapseprotocol.com/docs/Support/Transaction-Support"
+    },
+    {
+      "label": {
+        "zh": "Hop 官方文档：发了币目标链没到（15 分钟、5 分钟、hToken）",
+        "en": "Hop docs: I sent a token but it's not arriving (15 minutes, 5 minutes, hTokens)"
+      },
+      "url": "https://docs.hop.exchange/basics/faq/i-sent-a-token-but-its-not-arriving-at-the-destination"
+    },
+    {
+      "label": {
+        "zh": "Hop 官方文档：一次转账要多久（按出发的链列时间，提到查询站）",
+        "en": "Hop docs: How long does a transfer take? (times by source chain; mentions its explorer)"
+      },
+      "url": "https://docs.hop.exchange/basics/how-long-does-a-transfer-take"
+    },
+    {
+      "label": {
+        "zh": "Hop 官方文档：手动提款（几个小时到几天）",
+        "en": "Hop docs: Manual withdrawals (a few hours or days)"
+      },
+      "url": "https://docs.hop.exchange/basics/manual-withdrawals"
+    },
+    {
+      "label": {
+        "zh": "Hop 官方文档：USDC.e 手动提款（Commit、Prove 之后 7 天，再 Finalize、Withdraw）",
+        "en": "Hop docs: USDC.e manual withdrawals (7 days after Commit and Prove, then Finalize and Withdraw)"
+      },
+      "url": "https://docs.hop.exchange/basics/usdce-manual-withdrawals"
+    },
+    {
+      "label": {
+        "zh": "BNB Chain 官方文档：从 opBNB 提款（7 天挑战期、手动提交证明）",
+        "en": "BNB Chain docs: Withdraw from opBNB (7-day challenge period, submit the proof manually)"
+      },
+      "url": "https://docs.bnbchain.org/bnb-opbnb/get-started/withdraw-from-opbnb/"
+    },
+    {
+      "label": {
+        "zh": "BNB Chain 官方文档：opBNB 桥常见问题（7 天没到：先查是不是还没提交证明）",
+        "en": "BNB Chain docs: opBNB bridge FAQs (not received after 7 days: check whether the proof was submitted)"
+      },
+      "url": "https://docs.bnbchain.org/bnb-opbnb/faq/opbnb-bridge-faqs/"
+    },
+    {
+      "label": {
+        "zh": "Polygon 官方文档：Polygon Portal 使用指南（Initiate Claim、Claim Tokens）",
+        "en": "Polygon docs: Polygon Portal guide (Initiate Claim, Claim Tokens)"
+      },
+      "url": "https://docs.polygon.technology/tools/wallets/portal"
+    },
+    {
+      "label": {
+        "zh": "Polygon 帮助中心：交易挂太久怎么办（Try Again、Confirm Exit）",
+        "en": "Polygon Support: My transaction is pending for too long (Try Again, Confirm Exit)"
+      },
+      "url": "https://support.polygon.technology/support/solutions/articles/82000890640-my-transaction-is-pending-for-too-long-how-can-i-proceed-further-"
+    },
+    {
+      "label": {
+        "zh": "Polygon 帮助中心：提款不能取消，但没有完成期限",
+        "en": "Polygon Support: Withdrawals can't be cancelled, but have no time limit"
+      },
+      "url": "https://support.polygon.technology/support/solutions/articles/82000887804-checkpoint-arrived-but-i-want-to-cancel-my-transaction"
+    },
+    {
+      "label": {
+        "zh": "以太坊官网：被骗或丢了钱怎么办（防骗通用资料）",
+        "en": "ethereum.org: Scam help and reporting (general advice)"
+      },
+      "url": "https://ethereum.org/community/support/scams/"
+    }
+  ]
+}

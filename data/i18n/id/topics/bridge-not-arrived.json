@@ -1,0 +1,188 @@
+{
+  "title": "Transfer lintas chain belum masuk? Cari tahu bridge mana yang Anda pakai, lalu cek di halaman resminya",
+  "summary": "Transfer lintas chain yang belum masuk biasanya masih dalam perjalanan, atau sedang menunggu Anda mengerjakan satu langkah lagi. Cari tahu bridge mana yang Anda pakai, lalu cek halaman status resmi bridge itu. Untuk bridge yang memublikasikan waktunya: sebagian besar transfer Across butuh sekitar 2 detik dan sebagian besar transfer cBridge 5–20 menit; penarikan resmi dari opBNB ke BNB Smart Chain mengharuskan Anda mengirim bukti (proof) secara manual lalu menunggu 7 hari. Hanya sebagian kasus yang perlu langkah tambahan dari Anda. Jangan mengirim lagi untuk \"melepaskan\" transfer yang tersangkut, dan jangan membayar siapa pun yang mengaku dari tim dukungan.",
+  "sections": [
+    {
+      "h": "Pertama, cari tahu bridge mana yang Anda pakai",
+      "p": [
+        "Banyak layanan berbeda yang memindahkan dana antar-chain. Di mana mengecek status, berapa lama prosesnya, dan apa yang harus dilakukan kalau ada masalah, semuanya berbeda dari satu layanan ke layanan lain. Jadi langkah pertama adalah mencari tahu layanan mana yang Anda pakai."
+      ],
+      "list": [
+        "Lihat situs web tempat Anda menekan kirim. Alamat situsnya memberi tahu Anda, misalnya stargate.finance, across.to, relay.link, atau portalbridge.com.",
+        "Buka transaksinya di block explorer chain asal (chain tempat Anda mengirim dana) dan lihat nama kontrak di bawah `Interacted With (To)`. Nama itu sering menunjukkan bridge mana yang dipakai.",
+        "Jika Anda memakai fitur bridge bawaan dompet, atau agregator yang menawarkan beberapa rute dalam satu halaman, bridge mana pun di bawah ini bisa jadi yang bekerja di belakangnya. Kembali ke dompet atau situs yang Anda pakai dan cek riwayatnya untuk melihat rutenya. Relay menyatakan jika Anda memulai dari dalam aplikasi lain, Anda mencarinya dengan alamat yang dipakai aplikasi itu untuk mengirim; Wormhole menyatakan jika aplikasi pihak ketiga memulai transfer USDC dan menyimpan hak untuk menyelesaikannya, hanya aplikasi itu yang bisa menyelesaikannya.",
+        "Menarik dari exchange ke chain lain? Yang mengirim dana adalah exchange, jadi tanyakan ke exchange itu. Relay juga menyatakan hal yang sama: jika exchange atau layanan lain mengirim dana untuk Anda, hubungi layanan itu, karena merekalah yang memegang dompet pengirimnya.",
+        "Jika Anda memakai bridge L2 resmi untuk menarik dari OP Mainnet, Base, Arbitrum, zkSync Era, Linea, atau Scroll kembali ke Ethereum, itu kasus lain dengan masa tunggu beberapa jam sampai 7 hari; lihat topik kami tentang penarikan dari L2, tautannya ada di bagian Terkait di bawah halaman ini.",
+        "Halaman ini hanya membahas transfer antar-chain EVM. Solana dan chain non-EVM lainnya tidak termasuk."
+      ]
+    },
+    {
+      "h": "Di mana mengecek status",
+      "p": [
+        "Gunakan hanya halaman resmi tiap bridge. Alamat di bawah ini hanya teks biasa: cek di bilah alamat sebelum Anda membukanya. Biasanya Anda butuh hash transaksi dari chain asal."
+      ],
+      "list": [
+        "Stargate: cek di stargate.finance, atau di LayerZero Scan (layerzeroscan.com). Jika Anda memilih mode Economy (Bus) yang lebih murah, transfernya baru muncul di LayerZero Scan setelah \"bus\"-nya diberangkatkan.",
+        "Across: alat pelacak status di dokumentasinya, docs.across.to/tools/status-tracker, dengan hash transaksi atau ID deposit.",
+        "Wormhole / Portal: bridge-nya di portalbridge.com, dan riwayat transaksinya ada di Wormholescan (wormholescan.io).",
+        "Circle CCTP (USDC): jalur dasar yang dipakai banyak aplikasi, termasuk Across, Portal, dan bridge Linea untuk USDC. Kami tidak menemukan halaman status Circle untuk pengguna biasa, jadi cek di aplikasi yang Anda pakai.",
+        "Chainlink CCIP: CCIP Explorer (ccip.chain.link), bisa dicari dengan ID pesan (message ID).",
+        "Axelar / Squid: transfer yang lewat Axelar bisa dipantau di Axelarscan (axelarscan.io).",
+        "Celer cBridge: Pending dan riwayat transfer di kanan atas cbridge.celer.network.",
+        "deBridge: deExplorer (app.debridge.com/orders), dengan ID order, alamat dompet, atau hash transaksi. Statusnya ada Created, Fulfilled, Canceling, dan Canceled.",
+        "Relay: setiap transfer punya halamannya sendiri, dan tautannya diberikan saat transfer selesai. Jika tautannya hilang, buka relay.link/transactions dan filter dengan alamat dompet, nama ENS, atau hash transaksi.",
+        "Orbiter: tab Search di orbiter.finance/history.",
+        "Synapse: tab Activity di synapseprotocol.com. Dropdown progres berisi tautan ke block explorer di kedua chain.",
+        "Hop: explorer yang disebut dokumentasinya, explorer.hop.exchange, menampilkan 404 saat kami mencobanya pada 6 November 2026, dan kami tidak menemukan halaman status resmi lain. Jangan langsung menarik secara manual hanya karena sudah lama menunggu; cek dulu syaratnya di bagian tentang langkah tambahan di bawah.",
+        "Bridge resmi opBNB (dari opBNB kembali ke BNB Smart Chain): opbnb-bridge.bnbchain.org, pindah ke tab \"official bridge\". Dokumentasinya menyebut halaman ini secara default terbuka di bridge komunitas, jadi cek tab mana yang Anda pakai waktu itu.",
+        "Bridge Polygon PoS: riwayat transaksi di Polygon Portal (portal.polygon.technology)."
+      ]
+    },
+    {
+      "h": "Berapa lama biasanya",
+      "p": [
+        "Jika sebuah bridge memublikasikan angka, kami cantumkan beserta syaratnya; jika tidak, kami sebutkan juga (dicek 6 November 2026). Ini perkiraan bridge itu sendiri, bukan jaminan."
+      ],
+      "list": [
+        "Across: sebagian besar transfer sampai di chain tujuan dalam sekitar 2 detik di mainnet, lebih lama saat jaringan padat. Deposit yang tidak diproses (fill) siapa pun sebelum tenggatnya dikembalikan secara otomatis, tapi tidak seketika. FAQ-nya memperkirakan sekitar 120–150 menit dihitung dari saat deposit, dan angka itu sudah termasuk tenggat pemrosesan (fill deadline) sekitar 90 menit, jadi bukan waktu tunggu tambahan setelah kedaluwarsa; halaman refund-nya menyebut penyelesaian setelah kedaluwarsa bisa makan waktu beberapa jam lagi.",
+        "Orbiter: menurut dokumentasinya, transfer antara dua alamat dompet biasa selesai dalam 10 sampai 20 detik.",
+        "deBridge: biasanya selesai dalam hitungan detik, katanya; dalam kasus langka (kondisi pasar atau masalah teknis) bisa lebih lama. Order yang tidak diambil siapa pun tetap terbuka sampai kondisinya sesuai.",
+        "Celer cBridge: sebagian besar transfer butuh 5–20 menit. Ada batas laju (rate limit) demi keamanan, jadi jumlah yang lebih besar butuh waktu tambahan.",
+        "Hop: tergantung rutenya, dan dua halaman resminya tidak sejalan. Satu FAQ menyebut paling lama 15 menit untuk transfer biasa antara L1 dan L2 dan paling lama 5 menit antara dua L2; halaman per rute memperkirakan sekitar 25 menit dari Optimism atau Base, sekitar 12 menit dari Arbitrum, dan sekitar 60 menit dari Polygon. Jadi lewat 5 atau 15 menit tidak berarti Anda perlu menarik secara manual; syaratnya ada di bagian berikutnya.",
+        "Circle CCTP: dokumentasi developer Circle mencantumkan berapa lama atestasi (attestation) berlangsung, menurut chain asal. Mode standar (Standard): sekitar 15–19 menit dari Ethereum, Arbitrum, Base, atau OP Mainnet, sekitar 2 detik dari BNB Smart Chain, sekitar 8 detik dari Polygon PoS. Mode cepat (Fast): sekitar 20 detik dari Ethereum, sekitar 8 detik dari Arbitrum, Base, OP Mainnet, atau Linea. Setelah atestasi, USDC masih harus dikirimkan di chain tujuan; lihat bagian berikutnya.",
+        "Transfer USDC standar yang keluar dari Linea lambat, dan dua sumber resmi tidak sejalan: dokumentasi developer Circle menyebut sekitar 6–32 jam, sedangkan dokumentasi bridge Linea menyebut sekitar 2–12 jam untuk USDC kembali ke Ethereum. Ikuti apa yang ditampilkan bridge yang Anda pakai.",
+        "Chainlink CCIP: waktunya dipengaruhi oleh berapa lama chain asal mencapai finalitas. Tabelnya memperkirakan finalitas sekitar 12.8 menit untuk Ethereum, 17 menit untuk Arbitrum, 18 menit untuk Base, 20 menit untuk OP Mainnet, 17 menit untuk Polygon, dan 5 detik untuk BNB Chain, serta menyatakan angka-angka ini bisa berubah.",
+        "Squid: tidak ada satu waktu baku; ikuti perkiraan yang ditampilkan saat Anda melakukan transfer. Squid menyarankan menghubungi tim dukungan setelah lewat 15 menit atau dua kali waktu perkiraan, mana yang lebih lama.",
+        "Wormhole: tidak ada satu waktu baku. Panduan pemulihannya untuk transfer token terbungkus (wrapped token transfers, WTT) menyatakan bahwa untuk transfer dari Ethereum, Anda menunggu paling lama sekitar 20 menit untuk finalitas Ethereum sebelum menganggap transfer itu tersangkut.",
+        "Bridge resmi opBNB kembali ke BNB Smart Chain: masa sanggah (challenge period) 7 hari setelah Anda mengirim bukti. Halamannya juga menawarkan bridge komunitas yang lebih cepat, yang menurut peringatan dokumentasinya mungkin tidak seaman bridge resmi.",
+        "Stargate: tidak ada satu waktu baku. Di mode Economy (Bus), bus berangkat saat penuh atau saat waktu tunggu maksimum tercapai, dan halamannya menampilkan perkiraan waktu tunggu; mode Fast (Taxi) tidak menunggu bus.",
+        "Relay, Synapse, dan bridge Polygon PoS: tidak ada satu waktu baku. Synapse menyatakan perkiraannya didasarkan pada waktu blok chain tujuan, dan transaksi kadang masuk di blok yang lebih lambat dari perkiraan."
+      ]
+    },
+    {
+      "h": "Kapan Anda perlu mengerjakan langkah tambahan sendiri",
+      "p": [
+        "Dalam kasus-kasus di bawah ini, Anda mungkin perlu bertindak sendiri. Cek statusnya dulu dan baru bertindak setelah Anda benar-benar sampai di langkah itu, dengan membuka alatnya dari situs atau dokumentasi resmi. Tanda tangan tidak sama dengan transaksi: di Relay, misalnya, tanda tangannya gratis dan Anda baru membayar gas saat mengirim transaksinya nanti. Apakah sebuah langkah butuh biaya, dan berapa, ditampilkan di langkah itu sendiri dan di layar konfirmasi dompet Anda."
+      ],
+      "list": [
+        "Bridge resmi opBNB (menarik dari opBNB ke BNB Smart Chain): setiap penarikan. Saat statusnya menunjukkan Waiting for Proof, Anda harus Submit Proof sendiri; masa sanggah 7 hari baru mulai setelah itu; setelah 7 hari Anda Claim. FAQ-nya menyebut salah satu kemungkinan penyebab dana belum masuk setelah 7 hari adalah bukti yang tidak pernah ditandatangani, jadi cek riwayat transaksinya dulu.",
+        "Bridge Polygon PoS (kembali ke Ethereum): setelah dana siap, Anda mengonfirmasi sekali lagi di Ethereum dari riwayat transaksi di Polygon Portal sebelum dana masuk (tombol di panduan resmi adalah Initiate Claim dan Claim Tokens). Pusat bantuannya menyatakan penarikan yang tersangkut bisa diselesaikan di portal.polygon.technology/withdraw-tool dengan menempelkan hash transaksi dan menekan Confirm Exit, dan transaksi yang terbuang (dropped) karena gas terlalu rendah atau sebab serupa akan menampilkan tombol Try Again setelah tersangkut lebih dari satu jam. Tidak ada batas waktu untuk menyelesaikannya, dan dana tetap berada di kontrak bridge.",
+        "Wormhole / Portal: poin otomatis, manual, dan 24 jam di sini hanya berlaku untuk transfer token terbungkus (WTT) Wormhole. Transfer otomatis diselesaikan oleh relayer; Anda tidak perlu melakukan apa-apa. Transfer manual menunggu sampai atestasi transfernya ditandatangani, lalu perlu satu kali pengiriman di chain tujuan (disebut redeem). Dokumentasi developer menyatakan agar ini diselesaikan dalam 24 jam; setelah itu tanda tangan Guardian milik bridge mungkin sudah berganti dan harus diperbarui sebelum Anda bisa mengirimnya. Ini soal tanda tangan bridge, bukan izin (approval) di dompet Anda. Jika transfer otomatis tidak selesai, cek aplikasi asalnya dulu; Wormhole juga mendokumentasikan skrip pemulihan untuk developer. Untuk transfer USDC (CCTP) yang dimulai di aplikasi pihak ketiga, jika aplikasi itu menyimpan hak untuk menyelesaikannya, Portal tidak bisa menyelesaikannya untuk Anda dan Anda kembali ke aplikasi itu; itu salah satu kemungkinan penyebab Portal tidak bisa menyelesaikan sebuah transfer.",
+        "Hop: hanya jika tidak ada Bonder yang mengambil transfer Anda tepat waktu, misalnya karena biayanya diatur terlalu rendah, atau Bonder sedang offline atau kehabisan likuiditas. Pertama, Transfer Root yang memuat transfer Anda harus sampai di chain tujuan, yang menurut Hop bisa makan waktu beberapa jam atau hari, jadi menarik tepat setelah mengirim tidak akan berhasil. Lalu tempelkan hash transaksi chain asal di halaman Withdraw milik Hop dan tekan withdraw. Di L2 Anda mendapat hToken (seperti hUSDC), yang Anda konversi ke token asli di halaman Convert; di Ethereum Anda langsung mendapat token asli.",
+        "Hop dan USDC.e: ini proses manual tersendiri, dan menunggu 7 hari saja tidak cukup. Sejak bridge USDC beralih ke CCTP dan Bonder USDC.e dihentikan, transfer yang melibatkan USDC.e perlu diproses secara manual. Untuk memindahkan hUSDC.e ke L1 sesuai panduan resmi USDC.e: hanya jika Anda belum memulainya, mulai di halaman Convert dengan \"via Hop Bridge\". Jika Anda sudah memulai dan transfernya tersangkut, jangan mengirim transfer lain: bawa hash transaksi chain asal dari transfer awal itu ke halaman Relay milik Hop dan selesaikan langkah yang masih tersisa, berurutan: Commit Transfers dulu, lalu Prove Withdrawal. Setelah bukti (proof) berhasil, tunggu 7 hari, kirim Finalize Withdrawal di halaman Relay saat sudah tersedia, lalu masukkan hash transaksi chain asal dari transfer awal yang sama itu di halaman Withdraw dan tekan Withdraw.",
+        "Celer cBridge: hanya jika transfernya gagal, misalnya karena likuiditas di chain tujuan rendah atau pengaturan slippage terlalu ketat. Pop-up akan menjelaskan sebabnya, lalu Anda menekan Request Refund di riwayat transfer.",
+        "deBridge: pembatalan hanya berlaku untuk order yang belum diambil siapa pun dan masih terbuka. Buka order itu di deExplorer, hubungkan alamat Order Authority di chain tujuan, tekan Cancel, masukkan alamat di chain asal untuk menerima pengembalian dana, tekan Send Cancel, lalu konfirmasi di dompet Anda. deBridge menyatakan semua yang terkunci dikembalikan, termasuk biayanya; Anda hanya membayar gas untuk transaksi pembatalan.",
+        "Relay: jika transfer tidak bisa selesai, pengembalian dana dicoba secara otomatis. Hanya jika itu juga gagal, halaman transaksinya menampilkan \"Automatic refund failed\" dan tombol Withdraw funds, dan baru saat itu Anda membuka relay.link/withdraw: verifikasi depositnya, tanda tangani (gratis), tunggu beberapa menit sampai siap, lalu tekan Submit dalam waktu sekitar satu jam (sedikit gas). Transfer yang masih diproses atau sudah masuk tidak memerlukannya dan tidak bisa ditarik, dan hanya dompet yang mengirim dana yang bisa menarik.",
+        "Axelar / Squid: hanya jika Axelarscan menampilkan Pay Gas, Insufficient Fee, atau Not Enough Gas, misalnya karena gas di chain tujuan naik dan transfernya tertahan. Lalu buka pesan itu di Axelarscan, hubungkan dompet di chain asal, dan tekan Add gas; jumlahnya sudah dihitungkan. Transfernya berlanjut, dan bagian yang tidak terpakai dikembalikan.",
+        "Swap Squid yang tidak berhasil ada beberapa jenis. Di rute Axelar, jika transaksi di chain asal berhasil tapi swap di chain tujuan gagal (status PARTIAL_SUCCESS), Anda menerima axlUSDC di chain tujuan; pastikan sudah masuk, lalu tukar sendiri di sana. Jika transaksi di chain asal tidak pernah berhasil, ini tidak berlaku: Squid menyatakan token Anda masih ada di dompet Anda, meski mungkin sudah terpakai sedikit untuk gas. Rute Squid Intents yang gagal dikembalikan otomatis di chain asal, biasanya dalam sekitar 10 menit, kata Squid.",
+        "Chainlink CCIP: executor default mencoba mengeksekusi pesan secara otomatis. Hanya saat CCIP Explorer menampilkan \"Ready for manual execution\" ada tombol Trigger Manual Execution, dan menekannya berarti Anda mengirim transaksi di chain tujuan dan membayar gasnya. Tombol itu tidak berarti masalahnya sudah beres: jika eksekusi sebelumnya gagal, dokumentasinya menyatakan coba lagi hanya setelah penyebabnya diperbaiki, jadi minta aplikasi asal memastikan perbaikannya dulu dan jangan mengirim ulang berkali-kali.",
+        "Circle CCTP: langkah terakhir yang mengirim USDC di chain tujuan dikerjakan untuk Anda oleh sebagian aplikasi (dengan fitur Forwarding milik Circle, langkah ini dikirim otomatis) dan diserahkan kepada Anda oleh aplikasi lain; misalnya, USDC di bridge Linea selalu perlu Claim manual, yang Anda kirim di chain tujuan setelah riwayatnya menampilkan \"Ready to claim\". Dokumentasi developer Circle menyatakan pesannya punya masa berlaku 24 jam dan harus ditandatangani ulang setelah itu, dan bahwa transfer cepat yang kedaluwarsa tidak tersangkut selamanya dan bisa diatestasi ulang kapan saja. Itu dilakukan oleh aplikasinya, jadi datangi aplikasi yang Anda pakai.",
+        "Synapse: jika slippage melonjak saat swap, Synapse mengirimkan aset perantara alih-alih menukarnya dengan rugi, dan Anda bisa menukarnya sendiri di chain tujuan. Transfer yang gagal selesai tidak hilang, katanya; tim dukungannya menanganinya secara manual."
+      ]
+    },
+    {
+      "h": "Minta bantuan langsung ke bridge-nya",
+      "p": [
+        "Siapkan hash transaksi dari chain asal. Hubungi tim dukungan hanya lewat situs atau dokumentasi resmi; abaikan tautan \"dukungan\" dari hasil pencarian, DM, atau balasan."
+      ],
+      "list": [
+        "Across: jika sudah lebih dari 3 jam, FAQ-nya mencantumkan Telegram, dukungan di dalam aplikasi di across.to, dan Slack.",
+        "Celer cBridge: tersangkut di Submitting? Cek apakah transaksi di chain asal sudah dikonfirmasi; jika belum, Anda bisa menaikkan harga gas untuk mempercepatnya, dan jika sudah, hubungi tim dukungan. Tersangkut di \"Waiting for SGN confirmation\" atau \"Waiting for fund release\"? Tunggu setidaknya 2 jam lagi, dan hubungi tim dukungan setelah 3 jam. Pakai tautan customer support di FAQ resmi dan sertakan hash transaksi chain asal. Ada juga komunitas Discord dan Telegram resmi.",
+        "Relay: jendela chat di relay.link, atau email support@relay.link yang tercantum di pusat bantuannya. Mengirim URL lengkap halaman transaksinya adalah cara tercepat.",
+        "Orbiter: temukan transfernya di halaman History dulu, lalu gunakan Create Ticket di Discord resminya dengan menyebutkan kedua chain dan hash transaksinya.",
+        "Synapse dan Squid: dokumentasi mereka mengarahkan ke server Discord masing-masing.",
+        "deBridge: bagian Contact di situsnya mencantumkan pusat bantuan, debridge.com/support, dan Discord.",
+        "Chainlink CCIP: dokumentasinya meminta Anda mengajukan tiket dukungan dengan message ID CCIP jika menurut Anda status di Explorer salah, tapi tidak menyebutkan di mana tiket itu diajukan.",
+        "Circle CCTP: tautan Support di footer dokumentasi developer Circle mengarah ke halaman tiket Circle Help Center (help.circle.com). Jika transfernya dimulai di aplikasi lain, datangi aplikasi itu dulu.",
+        "Bridge Polygon PoS: pusat bantuannya di support.polygon.technology. Tanpa login, kami hanya melihat artikel basis pengetahuan di sana dan tidak ada cara untuk mengajukan tiket.",
+        "Stargate: Support → Help Center di situsnya membuka Discord resmi, dan situsnya juga mencantumkan Telegram. Kami tidak menemukan formulir tiket web terpisah.",
+        "Wormhole / Portal, Hop, dan opBNB: kami tidak menemukan kanal dukungan yang jelas di dokumentasi mereka."
+      ]
+    },
+    {
+      "h": "Yang tidak boleh dilakukan",
+      "p": [
+        "Menunggu dana yang belum juga masuk itu membuat cemas, dan justru saat itulah orang membayar terlalu mahal atau tertipu."
+      ],
+      "list": [
+        "Jangan mengirim lagi untuk \"melepaskan\" transfer yang tersangkut. Itu hanya mengirim jumlah lain dan tidak membuat transfer pertama bergerak. Polygon menyatakan penarikan yang sudah dimulai tidak bisa dibatalkan, tapi tidak ada tenggat untuk menyelesaikannya, dan dananya tetap berada di kontrak bridge.",
+        "Jangan menekan pengembalian dana, pembatalan, atau penarikan sebelum waktunya. Relay menyatakan transfer yang masih diproses tidak memerlukannya dan tidak bisa ditarik, dan Across otomatis mengembalikan deposit yang tidak diproses setelah tenggatnya.",
+        "Jangan membayar siapa pun yang menawarkan untuk \"mempercepat\", \"membuka blokir\", atau \"memulihkan\" dana Anda. Halaman bantuan penipuan ethereum.org menyatakan bahwa orang yang menghubungi Anda dan mengaku bisa memulihkan dana Anda dengan bayaran hampir pasti sedang menjalankan penipuan kedua, dan moderator asli tidak akan pernah DM Anda lebih dulu. (Itu saran umum dari ethereum.org, bukan kebijakan bridge mana pun.)",
+        "Frasa pemulihan dan kunci privat Anda tidak pernah boleh dimasukkan ke situs web. ethereum.org menyatakan jangan pernah memasukkan frasa pemulihan di situs web mana pun, karena aplikasi yang sah tidak pernah memintanya. Relay menyatakan tarik dana hanya di relay.link/withdraw dan jangan pernah membagikan frasa pemulihan atau kunci privat Anda kepada siapa pun, termasuk orang yang mengaku dari Relay.",
+        "DeFiExit hanya meminta dompet Anda membagikan alamatnya — tidak pernah meminta Anda menandatangani, memberi izin, atau mengirim apa pun, dan kami tidak pernah menghubungi Anda lebih dulu."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Transaksinya berhasil di chain asal. Kenapa dananya belum masuk?",
+      "a": "Berhasil di chain asal hanya berarti dana sudah dikirim. Di sisi chain tujuan, transfernya mungkin masih antre, menunggu konfirmasi, atau menunggu Anda mengerjakan satu langkah. Cari tahu bridge mana yang dipakai dan cek halaman status resminya: lihat statusnya dulu, baru waktunya. Jika diminta bukti (proof) atau tertulis dana siap diklaim (Waiting for Proof di opBNB, Ready to claim di Linea), ikuti langkah resminya. Jika masih dalam konfirmasi atau diproses dan tidak ada yang diminta dari Anda, terus tunggu, dan bandingkan dengan \"Berapa lama biasanya\" di halaman ini."
+    },
+    {
+      "q": "Bridge-nya bilang sudah selesai, tapi saya tidak melihat dananya di dompet.",
+      "a": "Pertama, alihkan dompet Anda ke chain tujuan. Celer cBridge menyatakan penyebab yang umum adalah tokennya belum ditambahkan ke dompet Anda, dan ikon MetaMask di item riwayat itu bisa menambahkannya. Synapse menyatakan airdrop gas dan rebate masuk secara otomatis, tapi halamannya hanya menampilkan aset yang bisa dipindahkan lewat bridge, jadi cek dompet Anda di chain tujuan. Mungkin juga Anda menerima token yang berbeda; lihat pertanyaan berikutnya."
+    },
+    {
+      "q": "Saya menerima token yang berbeda dari yang saya harapkan.",
+      "a": "Jika transfer disertai swap dan harganya bergerak terlalu jauh di tengah jalan, sebagian bridge memberikan token perantara sebagai gantinya. Di rute Axelar milik Squid, transaksi chain asal yang berhasil lalu diikuti swap chain tujuan yang gagal (PARTIAL_SUCCESS) memberi Anda axlUSDC; jika transaksi chain asal gagal, token Anda masih ada di dompet asal Anda. Synapse memberikan aset perantara, dan Hop kadang memberikan hToken (seperti hUSDC), yang Anda konversi ke token asli di halaman Convert milik Hop. Pastikan token itu sudah masuk ke dompet Anda, lalu tukar sendiri di chain tujuan."
+    },
+    {
+      "q": "Bisakah saya membatalkan dan mendapatkan dana saya kembali?",
+      "a": "Tergantung bridge-nya dan tahapnya. Di deBridge, order yang belum diambil siapa pun bisa dibatalkan dan dikembalikan penuh. Across mengembalikan deposit yang tidak diproses secara otomatis setelah tenggatnya. Di cBridge, transfer yang gagal punya tombol Request Refund di riwayat. Di Relay, jika pengembalian dana otomatis gagal, Anda menarik di relay.link/withdraw. Polygon menyatakan penarikan dari Polygon tidak bisa dibatalkan setelah dikirim, tapi tidak ada tenggatnya dan bisa diselesaikan kapan saja."
+    },
+    {
+      "q": "Saya menarik dari exchange ke chain lain, dan dananya tidak pernah masuk.",
+      "a": "Dalam kasus itu yang mengirim dana adalah exchange, jadi hubungi tim dukungan exchange itu sendiri, lewat aplikasinya atau situs resminya. Relay menyatakan hal yang sama: jika exchange atau layanan lain mengirim dana untuk Anda, hanya dompet pengirim yang bisa menindaklanjutinya, jadi hubungi layanan itu."
+    },
+    {
+      "q": "Ada orang di balasan yang bilang bisa melepaskan transfer saya yang tersangkut dengan sedikit biaya.",
+      "a": "Abaikan. Halaman bantuan penipuan ethereum.org menyatakan siapa pun yang menawarkan pemulihan dana dengan bayaran hampir pasti penipu, dan moderator asli tidak pernah DM Anda lebih dulu. Transfer yang tersangkut hanya bisa ditangani lewat halaman dan langkah resmi milik bridge itu sendiri. Jangan pernah memberikan frasa pemulihan atau kunci privat Anda kepada siapa pun."
+    }
+  ],
+  "sources": [
+    "Dokumentasi Stargate: Transfer (mode Bus dan Taxi, pelacakan di LayerZero Scan)",
+    "Dokumentasi Stargate: FAQ (bus berangkat saat penuh atau saat waktu tunggu maksimum)",
+    "Dokumentasi LayerZero: Stargate (lacak transfer di LayerZero Scan)",
+    "Situs Stargate (Support → Help Center membuka Discord resmi; Telegram juga tercantum)",
+    "Dokumentasi Across: Fitur utama (sekitar 2 detik di mainnet)",
+    "Dokumentasi Across: Pengembalian dana (otomatis, bisa makan waktu beberapa jam)",
+    "Dokumentasi Across: FAQ teknis (pengembalian dana sekitar 120–150 menit setelah deposit, siapa yang dihubungi setelah 3 jam)",
+    "Dokumentasi Across: Pelacak status",
+    "Blog Wormhole: Upgrade Portal (riwayat di Wormholescan, redeem otomatis)",
+    "Dokumentasi Wormhole: Alur transfer token terbungkus (WTT) (otomatis vs manual; selesaikan transfer manual dalam 24 jam)",
+    "Dokumentasi Wormhole: Mentransfer aset terbungkus (WTT; skrip pemulihan untuk developer, hingga 20 menit untuk finalitas Ethereum)",
+    "Dokumentasi Wormhole: FAQ Portal (transfer CCTP yang hak penyelesaiannya disimpan aplikasi pihak ketiga: hanya aplikasi itu yang bisa menyelesaikannya)",
+    "Dokumentasi developer Circle: Finalitas dan konfirmasi blok (waktu atestasi menurut chain asal)",
+    "Dokumentasi developer Circle: Panduan teknis CCTP (kedaluwarsa 24 jam, atestasi ulang)",
+    "Circle: Cross-Chain Transfer Protocol (dengan Forwarding, atestasi dikirim otomatis)",
+    "Dokumentasi Linea: Memindahkan token lewat bridge (USDC memakai CCTP, Claim manual setelah Ready to claim, sekitar 2–12 jam ke Ethereum)",
+    "Dokumentasi Chainlink: CCIP Explorer",
+    "Dokumentasi Chainlink: Latensi eksekusi CCIP (dipengaruhi finalitas)",
+    "Dokumentasi Chainlink: Finalitas CCIP per chain",
+    "Dokumentasi Chainlink: Eksekusi manual CCIP (Ready for manual execution, coba ulang kegagalan hanya setelah penyebabnya diperbaiki, tiket dukungan)",
+    "Dokumentasi Squid: Melacak status (NEEDS_GAS, 15 menit, axlUSDC saat PARTIAL_SUCCESS, pengembalian dana dalam sekitar 10 menit)",
+    "Dokumentasi Squid: Informasi untuk integrator (token tetap di dompet jika swap di chain asal tidak dimulai, tambah gas di Axelarscan saat tertahan, Discord)",
+    "Dokumentasi Axelar: Memulihkan pesan (Add gas di Axelarscan)",
+    "Dokumentasi Celer cBridge: FAQ (5–20 menit, transfer tersangkut, customer support)",
+    "Dokumentasi Celer cBridge: Tutorial transfer lintas chain (Pending, Request Refund)",
+    "Pusat bantuan deBridge (hitungan detik, deExplorer, Contact)",
+    "Bantuan deBridge: Apa yang terjadi jika transaksi bridge tertunda atau masih pending?",
+    "Bantuan deBridge: Bagaimana cara membatalkan order?",
+    "Bantuan deBridge: Jika saya membatalkan transaksi, apakah biayanya dikembalikan?",
+    "Pusat Bantuan Relay: Bagaimana cara menemukan transaksi saya?",
+    "Pusat Bantuan Relay: Cara menarik dana (setelah pengembalian dana otomatis gagal; hanya di relay.link/withdraw)",
+    "Dokumentasi Orbiter: FAQ (pencarian di History, Create Ticket)",
+    "Dokumentasi Orbiter: Ikhtisar (10 sampai 20 detik)",
+    "Dokumentasi Synapse: FAQ bantuan transaksi",
+    "Dokumentasi Hop: Saya mengirim token tapi tidak sampai (15 menit, 5 menit, hToken)",
+    "Dokumentasi Hop: Berapa lama sebuah transfer? (waktu menurut chain asal; menyebut explorer-nya)",
+    "Dokumentasi Hop: Penarikan manual (beberapa jam atau hari)",
+    "Dokumentasi Hop: Penarikan manual USDC.e (7 hari setelah Commit dan Prove, lalu Finalize dan Withdraw)",
+    "Dokumentasi BNB Chain: Menarik dari opBNB (masa sanggah 7 hari, kirim bukti secara manual)",
+    "Dokumentasi BNB Chain: FAQ bridge opBNB (belum masuk setelah 7 hari: cek apakah bukti sudah dikirim)",
+    "Dokumentasi Polygon: Panduan Polygon Portal (Initiate Claim, Claim Tokens)",
+    "Bantuan Polygon: Transaksi saya pending terlalu lama (Try Again, Confirm Exit)",
+    "Bantuan Polygon: Penarikan tidak bisa dibatalkan, tapi tidak ada batas waktunya",
+    "ethereum.org: Bantuan dan pelaporan penipuan (saran umum)"
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "title": "Dein Cross-Chain-Transfer ist nicht angekommen? Finde heraus, welche Bridge du genutzt hast, und sieh auf ihrer offiziellen Seite nach",
+  "summary": "Ein Cross-Chain-Transfer, der nicht angekommen ist, ist meist noch unterwegs oder wartet darauf, dass du noch einen Schritt machst. Finde heraus, welche Bridge du genutzt hast, und prüf dann die offizielle Statusseite dieser Bridge. Wo Bridges Zeiten veröffentlichen: Die meisten Across-Transfers dauern etwa 2 Sekunden, die meisten cBridge-Transfers 5–20 Minuten; bei einer offiziellen Auszahlung von opBNB auf die BNB Smart Chain musst du einen Beweis von Hand einreichen und dann 7 Tage warten. Nur in manchen Fällen musst du selbst noch etwas tun. Schick nicht noch einmal Geld, um den Transfer „freizubekommen“, und bezahl niemanden, der sich als Support ausgibt.",
+  "sections": [
+    {
+      "h": "Finde zuerst heraus, welche Bridge du genutzt hast",
+      "p": [
+        "Viele verschiedene Dienste bringen Geld von einer Chain auf eine andere. Wo du den Status prüfst, wie lange es dauert und was zu tun ist, wenn etwas schiefgeht, ist bei jedem anders. Der erste Schritt ist also herauszufinden, welchen du genutzt hast."
+      ],
+      "list": [
+        "Schau, auf welcher Website du auf Senden getippt hast. Ihre Adresse verrät es dir, zum Beispiel stargate.finance, across.to, relay.link oder portalbridge.com.",
+        "Öffne die Transaktion im Block-Explorer der Ausgangs-Chain und sieh dir den Contract-Namen unter `Interacted With (To)` an. Oft erkennst du daran, welche Bridge es war.",
+        "Wenn du die eingebaute Bridge einer Wallet genutzt hast oder einen Aggregator, der auf einer Seite mehrere Routen anbietet, kann jede der Bridges unten dahinterstecken. Geh zurück zu der Wallet oder Website, die du genutzt hast, und schau in ihrem Verlauf nach der Route. Laut Relay suchst du, wenn du in einer anderen App gestartet hast, nach der Adresse, von der diese App gesendet hat; laut Wormhole gilt: Hat eine Drittanbieter-App einen USDC-Transfer gestartet und sich das Recht zum Abschließen vorbehalten, kann nur diese App ihn abschließen.",
+        "Von einer Börse auf eine andere Chain abgehoben? Das Geld hat die Börse geschickt, also frag die Börse. Relay sagt dasselbe: Wenn eine Börse oder ein anderer Dienst das Geld für dich gesendet hat, wende dich an diesen Dienst, denn er kontrolliert die sendende Wallet.",
+        "Wenn du eine offizielle L2-Bridge genutzt hast, um von OP Mainnet, Base, Arbitrum, zkSync Era, Linea oder Scroll zurück auf Ethereum abzuheben, ist das ein anderer Fall mit einer Wartezeit von ein paar Stunden bis 7 Tagen; sieh dir unser Thema zu L2-Auszahlungen an, verlinkt unter „Siehe auch“ unten auf dieser Seite.",
+        "Diese Seite behandelt nur Transfers zwischen EVM-Chains. Solana und andere Nicht-EVM-Chains sind hier nicht Thema."
+      ]
+    },
+    {
+      "h": "Wo du den Status prüfst",
+      "p": [
+        "Nutze nur die offiziellen Seiten der jeweiligen Bridge. Die Adressen unten sind reiner Text: Prüf sie in der Adressleiste, bevor du sie öffnest. Meist brauchst du den Transaktions-Hash von der Ausgangs-Chain."
+      ],
+      "list": [
+        "Stargate: Prüf es auf stargate.finance oder auf LayerZero Scan (layerzeroscan.com). Hast du den günstigeren Modus „Economy (Bus)“ gewählt, taucht der Transfer erst auf LayerZero Scan auf, wenn der Bus losgeschickt wurde.",
+        "Across: der Status-Tracker in der Doku, docs.across.to/tools/status-tracker, per Transaktions-Hash oder Deposit-ID.",
+        "Wormhole / Portal: Die Bridge ist portalbridge.com, der Transaktionsverlauf liegt auf Wormholescan (wormholescan.io).",
+        "Circle CCTP (USDC): eine zugrunde liegende Route, die viele Apps nutzen, darunter Across, Portal und die Linea-Bridge für USDC. Eine Statusseite von Circle für normale Nutzer haben wir nicht gefunden, prüf es also in der App, die du genutzt hast.",
+        "Chainlink CCIP: CCIP Explorer (ccip.chain.link), durchsuchbar nach Message-ID.",
+        "Axelar / Squid: Transfers, die über Axelar laufen, kannst du auf Axelarscan (axelarscan.io) verfolgen.",
+        "Celer cBridge: „Pending“ und der Transferverlauf oben rechts auf cbridge.celer.network.",
+        "deBridge: deExplorer (app.debridge.com/orders), per Order-ID, Wallet-Adresse oder Transaktions-Hash. Die möglichen Status sind „Created“ (erstellt), „Fulfilled“ (ausgeführt), „Canceling“ (wird storniert) und „Canceled“ (storniert).",
+        "Relay: Jeder Transfer hat eine eigene Seite, die am Ende verlinkt wird. Hast du den Link verloren, geh auf relay.link/transactions und filtere nach Wallet-Adresse, ENS-Namen oder Transaktions-Hash.",
+        "Orbiter: der Tab „Search“ auf orbiter.finance/history.",
+        "Synapse: der Tab „Activity“ auf synapseprotocol.com. Das Dropdown der Fortschrittsanzeige verlinkt auf die Block-Explorer beider Chains.",
+        "Hop: Der Explorer, den die Doku nennt, explorer.hop.exchange, lieferte bei unserem Versuch am 2026-11-06 einen 404-Fehler, und eine andere offizielle Statusseite haben wir nicht gefunden. Mach keine manuelle Auszahlung, nur weil Zeit vergangen ist; die Bedingungen dafür stehen weiter unten im Abschnitt dazu, wann du selbst noch einen Schritt machen musst.",
+        "Offizielle opBNB-Bridge (von opBNB zurück auf die BNB Smart Chain): opbnb-bridge.bnbchain.org, auf den Tab „official bridge“ umgeschaltet. Laut Doku öffnet die Seite standardmäßig die Community-Bridge, prüf also, welchen Tab du genutzt hast.",
+        "Polygon-PoS-Bridge: der Transaktionsverlauf im Polygon Portal (portal.polygon.technology)."
+      ]
+    },
+    {
+      "h": "Wie lange es normalerweise dauert",
+      "p": [
+        "Wo eine Bridge Zahlen veröffentlicht, stehen sie hier mit ihren Bedingungen; wo nicht, sagen wir das (geprüft am 2026-11-06). Das sind Schätzungen der Bridges selbst, keine Garantien."
+      ],
+      "list": [
+        "Across: Auf dem Mainnet kommen die meisten Transfers in etwa 2 Sekunden auf der Ziel-Chain an, bei überlastetem Netz dauert es länger. Eine Einzahlung, die vor Ablauf ihrer Frist niemand ausführt, wird automatisch erstattet, aber nicht sofort. Die FAQ schätzt etwa 120–150 Minuten ab der Einzahlung, und darin ist eine Ausführungsfrist von etwa 90 Minuten schon enthalten – es ist also keine zusätzliche Wartezeit nach Ablauf; laut der Seite zu Rückerstattungen kann die Abwicklung nach Ablauf noch mehrere Stunden dauern.",
+        "Orbiter: Laut Doku sind Transfers zwischen zwei normalen Wallet-Adressen in 10 bis 20 Sekunden erledigt.",
+        "deBridge: Laut deBridge meist in Sekunden erledigt; in seltenen Fällen (Marktlage oder technische Probleme) dauert es länger. Eine Order, die niemand übernimmt, bleibt offen, bis die Bedingungen passen.",
+        "Celer cBridge: Die meisten Transfers dauern 5–20 Minuten. Aus Sicherheitsgründen gibt es Limits, größere Beträge brauchen daher länger.",
+        "Hop: Es hängt von der Route ab, und zwei offizielle Seiten widersprechen sich. Eine FAQ nennt bis zu 15 Minuten für einen normalen Transfer zwischen L1 und L2 und bis zu 5 Minuten zwischen zwei L2s; die Seite mit den einzelnen Routen schätzt etwa 25 Minuten ab Optimism oder Base, etwa 12 ab Arbitrum und etwa 60 ab Polygon. Sind also 5 oder 15 Minuten vorbei, heißt das nicht, dass du eine manuelle Auszahlung brauchst; die Bedingungen dafür stehen im nächsten Abschnitt.",
+        "Circle CCTP: Circles Entwickler-Doku nennt je Ausgangs-Chain, wie lange die Attestation dauert. Im Standard-Modus: etwa 15–19 Minuten ab Ethereum, Arbitrum, Base oder OP Mainnet, etwa 2 Sekunden ab der BNB Smart Chain, etwa 8 Sekunden ab Polygon PoS. Im schnellen Modus: etwa 20 Sekunden ab Ethereum, etwa 8 Sekunden ab Arbitrum, Base, OP Mainnet oder Linea. Nach der Attestation muss das USDC noch auf der Ziel-Chain zugestellt werden; siehe nächsten Abschnitt.",
+        "Standard-Transfers von USDC aus Linea heraus sind langsam, und zwei offizielle Quellen widersprechen sich: Circles Entwickler-Doku nennt etwa 6–32 Stunden, die Doku der Linea-Bridge etwa 2–12 Stunden für USDC zurück auf Ethereum. Richte dich nach dem, was die Bridge anzeigt, die du genutzt hast.",
+        "Chainlink CCIP: Die Dauer wird davon beeinflusst, wie lange die Ausgangs-Chain bis zur Finalität braucht. Die Tabelle von Chainlink schätzt die Finalität auf etwa 12.8 Minuten bei Ethereum, 17 Minuten bei Arbitrum, 18 Minuten bei Base, 20 Minuten bei OP Mainnet, 17 Minuten bei Polygon und 5 Sekunden bei der BNB Chain und sagt, dass sich diese Werte ändern können.",
+        "Squid: keine einheitliche Zeit; richte dich nach der Schätzung, die beim Transfer angezeigt wurde. Squid empfiehlt, sich an den Support zu wenden, wenn 15 Minuten oder die doppelte geschätzte Zeit vergangen sind – je nachdem, was länger ist.",
+        "Wormhole: keine einheitliche Zeit. Laut seinem Leitfaden zur Wiederherstellung von Wrapped-Token-Transfers (WTT) wartest du bei Transfers von Ethereum bis zu etwa 20 Minuten auf die Finalität von Ethereum, bevor du einen Transfer als festhängend betrachtest.",
+        "Offizielle opBNB-Bridge zurück auf die BNB Smart Chain: eine Anfechtungsfrist von 7 Tagen, nachdem du den Beweis eingereicht hast. Die Seite bietet auch schnellere Community-Bridges an; die Doku warnt, dass sie womöglich nicht so sicher sind wie die offizielle.",
+        "Stargate: keine einheitliche Zeit. Im Modus „Economy (Bus)“ fährt der Bus los, wenn er voll ist oder die maximale Wartezeit erreicht ist, und die Seite zeigt die geschätzte Wartezeit; der Modus „Fast (Taxi)“ wartet auf keinen Bus.",
+        "Relay, Synapse und die Polygon-PoS-Bridge: keine einheitliche Zeit. Laut Synapse beruhen seine Schätzungen auf den Blockzeiten der Ziel-Chain, und eine Transaktion landet manchmal in einem späteren Block als erwartet."
+      ]
+    },
+    {
+      "h": "Wann du selbst noch einen Schritt machen musst",
+      "p": [
+        "In den Fällen unten musst du womöglich selbst handeln. Prüf zuerst den Status und handle erst, wenn du an diesem Schritt angekommen bist; öffne das Tool dabei über die offizielle Website oder Doku. Eine Signatur ist nicht dasselbe wie eine Transaktion: Bei Relay zum Beispiel ist die Signatur kostenlos, und Gas zahlst du erst, wenn du später die Transaktion einreichst. Ob etwas Geld kostet und wie viel, siehst du im Schritt selbst und auf dem Bestätigungsbildschirm deiner Wallet."
+      ],
+      "list": [
+        "Offizielle opBNB-Bridge (Auszahlung von opBNB auf die BNB Smart Chain): bei jeder Auszahlung. Zeigt der Status „Waiting for Proof“ (wartet auf Beweis), musst du selbst „Submit Proof“ machen; die Anfechtungsfrist von 7 Tagen beginnt erst danach; nach 7 Tagen machst du „Claim“. Laut FAQ ist ein möglicher Grund, wenn nach 7 Tagen nichts angekommen ist, ein Beweis, der nie signiert wurde – prüf also zuerst den Transaktionsverlauf.",
+        "Polygon-PoS-Bridge (zurück auf Ethereum): Sobald das Geld bereit ist, bestätigst du noch einmal auf Ethereum, im Transaktionsverlauf von Polygon Portal, bevor es ankommt (im offiziellen Leitfaden heißen die Buttons „Initiate Claim“ und „Claim Tokens“). Laut Hilfecenter lässt sich eine festhängende Auszahlung auf portal.polygon.technology/withdraw-tool abschließen, indem du den Transaktions-Hash einfügst und auf „Confirm Exit“ tippst; bei einer Transaktion, die wegen zu wenig Gas oder Ähnlichem verworfen wurde, erscheint ein Button „Try Again“, wenn sie länger als eine Stunde festhängt. Für den Abschluss gibt es keine Frist, und das Geld bleibt im Bridge-Contract.",
+        "Wormhole / Portal: Was hier zu automatisch, manuell und 24 Stunden steht, gilt nur für die Wrapped-Token-Transfers (WTT) von Wormhole. Automatische Transfers schließt ein Relayer ab; du musst nichts tun. Ein manueller Transfer wartet, bis die Attestation des Transfers signiert ist, und braucht dann eine Einreichung auf der Ziel-Chain („redeem“ genannt). Laut Entwickler-Doku sollst du das innerhalb von 24 Stunden erledigen; danach können sich die Guardian-Signaturen der Bridge geändert haben und müssen aktualisiert werden, bevor du einreichen kannst. Gemeint sind die Signaturen der Bridge, nicht die Freigaben deiner Wallet. Ist ein automatischer Transfer nicht durchgelaufen, schau zuerst in der ursprünglichen App nach; Wormhole dokumentiert außerdem ein Wiederherstellungs-Skript für Entwickler. Bei einem USDC-Transfer (CCTP), der in einer Drittanbieter-App gestartet wurde, gilt: Hat sich diese App das Recht zum Abschließen vorbehalten, kann Portal ihn nicht für dich abschließen, und du gehst zurück zu dieser App; das ist ein möglicher Grund, warum Portal einen Transfer nicht abschließen kann.",
+        "Hop: nur, wenn kein Bonder deinen Transfer rechtzeitig übernimmt, zum Beispiel weil die Gebühr zu niedrig angesetzt war oder der Bonder offline ist oder keine Liquidität mehr hat. Zuerst muss die Transfer Root mit deinem Transfer auf der Ziel-Chain ankommen, was laut Hop ein paar Stunden bis Tage dauern kann – direkt nach dem Senden abzuheben klappt also nicht. Füg dann auf der Seite „Withdraw“ von Hop den Transaktions-Hash der Ausgangs-Chain ein und tippe auf „withdraw“. Auf einem L2 bekommst du hTokens (etwa hUSDC), die du auf der Seite „Convert“ in den nativen Token umwandelst; auf Ethereum bekommst du direkt den nativen Token.",
+        "Hop und USDC.e: Das ist ein eigener manueller Ablauf, und 7 Tage zu warten reicht nicht. Seit die USDC-Bridge auf CCTP umgestellt und der USDC.e-Bonder eingestellt wurde, müssen Transfers mit USDC.e manuell abgewickelt werden. So bringst du hUSDC.e laut offiziellem USDC.e-Leitfaden auf das L1: Nur wenn du noch nicht gestartet hast, starte den Transfer auf der Seite „Convert“ mit „via Hop Bridge“. Hast du schon gestartet und es hängt, schick keinen weiteren los: Nimm den Transaktions-Hash des ursprünglichen Transfers auf der Ausgangs-Chain, geh damit auf die Seite „Relay“ von Hop und erledige die noch offenen Schritte der Reihe nach: zuerst „Commit Transfers“, dann „Prove Withdrawal“. Wenn der Beweis erfolgreich war, warte 7 Tage, reiche auf der Seite „Relay“ „Finalize Withdrawal“ ein, sobald das möglich ist, gib dann auf der Seite „Withdraw“ denselben ursprünglichen Transaktions-Hash der Ausgangs-Chain ein und tippe auf „Withdraw“.",
+        "Celer cBridge: nur, wenn der Transfer fehlschlägt, zum Beispiel wegen zu wenig Liquidität auf der Ziel-Chain oder einer zu knapp eingestellten Slippage. Ein Pop-up erklärt den Grund, und du tippst im Transferverlauf auf „Request Refund“.",
+        "deBridge: Stornieren kommt nur bei einer Order infrage, die niemand übernommen hat und die noch offen ist. Öffne sie in deExplorer, verbinde die Adresse der Order Authority auf der Ziel-Chain, tippe auf „Cancel“, gib die Adresse auf der Ausgangs-Chain ein, die die Erstattung bekommen soll, tippe auf „Send Cancel“ und bestätige in deiner Wallet. Laut deBridge wird alles, was gesperrt ist, erstattet, Gebühren eingeschlossen; du zahlst nur das Gas für die Storno-Transaktion.",
+        "Relay: Wenn ein Transfer nicht abgeschlossen werden kann, wird automatisch eine Erstattung versucht. Nur wenn auch die fehlschlägt, zeigt die Transaktionsseite „Automatic refund failed“ (automatische Erstattung fehlgeschlagen) und einen Button „Withdraw funds“, und nur dann gehst du auf relay.link/withdraw: Einzahlung verifizieren, signieren (kostenlos), ein paar Minuten warten, bis alles vorbereitet ist, dann innerhalb von etwa einer Stunde auf „Submit“ tippen (etwas Gas). Ein Transfer, der noch verarbeitet wird oder schon angekommen ist, braucht das nicht und lässt sich nicht abheben, und abheben kann nur die Wallet, die das Geld gesendet hat.",
+        "Axelar / Squid: nur, wenn Axelarscan „Pay Gas“, „Insufficient Fee“ oder „Not Enough Gas“ anzeigt, zum Beispiel weil das Gas auf der Ziel-Chain gestiegen ist und der Transfer pausiert. Öffne dann die Nachricht auf Axelarscan, verbinde eine Wallet auf der Ausgangs-Chain und tippe auf „Add gas“; den Betrag berechnet Axelarscan selbst. Der Transfer läuft weiter, und der nicht verbrauchte Teil wird erstattet.",
+        "Ein Squid-Tausch, der nicht geklappt hat, kann verschiedene Formen haben. Bei Axelar-Routen gilt: Ist die Transaktion auf der Ausgangs-Chain erfolgreich, aber der Tausch auf der Ziel-Chain fehlgeschlagen (Status PARTIAL_SUCCESS), bekommst du axlUSDC auf der Ziel-Chain; prüf, ob es angekommen ist, und tausch es dann dort selbst. Ist die Transaktion auf der Ausgangs-Chain gar nicht durchgegangen, trifft das nicht zu: Laut Squid sind deine Token dann noch in deiner Wallet, allerdings wurde womöglich schon etwas Gas verbraucht. Eine fehlgeschlagene Route über Squid Intents wird laut Squid automatisch auf der Ausgangs-Chain erstattet, typischerweise in etwa 10 Minuten.",
+        "Chainlink CCIP: Der Standard-Executor versucht, Nachrichten automatisch auszuführen. Nur wenn CCIP Explorer „Ready for manual execution“ (bereit zur manuellen Ausführung) anzeigt, gibt es einen Button „Trigger Manual Execution“; wenn du darauf tippst, sendest du eine Transaktion auf der Ziel-Chain und zahlst das Gas. Der Button heißt nicht, dass das Problem gelöst ist: Ist die Ausführung schon einmal fehlgeschlagen, soll man es laut Doku erst erneut versuchen, wenn die Ursache behoben ist – lass dir also zuerst von der ursprünglichen App bestätigen, dass es behoben ist, und reich nicht immer wieder neu ein.",
+        "Circle CCTP: Den letzten Schritt, der das USDC auf der Ziel-Chain zustellt, erledigen manche Apps für dich (mit Circles Forwarding wird er automatisch eingereicht), bei anderen musst du ihn selbst machen; zum Beispiel braucht USDC auf der Linea-Bridge immer ein manuelles „Claim“, das du auf der Ziel-Chain einreichst, sobald der Verlauf „Ready to claim“ zeigt. Laut Circles Entwickler-Doku ist die Nachricht 24 Stunden gültig und muss danach neu signiert werden, und ein abgelaufener schneller Transfer hängt nicht dauerhaft fest, sondern kann jederzeit neu attestiert werden. Das macht die App, wende dich also an die App, die du genutzt hast.",
+        "Synapse: Steigt die Slippage während des Tauschs sprunghaft an, liefert Synapse das Zwischen-Asset, statt mit Verlust zu tauschen, und du kannst es auf der Ziel-Chain selbst tauschen. Transfers, die nicht abgeschlossen werden, gehen laut Synapse nicht verloren; sein Support-Team bearbeitet sie von Hand."
+      ]
+    },
+    {
+      "h": "Hilfe direkt bei der Bridge holen",
+      "p": [
+        "Halte den Transaktions-Hash der Ausgangs-Chain bereit. Wende dich nur über die offizielle Website oder Doku an den Support; ignoriere „Support“-Links aus Suchergebnissen, Direktnachrichten oder Antworten."
+      ],
+      "list": [
+        "Across: Sind mehr als 3 Stunden vergangen, nennt die FAQ Telegram, den Support in der App auf across.to und Slack.",
+        "Celer cBridge: Hängt es bei „Submitting“? Prüf, ob die Transaktion auf der Ausgangs-Chain bestätigt ist; wenn nicht, kannst du den Gas-Preis erhöhen, um sie zu beschleunigen, und wenn ja, wende dich an den Support. Hängt es bei „Waiting for SGN confirmation“ oder „Waiting for fund release“? Warte noch mindestens zwei Stunden und wende dich nach 3 Stunden an den Support. Nutze den Link „customer support“ in der offiziellen FAQ und gib den Transaktions-Hash der Ausgangs-Chain an. Außerdem gibt es eine offizielle Discord- und Telegram-Community.",
+        "Relay: das Chat-Fenster auf relay.link oder die E-Mail-Adresse support@relay.link aus dem Hilfecenter. Am schnellsten geht es, wenn du die vollständige URL der Transaktionsseite schickst.",
+        "Orbiter: Such den Transfer zuerst auf der Seite „History“, dann nutze „Create Ticket“ im offiziellen Discord und gib beide Chains und den Transaktions-Hash an.",
+        "Synapse und Squid: Ihre Doku verweist jeweils auf den eigenen Discord-Server.",
+        "deBridge: Der Bereich „Contact“ auf der Website nennt das Hilfecenter, debridge.com/support, und Discord.",
+        "Chainlink CCIP: Laut Doku sollst du ein Support-Ticket mit der CCIP-Message-ID einreichen, wenn du glaubst, dass der Status im Explorer falsch ist, aber wo, sagt sie nicht.",
+        "Circle CCTP: Der Link „Support“ in der Fußzeile von Circles Entwickler-Doku führt zur Ticket-Seite des Circle Help Center (help.circle.com). Wurde der Transfer in einer anderen App gestartet, wende dich zuerst an diese App.",
+        "Polygon-PoS-Bridge: das Hilfecenter unter support.polygon.technology. Ohne Anmeldung haben wir dort nur Artikel der Wissensdatenbank gesehen und keine Möglichkeit, ein Ticket einzureichen.",
+        "Stargate: „Support → Help Center“ auf der Website öffnet den offiziellen Discord, außerdem nennt die Website Telegram. Ein eigenes Ticket-Formular im Web haben wir nicht gefunden.",
+        "Wormhole / Portal, Hop und opBNB: In ihrer Doku haben wir keinen klaren Support-Kanal gefunden."
+      ]
+    },
+    {
+      "h": "Was du nicht tun solltest",
+      "p": [
+        "Auf Geld zu warten, das nicht ankommt, ist stressig – und genau dann zahlen Leute zu viel oder werden betrogen."
+      ],
+      "list": [
+        "Schick nicht noch einmal Geld, um den Transfer „freizubekommen“. Damit schickst du nur einen weiteren Betrag, der erste kommt dadurch nicht voran. Laut Polygon lässt sich eine gestartete Auszahlung nicht abbrechen, aber es gibt keine Frist, um sie abzuschließen, und das Geld bleibt im Bridge-Contract.",
+        "Tippe nicht vorzeitig auf Erstatten, Stornieren oder Abheben. Laut Relay braucht ein Transfer, der noch verarbeitet wird, das nicht und lässt sich nicht abheben, und Across erstattet eine nicht ausgeführte Einzahlung nach Ablauf ihrer Frist automatisch.",
+        "Bezahl niemanden, der anbietet, deinen Transfer zu „beschleunigen“, zu „entsperren“ oder „zurückzuholen“. Laut der Seite von ethereum.org zu Betrug betreibt jemand, der dich kontaktiert und behauptet, er könne dein Geld gegen eine Gebühr zurückholen, fast sicher einen zweiten Betrug, und echte Moderatoren schreiben dir nie zuerst per Direktnachricht. (Das ist ein allgemeiner Rat von ethereum.org, keine Regel einer bestimmten Bridge.)",
+        "Deine Seed-Phrase und deine privaten Schlüssel gibst du nie auf einer Website ein. Laut ethereum.org sollst du deine Seed-Phrase nie auf irgendeiner Website eingeben, weil seriöse Apps nie danach fragen. Laut Relay sollst du nur auf relay.link/withdraw abheben und deine Seed-Phrase oder deinen privaten Schlüssel niemals mit jemandem teilen, auch nicht mit jemandem, der behauptet, von Relay zu sein.",
+        "DeFiExit bittet deine Wallet nur, ihre Adresse zu teilen – es fordert dich nie auf, etwas zu signieren, freizugeben oder zu senden, und wir schreiben dir nie zuerst."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Die Transaktion war auf der Ausgangs-Chain erfolgreich. Warum ist das Geld nicht angekommen?",
+      "a": "Erfolg auf der Ausgangs-Chain heißt nur, dass das Geld abgeschickt ist. Auf der Zielseite steht es vielleicht noch in einer Warteschlange, wartet auf Bestätigung oder darauf, dass du einen Schritt machst. Finde heraus, welche Bridge es war, und prüf ihre offizielle Statusseite: erst auf den Status schauen, dann auf die Zeit. Verlangt sie einen Beweis oder sagt sie, dass das Geld abholbereit ist („Waiting for Proof“ bei opBNB, „Ready to claim“ bei Linea), folge den offiziellen Schritten. Wird noch bestätigt oder verarbeitet und wird nichts von dir verlangt, warte weiter und vergleich mit „Wie lange es normalerweise dauert“ auf dieser Seite."
+    },
+    {
+      "q": "Die Bridge sagt, es ist abgeschlossen, aber ich sehe das Geld nicht in meiner Wallet.",
+      "a": "Stell deine Wallet zuerst auf die Ziel-Chain um. Laut Celer cBridge ist der übliche Grund, dass der Token noch nicht zu deiner Wallet hinzugefügt wurde; das MetaMask-Symbol beim Eintrag im Verlauf fügt ihn hinzu. Laut Synapse kommen Gas-Airdrops und Rückvergütungen automatisch an, aber seine Seite zeigt nur Assets, die sich per Bridge übertragen lassen – prüf also deine Wallet auf der Ziel-Chain. Vielleicht hast du auch einen anderen Token bekommen; siehe nächste Frage."
+    },
+    {
+      "q": "Ich habe einen anderen Token bekommen als erwartet.",
+      "a": "Wenn ein Transfer einen Tausch enthält und sich der Preis unterwegs zu stark bewegt, geben dir manche Bridges stattdessen den Zwischen-Token. Bei Squids Axelar-Routen bekommst du axlUSDC, wenn die Transaktion auf der Ausgangs-Chain erfolgreich war, der Tausch auf der Ziel-Chain aber fehlschlug (PARTIAL_SUCCESS); ist die Transaktion auf der Ausgangs-Chain fehlgeschlagen, sind deine Token noch in deiner ursprünglichen Wallet. Synapse gibt das Zwischen-Asset, und Hop gibt gelegentlich hTokens (etwa hUSDC), die du auf der Seite „Convert“ von Hop in den nativen Token umwandelst. Prüf, ob die Token in deiner Wallet angekommen sind, und tausch sie dann selbst auf der Ziel-Chain."
+    },
+    {
+      "q": "Kann ich abbrechen und mein Geld zurückbekommen?",
+      "a": "Das hängt von der Bridge und vom Stand ab. Bei deBridge lässt sich eine Order, die niemand übernommen hat, stornieren und wird voll erstattet. Across erstattet eine nicht ausgeführte Einzahlung nach Ablauf ihrer Frist automatisch. Bei cBridge hat ein fehlgeschlagener Transfer im Verlauf einen Button „Request Refund“. Bei Relay hebst du, wenn die automatische Erstattung fehlschlägt, auf relay.link/withdraw ab. Laut Polygon lässt sich eine Auszahlung von Polygon nach dem Absenden nicht abbrechen, sie hat aber keine Frist und kann jederzeit abgeschlossen werden."
+    },
+    {
+      "q": "Ich habe von einer Börse auf eine andere Chain abgehoben, und es ist nie angekommen.",
+      "a": "Dann hat die Börse das Geld geschickt, wende dich also an den Support der Börse selbst, über ihre App oder offizielle Website. Relay sagt dasselbe: Wenn eine Börse oder ein anderer Dienst das Geld für dich gesendet hat, kann nur die sendende Wallet etwas damit tun, wende dich also an diesen Dienst."
+    },
+    {
+      "q": "Jemand in den Antworten sagt, er könne meinen Transfer gegen eine kleine Gebühr freibekommen.",
+      "a": "Ignorier ihn. Laut der Seite von ethereum.org zu Betrug ist jeder, der anbietet, Geld gegen eine Gebühr zurückzuholen, fast sicher ein Betrüger, und echte Moderatoren schreiben dir nie zuerst per Direktnachricht. Ein festhängender Transfer lässt sich nur über die offizielle Seite und die offiziellen Schritte der Bridge selbst abwickeln. Gib niemals jemandem deine Seed-Phrase oder deinen privaten Schlüssel."
+    }
+  ],
+  "sources": [
+    "Stargate-Doku: Transfer (Modi Bus und Taxi, Verfolgen auf LayerZero Scan)",
+    "Stargate-Doku: FAQ (der Bus fährt los, wenn er voll ist oder die maximale Wartezeit erreicht ist)",
+    "LayerZero-Doku: Stargate (Transfers auf LayerZero Scan verfolgen)",
+    "Stargate-Website („Support → Help Center“ öffnet den offiziellen Discord; Telegram wird auch genannt)",
+    "Across-Doku: Hauptfunktionen (etwa 2 Sekunden auf dem Mainnet)",
+    "Across-Doku: Rückerstattungen (automatisch, können mehrere Stunden dauern)",
+    "Across-Doku: Technische FAQ (Erstattung etwa 120–150 Minuten nach der Einzahlung, an wen du dich nach 3 Stunden wendest)",
+    "Across-Doku: Status-Tracker",
+    "Wormhole-Blog: das Portal-Upgrade (Verlauf auf Wormholescan, automatisches „redeem“)",
+    "Wormhole-Doku: Ablauf von Wrapped-Token-Transfers (WTT) (automatisch oder manuell; manuelle Transfers innerhalb von 24 Stunden abschließen)",
+    "Wormhole-Doku: Wrapped Assets übertragen (WTT; Wiederherstellungs-Skript für Entwickler, bis zu 20 Minuten bis zur Finalität von Ethereum)",
+    "Wormhole-Doku: Portal-FAQ (CCTP-Transfers, bei denen sich eine Drittanbieter-App das Recht zum Abschließen vorbehalten hat: Nur diese App kann sie abschließen)",
+    "Circle-Entwickler-Doku: Finalität und Blockbestätigungen (Attestationszeiten je Ausgangs-Chain)",
+    "Circle-Entwickler-Doku: technischer CCTP-Leitfaden (Ablauf nach 24 Stunden, erneute Attestation)",
+    "Circle: Cross-Chain Transfer Protocol (mit Forwarding wird die Attestation automatisch eingereicht)",
+    "Linea-Doku: Token per Bridge übertragen (USDC läuft über CCTP, manuelles „Claim“ bei „Ready to claim“, etwa 2–12 Stunden bis Ethereum)",
+    "Chainlink-Doku: CCIP Explorer",
+    "Chainlink-Doku: CCIP-Ausführungslatenz (von der Finalität beeinflusst)",
+    "Chainlink-Doku: CCIP-Finalität je Chain",
+    "Chainlink-Doku: manuelle CCIP-Ausführung („Ready for manual execution“, nach Fehlschlägen erst erneut versuchen, wenn die Ursache behoben ist, Support-Ticket)",
+    "Squid-Doku: Status verfolgen (NEEDS_GAS, 15 Minuten, axlUSDC bei PARTIAL_SUCCESS, Erstattungen in etwa 10 Minuten)",
+    "Squid-Doku: Informationen für Integratoren (Token bleiben in der Wallet, wenn der Tausch auf der Ausgangs-Chain nicht gestartet ist, bei Pause Gas auf Axelarscan nachlegen, Discord)",
+    "Axelar-Doku: eine Nachricht wiederherstellen („Add gas“ auf Axelarscan)",
+    "Celer-cBridge-Doku: FAQ (5–20 Minuten, festhängende Transfers, Kundensupport)",
+    "Celer-cBridge-Doku: Anleitung für Cross-Chain-Transfers („Pending“, „Request Refund“)",
+    "deBridge-Hilfecenter (Sekunden, deExplorer, „Contact“)",
+    "deBridge-Hilfe: Was passiert, wenn eine Bridge-Transaktion verzögert ist oder hängt?",
+    "deBridge-Hilfe: Wie kann ich eine Order stornieren?",
+    "deBridge-Hilfe: Bekomme ich meine Gebühren zurück, wenn ich eine Transaktion storniere?",
+    "Relay-Hilfecenter: Wie finde ich meine Transaktion?",
+    "Relay-Hilfecenter: Wie man Geld abhebt (nach fehlgeschlagener automatischer Erstattung; nur auf relay.link/withdraw)",
+    "Orbiter-Doku: FAQ (Suche unter „History“, „Create Ticket“)",
+    "Orbiter-Doku: Überblick (10 bis 20 Sekunden)",
+    "Synapse-Doku: FAQ zur Transaktionshilfe",
+    "Hop-Doku: Ich habe einen Token gesendet, aber er kommt nicht an (15 Minuten, 5 Minuten, hTokens)",
+    "Hop-Doku: Wie lange dauert ein Transfer? (Zeiten je Ausgangs-Chain; nennt den Explorer)",
+    "Hop-Doku: Manuelle Auszahlungen (ein paar Stunden bis Tage)",
+    "Hop-Doku: Manuelle USDC.e-Auszahlungen (7 Tage nach „Commit“ und „Prove“, dann „Finalize“ und „Withdraw“)",
+    "BNB-Chain-Doku: Von opBNB abheben (Anfechtungsfrist von 7 Tagen, Beweis manuell einreichen)",
+    "BNB-Chain-Doku: FAQ zur opBNB-Bridge (nach 7 Tagen nichts angekommen: prüfen, ob der Beweis eingereicht wurde)",
+    "Polygon-Doku: Leitfaden zu Polygon Portal („Initiate Claim“, „Claim Tokens“)",
+    "Polygon-Support: Meine Transaktion hängt zu lange („Try Again“, „Confirm Exit“)",
+    "Polygon-Support: Auszahlungen lassen sich nicht abbrechen, haben aber keine Frist",
+    "ethereum.org: Hilfe und Meldung bei Betrug (allgemeine Hinweise)"
+  ]
+}
