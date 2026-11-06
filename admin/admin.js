@@ -1,5 +1,5 @@
-// 运营台(只在 admin 主机上打开):登录 → 读 /api/admin/state → 待发、收件、数据、已处理。管理员点的「已发 / 采纳」、改的草稿,
-// 都经 /api/admin/* 存进数据库。页面里的评论、帖子是别人写的:一律用 textContent 放进页面,不当 HTML。
+// 运营台(只在 admin 主机上打开):登录 → 读 /api/admin/state → 待发、收件、宣传、数据、已处理。管理员点的「已发 / 采纳」、改的草稿,
+// 都经 /api/admin/* 存进数据库。页面里的评论、帖子是别人写的:一律用 textContent 放进页面,不当 HTML(宣传稿的正文也一样,markdown 照原样显示)。
 // 每天放出几条回复、发得快了提醒,算法在 pace.js(测试也用它)。
 import { capOf, gate, waitText, paceNote } from "./pace.js";
 (function () {
@@ -54,7 +54,10 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
   const QUOTE = /^https:\/\/(?:x|twitter)\.com\/([A-Za-z0-9_]{1,15})\/status\/\d{1,25}$/;
   const quoteOf = (d) => (d && d.mine && d.mine.kind === "post" && QUOTE.test(String(d.mine.quote || "")) ? d.mine.quote : null);
   const withQuote = (text, quote) => (quote ? String(text || "").trimEnd() + " " + quote : text || "");
-  const intent = (text, replyTo, quote) => "https://x.com/intent/tweet?" + (/^\d{1,25}$/.test(String(replyTo || "")) ? "in_reply_to=" + replyTo + "&" : "") + "text=" + encodeURIComponent(withQuote(text, quote));
+  // 编进链接的字:不成对的代理项(坏掉的字符)换成 \ufffd,不然 encodeURIComponent 当场报错,整张列表都画不出来(服务器现在不收这种字,这里兜以前的)
+  const LONE = /[\ud800-\udbff](?![\udc00-\udfff])|(?<![\ud800-\udbff])[\udc00-\udfff]/g;
+  const enc = (s) => encodeURIComponent(String(s).replace(LONE, "\ufffd"));
+  const intent = (text, replyTo, quote) => "https://x.com/intent/tweet?" + (/^\d{1,25}$/.test(String(replyTo || "")) ? "in_reply_to=" + replyTo + "&" : "") + "text=" + enc(withQuote(text, quote));
 
   // ---------- 接口 ----------
   async function api(path, body) {
@@ -76,6 +79,7 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     purged: "这条 30 天到了,原帖信息已经删了,不能再记", gone: "这条帖子按对方要求删过,不能再记",
     changed: "这条刚被别处改过,页面刷新一下再改", more: "这条帖子还有记录没查完,再点「删除这条」并确认,接着往下查、往下删",
     badlink: "链接不对:要 x.com 上那一条的链接(帖子右下角「分享」→「复制链接」)",
+    notsent: "先点「已发」再记回音", badurl: "链接不对:要 https:// 开头的完整网址(不带账号密码、IP 地址、端口)",
   };
   const why = (j) => (WHY[j && (j.error || j.need)] || "出错了(" + ((j && (j.error || j.need)) || "未知") + "),再试一次") + (j && j.why ? ":" + j.why : "");
   function note(el, msg, bad) {
@@ -86,7 +90,11 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
   }
 
   // quota:今天对人的首回放出几条(上限、已发、排队的编号),每次摆待发卡片前重算;hits:网站自己数的体检次数
-  const S = { docs: {}, out: new Map(), inn: new Map(), cards: new Map(), ro: null, watchOff: new Set(), needs: [], leads: [], auto: {}, outStats: {}, hits: {}, quota: gate([], [], capOf(null)) };
+  const S = { docs: {}, out: new Map(), inn: new Map(), reach: new Map(), reachMore: 0, cards: new Map(), ro: null, watchOff: new Set(), needs: [], leads: [], auto: {}, outStats: {}, hits: {}, quota: gate([], [], capOf(null)) };
+  // 三种卡片:待发(out)、收件(in)、宣传(reach);接口的名字 → 卡片的种类
+  const KINDS = { outbox: "out", inbox: "in", outreach: "reach" };
+  const storeOf = (k) => (k === "out" ? S.out : k === "in" ? S.inn : S.reach);
+  const resync = (k) => (k === "reach" ? syncReach() : sync(k));
 
   function show(view) {
     $("boot-msg").hidden = view !== "boot";
@@ -113,12 +121,13 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
   async function save(kind, id, patch, msgEl) {
     const { status, json } = await api(kind, { id, ...patch });
     const ok = status === 200 && !!json.item;
-    const el0 = S.cards.get((kind === "outbox" ? "out:" : "in:") + id);
+    const k = KINDS[kind];
+    const el0 = S.cards.get(k + ":" + id);
     if (el0 && el0._saved) el0._saved(ok, "draft" in patch, status);
     if (ok) {
-      (kind === "outbox" ? S.out : S.inn).set(id, json.item);
-      // 状态或决定变了要挪到「待发 / 收件」或「已处理」(sync 只在顺序变了才挪,改草稿不会让框失焦)
-      sync(kind === "outbox" ? "out" : "in");
+      storeOf(k).set(id, json.item);
+      // 状态或决定变了要挪到「待发 / 收件」或「已处理」(宣传卡片挪到下面的「发过的」;sync 只在顺序变了才挪,改草稿不会让框失焦)
+      resync(k);
       renderTop();
       if (kind === "outbox") renderData();
       note(msgEl, "已存");
@@ -133,6 +142,8 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
   // 自己发的项目帖没有别人的帖子,只删这一张。删完重新读一遍,列表、计数、数据都照服务器的
   const SCOPE_POST = "会删掉这条帖子在待发、收件、问题记录里的全部记录(同一条帖子的别的卡片也删),以后也不再收";
   const SCOPE_CARD = "只删这一张自己发的帖子,以后不再收";
+  // 宣传卡片:只删这一张;写邮件的,收件邮箱也记下(只存哈希),以后写给这个邮箱的都不再收
+  const SCOPE_REACH = "只删这一张宣传卡片,以后不再收;写邮件的,以后写给这个邮箱的也不再收(对方要求删时用;不想发点「跳过」)";
   function delButton(kind, id, msgEl) {
     const b = h("button", { class: "linkbtn warn", type: "button" }, "删除这条");
     let armed = null, scope = "";
@@ -140,7 +151,7 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     b.addEventListener("click", async () => {
       if (!armed) {
         b.textContent = "确定删除?再点一次";
-        scope = kind === "outbox" && isPost(S.out.get(id)) ? SCOPE_CARD : SCOPE_POST;
+        scope = kind === "outreach" ? SCOPE_REACH : kind === "outbox" && isPost(S.out.get(id)) ? SCOPE_CARD : SCOPE_POST;
         msgEl.textContent = scope;
         msgEl.classList.remove("bad");
         armed = setTimeout(disarm, 5000);
@@ -150,8 +161,8 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
       disarm();
       const { status, json } = await api("delete", { kind, id });
       if (status === 200 && json.ok) {
-        (kind === "outbox" ? S.out : S.inn).delete(id);
-        sync(kind === "outbox" ? "out" : "in");
+        storeOf(KINDS[kind]).delete(id);
+        resync(KINDS[kind]);
         renderTop();
         await load(); // 同一条帖子的别的卡片、收件,问题记录的数,服务器那边也删了
       } else if (status === 409 && json.error === "more") {
@@ -373,17 +384,201 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     return el;
   }
 
-  // 按顺序摆卡片:只在顺序变了才挪(挪动会让正在打字的框失焦)。rows 是 [种类, 编号, 数据]
+  // ---------- 宣传卡片 ----------
+  // 我写好的四种稿子,老板自己发:媒体投稿、给项目团队的邮件、安全清单的提交(PR 或 issue)、技术社区的帖子。没有发帖节奏的限制(那只管 X 上的回复)。
+  // 带收件邮箱的点「写邮件」:收件人、邮件标题、正文填进 mailto 链接;链接太长(超过 MAILTO_MAX,有的邮件程序打不开)就不放正文,
+  // 点的时候先把正文复制好。别的点「打开投稿页」,新标签打开。打开不算发了:发出去以后点「已发」,有回音了记一句话和一个链接
+  const CHANNEL = { media: "媒体投稿", project: "项目团队", list: "安全清单", community: "技术社区" };
+  const GROUPS = [...Object.keys(CHANNEL), "other"]; // 按这个顺序分组;不认识的渠道放最后「其他」
+  const LANGS = { zh: "中文", en: "英文", ja: "日文", ko: "韩文", es: "西班牙文", fr: "法文", de: "德文", ru: "俄文", pt: "葡萄牙文", vi: "越南文", tr: "土耳其文", id: "印尼文" };
+  const langName = (c) => { const s = String(c || ""), base = s.split("-")[0]; return LANGS[base] ? LANGS[base] + (s !== base ? "(" + s + ")" : "") : s; };
+  const MAILTO_MAX = 1800, LONG = 400;
+  const MAIL = /^[A-Za-z0-9._+-]{1,64}@[a-z0-9.-]{4,253}$/; // 服务器查过一遍(ingest.js 的 mailAddr),这里再兜一层:多不出别的收件人、别的栏
+  const webHref = (u) => (/^https:\/\/[^\s"'<>\\]+$/.test(String(u || "")) ? u : null); // 网址显示成链接以前再兜一层:只认 https(主机名用下面线索那块的 hostName)
+  // 写邮件的链接:正文的换行写成 \r\n(邮件的规矩)。整条超过 MAILTO_MAX 就先不放正文,还超就连邮件标题也不放;cut 是没放进去的
+  function mailtoOf(m) {
+    if (!MAIL.test(String(m.to || ""))) return null;
+    const link = (parts) => { const q = parts.filter(([, v]) => v).map(([k, v]) => k + "=" + enc(String(v).replace(/\r?\n/g, "\r\n"))).join("&"); return "mailto:" + m.to + (q ? "?" + q : ""); };
+    const full = link([["subject", m.subject], ["body", m.body]]);
+    if (full.length <= MAILTO_MAX) return { href: full, cut: [] };
+    const noBody = link([["subject", m.subject]]);
+    return noBody.length <= MAILTO_MAX ? { href: noBody, cut: ["body"] } : { href: link([]), cut: ["subject", "body"] };
+  }
+  // 剪贴板用不了的时候:选中那段字(请他长按复制);浏览器不支持就回 false
+  const pick = (box) => { try { const r = document.createRange(); r.selectNodeContents(box); const s = window.getSelection(); s.removeAllRanges(); s.addRange(r); return true; } catch (_) { return false; } };
+
+  function reachCard(id) {
+    const btn = (t, hidden) => h("button", { class: "btn", type: "button", hidden }, t);
+    const head = h("div", { class: "meta-row" });
+    const chips = h("div", { class: "chips" });
+    const whyDt = h("dt", null, "我的说明"), whyDd = h("dd"), toDt = h("dt", null, "收件人"), toDd = h("dd"), urlDt = h("dt", null, "去哪发"), urlDd = h("dd");
+    const kv = h("dl", { class: "kv" }, whyDt, whyDd, toDt, toDd, urlDt, urlDd);
+    const subj = h("div", { class: "quote" }), title = h("div", { class: "quote" });
+    const subjWrap = h("div", { class: "drafted" }, h("div", { class: "label" }, "邮件标题"), subj);
+    const titleWrap = h("div", { class: "drafted" }, h("div", { class: "label" }, "标题"), title);
+    // 正文:长的收起来,点开看全文(打开过的,刷新时不再收回去)
+    const body = h("div", { class: "quote" }), sum = h("summary");
+    const fold = h("details", { class: "fold" }, sum, body);
+    const cBody = btn("复制正文"), cTitle = btn("复制标题", true), cSubj = btn("复制邮件标题", true), cTo = btn("复制收件人", true);
+    const tip = h("p", { class: "count", hidden: true });
+    const go = h("a", { class: "btn primary wide", rel: "noopener noreferrer" });
+    const sent = btn("已发"), skip = btn("跳过"), back = btn("改回待发", true);
+    const status = h("span", { class: "pill" });
+    // 回音:点「已发」以后才有;一句话加一个链接(可不填),两样都空着点「记下」就是清掉
+    const said = h("p", { class: "result", hidden: true });
+    const echo = btn("有回音", true), echoRow = h("div", { class: "row", hidden: true }, echo);
+    const eNote = h("input", { type: "text", id: "echo-note-" + id, maxlength: "300", placeholder: "一句话:比如「编辑回邮件说下周发」「PR 合并了」", "aria-label": "回音:一句话" });
+    const eLink = h("input", { type: "url", id: "echo-url-" + id, inputmode: "url", maxlength: "500", placeholder: "链接(可不填):发出来的文章、合并的 PR", "aria-label": "回音的链接" });
+    const eKeep = btn("记下"), eDrop = h("button", { class: "linkbtn", type: "button" }, "先不记");
+    const form = h("div", { class: "echo", hidden: true }, h("div", { class: "label" }, "回音(两样都空着点「记下」就是清掉)"), eNote, eLink, h("div", { class: "row" }, eKeep, eDrop));
+    const saved = h("span", { class: "saved", "aria-live": "polite" });
+    const el = h("article", { class: "card", "data-id": id }, head, chips, kv, subjWrap, titleWrap, fold,
+      h("div", { class: "row" }, cBody, cTitle, cSubj, cTo), tip, go,
+      h("div", { class: "row" }, sent, skip, back, h("span", { class: "grow" }), status),
+      said, echoRow, form, h("div", { class: "row" }, saved, h("span", { class: "grow" }), delButton("outreach", id, saved)));
+    const m = () => (el._d && el._d.mine) || {};
+    const copyOut = (text, ok, box) => {
+      const fb = () => { if (box === body) fold.open = true; note(saved, pick(box) ? "复制不了:已选中,长按复制" : "复制不了:长按上面的字自己复制", true); };
+      try { navigator.clipboard.writeText(String(text || "")).then(() => note(saved, ok), fb); } catch (_) { fb(); }
+    };
+    cBody.addEventListener("click", () => copyOut(m().body, "正文已复制", body));
+    cTitle.addEventListener("click", () => (m().title ? copyOut(m().title, "标题已复制", title) : copyOut(m().subject, "邮件标题已复制", subj)));
+    cSubj.addEventListener("click", () => copyOut(m().subject, "邮件标题已复制", subj));
+    cTo.addEventListener("click", () => copyOut(m().to, "收件人已复制", toDd));
+    // 正文放不进邮件链接:点「写邮件」的同时先复制好正文(不拦着链接打开邮件程序)
+    go.addEventListener("click", () => { if (el._mail && el._mail.cut.includes("body")) copyOut(m().body, "正文已复制:邮件窗口打开后,长按粘贴进正文", body); });
+    const decide = async (st) => {
+      const was = isPend(el._d);
+      if ((await save("outreach", id, { status: st }, saved)) && was) note($("reach-msg"), "点了「" + st + "」,这条挪到下面的「发过的」了");
+    };
+    sent.addEventListener("click", () => decide("已发"));
+    skip.addEventListener("click", () => decide("跳过"));
+    back.addEventListener("click", async () => { if (await save("outreach", id, { status: "待发" }, saved)) note($("reach-msg"), "这条挪回上面了"); });
+    echo.addEventListener("click", () => {
+      const d = el._d || {};
+      eNote.value = d.result_note || "";
+      eLink.value = d.result_url || "";
+      form.hidden = false;
+      echo.hidden = echoRow.hidden = true;
+      eNote.focus();
+    });
+    eDrop.addEventListener("click", () => { form.hidden = true; el._update(el._d); });
+    eKeep.addEventListener("click", async () => {
+      const v = { result_note: eNote.value.trim(), result_url: eLink.value.trim() };
+      if (await save("outreach", id, v, saved)) { form.hidden = true; el._update(el._d); note(saved, v.result_note || v.result_url ? "回音记下了" : "回音清掉了"); }
+    });
+    el._update = (d) => {
+      el._d = d;
+      const mm = d.mine || {}, st = d.status || "待发", pend = st === "待发";
+      const url = webHref(mm.url);
+      el._mail = mailtoOf(mm);
+      fill(head, h("span", { class: "who" }, mm.target || "?"), url ? h("span", null, hostName(url)) : null, el._mail ? h("span", null, "写邮件") : null);
+      chips.replaceChildren(...[CHANNEL[mm.channel] || mm.channel, langName(mm.lang)].filter(Boolean).map((x) => h("span", { class: "chip" }, x)));
+      whyDd.textContent = mm.why || "";
+      // 点过「已发 / 跳过」满 180 天,服务器把收件邮箱删了(toGone):写明是到期删的,要再写叫我重新送一张
+      toDd.textContent = mm.to || (mm.toGone ? "点过「已发 / 跳过」满 180 天,邮箱已删" : "");
+      fill(urlDd, url ? out(url, url) : null);
+      whyDt.hidden = whyDd.hidden = !mm.why;
+      toDt.hidden = toDd.hidden = !mm.to && !mm.toGone;
+      urlDt.hidden = urlDd.hidden = !url;
+      kv.hidden = !mm.why && !mm.to && !mm.toGone && !url;
+      subj.textContent = mm.subject || "";
+      subjWrap.hidden = !mm.subject;
+      title.textContent = mm.title || "";
+      titleWrap.hidden = !mm.title;
+      const text = String(mm.body || ""), long = text.length > LONG || text.split("\n").length > 10;
+      if (el._text !== text) { el._text = text; body.textContent = text; fold.open = !long; }
+      sum.textContent = long ? "正文(共 " + fmt(text.length) + " 字,点开看全文)" : "正文";
+      cTitle.hidden = !(mm.title || mm.subject);
+      cSubj.hidden = !(mm.title && mm.subject);
+      cTo.hidden = !mm.to;
+      // 主按钮:带收件邮箱的写邮件,别的打开投稿页;点过「已发 / 跳过」的收起来(免得同一份发两次)
+      if (el._mail) {
+        go.href = el._mail.href;
+        go.removeAttribute("target");
+        go.textContent = el._mail.cut.length ? "写邮件,正文先复制好 ↗" : "写邮件,字已填好 ↗";
+      } else if (url) {
+        go.href = url;
+        go.setAttribute("target", "_blank");
+        go.textContent = "打开投稿页 ↗";
+      } else go.removeAttribute("href");
+      go.hidden = !pend || !(el._mail || url);
+      tip.textContent = !el._mail || !el._mail.cut.length ? ""
+        : el._mail.cut.includes("subject") ? "邮件标题和正文太长,放不进邮件链接(有的邮件程序会打不开):先点「" + (mm.title ? "复制邮件标题" : "复制标题") + "」贴进邮件标题,再点「写邮件」(正文会先复制好),粘贴进正文。"
+          : "正文太长,放不进邮件链接(有的邮件程序会打不开):点「写邮件」时先把正文复制好,邮件窗口打开后长按粘贴进正文。";
+      tip.hidden = !pend || !tip.textContent;
+      status.className = "pill " + (OUT_STATUS[st] || "mute");
+      status.textContent = st + (!pend && d.decided_at ? " · " + mdhm(d.decided_at) : "");
+      sent.setAttribute("aria-pressed", String(st === "已发"));
+      skip.setAttribute("aria-pressed", String(st === "跳过"));
+      back.hidden = pend;
+      el.classList.toggle("done", !pend);
+      const has = !!(d.result_note || d.result_url), link = webHref(d.result_url);
+      fill(said, has ? ["回音:", d.result_note || "", link ? [d.result_note ? " · " : "", out(link, "看 ↗")] : null, d.result_at ? " · " + md(d.result_at) + " 记" : ""] : null);
+      said.hidden = st !== "已发" || !has;
+      if (st !== "已发") form.hidden = true;
+      echo.hidden = echoRow.hidden = st !== "已发" || !form.hidden;
+      echo.textContent = has ? "改回音" : "有回音";
+    };
+    return el;
+  }
+
+  // 宣传:还没点的按渠道分组(先送来的在上面),点过「已发 / 跳过」的放下面「发过的」(最近点的在上面)。分组第一次用到时按固定顺序建好
+  const reachGroups = new Map();
+  function syncReach() {
+    if (!reachGroups.size) for (const ch of GROUPS) {
+      const n = h("span", { class: "n" }), box = h("div", { class: "cards" });
+      const el = h("div", { class: "group", hidden: true }, h("h3", { class: "group-h" }, CHANNEL[ch] || "其他", n), box);
+      reachGroups.set(ch, { el, box, n });
+      $("reach-cards").append(el);
+    }
+    const keys = new Set([...S.reach.keys()].map((id) => "reach:" + id));
+    for (const [key, el] of S.cards) if (key.startsWith("reach:") && !keys.has(key)) { el.remove(); S.cards.delete(key); }
+    const all = [...S.reach.entries()];
+    const pend = all.filter(([, d]) => isPend(d)).sort((a, b) => String(a[1].created_at || "").localeCompare(String(b[1].created_at || "")) || a[0].localeCompare(b[0]));
+    for (const ch of GROUPS) {
+      const g = reachGroups.get(ch);
+      const rows = pend.filter(([, d]) => (CHANNEL[(d.mine || {}).channel] ? d.mine.channel : "other") === ch).map(([id, d]) => ["reach", id, d]);
+      place(g.box, rows);
+      g.el.hidden = !rows.length;
+      g.n.textContent = rows.length;
+    }
+    const done = all.filter(([, d]) => !isPend(d)).sort((a, b) => String(b[1].decided_at || "").localeCompare(String(a[1].decided_at || "")) || String(b[0]).localeCompare(String(a[0]))).map(([id, d]) => ["reach", id, d]);
+    place("reach-done-cards", done);
+    $("reach-done").hidden = !done.length && !S.reachMore;
+    $("reach-more").hidden = !S.reachMore;
+    $("reach-more").textContent = "再看早一点的(还有 " + fmt(S.reachMore) + " 张)";
+    $("reach-empty").hidden = pend.length > 0;
+    $("reach-empty").textContent = done.length
+      ? "要发的都发完了。发过的在下面:有回音了点「有回音」记一句。"
+      : "还没有要发的宣传。我写好的媒体投稿、给项目团队的邮件、安全清单的提交、技术社区的帖子放在这里,按渠道分好。";
+  }
+
+  // 点过的宣传卡片再往前翻一页:从页面上最早点的那张往前(服务器按点的时间、编号排,不会漏也不会重),翻出来的接在「发过的」下面
+  async function moreReach() {
+    const done = [...S.reach.values()].filter((d) => !isPend(d)).sort((a, b) => String(b.decided_at || "").localeCompare(String(a.decided_at || "")) || String(b.id).localeCompare(String(a.id)));
+    const last = done[done.length - 1];
+    if (!last) return;
+    const { status, json } = await api("outreach-done?at=" + encodeURIComponent(String(last.decided_at || "")) + "&id=" + encodeURIComponent(String(last.id)));
+    if (status === 401) return show("login");
+    if (status !== 200 || !json.ok) return note($("reach-msg"), "没翻出来:" + why(json), true);
+    for (const d of Array.isArray(json.items) ? json.items : []) if (d && d.id && !S.reach.has(d.id)) S.reach.set(d.id, d);
+    S.reachMore = Math.max(0, Number(json.more) || 0);
+    syncReach();
+  }
+
+  // 按顺序摆卡片:只在顺序变了才挪(挪动会让正在打字的框失焦)。rows 是 [种类, 编号, 数据];box 是容器的 id,或者容器本身(宣传的分组)
   // 「待发」只放还没点的(先送来的在上面),「收件」只放还没定的(新的在上面);
   // 待发里点过「已发 / 跳过」的、收件里点过决定的,一起放「已处理」(最近点的在上面)
   function place(boxId, rows) {
-    const box = $(boxId);
+    const box = typeof boxId === "string" ? $(boxId) : boxId;
     const want = rows.map(([k, id]) => k + ":" + id);
     for (const [k, id, d] of rows) {
       const key = k + ":" + id;
       let el = S.cards.get(key);
-      if (!el) { el = k === "out" ? outCard(id) : inCard(id); el._key = key; S.cards.set(key, el); }
-      el._update(d);
+      if (!el) { el = k === "out" ? outCard(id) : k === "in" ? inCard(id) : reachCard(id); el._key = key; S.cards.set(key, el); }
+      // 一张卡片的数据不对、画的时候出错:只坏这一张,后面的卡片、顶上的数照常
+      try { el._update(d); } catch (_) { el.classList.add("broken"); }
     }
     const now = [...box.children].map((c) => c._key);
     if (now.join("|") !== want.join("|")) want.forEach((k) => box.append(S.cards.get(k)));
@@ -430,8 +625,18 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     S.problems = json.problems && typeof json.problems === "object" ? json.problems : null; // 问题记录的数(最近 7 天、30 天)
     S.out = new Map((json.outbox || []).map((d) => [d.id, d]));
     S.inn = new Map((json.inbox || []).map((d) => [d.id, d]));
+    // 宣传:服务器给全部还没点的、点过的最近一页(outreachMore.after 是这一页最早那张)。以前点「再看早一点的」翻出来、比这一页还早的
+    // 接着留着(切回来刷新,正在记回音的那张不会不见);reachMore:点过的还有几张没翻出来(库里数的,减掉留着的)
+    const prev = S.reach, page = (json.outreachMore && typeof json.outreachMore === "object") ? json.outreachMore : {};
+    const after = page.after && typeof page.after === "object" ? page.after : null;
+    const older = (d) => !!after && (String(d.decided_at || "") < String(after.at || "") || (String(d.decided_at || "") === String(after.at || "") && String(d.id) < String(after.id || "")));
+    S.reach = new Map((Array.isArray(json.outreach) ? json.outreach : []).map((d) => [d.id, d]));
+    let kept = 0;
+    for (const [id, d] of prev) if (!S.reach.has(id) && !isPend(d) && older(d)) { S.reach.set(id, d); kept++; }
+    S.reachMore = Math.max(0, (Number(page.handled) || 0) - kept);
     sync("out");
     sync("in");
+    syncReach();
     renderTop(json);
     renderData();
   }
@@ -445,10 +650,13 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     $("n-out").textContent = pendOut; $("n-out").classList.toggle("due", pendOut - queued > 0);
     $("n-in").textContent = pendIn; $("n-in").classList.toggle("due", pendIn > 0);
     $("n-done").textContent = S.out.size - pendOut + S.inn.size - pendIn;
+    const pendReach = [...S.reach.values()].filter(isPend).length;
+    $("n-reach").textContent = pendReach; $("n-reach").classList.toggle("due", pendReach > 0);
     const items = [];
     if (ready || pendPosts) items.push({ text: [ready ? ready + " 条回复" : "", pendPosts ? pendPosts + " 条项目帖" : ""].filter(Boolean).join("、") + "等你发(点「在 X 打开」发出去就行)", href: "#outbox", when: "今天" });
     if (queued) items.push({ text: queued + " 条回复在排队:今天" + (S.quota.used >= S.quota.cap ? "已到上限 " : "上限 ") + S.quota.cap + " 条,明天放出", href: "#outbox", when: "明天" });
     if (pendIn) items.push({ text: pendIn + " 条评论等你看(回一句,或点一个决定)", href: "#inbox", when: "今天" });
+    if (pendReach) items.push({ text: pendReach + " 份宣传等你发(投稿、邮件、清单、社区;发出去以后点「已发」)", href: "#reach", when: "今天" });
     const lost = [...S.out.values()].filter((d) => !isPost(d) && d.status === "已发" && !safeUrl(d.reply_url) && Date.now() - Date.parse(d.decided_at || 0) > 864e5 && Date.now() - Date.parse(d.decided_at || 0) < 7 * 864e5).length;
     if (lost) items.push({ text: lost + " 条回复点了「在 X 打开」,一天了还没在 X 上找到你发的,可能没发出去(在「已处理」里点「改回待发」)", href: "#done", when: "今天" });
     if (json && json.synced) $("sync-at").textContent = json.synced.at ? "上次刷新 " + mdhm(json.synced.at) + (json.synced.note ? " · " + json.synced.note : "") : "";
@@ -821,6 +1029,7 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
       load();
     });
     $("pace-ok").addEventListener("click", () => { $("pace").hidden = true; });
+    $("reach-more").addEventListener("click", moreReach);
     $("logout").addEventListener("click", async () => { await api("logout", {}); show("login"); });
     $("logout-all").addEventListener("click", async () => { await api("logout-all", {}); show("login"); });
     document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && !$("desk").hidden) load(); });

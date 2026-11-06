@@ -7,6 +7,9 @@
 // 体检计数(公开接口 /api/hit)也记在这个库里:每天一个数,不带地址和任何访客信息。
 // 问题记录(problems):X 上说自己钱卡住的帖子,一条帖子一行(哪个协议、哪条链、哪种问题、从哪找到的、哪天发的、我们回没回),只用来数大家最常问什么;
 // 帖子编号只存哈希,帖子链接和账号 30 天后删,只留这几样能数的。运营台和导出只给数,不给单条。
+// 宣传卡片(outreach):我写好、管理员自己发出去的媒体投稿、给项目团队的邮件、安全资源清单的提交、技术社区的帖子。
+// 和待发一样两类字段分开(mine 是我写的,其余是管理员点的状态和他记下的回音);都是机构的公开信息和我们自己的文字。
+// 收件邮箱在点过「已发 / 跳过」180 天后删掉(只留哈希,见 purge),别的不自动删;按要求删的见 reachKeys。
 
 import { softName, safeLabel } from "./names.js";
 
@@ -34,6 +37,9 @@ const DDL = [
   // 这张表只增不减(到期也留着数):按日期数、找到期的都走索引,每次打开运营台不用把整张表读一遍
   "CREATE INDEX IF NOT EXISTS problems_day ON problems (day)",
   "CREATE INDEX IF NOT EXISTS problems_due ON problems (purge_after) WHERE purged = 0",
+  // 宣传卡片:mine 是我写的(渠道、目标、语言、网址、收件邮箱、邮件标题、标题、正文、说明,见 ingest.js 的 cleanReach),只能经签名投递改,
+  // 管理员点过「已发 / 跳过」就不再改;其余是管理员点的:状态、点的时间、回音(一句话、一个链接、记的时间)
+  "CREATE TABLE IF NOT EXISTS outreach (id TEXT PRIMARY KEY, mine TEXT NOT NULL, status TEXT NOT NULL DEFAULT '待发', decided_at TEXT, result_note TEXT, result_url TEXT, result_at TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL)",
 ];
 const ready = new WeakSet();
 
@@ -96,6 +102,15 @@ export async function outKeys(cardId, mine, replyUrl, sentTarget) {
 }
 export async function inKeys(id, mine) {
   return uniq([await goneKey(id), ...(await postKeys(inPosts(id, mine).filter((p) => p !== id)))]);
+}
+// 宣传卡片按要求删掉时记进 gone 的两种标记(都只存哈希;前缀和帖子编号、待发卡片的分开,撞不到一起):
+//   这张卡片的编号 reachCardKey:以后同一个编号不再收;
+//   收件邮箱 reachToKey(统一成小写):以后写给这个邮箱的卡片都不再收(对方说别再发了,删一张就够)
+export const reachCardKey = (id) => goneKey("o:" + id);
+export const reachToKey = (to) => goneKey("to:" + String(to).toLowerCase());
+export async function reachKeys(id, mine) {
+  const to = obj(mine).to;
+  return uniq([await reachCardKey(id), typeof to === "string" && to ? await reachToKey(to) : null]);
 }
 // 库里带着这条帖子(只知道它的 goneKey)的收件、没到期的待发,按要求删到期的旧卡片时才用:按编号一页页翻,每页只读编号和链接那几样,
 // 把带着的帖子编号算成 goneKey 比(这一版以前收进来的行没存哈希,也认得出)。一次最多翻 SCAN.pages 页,
@@ -253,6 +268,35 @@ export async function getIn(db, id) {
   const r = await db.prepare("SELECT * FROM inbox WHERE id = ?").bind(id).first();
   return r ? inRow(r) : null;
 }
+// 宣传卡片:运营台给全部还没点的(先送来的在前),和点过的最近 REACH_LIST.page 张(最近点的在前);更早点过的一页页翻(reachDone,
+// 从页面上最早的那张往前接着给,不会被新的挤掉)。点过的一共几张从库里数:more 是还没给出去的张数,after 是这一页最早那张(翻页从它往前)
+export const REACH_LIST = { page: 100 };
+export function reachRow(r) {
+  return { id: r.id, mine: parse(r.mine, {}), status: r.status, decided_at: r.decided_at, result_note: r.result_note, result_url: r.result_url, result_at: r.result_at, created_at: r.created_at };
+}
+const DONE_ORDER = "ORDER BY COALESCE(decided_at, '') DESC, id DESC";
+const DONE_OLDER = "status != '待发' AND (COALESCE(decided_at, '') < ? OR (COALESCE(decided_at, '') = ? AND id < ?))";
+const lastOf = (page) => (page.length ? { at: page[page.length - 1].decided_at || "", id: page[page.length - 1].id } : null);
+export async function listReach(db) {
+  const [pend, done, all] = await Promise.all([
+    db.prepare("SELECT * FROM outreach WHERE status = '待发' ORDER BY created_at, id").all(),
+    db.prepare(`SELECT * FROM outreach WHERE status != '待发' ${DONE_ORDER} LIMIT ?`).bind(REACH_LIST.page).all(),
+    db.prepare("SELECT COUNT(*) AS n FROM outreach WHERE status != '待发'").first(),
+  ]);
+  const page = done.results.map(reachRow);
+  return { items: [...pend.results.map(reachRow), ...page], more: Math.max(0, Number((all && all.n) || 0) - page.length), after: lastOf(page) };
+}
+// 比 (at, id) 那张更早点过的下一页,和这一页之后还剩几张
+export async function reachDone(db, at, id) {
+  const page = (await db.prepare(`SELECT * FROM outreach WHERE ${DONE_OLDER} ${DONE_ORDER} LIMIT ?`).bind(at, at, id, REACH_LIST.page).all()).results.map(reachRow);
+  const last = lastOf(page);
+  const rest = last ? await db.prepare(`SELECT COUNT(*) AS n FROM outreach WHERE ${DONE_OLDER}`).bind(last.at, last.at, last.id).first() : null;
+  return { items: page, more: Number((rest && rest.n) || 0), after: last };
+}
+export async function getReach(db, id) {
+  const r = await db.prepare("SELECT * FROM outreach WHERE id = ?").bind(id).first();
+  return r ? reachRow(r) : null;
+}
 
 // ---------- 到期删除 ----------
 // 收件:删原文、账号名、帖子链接、草稿、备注,只留类型、需求摘要、建议(都是 Claude 写的、不带账号名;摘要里的 @账号换掉,
@@ -264,10 +308,15 @@ export async function getIn(db, id) {
 //  以后按要求删这条,还删得掉问题记录里同一条帖子的那一行,那条帖子也照样记进 gone,收件、待发、问题记录都不再收)
 // (自己发的帖子没有目标帖子:留题目和草稿,引用的原帖链接也删)
 // 问题记录:删帖子链接和账号(编号本来就只存哈希),只留协议、链、种类、来源、日期、回没回。一句写完,到期的一次全删
+// 宣传卡片:点过「已发 / 跳过」满 REACH_TO_DAYS 天,收件邮箱删掉(mine 里去掉 to,记一个 toGone,页面上写明是到期删的;别的留着)。
+// 删明文之前先算好它的哈希留在 toKey(和按要求删时记进 gone 的 reachToKey 是同一个):以后再按要求删这张卡片,照样挡得住这个邮箱。
+// 还没点的、改回待发的不删(重新点「已发 / 跳过」从那时起算)。读和写之间邮箱、状态变了的这次不改(语句里核对)
+export const REACH_TO_DAYS = 180;
 export async function purge(db, now) {
-  const t = iso(now);
+  const t = iso(now), cut = plusDays(now, -REACH_TO_DAYS);
   const ins = (await db.prepare("SELECT id, mine, decision FROM inbox WHERE purge_after <= ?").bind(t).all()).results;
   const outs = (await db.prepare("SELECT id, mine, draft_admin, sent_text FROM outbox WHERE purged = 0 AND purge_after <= ?").bind(t).all()).results;
+  const due = (await db.prepare("SELECT id, json_extract(mine, '$.to') AS addr FROM outreach WHERE status != '待发' AND decided_at <= ? AND json_extract(mine, '$.to') IS NOT NULL").bind(cut).all()).results;
   const stmts = [];
   for (const r of ins) {
     const m = parse(r.mine, {});
@@ -293,8 +342,14 @@ export async function purge(db, now) {
   stmts.push(db.prepare("DELETE FROM leads WHERE found_at <= ?").bind(plusDays(now, -90)));
   stmts.push(db.prepare("DELETE FROM sessions WHERE expires_at <= ?").bind(t));
   stmts.push(db.prepare("DELETE FROM nonces WHERE at <= ?").bind(plusDays(now, -2)));
+  const reachAt = stmts.length;
+  for (const r of due) {
+    stmts.push(db.prepare("UPDATE outreach SET mine = json_set(json_remove(mine, '$.to'), '$.toGone', json('true'), '$.toKey', ?), updated_at = ? WHERE id = ? AND status != '待发' AND decided_at <= ? AND json_extract(mine, '$.to') IS ?")
+      .bind(await reachToKey(String(r.addr)), t, r.id, cut, r.addr));
+  }
   const res = await db.batch(stmts);
-  return { inbox: ins.length, outbox: outs.length, problems: Number((res && res[probAt] && res[probAt].meta && res[probAt].meta.changes) || 0) };
+  const n = (at) => Number((res && res[at] && res[at].meta && res[at].meta.changes) || 0);
+  return { inbox: ins.length, outbox: outs.length, problems: n(probAt), outreach: due.reduce((k, _, i) => k + n(reachAt + i), 0) };
 }
 // 以前到期留下的需求摘要,来源只换掉了 @账号(更早的一个都没换):库里已经有的,按编号一页页用 safeLabel 过一遍。
 // 只在定时任务里跑(每 6 小时那一次,见 task.js;打开运营台、投递都不跑),一次最多 NEEDS_FIX.pages 页,翻到哪记在 kv needs_v2_at;

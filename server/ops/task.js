@@ -8,7 +8,8 @@
 // POST /api/admin/export  维护者(Claude 主窗口)用投递那把钥匙读:管理员点的决定、状态、时间,管理员自己写的备注(可能提到别人),
 //   我们自己发出去的回复的链接和读数(浏览、点赞、回复数),线索(公开信息),定时任务的情况,
 //   体检次数 hits(每种的总数、开始数的那天、最近 60 天每天的数,北京时间;见 db.js 的 hitCounts),
-//   问题记录 problems(最近 90 天的数:每种、问得多的 20 个协议、每周几条、回了几成;见 db.js 的 problemCounts,只有数,不带编号、账号、链接)。
+//   问题记录 problems(最近 90 天的数:每种、问得多的 20 个协议、每周几条、回了几成;见 db.js 的 problemCounts,只有数,不带编号、账号、链接),
+//   宣传卡片 outreach(编号、渠道、目标、状态、点的时间,管理员记下的回音:一句话、链接、记的时间;不带正文和收件邮箱,那些是我自己写的)。
 //   不回评论原文、评论人账号、目标帖子信息。导出前先跑一遍到期清理,过期的不会导出。
 // 两个入口都查:签名、时间(±10 分钟)、nonce 只能用一次;task 还要求 ts 比上一次大,同一时刻只处理一包(锁 5 分钟,比最慢的一次刷新长)。
 // 「每天」按 UTC 算。
@@ -151,10 +152,11 @@ export async function exportFor(db, { raw, sig, envName, method, path, pubkeys }
   const inbox = (await db.prepare("SELECT id, decision, decided_at, replied, replied_at, note FROM inbox WHERE updated_at >= ? ORDER BY updated_at DESC LIMIT 500").bind(since).all()).results
     .map((r) => ({ id: r.id, decision: r.decision, decided_at: r.decided_at, replied: !!r.replied, replied_at: r.replied_at, note: r.note }));
   const outbox = (await db.prepare("SELECT id, status, decided_at, reply_url, note FROM outbox WHERE updated_at >= ? ORDER BY updated_at DESC LIMIT 500").bind(since).all()).results;
+  const outreach = (await db.prepare("SELECT id, json_extract(mine, '$.channel') AS channel, json_extract(mine, '$.target') AS target, status, decided_at, result_note, result_url, result_at FROM outreach WHERE updated_at >= ? ORDER BY updated_at DESC LIMIT 500").bind(since).all()).results;
   const leads = (await db.prepare("SELECT id, v, found_at FROM leads WHERE found_at >= ? ORDER BY found_at DESC LIMIT 300").bind(since).all()).results
     .map((r) => ({ id: r.id, found_at: r.found_at, ...(parse(r.v, {}) || {}) }));
   let outStats = {};
   try { outStats = JSON.parse((await getKv(db, "out_stats")) || "{}") || {}; } catch { outStats = {}; }
   // 体检次数不看 since:总是给总数和最近 60 天;问题记录也不看 since:总是最近 90 天的数
-  return { status: 200, body: { ok: true, at: iso(now), inbox, outbox, leads, auto: await autoState(db), outStats, hits: await hitCounts(db, now), problems: await problemCounts(db, now, PROBLEM_DAYS, 20) } };
+  return { status: 200, body: { ok: true, at: iso(now), inbox, outbox, outreach, leads, auto: await autoState(db), outStats, hits: await hitCounts(db, now), problems: await problemCounts(db, now, PROBLEM_DAYS, 20) } };
 }
