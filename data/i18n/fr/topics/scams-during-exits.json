@@ -1,0 +1,102 @@
+{
+  "title": "Les arnaques les plus courantes pendant les fermetures et les migrations",
+  "summary": "Les plus fréquentes : des agents du « support » qui vous écrivent en premier, de faux sites de migration ou d'airdrop, des demandes d'autorisation (« approve ») ou de signature qui permettent à quelqu'un de prendre vos jetons, et des services de « récupération » payants. Une règle en arrête la plupart : les vrais projets ne vous écrivent pas en premier en privé, ne demandent jamais votre phrase de récupération ni vos clés privées, et ne vous demandent jamais d'envoyer de l'argent d'abord ; et les seuls liens fiables sont ceux publiés par le compte officiel lui-même et le site officiel.",
+  "sections": [
+    {
+      "h": "Pourquoi les arnaques explosent à ces moments-là",
+      "p": [
+        "Les fermetures et les migrations s'accompagnent de dates limites, et beaucoup de gens demandent de l'aide en public, dans l'urgence. ethereum.org indique que les escrocs au faux support fouillent les canaux publics à la recherche de personnes qui posent des questions, puis leur envoient un message privé pour leur proposer de l'aide, dans le but d'obtenir leurs clés privées ou leurs fonds.",
+        "MetaMask cite de même la pression du temps construite autour d'une date limite comme un signe typique d'une demande d'autorisation malveillante. Plus la date limite approche, plus il faut ralentir."
+      ],
+      "list": []
+    },
+    {
+      "h": "Les arnaques les plus courantes",
+      "p": [
+        "Chacune a été signalée publiquement par un projet ou un fournisseur de portefeuille."
+      ],
+      "list": [
+        "Le « support » qui vous trouve : vous évoquez un problème sur X, Discord ou Telegram, et quelqu'un vous écrit en privé en se disant support officiel, ou répond avec un lien d'« aide ». Horizen indique que son équipe ne vous écrira jamais en premier ; MetaMask indique qu'il ne vous écrira jamais en privé pour vous proposer de l'aide, qu'il n'a pas d'assistance téléphonique et qu'il ne vous contacte jamais sur X au sujet d'une demande d'assistance.",
+        "De faux sites de migration et d'airdrop qui ressemblent aux vrais. Sophon a prévenu : « n'utilisez que les liens officiels de Sophon et méfiez-vous des faux sites de migration. » Abstract a mis en garde contre l'usurpation d'identité, les faux sites de migration et les messages privés prétendant le représenter. La documentation de Sophon ajoute : ne suivez jamais un lien de réclamation, de migration ou d'échange de jetons que vous n'avez pas demandé.",
+        "« Approuvez pour débloquer / migrer » : une autorisation permet à un site ou à un contrat de sortir un jeton donné de votre portefeuille, et une signature sans gas comme un permit peut faire la même chose. Le conseil de MetaMask : vérifiez exactement ce que demande un site avant d'approuver, et plafonnez le montant quand c'est possible ; si un site vous demande d'approuver tous vos NFT pour recevoir un airdrop, ne tombez pas dans le piège : vous ne devriez pas avoir besoin de ce type d'autorisation pour recevoir quoi que ce soit.",
+        "Des jetons ou des NFT que vous n'avez jamais demandés, avec un message qui vous envoie sur un site web pour les réclamer. MetaMask parle d'une arnaque à l'airdrop courante : le site cherche très probablement votre phrase de récupération ou une autorisation, alors n'interagissez pas ; masquez-les. ethereum.org ajoute que ces sites vous demandent de connecter votre portefeuille et d'« approuver » une transaction qui remet vos actifs à l'escroc.",
+        "La « récupération » payante : quelqu'un prétend pouvoir récupérer votre argent volé ou bloqué, moyennant des frais payés d'avance. Le FBI prévient que ces escrocs apparaissent sur les réseaux sociaux, dans les commentaires et dans les résultats de recherche ; ils encaissent un premier paiement puis disparaissent, ou remettent un « rapport de traçage » incomplet ou inexact et réclament davantage. Certains se font passer pour des cabinets d'avocats ou des organismes publics. Les entreprises privées ne peuvent pas émettre d'ordres de saisie, et les forces de l'ordre ne font pas payer les victimes pour enquêter."
+      ]
+    },
+    {
+      "h": "Comment vérifier un lien",
+      "p": [
+        "Un lien frauduleux peut ressembler trait pour trait au vrai : jugez-le donc d'après sa provenance."
+      ],
+      "list": [
+        "Ne prenez les liens que dans les publications du compte officiel lui-même, ou passez par la page d'accueil officielle. Le conseil d'Abstract : n'utilisez que le lien officiel et recoupez-le sur Discord et les autres canaux officiels.",
+        "Vérifiez le compte lui-même : assurez-vous que le @nom d'utilisateur correspond à celui indiqué sur le site officiel, au lieu de vous fier à la photo et au nom affiché.",
+        "N'utilisez pas les liens venant de résultats de recherche, de publicités, de fils de commentaires ou de messages privés. Le FBI signale que les faux services de récupération apparaissent dans les commentaires et les résultats de recherche.",
+        "Revérifiez dans la fenêtre du portefeuille : MetaMask indique que la demande d'autorisation affiche en haut le nom et l'adresse web du site, pour que vous puissiez confirmer qu'il s'agit bien du site que vous vouliez utiliser. Regardez ensuite si l'étape est un transfert, une autorisation ou une signature.",
+        "Si vous ne comprenez pas ce que fait la fenêtre, ne confirmez pas ; posez d'abord la question sur le Discord officiel."
+      ]
+    },
+    {
+      "h": "Ce que les projets légitimes ne font pas",
+      "p": [
+        "Si vous tombez sur l'un de ces cas, vous pouvez vous arrêter là."
+      ],
+      "list": [
+        "Vous écrire en premier en privé. (Horizen : son équipe ne vous écrira jamais en premier. MetaMask : il ne vous écrira jamais en privé pour vous proposer de l'aide.)",
+        "Vous demander votre phrase de récupération, vos clés privées ou votre mot de passe. ethereum.org indique qu'aucun service, agent de support ou site légitime ne vous les demandera jamais ; MetaMask indique que les seuls moments où vous devez saisir votre phrase de récupération sont la création d'un portefeuille et sa restauration.",
+        "Vous demander de leur envoyer vos fonds. (Horizen : « Nous ne vous demanderons jamais de nous envoyer vos fonds. »)",
+        "Vous appeler, ou demander un accès à distance à votre ordinateur. (MetaMask n'a pas d'assistance téléphonique. ethereum.org : n'accordez jamais à personne un accès à distance à votre ordinateur.)",
+        "Faire payer des frais pour « accélérer », « débloquer » ou « récupérer » vos fonds.",
+        "DeFiExit demande seulement à votre portefeuille de partager son adresse : il ne vous demande jamais de signer, d'autoriser ou d'envoyer quoi que ce soit, et nous ne vous écrivons jamais en premier."
+      ]
+    },
+    {
+      "h": "Si vous avez déjà cliqué ou signé",
+      "p": [
+        "Plus vous agissez vite, plus vous avez de chances de limiter les dégâts."
+      ],
+      "list": [
+        "Si vous avez donné une autorisation à un site suspect : MetaMask conseille de révoquer l'autorisation le plus vite possible (par exemple, en la vérifiant et en la révoquant dans MetaMask Portfolio) avant que des fonds ne soient pris. Une fois le portefeuille vidé, il n'y a plus grand-chose à faire.",
+        "Si votre phrase de récupération ou votre clé privée a fuité, ou si des transactions que vous n'avez pas faites apparaissent : MetaMask conseille de créer immédiatement un nouveau portefeuille, d'y transférer ce qui reste et d'abandonner l'ancien ; si vous soupçonnez un script de siphonnage (sweeper), n'envoyez plus de gas sur l'ancien portefeuille.",
+        "Les transactions sur la blockchain ne peuvent pas être annulées. Conservez les traces des transactions et signalez les faits à la police ; aux États-Unis, vous pouvez faire un signalement à l'IC3 du FBI.",
+        "Attendez-vous à ce que des gens vous écrivent en privé pour vous proposer de récupérer les fonds. C'est l'arnaque de seconde vague contre laquelle le FBI met en garde ; ne leur donnez ni argent ni informations personnelles."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Un compte « support officiel » m'a écrit en privé pour me proposer de sortir mes fonds bloqués. Est-ce vrai ?",
+      "a": "C'est presque certainement une arnaque. Horizen affirme que son équipe ne vous écrira jamais en premier, et MetaMask qu'il ne vous écrira jamais en privé pour vous proposer de l'aide. Ne répondez pas et ne cliquez sur rien ; posez la question vous-même par les canaux officiels indiqués sur le site du projet, comme un ticket sur le Discord officiel."
+    },
+    {
+      "q": "Une page de migration me demande de connecter mon portefeuille et de signer quelque chose. Dois-je le faire ?",
+      "a": "Vérifiez d'abord que le lien vient d'une publication du compte officiel lui-même. Lisez ensuite la fenêtre du portefeuille : s'agit-il d'un simple retrait ou transfert, ou d'une autorisation (« approve ») ou d'une signature de type permit ? Les autorisations et les permits permettent à quelqu'un d'autre de déplacer vos jetons ; si l'une d'elles est vraiment nécessaire, n'autorisez que le contrat cité dans le guide officiel, et uniquement pour le montant que vous utilisez. Si vous ne comprenez pas la fenêtre, ne signez pas ; posez d'abord la question sur le Discord officiel."
+    },
+    {
+      "q": "Des jetons que je n'ai jamais achetés sont apparus dans mon portefeuille, avec un message m'invitant à visiter un site web.",
+      "a": "N'y touchez pas. MetaMask décrit cela comme une arnaque à l'airdrop courante : quand vous allez « réclamer », ce que vous signez peut être une autorisation qui leur permet de prendre vos jetons, ou l'on peut vous amener à taper votre phrase de récupération. Ignorez-les et masquez-les."
+    },
+    {
+      "q": "Quelqu'un dit pouvoir récupérer mes cryptos volées contre des frais.",
+      "a": "Le FBI a mis en garde contre exactement cela : ils encaissent des frais d'avance et disparaissent, ou produisent un « rapport de traçage » incomplet ou inexact et réclament davantage. Les entreprises privées ne peuvent pas émettre d'ordres de saisie pour récupérer des cryptomonnaies, et les forces de l'ordre ne font pas payer les victimes pour enquêter. Ne leur donnez ni argent ni informations personnelles."
+    },
+    {
+      "q": "Comment savoir si un lien est officiel ?",
+      "a": "Ne faites confiance qu'à deux endroits : les publications du compte officiel lui-même et la page d'accueil officielle. Le conseil d'Abstract est de n'utiliser que le lien officiel et de le recouper sur Discord et les autres canaux officiels. Les liens dans des réponses, des messages privés ou des annonces de recherche ne comptent pas, même s'ils semblent identiques."
+    }
+  ],
+  "sources": [
+    "Sophon sur X : n'utiliser que les liens officiels, se méfier des faux sites de migration (19 octobre 2026)",
+    "Documentation de Sophon : FAQ sur les retraits (ne jamais suivre de liens non sollicités)",
+    "Abstract sur X : « Abstract is Winding Down » (usurpation d'identité, faux sites de migration, messages privés ; 6 octobre 2026)",
+    "Blog d'Horizen : rappel de sécurité (jamais de message privé en premier, jamais de demande de clés ni de fonds ; 23 octobre 2026)",
+    "Assistance MetaMask : « Basic security tips » (phrase de récupération, clés privées)",
+    "Assistance MetaMask : « Official support channels » (pas de messages privés, pas de téléphone, pas de contact sur X)",
+    "Assistance MetaMask : « What is a token approval? » (permits, autorisations malveillantes, révocation)",
+    "Assistance MetaMask : « Avoid scammers, rug pulls and airdrop scams »",
+    "Assistance MetaMask : « I've been hacked or scammed »",
+    "ethereum.org : « Security and scam prevention » (arnaques au faux support, arnaques à l'airdrop)",
+    "Avis public de l'IC3 du FBI : entreprises prétendant à tort récupérer des cryptos perdues (11 août 2023)",
+    "Avis public de l'IC3 du FBI : faux cabinets d'avocats proposant de récupérer des fonds (13 août 2025)"
+  ]
+}

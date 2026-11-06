@@ -1,0 +1,134 @@
+{
+  "title": "Rapatrier vos fonds bloqués dans OKX Boost vers votre portefeuille",
+  "short": "D'OKX Boost à votre portefeuille",
+  "verified": "Testé en octobre 2026 avec le propre compte de l'auteur dans l'application OKX, en suivant ce guide : l'adresse d'interaction, le réseau et le montant affichés sur la page de confirmation correspondaient tous à la fiche de contrôle, et l'OKB natif est arrivé quelques secondes plus tard. Le code source du contrat de blocage est vérifié sur l'explorateur d'OKX. Il n'a pas d'administrateur, seule l'adresse qui a bloqué les jetons peut les retirer, et l'argent ne revient qu'à cette adresse",
+  "covers": "L'OKB, l'USDT0 et l'USDG bloqués sur X Layer pour le Plasma X Launch d'OKX Boost",
+  "summary": "Pour participer au Plasma X Launch d'OKX Boost, il fallait bloquer des jetons sur X Layer (0.5 OKB, 200 USDT0 ou 200 USDG). Ils ne reviennent pas tout seuls, et un an plus tard, plus d'un millier d'adresses ne les ont toujours pas retirés. Ouvrez la page de la campagne dans l'application OKX, touchez une seule fois « Unstake », et l'argent revient dans votre portefeuille.",
+  "facts": [
+    ["Transactions", "1 transaction ordinaire. Aucune autorisation, aucun message à signer"],
+    ["Frais", "Moins de $0.01, payés avec l'OKB de votre portefeuille sur X Layer"],
+    ["Durée", "Environ 2 minutes. Les fonds arrivent quelques secondes après votre confirmation"],
+    ["Il vous faut", "L'application OKX, réglée sur le compte qui a bloqué les jetons, et un peu d'OKB sur X Layer pour les frais"]
+  ],
+  "chips": ["Environ 2 minutes", "1 transaction, sans autorisation", "Moins d'un centime de frais"],
+  "support": {
+    "label": "Centre d'aide OKX",
+    "url": "https://www.okx.com/help",
+    "note": "OKX ne vous écrit jamais en premier en message privé. Toute personne qui vous écrit en se présentant comme le support est un escroc."
+  },
+  "official": [{"label": "Page de la campagne OKX Boost", "url": "https://web3.okx.com/boost/x-launch/plasma"}],
+  "vars": {
+    "addrShort": "votre propre adresse",
+    "got": "les jetons que vous avez bloqués (généralement 0.5 OKB)",
+    "sym": "le jeton que vous avez bloqué"
+  },
+  "pro": [
+    "**Parcours** : application OKX, « Web3 » en haut → l'onglet d'exploration en bas (deuxième icône) → collez `https://web3.okx.com/boost/x-launch/plasma` dans le champ de recherche → le résultat « site web tiers » → **ouvrir dans l'application** quand on vous le propose → faites défiler vers le bas jusqu'aux détails du staking → le bouton de retrait du staking → confirmez.",
+    "**Une transaction** : `unlock(bytes32 key, address token)` vers le contrat de blocage d'OKX Boost 0xDA63…FD2b. Elle envoie 0 OKB, sans autorisation ni signature de message. La clé est `lp:175`, complétée par des espaces jusqu'à 32 octets ; l'OKB natif est indiqué comme le jeton 0xEeee…EEeE.",
+    "**Vos chiffres** : {{got}}.",
+    "**Pièges** : la version web ne peut pas se connecter au portefeuille intégré à l'application OKX (elle indique que le portefeuille n'est pas pris en charge) ; choisissez donc toujours d'ouvrir la page dans l'application quand on vous le propose. Il vous faut un peu d'OKB sur X Layer pour les frais. Le contrat n'a pas de date limite : les fonds peuvent être retirés à tout moment après le déblocage."
+  ],
+  "done": {
+    "where": "sur le réseau X Layer, dans votre portefeuille",
+    "from": "Envoyé depuis le contrat de blocage d'OKX Boost",
+    "look": "Où regarder : dans l'application OKX, ouvrez dans votre portefeuille le jeton que vous avez bloqué (généralement OKB) et consultez son historique des transactions."
+  },
+  "screens": {
+    "web": {"name": "Version web de la page de la campagne (bouton noir Connect wallet en bas)", "features": ["La barre d'adresse en haut indique web3.okx.com", "Plasma X Launch, avec 15,000,000 XPL en gros caractères en dessous", "Un bouton noir Connect wallet tout en bas"], "do": "C'est la version web, qui ne peut pas se connecter à votre portefeuille dans l'application OKX. Ne touchez pas « Connect wallet » : touchez le × en haut à gauche pour la fermer, collez de nouveau le lien comme à l'étape 1, et quand on vous propose la version de l'application, touchez le premier bouton, en gras.", "images": [{"src": "ok-web.webp", "caption": "① Touchez le **×** en haut à gauche ✗ Ne touchez pas « Connect wallet »"}]},
+    "jump": {"name": "Fenêtre qui propose la version de l'application", "features": ["Une fenêtre blanche au milieu d'une page grisée", "Elle conseille d'utiliser la version de l'application pour plus de fluidité", "Deux boutons : un en gras en haut, Cancel en dessous"], "do": "Touchez le bouton en gras, en haut. Il ouvre la page de campagne propre à l'application OKX. Ne touchez pas « Cancel » : vous resteriez sur la version web, qui ne peut pas se connecter au portefeuille."},
+    "unsupported": {"name": "Message indiquant que le portefeuille n'est pas pris en charge", "features": ["Un panneau en bas avec une icône d'avertissement orange", "Il vous demande de passer à l'extension OKX Wallet pour participer à la campagne", "Deux boutons : Cancel et un bouton vert pour changer de portefeuille"], "do": "Vous avez touché « Connect wallet » sur la version web, qui ne fonctionne pas dans l'application OKX. Touchez **Cancel**, fermez la page avec le × en haut à gauche, rouvrez-la comme à l'étape 1, et choisissez la version de l'application quand on vous le propose. Ne touchez pas le bouton pour changer de portefeuille.", "images": [{"src": "ok-unsupported.webp", "caption": "① Touchez **Cancel** ✗ Ne touchez pas le bouton vert pour changer de portefeuille"}]},
+    "sign": {"name": "Votre portefeuille vous demande de signer un message, ou de donner une autorisation (Approve / Permit)", "do": "Touchez **Reject** (refuser). Ce guide se résume à une transaction ordinaire : aucune signature de message, aucune autorisation. La version web de web3.okx.com demande une signature pour se connecter, mais ce guide n'utilise pas la version web : fermez la page, rouvrez-la comme à l'étape 1, et choisissez la version de l'application quand on vous le propose.", "images": [{"src": "ok-sign.webp", "caption": "① Touchez **Reject** (refuser) ✗ Ne confirmez pas"}]},
+    "wrong-to": {"name": "L'adresse d'interaction n'est pas 0xDA63E89d…2C0795FD2b, ou le montant porte un signe moins", "do": "Refusez. Dans ce guide, la seule transaction est adressée au contrat de blocage d'OKX Boost 0xDA63E89dd0632Db71c89c031de11542C0795FD2b, et vous recevez de l'argent (un montant positif) : on ne vous demande jamais d'envoyer des jetons. Fermez la page et recommencez depuis l'étape 1."},
+    "domain": {"name": "La barre d'adresse n'affiche pas web3.okx.com", "do": "Fermez la page immédiatement et ne signez rien. Collez vous-même `https://web3.okx.com/boost/x-launch/plasma` ; ne touchez pas les liens que d'autres personnes vous envoient."}
+  },
+  "steps": {
+    "open": {
+      "title": "Ouvrir la page de la campagne dans l'application OKX",
+      "items": [
+        "Touchez d'abord ce lien pour le copier : `https://web3.okx.com/boost/x-launch/plasma`",
+        "Voici comment faire dans l'application OKX, une image par geste. Nous avons testé l'application en chinois, les images sont donc en chinois. Si votre application est dans une autre langue, cherchez le bouton qui fait ce que décrit chaque légende, et arrêtez-vous si vous ne le trouvez pas ou si ce que vous voyez ne correspond pas."
+      ],
+      "copy": ["https://web3.okx.com/boost/x-launch/plasma"],
+      "images": [
+        "① Vous lisez ceci dans l'application OKX ? Une fois le lien copié, touchez le **×** en haut à gauche pour fermer la page, et revenez une fois terminé. Vous lisez dans un autre navigateur ? Ouvrez simplement l'application OKX",
+        "② Choisissez **Web3** en haut ③ Touchez l'onglet d'exploration, la deuxième icône de la barre du bas. Les montants sont masqués sur l'image ; la ligne OKX Boost X Launch sous DeFi correspond à ce blocage",
+        "④ Touchez le champ de recherche en haut",
+        "⑤ Appuyez longuement sur le champ de recherche, puis touchez **Paste** (Coller)",
+        "⑥ Touchez le résultat « site web tiers » juste en dessous. Le portefeuille étiquette ainsi toutes les adresses web ; l'adresse qui suit doit commencer exactement par **https://web3.okx.com/**",
+        "⑦ Une fenêtre propose la version de l'application : touchez le premier bouton, en gras, pour ouvrir cette fonction dans l'application. La barre d'adresse dans le cadre jaune doit indiquer exactement **web3.okx.com**, sans rien avant ni après ✗ Ne touchez pas « Cancel » : la version web ne peut pas se connecter au portefeuille de l'application",
+        "⑧ Voici la page de campagne propre à l'application OKX. En haut à droite s'affiche le compte actuel, qui doit être celui qui a bloqué les jetons"
+      ],
+      "situations": {
+        "web-page": {"see": "La version web s'est ouverte : une barre d'adresse indiquant web3.okx.com en haut et un bouton noir Connect wallet en bas", "do": "La version web ne peut pas se connecter au portefeuille de l'application OKX. Ne touchez pas « Connect wallet » : fermez-la avec le × en haut à gauche, collez de nouveau le lien, et touchez le bouton en gras **ouvrir dans l'application** quand la fenêtre apparaît."},
+        "no-dialog": {"see": "La fenêtre proposant la version de l'application n'est pas apparue", "do": "Elle est apparue à chaque fois lors de nos tests. Sinon, fermez la page avec le × en haut à gauche et collez de nouveau le lien. Si cela ne marche toujours pas, touchez « Un problème ? » en haut à droite et envoyez-nous le rapport."},
+        "unsupported": {"see": "Un message indique que le portefeuille n'est pas pris en charge et vous demande de passer à l'extension OKX Wallet", "do": "Vous avez touché « Connect wallet » sur la version web. Touchez **Cancel**, fermez la page, rouvrez-la comme ci-dessus, et choisissez la version de l'application quand on vous le propose. Ne touchez pas le bouton pour changer de portefeuille."},
+        "sign-login": {"see": "Une demande de signature de web3.okx.com qui commence par « Welcome to OKX Wallet »", "do": "C'est la version web qui vous demande de vous connecter, et ce guide n'en a pas besoin. Touchez **Reject** (refuser), fermez la page, rouvrez-la comme ci-dessus, et choisissez la version de l'application quand on vous le propose."},
+        "third-party": {"see": "Le résultat de recherche le présente comme un site web tiers", "do": "C'est normal : le portefeuille étiquette ainsi toutes les adresses web. Vérifiez l'adresse qui suit : elle doit commencer exactement par **https://web3.okx.com/**, avec une barre oblique juste après okx.com et rien de plus entre les deux."},
+        "no-paste": {"see": "Un appui long sur le champ de recherche n'affiche pas « Paste » (Coller)", "do": "Revenez sur cette page et touchez de nouveau le lien pour le copier. Sur iPhone, touchez « Allow Paste » (Autoriser le collage) si on vous le demande. Si cela ne marche toujours pas, tapez `https://web3.okx.com/boost/x-launch/plasma` à la main."},
+        "wrong-account": {"see": "Le compte en haut à droite n'est pas celui qui a bloqué les jetons", "do": "Revenez à l'accueil du portefeuille, touchez le petit triangle à côté du nom du compte et passez au compte qui a bloqué les jetons (un portefeuille OKX peut en contenir plusieurs), puis rouvrez la page. Sur le mauvais compte, vous ne trouverez pas les détails du staking."},
+        "extension": {"see": "J'utilise l'extension de navigateur OKX Wallet sur un ordinateur", "do": "Nous n'avons testé ce guide que dans l'application OKX pour téléphone. Les étapes de l'extension n'ont pas encore été vérifiées : ne suivez donc pas ce guide sur un ordinateur pour l'instant. Si ce compte se trouve dans l'application OKX de votre téléphone, utilisez l'application ; en cas de doute, touchez « Un problème ? » en haut à droite et envoyez-nous le rapport."}
+      }
+    },
+    "unstake": {
+      "title": "Retirer du staking",
+      "note": "La seule transaction",
+      "milestone": "Sortie du staking",
+      "images": [
+        "① Balayez l'écran vers le haut jusqu'aux détails du staking (la ligne du montant en staking correspond à ce que vous avez bloqué, environ {{got}}) et touchez le bouton de retrait du staking juste en dessous",
+        "② La confirmation du retrait du staking s'ouvre. Comparez-la d'abord avec la fiche ci-dessous, et ne touchez le bouton vert de confirmation que lorsque les trois cadres jaunes correspondent tous. La partie masquée de l'image est votre propre adresse"
+      ],
+      "check": {
+        "title": "Avant de confirmer, vérifiez 3 points",
+        "lead": "C'est la page de confirmation propre à l'application OKX. Comparez-la avec cette liste et touchez chaque point une fois qu'il correspond.",
+        "confirm": [
+          {"title": "C'est la confirmation du retrait du staking, sur X Layer", "sub": "C'est une page de l'application OKX elle-même, pas une fenêtre ouverte par un site web"},
+          {"title": "L'adresse d'interaction est 0xDA63E89d…2C0795FD2b (le contrat de blocage d'OKX Boost)", "sub": "L'adresse complète est 0xDA63E89dd0632Db71c89c031de11542C0795FD2b. Au minimum, le début 0xDA63E89d et la fin 2C0795FD2b doivent correspondre exactement, caractère par caractère"},
+          {"title": "Le montant porte un signe plus : +{{got}}", "sub": "Plus signifie de l'argent que vous recevez. Les frais de réseau indiqués en dessous sont inférieurs à $0.01"}
+        ],
+        "reject": ["Le montant porte un signe moins, ou on vous demande d'envoyer des jetons", "On y lit Approve ou Permit", "C'est une demande de signature qui vous demande de signer un message", "L'adresse d'interaction ne correspond pas à 0xDA63E89d…2C0795FD2b"],
+        "normal": [
+          "La ligne du portefeuille actuel montre votre propre adresse, avec le nom de votre compte en dessous",
+          "Quand vous touchez « Confirm », le téléphone demande Face ID, une empreinte digitale ou votre mot de passe",
+          "Un message de confirmation de la transaction apparaît d'abord, puis un autre indiquant que le retrait du staking a réussi"
+        ]
+      },
+      "situations": {
+        "no-section": {"see": "En faisant défiler, il n'y a pas de bloc de détails du staking", "do": "Ce compte n'a rien de bloqué dans cette campagne : soit les fonds ont déjà été retirés, soit ce n'est pas le compte qui a bloqué les jetons. Vérifiez le compte en haut à droite, et touchez « Un problème ? » en haut à droite pour une vérification en direct."},
+        "low-gas": {"see": "Il est indiqué que les frais ne peuvent pas être payés ou que le solde est trop bas", "do": "Il vous faut un peu d'OKB sur X Layer pour les frais (moins de $0.01). Envoyez d'abord un peu d'OKB à cette adresse sur X Layer (0.001 suffit largement), puis revenez et touchez de nouveau le bouton."},
+        "rejected": {"see": "Refusé par erreur", "do": "Rien n'a bougé. Revenez sur la page de la campagne et touchez de nouveau le bouton de retrait du staking."},
+        "spinning": {"see": "J'ai touché « Confirm » et ça continue de tourner", "do": "Attendez une minute et ne touchez plus rien. Touchez ensuite « Un problème ? » en haut à droite pour une vérification en direct : nous regardons le contrat de blocage sur la blockchain, nous pouvons donc savoir tout de suite si les fonds sont sortis."},
+        "sign": {"see": "C'est une demande de signature, pas la confirmation du retrait du staking", "do": "Refusez. Le retrait du staking est une transaction ordinaire et ne nécessite aucune signature de message. Vous êtes très probablement sur la version web : revenez à l'étape 1 et choisissez la version de l'application quand on vous le propose."},
+        "wrong-to": {"see": "L'adresse d'interaction n'est pas 0xDA63E89d…2C0795FD2b", "do": "Refusez immédiatement."}
+      }
+    },
+    "arrive": {
+      "title": "Vérifier l'arrivée des fonds",
+      "milestone": "Arrivée",
+      "images": [
+        "① Un message en haut indique que le retrait du staking a réussi, et le bloc des détails du staking a disparu : l'argent est revenu dans votre portefeuille ② Pour le voir dans votre portefeuille, touchez **‹** en haut à gauche pour fermer la page de la campagne, puis le × en haut à gauche de la page web",
+        "③ De retour sur l'accueil du portefeuille (OKX en bas), ouvrez la liste de vos jetons ④ Touchez **OKB** (ou USDT0 / USDG si c'est ce que vous avez bloqué). Les soldes sont masqués sur l'image",
+        "⑤ L'historique des transactions contient une nouvelle entrée de retrait du staking venant d'OKX Boost, +{{got}}. Le solde, l'adresse et la date sont masqués sur l'image"
+      ],
+      "check": {
+        "title": "Vérifier l'arrivée des fonds",
+        "rows": [
+          ["Délai", "Quelques secondes après votre confirmation"],
+          ["Où regarder", "Dans l'application OKX, ouvrez {{sym}} dans votre portefeuille et consultez son historique des transactions"],
+          ["Ce que vous devriez voir", "{{got}} de plus, dans une entrée de retrait du staking venant d'OKX Boost"],
+          ["Trace sur la blockchain", "Les fonds viennent du contrat de blocage d'OKX Boost 0xDA63…FD2b et vont à votre propre adresse"],
+          ["Si rien n'est arrivé", "Touchez « Un problème ? » en haut à droite pour une vérification en direct : nous regardons le contrat de blocage sur la blockchain"]
+        ],
+        "foot": "Une fois les fonds arrivés, c'est terminé. Si vous avez bloqué de l'OKB, c'est de l'OKB proprement dit qui revient (le jeton natif de X Layer), pas du WOKB"
+      },
+      "situations": {
+        "not-wokb": {"see": "J'ai bloqué de l'OKB : est-ce de l'OKB ou du WOKB qui est revenu ?", "do": "C'est de l'OKB proprement dit (le jeton natif de X Layer), pas du WOKB."},
+        "usdt0": {"see": "J'ai bloqué de l'USDT0 ou de l'USDG", "do": "Vous récupérez le même jeton et le même montant. Cherchez USDT0 ou USDG dans la liste des actifs de votre portefeuille."},
+        "no-record": {"see": "L'entrée n'apparaît pas dans l'historique des transactions", "do": "Touchez « Un problème ? » en haut à droite pour une vérification en direct : si votre blocage dans le contrat est à 0, les fonds sont sortis. L'historique du portefeuille met parfois un peu de temps à l'afficher."}
+      }
+    }
+  },
+  "sources": [
+    "Explorateur d'OKX · Contrat de blocage d'OKX Boost (code source vérifié)",
+    "OKX Boost · Page de la campagne Plasma X Launch"
+  ]
+}

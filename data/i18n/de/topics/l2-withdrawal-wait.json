@@ -1,0 +1,118 @@
+{
+  "title": "Von einem L2 auf Ethereum abheben: Warum man warten muss und was danach zu tun ist",
+  "summary": "Wenn du Geld über eine offizielle Bridge von einem L2 zurück zu Ethereum bringst, wartest du, bis das Ergebnis der Chain auf Ethereum bestätigt ist: etwa 7 Tage bei OP Mainnet und Arbitrum, inzwischen 5 Tage bei Base (1 Tag bei manchen Auszahlungen) und meist ein paar Stunden bei ZK-Chains wie zkSync Era und Linea. Die meisten Chains schicken das Geld nicht automatisch: Auf OP Mainnet und Base machst du zuerst „Prove“ auf Ethereum, wartest und machst dann „Finalize“; bei Arbitrum, Linea und Scroll gehst du nach der Wartezeit zurück zur Bridge und machst „Claim“ auf Ethereum. Behalte also etwas ETH auf Ethereum für die Gebühren.",
+  "sections": [
+    {
+      "h": "Warum es eine Wartezeit gibt",
+      "p": [
+        "Ein L2 übergibt seine Ergebnisse zur Bestätigung an Ethereum. Bevor die offizielle Bridge auf Ethereum Geld freigibt, muss sie sicher sein, dass dieses Ergebnis stimmt.",
+        "Chains wie OP Mainnet, Base und Arbitrum veröffentlichen zuerst ihre Ergebnisse und lassen dann Zeit, damit jeder ein falsches anfechten kann. Diese Zeit ist die Anfechtungsfrist. ZK-Chains wie zkSync Era, Linea und Scroll warten, bis ein Beweis erzeugt und auf Ethereum geprüft ist, und zkSync fügt noch eine zusätzliche Sicherheitsverzögerung hinzu.",
+        "Die Wartezeit gehört zu den Sicherheitsregeln der offiziellen Bridge. Die OP-Doku sagt klar, dass sie sich nicht umgehen lässt."
+      ],
+      "list": []
+    },
+    {
+      "h": "Wie lange es je Chain dauert",
+      "p": [
+        "Nach der offiziellen Doku der jeweiligen Chain (geprüft am 2026-11-05). Rechne die Zeit dazu, die du selbst für jeden Schritt brauchst."
+      ],
+      "list": [
+        "OP Mainnet: eine Anfechtungsfrist von 7 Tagen. Drei Schritte: auf OP Mainnet starten; sobald dieser Teil der Chain auf Ethereum veröffentlicht ist, „Prove“ auf Ethereum; nach 7 Tagen „Finalize“ auf Ethereum.",
+        "Base: Seit dem Upgrade Beryl am 25. Juni 2026 wartet die Standard-Bridge 5 Tage, oder 1 Tag, wenn das Ergebnis sowohl durch einen TEE-Beweis als auch durch einen ZK-Beweis gestützt ist. Bevor du „Prove“ machen kannst, wartest du meist etwa 20–60 Minuten. Die Schritte sind dieselben wie bei OP Mainnet: starten, „Prove“, „Finalize“. Richte dich nach der Zeit, die dir die Bridge anzeigt.",
+        "Arbitrum One / Nova: laut offizieller Doku mindestens 7 Tage, und der Countdown der Bridge zeigt meist 7–8 Tage (die Anfechtungsfrist beträgt 45 818 Ethereum-Blöcke, etwa 6.4 Tage, plus etwas Verarbeitung davor und danach). Wenn der Countdown abgelaufen ist, öffne oben rechts in der Bridge dein Profil, geh zu „Transactions“ und tippe auf „Claim“.",
+        "zkSync Era: Die Doku nennt eine Sicherheitsverzögerung von mindestens 3 Stunden, bei hoher Netzlast 1–2 Stunden mehr. Den letzten Schritt auf Ethereum („finalize withdrawal“) kann jeder einreichen; ob er auf dem Mainnet für dich erledigt wird, sagt die Doku nicht. Zeigt die Bridge, die du genutzt hast, einen Button „Claim“, musst du ihn antippen.",
+        "Linea: etwa 2–12 Stunden für ETH und normale Token. Auszahlungen von Linea auf Ethereum brauchen immer ein manuelles „Claim“ auf Ethereum (im Verlauf der offiziellen Bridge sind sie mit „Ready to claim“ markiert). In diese Richtung berechnet die offizielle Bridge außerdem eine Anti-DDoS-Gebühr von 0.001 ETH.",
+        "Scroll: Warte, bis der Batch mit deiner Transaktion auf Ethereum finalisiert ist, und sende dann noch eine Transaktion „Execute Withdrawal“ auf Ethereum (der Button „Claim“ in der Bridge). Wie lange das dauert, sagt die aktuelle offizielle Doku nicht.",
+        "Andere Chains: Chains auf Basis des OP Stack verhalten sich nicht unbedingt wie OP Mainnet; Base ist schon bei 5 Tagen. Eine Auszahlung von einem L3 auf Ethereum läuft über zwei Etappen mit jeweils eigener Wartezeit, und die Arbitrum-Doku setzt den ungünstigsten Fall mit Standardeinstellungen bei rund zwei Wochen an. Schau in die Doku der jeweiligen Chain."
+      ]
+    },
+    {
+      "h": "Was tun, wenn die Wartezeit vorbei ist",
+      "p": [
+        "Bei den meisten offiziellen Bridges landet das Geld nach der Wartezeit nicht von selbst in deiner Wallet. Laut Arbitrum-Doku macht die Bestätigung eine Auszahlung nur abholbar: Jemand muss sie auf Ethereum ausführen, und nichts erledigt das automatisch. Bevor seine Chain abgeschaltet wurde, erinnerte Lisk die Nutzer daran, dass eine Auszahlung erst mit dem „Claim“ abgeschlossen ist."
+      ],
+      "list": [
+        "Geh zurück auf dieselbe Bridge-Seite, auf der du gestartet hast, und verbinde dieselbe Wallet.",
+        "Such die Auszahlung im Verlauf („History“, „Transactions“ oder „Activity“) und tippe je nach Aufforderung auf „Prove“ oder auf „Claim“ / „Finalize“.",
+        "Dieser Schritt sendet eine Transaktion auf Ethereum, du zahlst also Ethereum-Gas. Die OP-Doku weist darauf hin, dass die Transaktionen für „Prove“ und „Finalize“ auf Ethereum meist deutlich mehr kosten als das Starten der Auszahlung auf dem L2.",
+        "Wenn du von einer Smart-Contract-Wallet wie einem Safe abgehoben hast: Laut Arbitrum-Doku erscheint die Auszahlung womöglich nicht im Verlauf der Bridge; du kannst den Verlauf dann nach dem Hash der L2-Transaktion durchsuchen, mit der sie gestartet wurde, und anschließend „Claim“ machen."
+      ]
+    },
+    {
+      "h": "Dauert es länger als in der Doku? Prüf zuerst diese Punkte",
+      "p": [
+        "Fang nicht von vorn an. Prüf diese Punkte einen nach dem anderen."
+      ],
+      "list": [
+        "OP Mainnet und Base: Die Wartezeit läuft mindestens ab deiner „Prove“-Transaktion, nicht ab dem Start. Hast du ein paar Tage zu spät „Prove“ gemacht, läuft die volle Wartezeit ab dann. Wird das Ergebnis, auf das sich dein „Prove“ stützt, für ungültig erklärt, musst du erneut „Prove“ machen, und die Uhr beginnt von vorn.",
+        "Arbitrum: In seltenen Fällen eröffnet jemand eine Anfechtung, und die Wartezeit wird länger; laut Doku verzögert sich eine ehrliche Auszahlung unter BoLD höchstens um eine weitere Anfechtungsfrist.",
+        "ZK-Chains: Laut zkSync sind 3 Stunden keine Garantie, bei hoher Netzlast kann es länger dauern; laut Sophon schwankt die Dauer, und man soll den Status auf seiner offiziellen Auszahlungsseite verfolgen.",
+        "Angekommen, aber nicht sichtbar? Laut zkSync erscheinen diese Auszahlungen meist unter „Internal Transactions“ auf der Seite deiner Adresse bei Etherscan, nicht in der normalen Transaktionsliste.",
+        "Linea: Auszahlungen, die länger als 90 Tage nicht abgeholt wurden, erscheinen nicht mehr in der offiziellen Bridge-App; du schließt sie manuell mithilfe der offiziellen Entwickler-Doku ab.",
+        "Wenn es dann immer noch nicht passt, frag nur im offiziellen Discord oder Hilfecenter des Projekts und ignoriere jeden, der dich zuerst anschreibt."
+      ]
+    },
+    {
+      "h": "Was du nicht tun solltest",
+      "p": [
+        "Wer es eilig hat, zahlt zu viel oder wird betrogen."
+      ],
+      "list": [
+        "Nutze nicht noch einmal eine Bridge, um es zu „beschleunigen“. Eine gestartete Auszahlung lässt sich nicht abbrechen (Arbitrum-Doku), und schnelle Bridges von Drittanbietern sind separate Dienste, die eine bereits laufende offizielle Auszahlung nicht verkürzen (Base-Doku). Eine erneute Übertragung per Bridge schickt nur einen weiteren Betrag.",
+        "Bezahl niemanden, der anbietet, sie zu „beschleunigen“ oder „freizuschalten“. Die Wartezeit ist eine Protokollregel, und niemand kann sie gegen eine Gebühr überspringen.",
+        "Folge keinen Links aus Suchergebnissen, Direktnachrichten oder Antworten. Nutze nur die offizielle Bridge, auf der du gestartet hast, oder einen Link, den der offizielle Account selbst gepostet hat.",
+        "DeFiExit bittet deine Wallet nur, ihre Adresse zu teilen – es fordert dich nie auf, etwas zu signieren, freizugeben oder zu senden, und wir schreiben dir nie zuerst."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Ich habe mein ETH schon per Bridge zurückgeschickt, aber dort steht 7 Tage. Hängt es fest?",
+      "a": "Höchstwahrscheinlich nicht. Eine Auszahlung von OP Mainnet oder Arbitrum auf Ethereum über die offizielle Bridge dauert normalerweise etwa 7 Tage; bei Base sind es jetzt 5 Tage, bei manchen Auszahlungen 1 Tag. Diese Zeit lässt sich nicht verkürzen. Ist sie um, geh zurück zur selben Bridge und mach den letzten Schritt („Finalize“ oder „Claim“); erst dann kommt das Geld an. Auf OP Mainnet und Base musst du zwischendurch außerdem zuerst „Prove“ machen."
+    },
+    {
+      "q": "Meine Auszahlung von Sophon ist immer noch nicht angekommen.",
+      "a": "Laut Sophon-Doku ist eine offizielle (kanonische) Auszahlung auf Ethereum nicht sofort da: Der Batch muss auf Ethereum bewiesen werden, dann gehst du mit derselben Wallet zurück auf claim.sophon.com und sendest auf Ethereum eine letzte „Claim“-Transaktion. Laut Sophon schwankt die Dauer, richte dich also nach dem Status auf dieser Seite. Hast du dort eine Drittanbieter-Route gewählt, prüf stattdessen den Status dieser Route. Sophons Frist zum Abheben ist der 25. November 2026, und das Mainnet wird am 30. November abgeschaltet – schieb es also nicht bis zum Schluss auf."
+    },
+    {
+      "q": "Der Countdown ist seit Tagen abgelaufen, und das Geld ist immer noch nicht da.",
+      "a": "Meist fehlt noch der letzte Schritt. Laut Arbitrum macht ein abgelaufener Countdown die Auszahlung nur abholbar: Du tippst im Verlauf der Bridge auf „Claim“, und nichts erledigt das automatisch. Auszahlungen von Linea auf Ethereum brauchen immer ein manuelles „Claim“. Auf OP Mainnet und Base machst du „Prove“, wartest die Frist ab und machst dann „Finalize“. Bevor du tippst, sorg dafür, dass die Wallet etwas ETH auf Ethereum für Gas hat."
+    },
+    {
+      "q": "Jemand sagt, er könne meine Auszahlung gegen eine kleine Gebühr beschleunigen. Stimmt das?",
+      "a": "Nein. Die Wartezeit ist eine Protokollregel der offiziellen Bridge: Laut OP-Doku lässt sie sich nicht umgehen, und laut Arbitrum kann eine gestartete Auszahlung nicht abgebrochen werden. Wer Geld dafür verlangt, sie zu „beschleunigen“ oder „freizuschalten“, ist ein Betrüger. Gib außerdem niemals jemandem deine Seed-Phrase oder deinen privaten Schlüssel."
+    },
+    {
+      "q": "Warum steht bei meiner Auszahlung von einem L3 etwa zwei Wochen?",
+      "a": "Von einem L3 zu Ethereum geht es in zwei Etappen: zuerst zurück auf das darunterliegende L2, dann von diesem L2 auf Ethereum, und jede Etappe hat ihre eigene Wartezeit. Die Arbitrum-Doku setzt den ungünstigsten Fall mit Standardeinstellungen bei rund zwei Wochen an. Manche Projekte haben eigene Regelungen: Laut dem offiziellen Leitfaden von Horizen vom 23. Oktober 2026 werden ETH-Auszahlungen, die vor dem 4. November über seine offizielle Bridge gestartet wurden, für dich finalisiert und kommen nach etwa zwei Wochen auf Base an."
+    },
+    {
+      "q": "Wie lange habe ich Zeit für „Claim“? Kann das verfallen?",
+      "a": "Laut Arbitrum kann eine bestätigte Auszahlung unbegrenzt darauf warten, dass du sie ausführst. Die Doku von OP Mainnet und Base nennt keine Frist. Bei Linea verschwinden Auszahlungen, die älter als 90 Tage sind, von der Seite der offiziellen Bridge, lassen sich laut Doku aber weiterhin manuell abschließen. Die Ausnahme ist eine Chain, die abgeschaltet wird: Dann richte dich nach ihrer Abschaltankündigung. Lisk sagte zum Beispiel, Auszahlungen, die bei der Abschaltung noch liefen, würden ihrem Ziel auf Ethereum gutgeschrieben, und die offizielle Rückhol-Website von Blast deckt auch nicht abgeschlossene Auszahlungen ab."
+    }
+  ],
+  "sources": [
+    "OP-Doku: Transaktionsfinalität auf OP Mainnet (7-tägige Auszahlungen über die Standard Bridge)",
+    "OP-Doku: Ablauf einer Auszahlung (starten, beweisen, finalisieren; erneutes „Prove“ setzt die Uhr zurück)",
+    "OP-Doku: Daten zwischen L1 und L2 senden (die Wartezeit lässt sich nicht umgehen; Schritte auf L1 kosten mehr)",
+    "Base-Doku: Auszahlungen (5 Tage oder 1 Tag, 20–60 Minuten, schnelle Bridges verkürzen nichts)",
+    "Base-Doku: „Beryl — Faster Withdrawals“ (7 Tage auf 5 verkürzt)",
+    "Base-Doku: Upgrades (Beryl seit 25. Juni 2026 auf dem Mainnet aktiv)",
+    "Arbitrum-Doku: Bridge-Schnellstart (mindestens 7 Tage, Countdown von 7–8 Tagen, „Claim“)",
+    "Arbitrum-Doku: Bridge-Fehlerbehebung (etwa 6.4 Tage, kein Abbrechen, Smart-Contract-Wallets)",
+    "Arbitrum-Doku: Auszahlungen verfolgen (Claims laufen nicht automatisch; L3 in zwei Etappen, etwa zwei Wochen)",
+    "ZKsync-Doku: Auszahlungsverzögerung (mindestens 3 Stunden, interne Transaktionen auf Etherscan)",
+    "ZKsync-Doku: Assets per Bridge übertragen (jeder kann auf L1 finalisieren)",
+    "ZKsync-Doku: Finalität (Beweis etwa eine Stunde, insgesamt rund 3 Stunden)",
+    "Linea-Doku: Token per Bridge übertragen (2–12 Stunden, manuelles „Claim“, 0.001 ETH Gebühr, 90 Tage)",
+    "Linea-Doku: Transaktionsfinalität (ZK-Beweise werden auf Ethereum geprüft)",
+    "Scroll-Doku (Quelle auf GitHub): Technologie-Überblick (Gültigkeitsbeweise werden auf Ethereum geprüft)",
+    "Scroll-Doku (Quelle auf GitHub): „The Scroll Messenger“ – von L2 auf L1 ist eine Transaktion „Execute Withdrawal“ nötig",
+    "Sophon-Doku: Finalisierung kanonischer Auszahlungen (Dauer schwankt; letztes „Claim“ auf Ethereum)",
+    "Sophon auf X: Frist zum Abheben am 25. November, Abschaltung am 30. November (19. Oktober 2026)",
+    "Lisk auf X: Eine Auszahlung ist erst mit dem „Claim“ abgeschlossen (1. November 2026)",
+    "Lisk auf X: Laufende Auszahlungen werden auf Ethereum gutgeschrieben (3. November 2026)",
+    "Offizielle Rückhol-Website von Blast (auch für nicht abgeschlossene Auszahlungen)",
+    "Horizen-Blog: „Changes for Horizen“ (23. Oktober 2026)"
+  ]
+}
