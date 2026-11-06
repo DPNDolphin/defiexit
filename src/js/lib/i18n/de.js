@@ -9,6 +9,8 @@ const liste = (a) => (a.length < 2 ? a.join("") : `${a.slice(0, -1).join(", ")} 
 const leftDe = ({ days, hours, day }) => (day ? `Frist endet heute (UTC): ${md(day)[1]}. ${MONATE[md(day)[0] - 1]}` : hours != null ? (hours > 1 ? `Noch ${hours} Stunden` : hours === 1 ? "Noch 1 Stunde" : "Noch weniger als 1 Stunde") : days >= 0 ? (days === 1 ? "Noch 1 Tag" : `Noch ${days} Tage`) : "Frist abgelaufen");
 
 export default {
+  guideInEn: "Diese Anleitung ist noch nicht in diese Sprache übersetzt, deshalb wird sie auf Englisch angezeigt.",
+  partlyInEn: "Teile dieser Seite sind noch nicht in diese Sprache übersetzt, deshalb werden sie auf Englisch angezeigt.",
   brandSub: "Sicherer Ausstieg",
   skip: "Zum Inhalt springen",
   langNav: "Sprache",

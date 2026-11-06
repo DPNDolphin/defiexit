@@ -6,6 +6,8 @@ const md = (iso) => String(iso).split("-").slice(1).map(Number);
 const left = ({ days, hours, day }) => (day ? `期限当日（UTC）：${md(day)[0]}月${md(day)[1]}日` : hours != null ? (hours ? `残り${hours}時間` : "残り1時間未満") : days >= 0 ? `残り${days}日` : "期限切れ");
 
 export default {
+  guideInEn: "このガイドはまだこの言語に翻訳されていないため、英語で表示しています。",
+  partlyInEn: "このページの一部はまだこの言語に翻訳されていないため、英語で表示しています。",
   brandSub: "安全な出口",
   skip: "本文へスキップ",
   langNav: "言語",

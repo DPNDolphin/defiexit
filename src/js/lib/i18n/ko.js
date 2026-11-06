@@ -7,6 +7,8 @@ const md = (iso) => String(iso).split("-").slice(1).map(Number);
 const left = ({ days, hours, day }) => (day ? `마감 당일(UTC): ${md(day)[0]}월 ${md(day)[1]}일` : hours != null ? (hours ? `${hours}시간 남음` : "1시간 미만 남음") : days >= 0 ? `${days}일 남음` : "마감 지남");
 
 export default {
+  guideInEn: "이 가이드는 아직 이 언어로 번역되지 않아 영어로 보여 드려요.",
+  partlyInEn: "이 페이지의 일부 내용은 아직 이 언어로 번역되지 않아 영어로 보여 드려요.",
   brandSub: "안전한 출구",
   skip: "본문으로 건너뛰기",
   langNav: "언어",

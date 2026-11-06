@@ -13,6 +13,8 @@ const lc = (s) => s.charAt(0).toLowerCase() + s.slice(1);
 const left = ({ days, hours, day }) => (day ? `Día límite (UTC): ${fecha(md(day)[0], md(day)[1])}` : hours != null ? (hours > 1 ? `Quedan ${hours} horas` : hours === 1 ? "Queda 1 hora" : "Queda menos de 1 hora") : days >= 0 ? (days === 1 ? "Queda 1 día" : `Quedan ${days} días`) : "Ya pasó la fecha límite");
 
 export default {
+  guideInEn: "Esta guía aún no está traducida a este idioma, así que se muestra en inglés.",
+  partlyInEn: "Parte de esta página aún no está traducida a este idioma, así que se muestra en inglés.",
   brandSub: "Salida segura",
   skip: "Saltar al contenido",
   langNav: "Idioma",

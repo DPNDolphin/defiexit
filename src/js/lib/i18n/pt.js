@@ -14,6 +14,8 @@ const lc = (s) => s.charAt(0).toLowerCase() + s.slice(1);
 const left = ({ days, hours, day }) => (day ? `Dia do prazo (UTC): ${data(md(day)[0], md(day)[1])}` : hours != null ? (hours > 1 ? `Faltam ${hours} horas` : hours === 1 ? "Falta 1 hora" : "Falta menos de 1 hora") : days >= 0 ? (days === 1 ? "Falta 1 dia" : `Faltam ${days} dias`) : "Prazo encerrado");
 
 export default {
+  guideInEn: "Este guia ainda não foi traduzido para este idioma, por isso aparece em inglês.",
+  partlyInEn: "Partes desta página ainda não foram traduzidas para este idioma, por isso aparecem em inglês.",
   brandSub: "Saída segura",
   skip: "Pular para o conteúdo",
   langNav: "Idioma",

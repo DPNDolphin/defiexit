@@ -17,6 +17,8 @@ const left = ({ days, hours, day }) => (day
 const lowerFirst = (s) => s.charAt(0).toLowerCase() + s.slice(1);
 
 export default {
+  guideInEn: "Эта инструкция ещё не переведена на этот язык, поэтому показана на английском.",
+  partlyInEn: "Часть этой страницы ещё не переведена на этот язык, поэтому показана на английском.",
   brandSub: "Безопасный выход",
   skip: "Перейти к содержанию",
   langNav: "Язык",

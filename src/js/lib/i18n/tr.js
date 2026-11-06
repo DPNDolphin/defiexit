@@ -11,6 +11,8 @@ const left = ({ days, hours, day }) => (day
     : days >= 0 ? `${days} gün kaldı` : "Son tarih geçti");
 
 export default {
+  guideInEn: "Bu rehber henüz bu dile çevrilmedi, bu yüzden İngilizce gösteriliyor.",
+  partlyInEn: "Bu sayfanın bazı bölümleri henüz bu dile çevrilmedi, bu yüzden İngilizce gösteriliyor.",
   brandSub: "Güvenli çıkış",
   skip: "İçeriğe geç",
   langNav: "Dil",

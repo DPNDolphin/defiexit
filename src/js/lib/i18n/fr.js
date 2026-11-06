@@ -14,6 +14,8 @@ const maj = (s) => s.replace(/^vo(s|tre)\b/, (w) => `V${w.slice(1)}`);
 const leftFr = ({ days, hours, day }) => (day ? `Date limite aujourd'hui (UTC) : ${jour(md(day)[1])} ${MOIS[md(day)[0] - 1]}` : hours != null ? (hours > 1 ? `Il reste ${hours} heures` : hours === 1 ? "Il reste 1 heure" : "Il reste moins d'1 heure") : days >= 0 ? `Il reste ${days} ${pl(days, "jour", "jours")}` : "Date limite passée");
 
 export default {
+  guideInEn: "Ce guide n’est pas encore traduit dans cette langue, il s’affiche donc en anglais.",
+  partlyInEn: "Certaines parties de cette page ne sont pas encore traduites dans cette langue, elles s’affichent donc en anglais.",
   brandSub: "Sortie sécurisée",
   skip: "Aller au contenu",
   langNav: "Langue",
