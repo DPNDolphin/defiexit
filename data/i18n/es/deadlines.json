@@ -302,7 +302,7 @@
     "deadlineNote": "La interfaz de retiro habitual cerró el 26 de octubre (ya pasó). El 4 de noviembre, Blast anunció que la L2 cerró. El sitio de retiro en `blast.io` sigue abierto durante 12 meses, y el 4 de noviembre de 2027 es el último día con soporte.",
     "who": "Quienes tengan ETH, WETH o USDB en Blast, o un retiro que nunca terminó, incluidos los usuarios de Blast Mobile y de Safe u otras billeteras de contrato.",
     "todo": "Conecta tu billetera en `blast.io` para buscar tu dirección y retirar ETH, WETH y USDB en Ethereum; los retiros sin terminar se incluyen automáticamente. Si usas Blast Mobile: importa tu frase semilla en MetaMask o Rabby y luego conéctate. Safe y otras billeteras de contrato tienen un acceso aparte.",
-    "caution": "Blast solo usa @blast (@Blast_L2 ahora es una cuenta de reserva). El sitio de retiro solo menciona ETH y activos en USD; Blast no ha dicho si se pueden retirar el token BLAST, otros tokens o las posiciones DeFi en la L2. Escribe una frase semilla solo tú y solo dentro de una app de billetera, nunca en un sitio web.",
+    "caution": "Blast solo usa @blast (@Blast_L2 ahora es una cuenta que solo reserva ese nombre). El sitio de retiro solo menciona ETH y activos en USD; Blast no ha dicho si se pueden retirar el token BLAST, otros tokens o las posiciones DeFi en la L2. Escribe una frase semilla solo tú y solo dentro de una app de billetera, nunca en un sitio web.",
     "official": [
       "Página de retiro de Blast",
       "Documentación de Blast: retirar a Ethereum",

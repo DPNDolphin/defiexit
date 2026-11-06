@@ -302,7 +302,7 @@
     "deadlineNote": "L'interface de retrait habituelle a fermé le 26 octobre (date passée). Le 4 novembre, Blast a annoncé la fermeture du L2. Le site de retrait `blast.io` reste ouvert 12 mois, avec le 4 novembre 2027 comme dernier jour pris en charge.",
     "who": "Toute personne ayant de l'ETH, du WETH ou de l'USDB sur Blast, ou un retrait jamais terminé, y compris les utilisateurs de Blast Mobile et ceux de Safe ou d'autres portefeuilles de contrat.",
     "todo": "Connectez votre portefeuille sur `blast.io` pour rechercher votre adresse et retirer l'ETH, le WETH et l'USDB sur Ethereum ; les retraits non terminés sont inclus automatiquement. Utilisateurs de Blast Mobile : importez votre phrase de récupération dans MetaMask ou Rabby, puis connectez-vous. Safe et les autres portefeuilles de contrat ont un point d'entrée distinct.",
-    "caution": "Blast n'utilise que @blast (@Blast_L2 n'est plus qu'un compte réservé). Le site de retrait ne mentionne que l'ETH et les actifs en USD ; Blast n'a pas dit si le jeton BLAST, d'autres jetons ou des positions DeFi sur le L2 peuvent être retirés. Ne saisissez une phrase de récupération que vous-même, dans une application de portefeuille, et jamais sur un site web.",
+    "caution": "Blast n'utilise que @blast (@Blast_L2 ne sert plus qu'à garder le nom). Le site de retrait ne mentionne que l'ETH et les actifs en USD ; Blast n'a pas dit si le jeton BLAST, d'autres jetons ou des positions DeFi sur le L2 peuvent être retirés. Ne saisissez une phrase de récupération que vous-même, dans une application de portefeuille, et jamais sur un site web.",
     "official": [
       "Page de retrait de Blast",
       "Documentation de Blast : retirer vers Ethereum",

@@ -12,6 +12,7 @@ import { STR, makeT, addUI, hasText } from "../src/js/lib/i18n.js";
 import { tokenDiff, chineseIn, checkUI, SAMPLES, loadUI, checkDeadlineOverlay, applyDeadlines, checkTopicOverlay, applyTopic, checkRecipeOverlay, recipeLangs, readDataOverlays, localNumbers, DTEXT, checkDText, loadDTexts } from "../scripts/i18n.mjs";
 import { build, localize, langSwitch, texts, checkDeadlines, loadTopics, deadlinesPage, TITLE_BAN } from "../scripts/build.mjs";
 import { addText, pickText } from "../src/js/lib/dtext.js";
+import { headersFor } from "./cf-headers.mjs";
 import { TEXT as OKX } from "../src/js/detectors/okx-boost.text.js";
 import { HOW } from "../src/js/lib/xlayer.text.js";
 import { makeFixtureRoot, tag, FIX_TOPIC, FIX_RECIPE } from "./fixtures/i18n/make.mjs";
@@ -570,7 +571,7 @@ test("样例语言从头到尾走一遍构建:页面、hreflang、og:locale、�
     // 404:翻了那两句的语言多一行;_headers 每一页都带 no-transform
     assert.ok(P("404.html").includes('<ul class="nf-langs"><li lang="de">[de] Page not found · <a href="/de/">[de] Back to home</a></li></ul>'));
     const headers = P("_headers");
-    for (const p of ["/de/", "/de/check/", "/de/r/hyperliquid/", `/de/r/${FIX_RECIPE}/`, "/de/deadlines/", "/de/topics/", `/de/topics/${FIX_TOPIC}/`]) assert.ok(headers.includes(`\n${p}\n  Cache-Control: public, max-age=0, must-revalidate, no-transform\n`), p);
+    for (const p of ["/de/", "/de/check/", "/de/r/hyperliquid/", `/de/r/${FIX_RECIPE}/`, "/de/deadlines/", "/de/topics/", `/de/topics/${FIX_TOPIC}/`]) assert.ok(headersFor(headers, p).includes("Cache-Control: public, max-age=0, must-revalidate, no-transform"), p);
     // 德文页面:除了语言菜单,一个汉字都没有;不用内联脚本和样式
     for (const f of ["de/index.html", "de/check/index.html", "de/r/hyperliquid/index.html", `de/r/${FIX_RECIPE}/index.html`, "de/deadlines/index.html", "de/topics/index.html", `de/topics/${FIX_TOPIC}/index.html`]) {
       const h = P(f);

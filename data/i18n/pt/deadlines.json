@@ -302,7 +302,7 @@
     "deadlineNote": "A interface de saque normal fechou em 26 de outubro (já passou). Em 4 de novembro, a Blast anunciou que a L2 foi encerrada. O site de saque em `blast.io` fica aberto por 12 meses, e 4 de novembro de 2027 é o último dia com suporte.",
     "who": "Quem tem ETH, WETH ou USDB na Blast, ou um saque que nunca terminou, incluindo usuários da Blast Mobile e de Safe ou de outras carteiras de contrato.",
     "todo": "Conecte a sua carteira em `blast.io` para consultar o seu endereço e sacar ETH, WETH e USDB na Ethereum; os saques não concluídos entram automaticamente. Se você usa a Blast Mobile: importe a sua frase-semente na MetaMask ou na Rabby e depois conecte. Safe e outras carteiras de contrato têm um acesso separado.",
-    "caution": "A Blast só usa @blast (@Blast_L2 agora é uma conta reservada). O site de saque só menciona ETH e ativos em USD; a Blast não disse se o token BLAST, outros tokens ou posições DeFi na L2 podem ser sacados. Digite uma frase-semente só por conta própria e só dentro de um app de carteira, nunca num site.",
+    "caution": "A Blast só usa @blast (@Blast_L2 agora só serve para guardar o nome). O site de saque só menciona ETH e ativos em USD; a Blast não disse se o token BLAST, outros tokens ou posições DeFi na L2 podem ser sacados. Digite uma frase-semente só por conta própria e só dentro de um app de carteira, nunca num site.",
     "official": [
       "Página de saque da Blast",
       "Documentação da Blast: sacar para a Ethereum",

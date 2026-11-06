@@ -224,7 +224,7 @@
     "deadlineNote": "Antarmuka penarikan reguler ditutup pada 26 Oktober (sudah lewat). Pada 4 November, Blast mengumumkan L2-nya sudah ditutup. Situs penarikan di `blast.io` tetap buka selama 12 bulan, dengan 4 November 2027 sebagai hari terakhir yang didukung.",
     "who": "Siapa pun yang punya ETH, WETH, atau USDB di Blast, atau penarikan yang belum selesai, termasuk pengguna Blast Mobile dan pengguna Safe atau dompet kontrak lain.",
     "todo": "Hubungkan dompet di `blast.io` untuk mencari alamat Anda dan menarik ETH, WETH, dan USDB di Ethereum; penarikan yang belum selesai otomatis ikut. Pengguna Blast Mobile: impor frasa pemulihan Anda ke MetaMask atau Rabby, lalu hubungkan. Safe dan dompet kontrak lain punya pintu masuk terpisah.",
-    "caution": "Blast hanya memakai @blast (@Blast_L2 kini akun cadangan). Situs penarikan hanya menyebut ETH dan aset USD; Blast belum menyatakan apakah token BLAST, token lain, atau posisi DeFi di L2 bisa ditarik. Masukkan frasa pemulihan hanya di dalam aplikasi dompet oleh Anda sendiri, jangan pernah di situs web.",
+    "caution": "Blast hanya memakai @blast (@Blast_L2 kini hanya akun untuk mempertahankan nama tersebut). Situs penarikan hanya menyebut ETH dan aset USD; Blast belum menyatakan apakah token BLAST, token lain, atau posisi DeFi di L2 bisa ditarik. Masukkan frasa pemulihan hanya di dalam aplikasi dompet oleh Anda sendiri, jangan pernah di situs web.",
     "official": ["Halaman penarikan Blast", "Dokumentasi Blast: menarik ke Ethereum", "Blast di X: penutupan diumumkan (2 Oktober)", "Blast di X: L2 sudah ditutup (4 November)"]
   },
   "stader-maticx-fixed-rate": {
