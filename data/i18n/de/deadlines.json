@@ -106,5 +106,125 @@
       "ThunderCore: letzter Block und Migrationsseite",
       "ThunderCore auf X: 1. September"
     ]
+  },
+  "zetachain-shutdown": {
+    "name": "ZetaChain wird abgeschaltet: ZETA zieht auf Solana um",
+    "summary": "ZetaChain will um den 9. Dezember stoppen und ZETA auf Solana umziehen. Wandle vor dem Snapshot wZETA in ZETA zurück und steig aus Pools und Liquid Staking aus.",
+    "deadlineNote": "Die Abstimmung über Vorschlag 70 endet am 7. November, und er tritt nur in Kraft, wenn er angenommen wird. Laut Vorschlag wird bei Block 20 755 000 um den 9. Dezember ein Snapshot erstellt und die Chain gestoppt, und das Migrationsportal für ZETA sowie die Seite für per Bridge übertragene Assets öffnen am selben Tag. Cross-Chain-Transfers sind bereits gestoppt (Einzahlungen im Juni, Auszahlungen am 1. Juli). Schreibgeschützte Archiv-Knoten laufen bis zum 31. Oktober 2027 weiter.",
+    "who": "Alle, die ZETA oder wZETA auf ZetaChain halten oder ZETA in Pools oder im Liquid Staking haben, und alle mit per Bridge übertragenen Assets (ZRC-20), die auf ZetaChain festsitzen. ERC-20-ZETA auf Ethereum ist nicht betroffen.",
+    "todo": "Wandle vor dem Snapshot wZETA zurück und steig aus Pools und Liquid Staking aus (ZETA in Contracts kann nicht per Adresse abgeholt werden). Ab dem 9. Dezember signierst du auf `hub.zetachain.com/migrate`, um ZETA auf Solana zu bekommen (mindestens 10 ZETA, kein SOL nötig). Für ZRC-20-Token signierst du auf `hub.zetachain.com/bridged-assets`, um sie auf ihrer ursprünglichen Chain zurückzubekommen.",
+    "caution": "Vorschlag 70 tritt nur in Kraft, wenn er am 7. November angenommen wird. ZRC-20-Token, die jeweils weniger als $5 wert sind oder in Pools, Vaults oder Contract-Wallets liegen, können nicht abgeholt werden. Laut ZetaChain verlangt das Portal nur eine Signatur, niemals eine Transaktion oder deine Seed-Phrase.",
+    "official": [
+      "ZetaChain auf X: Beitrag vom 4. November",
+      "ZetaChain-Governance: Vorschlag 68",
+      "ZetaChain-Blog: ZETA kommt auf Solana"
+    ]
+  },
+  "astralabs-astra-migration": {
+    "name": "AstraLabs: ASTRA zieht auf einen neuen Contract um",
+    "summary": "AstraLabs zieht ASTRA auf einen neuen Contract um: Snapshot am 7. November, und die neuen Token müssen bis zum 10. Dezember abgeholt werden. Verspätete Anfragen werden nicht angenommen.",
+    "deadlineNote": "Am 7. November zieht die Liquidität auf den neuen Contract um, und ein Snapshot wird erstellt. Der neue Contract geht zwischen dem 7. und 10. November live, und der Handel startet am 10. November wieder. Die Frist ist der 10. Dezember; laut AstraLabs werden verspätete Anfragen weder angenommen noch erstattet.",
+    "who": "Alle, die zum Zeitpunkt des Snapshots alte ASTRA halten.",
+    "todo": "Behalte deine alten Token über den Snapshot hinweg und hol dann bis zum 10. Dezember die neuen ab, so wie AstraLabs es auf seinem X-Account ankündigt.",
+    "caution": "Tauschverhältnis, Adresse des neuen Contracts und das Vorgehen zum Abholen waren noch nicht angekündigt. Laut AstraLabs werden Links nur auf seinem X-Account gepostet – Vorsicht vor gefälschten Seiten.",
+    "official": [
+      "AstraLabs auf X: Ankündigung vom 15. Oktober"
+    ],
+    "milestones": [
+      "Snapshot: Halte die alten Token vor diesem Zeitpunkt"
+    ]
+  },
+  "abstract-chain-shutdown": {
+    "name": "Abstract-Chain wird abgeschaltet",
+    "summary": "Die Abstract-Chain wird am 15. Dezember abgeschaltet, und Geld, das bis dahin nicht per Bridge abgezogen wurde, ist dann nicht mehr zugänglich. Steig zuerst aus den Apps aus und übertrag dann per Bridge.",
+    "deadlineNote": "Abstract wird am 15. Dezember abgeschaltet. In eigenen Worten: Geld, das bis dahin nicht per Bridge abgezogen wurde, „wird nicht mehr zugänglich sein“.",
+    "who": "Alle mit Assets auf Abstract, auch in Apps auf der Chain.",
+    "todo": "Heb zuerst aus Apps auf der Chain ab und übertrag dann per Migration Hub (`migrate.abs.xyz`) oder nativer Bridge (`native-bridge.abs.xyz`, etwa 3 Stunden). Die Migrationsseite nennt außerdem Stargate, Relay und Jumper.",
+    "caution": "Abstract warnt vor gefälschten Migrationsseiten und Direktnachrichten von Betrügern, die sich als Abstract ausgeben.",
+    "official": [
+      "Migrationsseite von Abstract",
+      "Abstract auf X: „Abstract is Winding Down“"
+    ]
+  },
+  "stargate-v1-pools": {
+    "name": "Stargate-V1-Pools werden eingestellt",
+    "summary": "Die Stargate-V1-Pools hören am 15. Dezember auf zu funktionieren. Liquiditätsanbieter in V1 müssen vorher abheben; Auszahlungen sind derzeit gebührenfrei.",
+    "deadlineNote": "Angekündigt am 4. September: Nachdem das V1-Messaging etwa zwei Wochen pausiert war, wurden gebührenfreie Auszahlungen geöffnet. Am 15. Dezember geht der LayerZero-V1-Relayer offline, und die V1-Pools funktionieren endgültig nicht mehr. Stargate V2 und Hydra sind nicht betroffen. Auf Metis endeten die Pools schon früher, am 23. Oktober; siehe den Metis-Eintrag auf dieser Seite.",
+    "who": "Liquiditätsanbieter in Stargate-V1-Pools, außer auf Metis, wo die Frist der 23. Oktober war.",
+    "todo": "Zieh deine Liquidität vor dem 15. Dezember aus den V1-Pools ab.",
+    "official": [
+      "Stargate auf X: Ankündigung vom 4. September",
+      "Metis-Blog: V1-Pools schließen am 15. Dezember auf allen Chains, auf Metis früher"
+    ]
+  },
+  "stargate-stg-zro": {
+    "name": "Stargate: letzter Tag, um STG gegen ZRO zu tauschen",
+    "summary": "Der Tausch von STG gegen ZRO von LayerZero endet am 15. Dezember; danach gibt es keine Unterstützung mehr.",
+    "deadlineNote": "Der Tausch wurde am 26. August 2025 geöffnet und schließt am 15. Dezember; laut LayerZero werden Tausche danach nicht mehr unterstützt.",
+    "who": "Alle, die noch STG halten. Börsen kümmern sich um die Guthaben, die bei ihnen liegen, meist mit einer früheren Frist.",
+    "todo": "Tausch dein STG vor dem 15. Dezember gegen ZRO. Der offizielle Umtausch-Leitfaden von Stargate nennt den festen Kurs: 1 STG = 0.08634 ZRO.",
+    "caution": "Laut der offiziellen Umtauschseite von Stargate muss dein STG zum Umtauschen auf Ethereum liegen; ist es in einem anderen Netzwerk, übertrag es zuerst per Bridge auf Ethereum. Nutze nur den Einstieg, der von offiziellen Seiten verlinkt ist.",
+    "official": [
+      "LayerZero-Blog: Ökosystem-Update für September",
+      "Stargate auf X: Tausch geöffnet (August 2025)",
+      "Offizielle Umtauschseite von Stargate"
+    ]
+  },
+  "fluxtra-frontend": {
+    "name": "Website von Fluxtra schließt, Vaults wechseln zu OMies",
+    "summary": "Die Website von Fluxtra schließt am 31. Dezember. Heb jetzt aus dem QuickSwap-LP-Vault ab; die anderen beiden Vaults erscheinen schon auf OMies.",
+    "deadlineNote": "Der 31. Dezember ist der letzte Tag zum Abheben über die Oberfläche von Fluxtra; danach schließt die Website komplett. Der QuickSwap-LP-Vault wurde eingestellt, und Fluxtra rät, jetzt daraus abzuheben.",
+    "who": "Alle, die Vaults von Fluxtra auf der MANTRA-Chain genutzt haben.",
+    "todo": "Einlagen in den Vaults wmantraUSD und stMANTRA erscheinen schon auf `onchainomies.com`, die kannst du also liegen lassen. Heb jetzt aus dem QuickSwap-LP-Vault ab.",
+    "official": [
+      "Fluxtra auf X: Ankündigung vom 30. Oktober"
+    ]
+  },
+  "neon-evm-shutdown": {
+    "name": "Neon EVM wird abgeschaltet",
+    "summary": "Neon EVM (eine EVM, die auf Solana läuft) wird abgeschaltet. Bring deine Assets vor dem 31. Dezember mit NeonPass auf Solana.",
+    "deadlineNote": "Entwicklung und Support wurden am 1. Oktober eingestellt. Der 31. Dezember ist die Frist zum Migrieren und Abheben.",
+    "who": "Alle mit Assets auf Neon EVM.",
+    "todo": "Bring deine Assets vor dem 31. Dezember mit NeonPass von Neon EVM auf Solana. Die offizielle Doku erklärt die Schritte.",
+    "caution": "Laut Neon wird der Token NEON auf Solana nicht entfernt. Ob Auszahlungen nach dem 31. Dezember noch funktionieren, hat Neon nicht gesagt.",
+    "official": [
+      "Hinweis auf der Website von Neon EVM",
+      "Neon-EVM-Doku: Abheben mit NeonPass"
+    ]
+  },
+  "quickswap-soneium-frontend": {
+    "name": "QuickSwap: Oberfläche auf Soneium geht offline",
+    "summary": "Die Oberfläche von QuickSwap auf Soneium geht am 31. Dezember offline. Zieh deine Liquidität vorher ab; danach müsstest du die Contracts über den Block-Explorer aufrufen.",
+    "deadlineNote": "Die Governance-Abstimmung wurde am 21. Oktober angenommen (99.22% dafür). Die Oberfläche für das Deployment auf Soneium geht am 31. Dezember offline. Danach lässt sich Geld laut QuickSwap abheben, indem man die Contracts direkt über den offiziellen Block-Explorer von Soneium aufruft.",
+    "who": "Alle mit Liquidität oder Assets in QuickSwap auf Soneium.",
+    "todo": "Zieh vor dem 31. Dezember deine Liquidität und Assets auf Soneium über die Oberfläche von QuickSwap ab. Danach rufst du die Contracts direkt über `soneium.blockscout.com` auf.",
+    "official": [
+      "QuickSwap auf X: Ankündigung vom 22. Oktober",
+      "Governance-Abstimmung von QuickSwap (Snapshot)"
+    ]
+  },
+  "relay-vaults": {
+    "name": "Relay Vaults werden eingestellt",
+    "summary": "Die Liquiditäts-Vaults von Relay werden eingestellt. Die Auszahlungsseite schließt am 31. Dezember, heb also vorher auf der offiziellen Seite ab.",
+    "deadlineNote": "Neue Einzahlungen sind gestoppt. Die Auszahlungsseite schließt am 31. Dezember; danach bleiben nur direkte Contract-Aufrufe.",
+    "who": "Alle mit Einlagen in Relay Vaults (WETH-Vaults auf Ethereum und Arbitrum).",
+    "todo": "Heb auf `relay.link/vaults` ab. Nach dem 31. Dezember folgst du der offiziellen Doku, um `redeem(shares, receiver, owner)` direkt auf dem ERC4626-Contract aufzurufen, oder nutzt das native Gateway, um natives ETH zu bekommen.",
+    "caution": "Wie viel du auf einmal abheben kannst, hängt von der verfügbaren Liquidität des Vaults ab. Die Contracts nehmen weiterhin Einzahlungen an; was versehentlich eingezahlt wird, kommt auf demselben Weg wieder heraus.",
+    "official": [
+      "Relay-Doku: Abheben aus den Vaults",
+      "Relay auf X: Ankündigung vom 9. Oktober"
+    ]
+  },
+  "silicon-network-shutdown": {
+    "name": "Silicon Network wird abgeschaltet (mit der Web3-Wallet von Korbit)",
+    "summary": "Die Silicon-Chain wird am 31. Dezember abgeschaltet, und zurückgelassenes Geld lässt sich danach nicht mehr zurückholen. Per Bridge von Ethereum übertragene Assets müssen über die offizielle Bridge zurück.",
+    "deadlineNote": "Silicon wird am 31. Dezember um 12:00 Uhr UTC+9 (03:00 UTC) abgeschaltet. Dann schließt der Block-Explorer, und das Netzwerk endet. In eigenen Worten: Geld, das bis dahin nicht abgehoben wurde, „kann nicht zurückgeholt werden“.",
+    "who": "Alle mit Assets auf Silicon, auch Nutzer der Web3-Wallet von Korbit.",
+    "todo": "Per Bridge von Ethereum übertragene Assets: Heb sie vor der Frist über die offizielle Bridge auf Ethereum ab und behalte etwas ETH für Gebühren. Nutzer der Web3-Wallet von Korbit: Folge dem Verfahren von Korbit. Der native Token von Silicon lässt sich nicht direkt per Bridge übertragen, tausch ihn also zuerst auf der Chain.",
+    "official": [
+      "Silicon-Doku: Mitteilung zur Einstellung des Dienstes",
+      "Silicon-Doku: Leitfaden zum Abheben",
+      "Silicon auf X: Web3-Wallet von Korbit endet am 31. Dezember"
+    ]
   }
 }
