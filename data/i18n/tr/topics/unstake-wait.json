@@ -1,0 +1,94 @@
+{
+  "title": "Stake'ten çıkarmak ne kadar sürer?",
+  "summary": "Protokole göre değişir ve çoğunda iki adım vardır: talep, bekleme, ardından geri gelip çekme. Resmi belgelere göre: EigenLayer'da sabit 14 gün; Lido'da normalde 1–5 gün, kuyruk uzunsa daha fazla; Ethena'da sUSDe bekleme süresi (cooldown) şu an 1–7 gün ve değişebilir. ether.fi ve Rocket Pool sabit bir gün sayısı vermiyor; ETH'yi hemen alıp alamayacağınız protokolün elinde ne kadar ETH olduğuna bağlı.",
+  "sections": [
+    {
+      "h": "Neden her zaman hemen geri alamazsınız",
+      "p": [
+        "Stake edilen para protokolün sözleşmelerinde durur. Onu geri vermek için protokolün elinde hazır coin olması ya da kurallarının belirlediği güvenlik beklemesini doldurması gerekir. Bu yüzden çoğu protokolde iki adım vardır: talep edersiniz, beklersiniz, sonra resmi siteye dönüp çekersiniz; para ancak o zaman cüzdanınıza geri gelir.",
+        "Aşağıda her protokolün resmi belgelerinin söyledikleri var (2026-11-05 tarihinde kontrol edildi). Rakamlar değişir; işlem yaptığınız anda resmi sitenin gösterdiğine göre hareket edin."
+      ],
+      "list": []
+    },
+    {
+      "h": "Her protokolde ne kadar sürer",
+      "p": [
+        "Bazı beklemeler sabit bir gün sayısıdır, bazıları bir kuyruğa bağlıdır, bazıları da protokolün elindeki hazır paraya."
+      ],
+      "list": [
+        "EigenLayer: Unstake düğmesine bastıktan sonra para ana ağda sabit 14 günlük çekim kuyruğuna girer (sözleşmede 100,800 blok). Sonra “Available to Withdraw” altındaki Withdraw düğmesine basın ve parayı geri almak için bir kez daha imzalayın. Yerel restaking (EigenPods) ayrıca önce doğrulayıcıdan çıkmayı gerektirir: bir çıkış kuyruğu (belgelere göre genelde bir günden az, ama aşırı yoğunlukta sınırsız), yaklaşık 27 saatlik sabit bir gecikme ve 0–9.1 günlük bir süpürme (sweep); yani toplamı daha uzundur.",
+        "Lido (stETH, wstETH): Request sekmesinde bir talep gönderin; normal koşullarda 1–5 gün sürer. Kuyruğun büyüklüğü, Ethereum'un doğrulayıcı çıkış kuyruğu ve Bunker modu bunu uzatabilir. Gönderdikten sonra Claim sekmesi tahmini süreyi gösterir; hazır olunca ETH'yi almak için Claim düğmesine basın.",
+        "Ethena (sUSDe): stake'ten çıkarmanın bir bekleme süresi (cooldown) var. Belgeler bunu “dinamik (şu an 1 ile 7 gün arasında)” olarak tanımlıyor; süreyi rezerv koşullarına göre yönetişim (governance) belirliyor ve sözleşme en fazla 90 güne izin veriyor. Bekleme süresince USDe'niz ayrı bir sözleşmede durur ve süre bitince onu çekersiniz. Talep sırasında gösterilen süreye göre hareket edin.",
+        "ether.fi (eETH, weETH): iki yol var. Anında bozdurma, protokolün tamponunda yeterli likidite olduğunda küçük bir çıkış ücreti düşülerek hemen öder. Kuyruklu çekimde ücret yoktur: bir çekim talebi NFT'si alırsınız ve işlendikten sonra ETH'yi talep edersiniz. Belgeler sabit bir gün sayısı vermiyor; süre protokolün likiditesine, Ethereum doğrulayıcı çekimlerine ve ağ koşullarına bağlı.",
+        "Rocket Pool (rETH): kuyruk yok. Resmi sitede ETH'ye geri takas anında olur, ama yalnızca yatırma havuzunda yeterli ETH varsa. Yoksa site “Insufficient liquidity” gösterir ve bunun yerine üçüncü taraf CoW Swap üzerinden yönlendirir; ya da merkeziyetsiz bir borsada takas edebilirsiniz, muhtemelen küçük bir primle."
+      ]
+    },
+    {
+      "h": "Beklemek yerine satabilir miyim?",
+      "p": [
+        "Likit staking tokenlarının çoğu bir borsada takas edilebilir, ama fiyat her zaman bozdurma değeri olmaz ve her an bir alıcı bulunacağının garantisi yoktur."
+      ],
+      "list": [
+        "Lido, beklemek istemezseniz anında çıkış için stETH ya da wstETH'yi merkeziyetsiz borsalarda veya toplayıcılarda takas edebileceğinizi söylüyor.",
+        "Ethena, dış piyasalar varsa sUSDe'yi bekleme süresinden önce satabileceğinizi söylüyor; ancak böyle piyasalar oluşturmayı planlamadığını ve bir piyasayı garanti edemeyeceğini belirtiyor.",
+        "ether.fi, likit bir ikincil piyasanın weETH'nin her zaman bozdurma değerinden işlem göreceğini garanti etmediğini söylüyor.",
+        "Rocket Pool, bir borsada takas etmenin muhtemelen küçük bir primle olacağını söylüyor."
+      ]
+    },
+    {
+      "h": "Beklerken",
+      "p": [
+        "Beklerken para hâlâ protokolün sözleşmelerindedir. Şunları aklınızda tutun."
+      ],
+      "list": [
+        "Talep ettiğinizden az alabilirsiniz: Lido, slashing ve cezaların talep edilebilir ETH'yi talep edilen miktardan düşük yapabileceğini; EigenLayer ise çekim kuyruğundaki payların hâlâ slashing'e uğrayabileceğini söylüyor.",
+        "Çekim NFT'si paranın hakkıdır: Lido, NFT'nin devredilebildiğini ve onu elinde tutan kişinin parayı talep edebileceğini, sizinse bu imkânı kaybedeceğinizi söylüyor. Onu asla herhangi bir “destek” görevlisine göndermeyin.",
+        "Yalnızca resmi siteleri kullanın: Lido için stake.lido.fi, EigenLayer için app.eigenlayer.xyz. Arama sonuçlarından ya da özel mesajlardan gelen bağlantıları kullanmayın.",
+        "Site açılmıyorsa önce projenin resmi X hesabına ya da Discord sunucusuna bakın. EigenLayer belgeleri, uygulamada sorun olduğunda bir çekimi doğrudan Etherscan üzerinden Delegation sözleşmesiyle tamamlamayı anlatıyor. Bu yalnızca sözleşmelerle rahat çalışabilenler içindir; gas ücreti tutar ve 14 gün dolmadan başarısız olur. Size göre değilse birinin “sizin yerinize yapmasına” izin vermek yerine resmi sitenin düzelmesini bekleyin.",
+        "DeFiExit cüzdanınızdan yalnızca adresini paylaşmasını ister; sizden asla bir şey imzalamanızı, onaylamanızı veya göndermenizi istemez ve size asla ilk mesajı biz atmayız."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Stake ettim ve şimdi site çalışmıyor (ya da trafiğin çok yüksek olduğunu söylüyor). Param hâlâ orada mı?",
+      "a": "Stake edilen para web sitesinde değil, zincirdeki sözleşmelerde kayıtlıdır; site yalnızca ona ulaşmanın bir yoludur. Duyurular için projenin resmi X hesabına ya da Discord sunucusuna bakın ve daha sonra yeniden deneyin. EigenLayer belgeleri, uygulama çalışmadığında bir çekimin Etherscan üzerinden nasıl tamamlanacağını anlatıyor, ama bu yalnızca sözleşmelerle rahat çalışabilenler için. “Yedek site” aramayın ve size özel mesaj atan kimseden yardım kabul etmeyin."
+    },
+    {
+      "q": "EigenLayer'da Unstake düğmesine bastım. Neden 14 gün?",
+      "a": "Bu, EigenLayer sözleşmelerinde belirlenmiş bir güvenlik gecikmesidir: ana ağda 100,800 blok, yaklaşık 14 gün. EigenLayer, bu gecikmenin bir güvenlik açığı ya da olağan dışı bir hareket bulunduğunda protokolü koruduğunu söylüyor. 14 gün dolduğunda para kendiliğinden geri gelmez: uygulamaya dönün, Withdraw düğmesine basın ve yeniden imzalayın."
+    },
+    {
+      "q": "Lido birkaç gün süreceğini söylüyor. Bu normal mi?",
+      "a": "Evet. Lido normal koşullarda 1–5 gün diyor; kuyruk uzunsa, Ethereum'un doğrulayıcı çıkış kuyruğu tıkalıysa ya da protokol Bunker modundaysa daha uzun. Gönderdikten sonra Claim sekmesi kalan süreyi gösterir; hazır olduğunda Claim düğmesine yine sizin basmanız gerekir."
+    },
+    {
+      "q": "Bekleme süresi bitti. Para neden cüzdanımda değil?",
+      "a": "Çoğu protokolde ikinci adımı kendiniz yapmanız gerekir: EigenLayer'da Withdraw, Lido'da Claim, Ethena'da bekleme süresinden sonra çekim ve ether.fi üzerinde işlenmiş kuyruklu çekimi talep etmek. Resmi siteye dönün, aynı cüzdanı bağlayın, talebi bulun, onaylayın ve imzalayın. Biraz gas ücreti tutar."
+    },
+    {
+      "q": "Biri bekleme süresini ücret karşılığında atlatabileceğini söylüyor.",
+      "a": "Bu bir dolandırıcılık. Bekleme, protokolün sözleşmelerindeki bir kuraldır (örneğin EigenLayer'ın 14 günü) ve kimse ücret karşılığında onu atlatamaz. Paraya hemen ihtiyacınız varsa, varsa protokolün kendi anında çıkış yolunu kullanın ya da tokenı bir borsada piyasa fiyatından kendiniz satın."
+    }
+  ],
+  "sources": [
+    "EigenLayer sözleşme belgeleri: DelegationManager (ana ağda 100,800 blok = 14 gün)",
+    "EigenLayer belgeleri (GitHub kaynağı): Unstake ve Withdraw",
+    "EigenLayer belgeleri (GitHub kaynağı): Test ağı ve ana ağ (ana ağda 14 günlük emanet)",
+    "EigenLayer belgeleri (GitHub kaynağı): Bir güvenlik önlemi olarak çekim gecikmesi",
+    "EigenLayer belgeleri (GitHub kaynağı): Yerel ETH restaking çekim gecikmeleri",
+    "EigenLayer belgeleri (GitHub kaynağı): Uygulamada sorun olduğunda sözleşmeyle çekim",
+    "Lido Yardım Merkezi: Ethereum çekimi ne kadar sürer? (1–5 gün, etkenler)",
+    "Lido Yardım Merkezi: Ethereum çekimleri SSS (iki adım, talep edilenden az olabilir)",
+    "Lido Yardım Merkezi: stETH'mi nasıl stake'ten çıkarırım? (beklemek istemezseniz takas)",
+    "Lido Yardım Merkezi: Lido çekim NFT'leri nasıl çalışır? (elinde tutan talep edebilir)",
+    "Ethena belgeleri: USDe nasıl stake edilir (bekleme süresi şu an 1–7 gün)",
+    "Ethena belgeleri: USDe staking (bekleme akışı; bekleme süresinden önce satış)",
+    "Ethena belgeleri: Staking temel fonksiyonları (bekleme süresi en fazla 90 gün)",
+    "ether.fi belgeleri: weETH / eETH (bozdurma süresi likiditeye ve başka etkenlere bağlı)",
+    "ether.fi belgeleri: Entegrasyon rehberi (anında bozdurma ve kuyruklu çekim)",
+    "ether.fi belgeleri: Ethereum staking (ikincil piyasa fiyatı garanti değil)",
+    "Rocket Pool belgeleri: Likit staking'e genel bakış (havuz yetersizse borsa)",
+    "Rocket Pool belgeleri: Rocket Pool ile staking (anında; likidite bittiğinde)"
+  ]
+}
