@@ -243,5 +243,133 @@
       "DUSD 에어드롭 소멸",
       "모든 포지션 강제 청산, 볼트 정산"
     ]
+  },
+  "parasail-pfil": {
+    "name": "Parasail: pFIL 풀 출금 전용, 웹사이트는 2027년 1월 말까지 운영",
+    "summary": "해킹 이후 Parasail의 pFIL 풀은 출금만 가능해요. 출금이 다시 열리면 pFIL을 FIL로 1:1 교환하세요. 웹사이트는 2027년 1월 31일까지 운영돼요.",
+    "deadlineNote": "풀은 일시 중지된 상태예요. 11월 4일 Parasail은 ‘이번 주 후반에’ 출금을 다시 열겠다고 했어요. 웹사이트는 2027년 1월 31일까지 운영되고, 그 뒤에는 컨트랙트를 직접 호출해야만 해요. Parasail은 사이트가 내려가기 전에 방법을 공개하겠다고 해요.",
+    "who": "pFIL을 가진 사람.",
+    "todo": "Parasail이 출금 재개를 발표하면, 공식 링크를 따라 pFIL을 FIL로 1:1 교환하세요.",
+    "caution": "이 풀은 해킹을 당했어요. Parasail에 따르면 344,056 FIL을 도난당했고, 부족분은 Parasail과 몇몇 대형 보유자가 메웠어요. 공식 채널의 링크만 믿으세요.",
+    "official": [
+      "Parasail X 게시물: 11월 4일 pFIL 업데이트"
+    ]
+  },
+  "derive-chain-rewards": {
+    "name": "Derive Chain 종료: Derive V3로 이전, 보상 마감 2027년 2월 1일",
+    "summary": "Derive Chain은 Derive V3로 옮겨 갔고, 자금은 Ethereum에 보관돼요. 아직 받지 않은 거래·스테이킹 보상은 2027년 2월 1일 전에 Optimism에서 받아야 해요.",
+    "deadlineNote": "스냅샷은 10월 6일 18:00 UTC, V3는 10월 8일에 가동됐어요. 아직 받지 않은 거래·스테이킹 보상은 2027년 2월 1일까지 Optimism의 컨트랙트에서 받을 수 있고, 그 뒤에는 재단이 회수해요.",
+    "who": "Derive Chain(옛 Lyra)에서 거래하거나 스테이킹한 사람.",
+    "todo": "잔액은 자동으로 V3로 옮겨졌어요. `app.derive.xyz`에서 확인하세요. 조건부 주문이나 TWAP 주문은 다시 만들고, 받지 않은 보상은 2027년 2월 1일 전에 Optimism에서 받으세요.",
+    "caution": "Derive Chain의 옛 DRV 공급량은 무효가 되고(제안에서는 ‘orphaned’), 스냅샷을 기준으로 Ethereum에서 보유자에게 다시 발행돼요.",
+    "official": [
+      "Derive 포럼: Derive V3 제안(DIP)",
+      "Derive X 게시물: Derive V3 가동"
+    ]
+  },
+  "quickswap-old-quick": {
+    "name": "QuickSwap: 옛 QUICK → 새 QUICK, 교환 비율이 매달 낮아져요",
+    "summary": "QuickSwap의 옛 QUICK → 새 QUICK 교환 비율은 매달 낮아져요. 12월 5일까지는 1:750, 12월 5일 이후는 1:500이에요. 빨리 바꿀수록 더 많이 받아요.",
+    "deadlineNote": "QuickSwap에 따르면 1:750 비율은 2026년 12월 5일까지 유지되고, 12월 5일 이후 1:500으로 내려가요. 그다음 단계는 서드파티 보도에 따르면 2027년 1월 5일 이후 1:250이고, 2027년 2월 5일에 교환이 완전히 끝나요.",
+    "who": "아직 옛 QUICK을 가진 사람.",
+    "todo": "비율 단계가 끝나기 전에 교환하세요. 일찍 바꿀수록 새 QUICK을 더 많이 받아요.",
+    "caution": "전체 일정은 서드파티 보도에서 나온 것이고, 최종 기준은 QuickSwap의 자체 게시물이에요. QuickSwap은 교환되지 않은 옛 QUICK을 어떻게 할지 투표를 진행 중이에요(11월 7일 12:00 UTC 종료).",
+    "official": [
+      "QuickSwap X 게시물: 11월 4일 알림",
+      "QuickSwap X 게시물: 교환되지 않은 옛 QUICK에 관한 투표"
+    ],
+    "milestones": [
+      "1:750 비율의 마지막 날. 이후 1:500으로 내려가요",
+      "1:500 비율의 마지막 날. 이후 1:250으로 내려가요"
+    ]
+  },
+  "kelp-rseth-sunset": {
+    "name": "Kelp: 지원 종료된 네트워크의 옛 rsETH, 2027년 6월까지 수동 처리",
+    "summary": "Kelp가 지원을 끝낸 네트워크의 옛 rsETH는 더 이상 바로 쓸 수 없지만, 2027년 6월 15일까지 Kelp 공식 가이드에 따라 신청하면 Ethereum에서 돌려받을 수 있어요.",
+    "deadlineNote": "옛 rsETH는 6월 15일에 22개 네트워크에서 지원이 끝났어요. 10월 5일부터는 Base, Mantle, Ink의 옛 rsETH도 지원이 끝났어요(Chainlink CCIP 버전으로 대체). 수동 처리는 2027년 6월 15일 23:59 UTC에 마감돼요.",
+    "who": "Kelp가 지원을 끝낸 네트워크에 아직 옛 rsETH를 가진 사람. Arbitrum은 영향을 받지 않아요.",
+    "todo": "Kelp 공식 블로그의 가이드만 따르세요. 먼저 옛 rsETH 컨트랙트를 가지고 있는지 확인한 뒤, 가이드대로 제출하세요(원래 체인의 소각 주소로 토큰을 보내고, 100 USDC 수수료를 내고, 거래 내역을 이메일로 보내라고 해요). Kelp는 분기마다 Ethereum에서 rsETH를 돌려보내요.",
+    "caution": "이 절차(소각 주소로 토큰 보내기, 수수료 내기, 이메일 보내기)는 흔한 사기와 매우 비슷해 보여요. Kelp 공식 블로그의 원문만 따르고, DM과 다른 웹사이트는 무시하세요. Base, Mantle, Ink, Linea, Optimism, Zircuit에서 wrsETH를 언랩하면 새 버전을 받으니, 이 절차가 필요 없어요.",
+    "official": [
+      "Kelp 블로그: 지원 종료 네트워크의 rsETH 가이드",
+      "Kelp X 게시물: CCIP 이전 완료(10월 8일)"
+    ]
+  },
+  "blast-l2-shutdown": {
+    "name": "Blast L2 종료, 공식 출금 사이트는 2027년 11월까지 운영",
+    "summary": "Blast L2가 종료됐어요. 2027년 11월 4일까지 blast.io에서 지갑을 연결해 내 주소를 조회하고, Ethereum에서 ETH, WETH, USDB를 출금하세요.",
+    "deadlineNote": "일반 출금 화면은 10월 26일에 닫혔어요(지남). 11월 4일 Blast는 L2가 종료됐다고 발표했어요. `blast.io`의 출금 사이트는 12개월 동안 열려 있고, 마지막 지원일은 2027년 11월 4일이에요.",
+    "who": "Blast에 ETH, WETH, USDB가 있거나 끝나지 않은 출금이 있는 사람(Blast Mobile 사용자, Safe 등 컨트랙트 지갑 사용자 포함).",
+    "todo": "`blast.io`에서 지갑을 연결해 내 주소를 조회하고, Ethereum에서 ETH, WETH, USDB를 출금하세요. 끝나지 않은 출금도 자동으로 포함돼요. Blast Mobile 사용자: 시드 문구를 MetaMask나 Rabby로 가져온 뒤 연결하세요. Safe 등 컨트랙트 지갑은 입구가 따로 있어요.",
+    "caution": "Blast는 @blast만 써요(@Blast_L2는 이제 자리만 지키는 계정이에요). 출금 사이트에는 ETH와 USD 자산만 나와 있고, BLAST 토큰, 다른 토큰, L2의 DeFi 포지션을 출금할 수 있는지는 Blast가 밝히지 않았어요. 시드 문구는 항상 지갑 앱 안에서 직접 입력하고, 웹사이트에는 절대 입력하지 마세요.",
+    "official": [
+      "Blast 출금 페이지",
+      "Blast 문서: Ethereum으로 출금",
+      "Blast X 게시물: 종료 발표(10월 2일)",
+      "Blast X 게시물: L2 종료(11월 4일)"
+    ]
+  },
+  "stader-maticx-fixed-rate": {
+    "name": "Stader: MaticX 비율 고정, 온체인 상환은 2029년 8월까지",
+    "summary": "10월 29일부터 Stader의 MaticX는 MaticX 하나당 1.2002 POL의 고정 비율로 상환돼요. 상환은 여전히 Ethereum의 컨트랙트로 하며, 2029년 8월 3일이 마지막 날이에요.",
+    "deadlineNote": "6월에 예치가 닫혔고, 그 뒤 MaticX는 상환만 가능해요. MaticX 앱은 8월 3일에 닫혔고, 상환은 Etherscan으로 계속돼요. 10월 29일부터 비율은 MaticX 하나당 1.2002 POL로 고정돼요. 2029년 8월 3일이 컨트랙트로 상환할 수 있는 마지막 날이에요.",
+    "who": "Ethereum이나 Polygon PoS에 아직 MaticX를 가진 사람.",
+    "todo": "Stader 공식 블로그의 단계를 따르세요: Etherscan에서 Ethereum의 MaticX 컨트랙트를 열고, 출금을 요청한 뒤(MaticX는 소각돼요), POL의 언본딩이 끝나기를 기다렸다가 POL을 지갑으로 출금하세요. 공지에 따르면 언본딩 기간은 체크포인트 80개로, 공지 당시 약 22시간으로 추정됐어요. Polygon PoS의 MaticX는 먼저 Polygon 브릿지로 Ethereum에 옮겨야 해요. 이미 요청한 출금은 영향이 없으니 마무리만 하면 돼요.",
+    "caution": "대출 시장, 유동성 풀, 볼트에 있는 MaticX는 그대로 있어요. Stader는 고정 비율이 내 포지션에 어떤 영향을 주는지 그 프로토콜에 물어보라고 해요. Stader 공식 블로그 게시물에 나온 컨트랙트 주소만 쓰세요.",
+    "official": [
+      "Stader 블로그: NearX, BNBx, MaticX의 상환 방식 변경",
+      "Stader X 게시물: 10월 28일 게시물"
+    ]
+  },
+  "balancer-winddown": {
+    "name": "Balancer 운영 종료: 풀은 출금 전용으로 전환",
+    "summary": "Balancer가 운영을 종료해요. 풀은 출금만 가능하고, 남은 v3 풀도 11월 30일에 뒤따라요. 출금은 계속 열려 있다지만, 유동성 공급자와 스테이커는 직접 출금해야 해요.",
+    "deadlineNote": "10월 30일부터 일시 중지할 수 있는 풀은 출금 전용이 됐고, 버그 바운티는 끝났어요. 파트너가 유지를 요청한 v3 풀은 11월 30일까지 열려 있고, 그날 v3 Vault가 일시 중지되며 남은 v3 풀도 출금 전용으로 바뀌어요. Balancer는 출금이 종료일 없이 계속 열려 있다고 해요. 그 뒤에는 veBAL 잠금이 끝나고 재무 배분이 두 차례(첫 번째는 2027년 5월 말) 끝날 때까지 간소화된 출금 페이지가 유지돼요. 일시 중지할 수 없는 풀은 프로토콜 수수료를 0으로 한 채 계속 작동해요.",
+    "who": "Balancer 풀의 유동성 공급자, 게이지에 스테이킹한 사람, v3 버퍼 지분이나 옛 v2 채굴 보상이 있는 사람. Balancer의 10월 23일 알림에 따르면 외부 사용자의 옛 포지션이 $500,000 넘게 발견됐어요.",
+    "todo": "`legacy.balancer.fi`에서 유동성을 빼고 게이지에서 스테이킹을 해제하세요. DeBank 같은 포트폴리오 추적 서비스에는 나오지 않는 v3 버퍼 지분과 옛 v2 채굴 보상도 확인하세요.",
+    "caution": "Balancer는 컨트랙트가 비수탁형이라, 출금이 팀에 달려 있지 않다고 해요.",
+    "official": [
+      "Balancer 포럼: BIP-928 운영 종료 제안",
+      "Balancer 포럼: 예전 사용자에게 보내는 알림",
+      "Balancer X 게시물: 10월 30일 게시물"
+    ],
+    "milestones": [
+      "남은 v3 풀이 출금 전용으로 전환(v3 Vault 일시 중지). 출금은 계속 열려 있어요"
+    ]
+  },
+  "compound-scroll-usdc": {
+    "name": "Compound III: Scroll의 USDC 마켓 정리",
+    "summary": "Compound가 지원을 끝낸 Scroll의 USDC 마켓을 정리할 계획이에요. 통과되면 남은 대출은 청산될 수 있으니, 대출자는 서둘러 갚고 담보를 되찾으세요.",
+    "deadlineNote": "이 마켓은 올해 초에 지원이 끝났어요. 11월 4일의 포럼 제안에 따르면 온체인 제안은 아직 제출되지 않았고, 날짜도 아직 없어요. 통과되면 남은 대출은 모두 청산될 수 있어요.",
+    "who": "Scroll의 Compound III USDC 마켓에서 USDC를 빌리거나 공급한 사람. 제안에 따르면 대출자 계정은 1,959개이고 모두 소액이에요.",
+    "todo": "대출자: 서둘러 USDC를 갚고 WETH나 wstETH 담보를 되찾으세요. 공급자: USDC를 출금하세요.",
+    "caution": "제안은 Scroll이 퍼블릭 L2 모델에서 벗어난다고 발표했다는 점을 들며, 사용자에게 모든 DeFi 포지션을 정리하라고 권해요(이 페이지의 Scroll 항목 참고).",
+    "official": [
+      "Compound 포럼: Scroll USDC 마켓 정리"
+    ]
+  },
+  "parasail-stpeaq": {
+    "name": "Parasail: stPEAQ 스테이킹 풀 종료, 출금 전용으로 전환",
+    "summary": "Parasail의 stPEAQ 스테이킹 풀이 해킹 이후 종료됐어요. Parasail은 peaq 재단이 손실을 메워 모든 사용자가 전액 출금할 수 있다고 해요. 공식 출금일을 기다리세요.",
+    "deadlineNote": "Parasail은 출금 전용 모드를 여는 날짜를 아직 정하지 않았어요.",
+    "who": "stPEAQ를 가진 사람.",
+    "todo": "Parasail이 출금 전용 모드를 여는 날짜와 출금 링크를 발표하기를 기다렸다가, PEAQ를 출금하세요.",
+    "caution": "이 풀은 해킹을 당했어요. Parasail에 따르면 1,096,424.06 PEAQ를 도난당했어요. 공식 채널의 링크만 믿으세요.",
+    "official": [
+      "Parasail X 게시물: 11월 4일 stPEAQ 업데이트"
+    ]
+  },
+  "scroll-transition": {
+    "name": "Scroll, 허가형 네트워크로 전환하고 SCR은 Ethereum 메인넷으로(제안)",
+    "summary": "Scroll이 허가형 네트워크로 바꾸자고 제안했어요. 전환 전에 DeFi 포지션을 정리하거나 처리해야 하니, 먼저 공식 페이지에서 보유 자산을 확인하세요.",
+    "deadlineNote": "포럼 제안은 11월 3일에 올라왔고, 아직 DAO 투표가 필요해요. Scroll은 네트워크 업그레이드를 ‘연말’에 계획하고 있으며, 정확한 날짜는 아직 없다고 해요.",
+    "who": "Scroll에 자산이 있는 사람, 특히 대출이나 유동성 같은 DeFi 포지션이 있는 사람, 그리고 SCR 보유자.",
+    "todo": "`positions.scroll.io`에서 보유 자산을 확인하고, 전환 전에 DeFi 포지션을 정리하거나 처리하세요. 공식 브릿지는 계속 열려 있고, Scroll은 업그레이드 뒤에도 작동한다고 해요.",
+    "caution": "제안은 아직 투표 전이에요. Scroll은 SCR의 총공급량과 토크노믹스는 바뀌지 않는다고 해요. Aave와 Compound는 이미 Scroll 마켓을 정리하고 있어요.",
+    "official": [
+      "Scroll 포럼: 전환 제안",
+      "Scroll X 게시물: 보유 자산 페이지(11월 2일)",
+      "Scroll X 게시물: 제안 게시(11월 3일)"
+    ]
   }
 }
