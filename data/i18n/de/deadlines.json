@@ -1,0 +1,110 @@
+{
+  "meth-cmeth-rewards": {
+    "name": "mETH Protocol: Seite für Belohnungen früherer cmETH-Kampagnen schließt",
+    "summary": "Die Seite für Belohnungen aus früheren cmETH-Kampagnen schließt am 7. November. Hol vorher alle Belohnungen ab, die du noch nicht genommen hast.",
+    "deadlineNote": "Am 7. November schließt die Seite für Belohnungen aus früheren cmETH-Kampagnen. cmETH selbst lässt sich weiterhin jederzeit in mETH unstaken oder per Bridge übertragen; dafür gibt es keine Frist.",
+    "who": "Alle, die an früheren cmETH-Kampagnen teilgenommen haben und noch offene Belohnungen haben.",
+    "todo": "Hol deine Belohnungen vor dem 7. November auf der Website von mETH Protocol ab. Dein cmETH kann warten: Du kannst es jederzeit in mETH unstaken oder per Bridge übertragen.",
+    "caution": "Laut mETH Protocol sollen die Unstaking- und Bridge-Contracts nach dem Belohnungszeitraum „voraussichtlich“ weiterlaufen; das Projekt will das aber je nach verbleibender Menge überprüfen.",
+    "official": [
+      "Blog von mETH Protocol: Zeitplan für die Abwicklung von cmETH"
+    ]
+  },
+  "gmo-gyen-zusd-redemption": {
+    "name": "GMO Trust: Stablecoins GYEN und ZUSD werden abgewickelt",
+    "summary": "GYEN und ZUSD werden abgewickelt. Löse sie bis zum 11. November zum Nennwert ein oder erhalte bis Jahresende USDC zum Kurs vom 12. November.",
+    "deadlineNote": "Die Einlösung zum Nennwert endet am 11. November um 23:59:59 Uhr US-Ostküstenzeit, und deine Token müssen vorher ankommen. Für alles, was nicht eingelöst wurde, schickt GMO Trust bis Jahresende den Gegenwert in USDC auf derselben Chain, zum Kurs vom 12. November.",
+    "who": "Alle, die GYEN oder ZUSD halten (auf Ethereum, Arbitrum, Stellar und anderen Chains).",
+    "todo": "Um zum Nennwert einzulösen, eröffne ein Konto auf `stablecoin.z.com`, durchlaufe die Identitätsprüfung (KYC) und verknüpfe ein Bankkonto in Yen (GYEN) oder US-Dollar (ZUSD). Deine Token müssen vor der Frist ankommen. Wenn du nicht einlöst, werden sie zum Jahresende in USDC umgewandelt. Auf Ethereum und Arbitrum gibt es außerdem Uniswap-Pools, in denen du verkaufen kannst.",
+    "caution": "Das automatische USDC bekommst du nicht, wenn deine Token per Bridge auf eine Chain gebracht wurden, die GMO Trust nicht unterstützt, die Geldwäscheprüfung nicht bestanden haben oder unter dem Mindestbetrag für Überweisungen auf dieser Chain liegen. Auf Stellar musst du zuerst eine USDC-Trustline einrichten. Ob GYEN auf Arbitrum nach dem 11. November automatisch in USDC umgewandelt wird, hat GMO Trust nicht gesagt.",
+    "official": [
+      "GMO-Trust-Hilfecenter: So löst du vor dem 11. November ein",
+      "GMO-Trust-Hilfecenter: Was passiert, wenn du nicht einlöst",
+      "GMO Trust auf X: Erinnerung vom 20. August",
+      "GMO Trust auf X: Mitteilung zur Pflichteinlösung vom 10. September"
+    ]
+  },
+  "blur-frontend-blend": {
+    "name": "Blur: blur.io geht offline, Blend vergibt keine neuen Kredite mehr",
+    "summary": "Die Website von Blur geht am 12. November offline, und Blend vergibt am selben Tag keine neuen Kredite mehr. Kreditnehmer müssen vorher zurückzahlen.",
+    "deadlineNote": "Am 12. November hört die Website blur.io auf zu funktionieren. Blend vermittelt am selben Tag keine neuen Kredite mehr: Kreditnehmer müssen vorher zurückzahlen, sonst fällt der Kredit nach den Regeln des Protokolls aus. Die Contracts des Marktplatzes laufen auf der Chain weiter.",
+    "who": "Kreditnehmer bei Blend und alle mit Assets auf Blur, die auf die Website blur.io angewiesen sind.",
+    "todo": "Kreditnehmer bei Blend: Zahl vor dem 12. November zurück. Alle anderen: Warte auf das Auszahlungs-Tool für Blend, das Blur nach dem 12. November veröffentlichen will, und nutze nur Links, die @blur_io gepostet hat.",
+    "caution": "Blur sagt, man solle nur @blur_io vertrauen. Wie man ETH aus dem Blur Pool (dem Gebots-Pool) abhebt, erklären seine Beiträge nicht gesondert, und für das Auszahlungs-Tool gibt es noch kein Veröffentlichungsdatum.",
+    "official": [
+      "Blur auf X: Abschaltankündigung",
+      "Blur auf X: Was mit Blend passiert"
+    ]
+  },
+  "universal-uassets-winddown": {
+    "name": "Universal: Die Wrapped Assets uAssets werden eingestellt",
+    "summary": "Die uAssets von Universal werden am 17. November eingestellt. Verkauf sie oder löse sie vorher in der Universal-App ein; danach bleibt nur ein Einlöse-Contract.",
+    "deadlineNote": "Das Protokoll wird am 17. November abgeschaltet. Danach werden verbleibende uAssets über einen Contract eingelöst: Auf Base werden uSOL, uXRP, uDOGE, uADA, uBTC und uLTC zu SOL auf Base, cbXRP, cbDOGE, cbADA, cbBTC und cbLTC, und alles andere wird zu USDC (laut Universal kann sich das noch ändern).",
+    "who": "Alle, die uAssets halten (uSOL, uBTC, uXRP und andere).",
+    "todo": "Verkauf sie vor dem 17. November in der Universal-App oder löse sie auf der Seite zum Prägen und Einlösen (mint and redeem) gegen das ursprüngliche Asset ein. Bei großen Beträgen schreib Universal an die Adresse auf seiner Abwicklungsseite.",
+    "caution": "Laut Universal werden der Einlöse-Contract und die Schritte vor dem 17. November veröffentlicht, und Einlösungen können sich bei hoher Nachfrage verlangsamen. Was mit uAssets in Pools oder Lending-Märkten von Drittanbietern passiert, hat Universal nicht gesagt.",
+    "official": [
+      "Abwicklungsseite von Universal"
+    ]
+  },
+  "pancakeswap-opbnb-cake": {
+    "name": "PancakeSwap: Bridge-Route für CAKE aus opBNB endet",
+    "summary": "CAKE auf opBNB muss vor dem 23. November per Bridge zurück auf BNB Chain, weil LayerZero die Unterstützung für opBNB beendet.",
+    "deadlineNote": "Ab dem 23. November um 00:00 UTC ist die LayerZero-Route eingestellt, über die CAKE per Bridge aus opBNB herauskommt.",
+    "who": "Alle, die CAKE auf opBNB halten.",
+    "todo": "Geh auf die Bridge-Seite von PancakeSwap, wähle opBNB → BNB Chain und übertrag dein CAKE per Bridge. Der Beitrag von PancakeSwap erklärt die Schritte.",
+    "caution": "Grund ist, dass LayerZero die Unterstützung für opBNB beendet; andere Token auf opBNB, die LayerZero nutzen, können also auch betroffen sein. Prüf die Ankündigungen des jeweiligen Projekts.",
+    "official": [
+      "PancakeSwap auf X: Ankündigung",
+      "PancakeSwap auf X: So nutzt du die Bridge"
+    ]
+  },
+  "sophon-chain-shutdown": {
+    "name": "Sophon-Chain wird abgeschaltet",
+    "summary": "Die Sophon-Chain wird am 30. November abgeschaltet. Der 25. November ist der letzte Tag, um dein Geld auf Ethereum abzuheben.",
+    "deadlineNote": "Der 25. November ist der letzte Tag zum Abheben. Danach werden Infrastruktur und zugehörige Websites nach und nach abgeschaltet, und das Mainnet wird am 30. November endgültig abgeschaltet.",
+    "who": "Alle mit SOPH, ETH, USDC oder anderen Assets auf Sophon, alle mit Assets in der Farm von Sophon und alle mit nicht abgeholten Staking- oder Guardian-Belohnungen.",
+    "todo": "Heb vor dem 25. November deine Assets auf der offiziellen Seite auf Ethereum ab (die Beiträge von Sophon nennen `claim.sophon.com`). Hol Farm-Assets auf `farm.sophon.xyz` heraus und hol alle Staking- und Guardian-Belohnungen ab. Node-Belohnungen gehen weiterhin an deine Ethereum-Wallet.",
+    "caution": "Die Beiträge von Sophon haben zwei Domains verwendet: `claim.sophon.com` (19. Oktober und 2. November) und `claim.sophon.xyz` (22. Oktober). Sophon warnt vor gefälschten Migrationsseiten.",
+    "official": [
+      "Sophon auf X: endgültiger Zeitplan (19. Oktober)",
+      "Sophon auf X: Erinnerung (2. November)",
+      "Sophon auf X: erste Ankündigung (25. Juni)"
+    ]
+  },
+  "recall-staking-readonly": {
+    "name": "Recall: Staking-App ist ab 30. November nur noch lesbar",
+    "summary": "Die Recall Foundation wird abgewickelt, und ihre Staking-App ist ab dem 30. November nur noch lesbar. Unstake und heb vorher ab.",
+    "deadlineNote": "Seit dem 30. Oktober haben neue Unstake-Anfragen keinen Cooldown mehr (Anfragen, die schon im Cooldown sind, behalten ihre ursprünglichen Daten, und Sperren werden nicht verkürzt). Am 30. November wird `app.recall.network` schreibgeschützt. Danach lassen sich Positionen, deren Sperre abgelaufen ist, weiterhin über einen direkten Contract-Aufruf auf BaseScan abheben.",
+    "who": "Alle, die RECALL auf Base gestakt haben.",
+    "todo": "Unstake und heb vor dem 30. November selbst auf `app.recall.network` ab. Danach nutzt du auf BaseScan beim Staking-Contract „Write as Proxy“, um `unstake(tokenId)` und `withdraw(tokenId)` aufzurufen. Du brauchst etwas ETH auf Base für die Gebühren.",
+    "caution": "Laut Recall bekommen Inhaber keine Ausschüttung, und es gibt keinen neuen Token, keinen Airdrop und keine Migration; wer so etwas anbietet, ist ein Fake. Die Ankündigung nennt die Adresse des Staking-Contracts nicht; nutze vor einem direkten Contract-Aufruf also nur eine Adresse aus offiziellen Kanälen. Derselbe Beitrag sagt an einer Stelle, der Zugang ende „nach 30 Tagen“, und an einer anderen, die App sei „ab dem 30. November nur noch lesbar“.",
+    "official": [
+      "Recall auf X: „The Recall Foundation is winding down“",
+      "Recall Labs auf X: Abwicklung des Unternehmens"
+    ]
+  },
+  "megapot-app-shutdown": {
+    "name": "Megapot: App wird eingestellt",
+    "summary": "Die Website von Megapot und die Telegram-Mini-App gehen am 1. Dezember offline. Wenn dein Konto per E-Mail, X oder Telegram angemeldet ist, heb dein Guthaben vorher ab.",
+    "deadlineNote": "Seit dem 29. Oktober ist der Ticketverkauf eingestellt, und Auszahlungen brauchen keine Identitätsprüfung mehr. Am 1. Dezember gehen `megapot.io` und die Telegram-Mini-App offline. Das Protokoll selbst läuft weiter.",
+    "who": "Alle, deren Konto mit E-Mail-, X- oder Telegram-Anmeldung erstellt wurde, und alle mit einem ausstehenden Trostpreis außerhalb der Chain. Wenn du mit deiner eigenen Wallet gespielt hast, bleiben deine Tickets und Gewinne bei dir.",
+    "todo": "Heb dein Kontoguthaben vor dem 1. Dezember ab und hol bis dahin auch alle Trostpreise außerhalb der Chain ab. Gewinne auf der Chain und Empfehlungsprovisionen lassen sich nach dem 1. Dezember weiterhin über Basescan oder Apps von Drittanbietern abholen. Liquiditätsanbieter können jederzeit abheben.",
+    "official": [
+      "Megapot auf X: „Winding down the Megapot app, going all in on Prizerail“"
+    ]
+  },
+  "thundercore-migration": {
+    "name": "ThunderCore-Chain gestoppt: TT zieht auf BNB Chain um",
+    "summary": "ThunderCore wurde gestoppt, und TT zieht auf BNB Chain um. Die Migrationsseite ist bis zum 1. Dezember offen.",
+    "deadlineNote": "ThunderBridge wurde am 28. August gestoppt. Der letzte Block, 236120709, wurde am 1. September erzeugt. Die Migrationsseite ist vom 1. September bis zum 1. Dezember offen.",
+    "who": "Alle, die Mainnet-TT, veTT, ERC20-TT auf Ethereum oder Assets in ThunderBridge halten. Liegen deine auf einer Börse, folge den Anweisungen der Börse.",
+    "todo": "Prüf deinen Status auf `migration.thundercore.com` und folge den Migrationsschritten.",
+    "caution": "Token und NFTs von Drittanbietern werden nicht migriert. Was vor dem 1. September noch in einem Contract lag, wird nicht automatisch migriert; das wird von Fall zu Fall geprüft, ohne Garantie. Was nach dem 1. Dezember passiert, hat ThunderCore nicht gesagt.",
+    "official": [
+      "ThunderCore: Migrationsankündigung",
+      "ThunderCore: letzter Block und Migrationsseite",
+      "ThunderCore auf X: 1. September"
+    ]
+  }
+}
