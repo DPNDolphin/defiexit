@@ -2500,8 +2500,8 @@ test("带协议的链接到哪儿为止(三种规矩都一样):包着它的 mark
   for (const s of ["[x](https://defiexit.com)evil.com", "https://defiexit.com/x)evil.com", "https://defiexit.com\\evil.com", "https://defiexit.com/x(https://evil.com)", "<https://defiexit.com>evil.com"]) {
     for (const hosts of [POST, IN]) assert.equal(checkText(s, undefined, hosts), "含站外链接「evil.com」", s);
   }
-  // 反斜杠后面跟着 @ 的(有的程序把 @ 前面当账号名):不收(见下面「整串按浏览器的读法」那一项)
-  assert.equal(checkText("https://defiexit.com\\@evil.com", undefined, POST), "含带 @ 的链接(@ 前面会被当成账号名,真正去的是 @ 后面的网址)");
+  // 反斜杠后面跟着 @ 的(有的程序把 @ 前面当账号名,去的是 evil.com):不收(见下面「整串按浏览器的读法」那一项)
+  assert.equal(checkText("https://defiexit.com\\@evil.com", undefined, POST), "含站外链接「evil.com」");
   // 紧挨着别的字的可疑网址、长得像的写法、http、子域名、借道 @ 的、IP,照旧
   assert.match(checkText("[x](https://defiexit.com)官网blast.io", undefined, IN), /^含可疑网址「blast\.io」/);
   assert.match(checkText("(官网blast.io)", undefined, IN), /^含可疑网址「blast\.io」/);
@@ -2626,12 +2626,14 @@ test("链接整串按浏览器的读法看(对人的回复、项目帖、收件�
   const BS = "\\";
   // 真正去的是站外:报真正的主机名
   for (const s of ["https://defiexit.com(a)@evil%2ecom/", "https://defiexit.com(a)@evil.com/", "[x](https://defiexit.com(a)@evil%2ecom/)", "((https://defiexit.com(a)@evil%2ecom/))", "<https://defiexit.com(a)@evil%2ecom/>",
-    "https://evil%2ecom/", "https://blast.io@evil%2ecom/", "https://defiexit.com%2f@evil.com"]) {
+    "https://evil%2ecom/", "https://blast.io@evil%2ecom/", "https://defiexit.com%2f@evil.com",
+    // 反斜杠:浏览器当路径,有的程序把它前面当账号名、去的是 @ 后面
+    "https://defiexit.com" + BS + "@evil%2ecom", "https://defiexit.com" + BS + "@evil.com/x", "https://defiexit.com" + BS + "x@evil.com/"]) {
     for (const hosts of [POST, IN]) assert.equal(checkText(s, undefined, hosts), "含站外链接「evil.com」", s);
     assert.notEqual(checkText(s, undefined, REPLY), null, s);
   }
   // 真正去的还是本站,但写法看不清(带账号名、反斜杠后面跟 @、编码过的):一样不收
-  for (const [s, want] of [["https://defiexit.com" + BS + "@evil%2ecom", AT_WHY], ["https://defiexit.com" + BS + "@evil.com/x", AT_WHY], ["https://defiexit.com" + BS + "x@evil.com/", AT_WHY], ["https://user@defiexit.com/", AT_WHY], ["https://user:pw@defiexit.com/deadlines/", AT_WHY],
+  for (const [s, want] of [["https://user@defiexit.com/", AT_WHY], ["https://user:pw@defiexit.com/deadlines/", AT_WHY], ["https://defiexit.com(a)@defiexit.com/", AT_WHY],
     ["[x](https://u@defiexit.com)", AT_WHY], ["https://defiexit.com%40evil.com/", PCT_WHY], ["https://defiexit%2ecom/", PCT_WHY]]) {
     for (const hosts of [POST, IN]) assert.equal(checkText(s, undefined, hosts), want, s);
     assert.notEqual(checkText(s, undefined, REPLY), null, s);
@@ -2732,4 +2734,42 @@ test("点过的宣传卡片分页:运营台给全部没点的(再早送来的也
   } finally {
     Object.assign(REACH_LIST, keep);
   }
+});
+
+// ---------- 11-06 第四轮(复审后):链接后面紧跟着的话不算主机名、仓库链接按浏览器真正去的路径查 ----------
+test("链接后面紧跟着的话不算链接(项目帖、收件续答、宣传稿、管理员改的草稿都一样):官网：https://defiexit.com（100%免费）、https://defiexit.com（@DeFiExit）照收;紧跟着 ( （ ） 】 」 。 ， 的也照收;https://defiexit.com(a)@evil%2ecom/ 照样不收", async () => {
+  const POST = ["defiexit.com", "www.defiexit.com"], IN = [...POST, "blast.io"];
+  const prose = ["官网：https://defiexit.com（100%免费）", "https://defiexit.com（@DeFiExit）", "https://defiexit.com(免费)", "https://defiexit.com（免费）", "https://defiexit.com）后面",
+    "https://defiexit.com】后面", "https://defiexit.com」后面", "https://defiexit.com。后面", "https://defiexit.com，后面"];
+  for (const s of prose) for (const hosts of [POST, IN]) assert.equal(checkText(s, undefined, hosts), null, s);
+  // 跟着的话里真有站外网址、或者整串真的去别处的,照样拦
+  for (const s of ["https://defiexit.com（@evil.com）", "https://defiexit.com，见 evil.com", "https://defiexit.com,@evil.com", "https://defiexit.com(a)@evil%2ecom/", "[x](https://defiexit.com(a)@evil%2ecom)"]) {
+    for (const hosts of [POST, IN]) assert.equal(checkText(s, undefined, hosts), "含站外链接「evil.com」", s);
+  }
+  const w = world();
+  const c = await w.login();
+  const BAD = "官方说明 https://defiexit.com(a)@evil%2ecom/ 。";
+  const r = await w.ingest({
+    docs: { rules: { officialHosts: ["blast.io"] } },
+    outbox: [...prose.map((s, i) => ({ id: "p-prose-" + i, kind: "post", topic: "提醒", draft: s })), { id: "p-prose-bad", kind: "post", topic: "提醒", draft: BAD }],
+    inbox: [...prose.map((s, i) => ({ id: "30000000000000007" + String(i).padStart(2, "0"), text: "x", author: "user_p" + i, draft: s })), { id: "3000000000000000799", text: "x", author: "user_pb", draft: BAD }],
+    outreach: [REACH({ id: "o-prose-1", body: prose.join("\n") }), REACH({ id: "o-prose-bad", body: BAD })],
+  });
+  assert.deepEqual([r.json.outbox, r.json.inbox, r.json.outreach], [prose.length, prose.length, 1], JSON.stringify(r.json.rejected));
+  assert.deepEqual(r.json.rejected.map((x) => [x.id, x.why]), [["p-prose-bad", "草稿含站外链接「evil.com」"], ["3000000000000000799", "草稿含站外链接「evil.com」"], ["o-prose-bad", "正文含站外链接「evil.com」" + REACH_OFF_WHY]]);
+  const edit = (draft) => w.call("/api/admin/outbox", { method: "POST", body: { id: "p-prose-0", draft }, cookie: c });
+  assert.equal((await edit("官网：https://defiexit.com（100%免费）")).status, 200);
+  assert.equal((await edit("https://defiexit.com（@DeFiExit）")).status, 200);
+  assert.equal((await edit(BAD)).json.why, "含站外链接「evil.com」");
+});
+
+test("宣传稿放行我们自己的仓库,按浏览器真正去的路径查:[source](https://github.com/DPNDolphin/defiexit(a)/../../attacker/repo) 去的是 /attacker/repo,不收;编码过的 ../ 也不收;仓库链接后面紧跟着的话照收", async () => {
+  const w = world();
+  const bad = ["[source](https://github.com/DPNDolphin/defiexit(a)/../../attacker/repo)", "https://github.com/DPNDolphin/defiexit(a)/../../attacker/repo", "https://github.com/DPNDolphin/defiexit%2f..%2f..%2fattacker",
+    "https://github.com/DPNDolphin/defiexit/%2e%2e/%2e%2e/attacker/repo", "https://github.com/DPNDolphin/defiexit(/../../attacker)"];
+  const ok = ["https://github.com/DPNDolphin/defiexit（源码）", "https://github.com/DPNDolphin/defiexit，源码在这", "https://github.com/DPNDolphin/defiexit。源码在这", "[源码](https://github.com/DPNDolphin/defiexit/blob/main/README.md)"];
+  const r = await w.ingest({ outreach: [...bad.map((s, i) => REACH({ id: "o-ghp-bad-" + i, body: "源码 " + s })), ...ok.map((s, i) => REACH({ id: "o-ghp-ok-" + i, body: "源码 " + s }))] });
+  assert.equal(r.json.outreach, ok.length, JSON.stringify(r.json.rejected));
+  const why = reachWhy(r);
+  bad.forEach((s, i) => assert.equal(why["o-ghp-bad-" + i], "正文含站外链接「github.com」" + REACH_OFF_WHY, s));
 });

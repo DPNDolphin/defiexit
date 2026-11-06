@@ -478,6 +478,52 @@ test("宣传「发过的」分页:还有更早的就出「再看早一点的(还
   assert.deepEqual([ids(), d.$("reach-more").hidden], [["o-s1", "o-s2", "o-s3", "o-s4"], true]);
 });
 
+// 点过的宣传卡片 h1…hN:编号越大越新;cur(n) 是服务器给的翻页位置(那一页最早那张)
+const hh = (n) => rc("o-h" + n, {}, { status: "已发", decided_at: ago(100 - n) });
+const cur = (n) => ({ at: ago(100 - n), id: "o-h" + n });
+
+test("宣传「发过的」翻页不漏:别处又点了几张以后刷新,接着翻从服务器给的位置往前(不从页面上最早那张往前),页面上留着的旧卡片和新的一页之间那几张也翻得到", async () => {
+  clipboard();
+  // 一开始库里点过的是 h1–h4,一页 2 张:页面上 h4、h3
+  const state = { ...base([]), outreach: [hh(4), hh(3)], outreachMore: { handled: 2, after: cur(3) }, donePages: [] };
+  const d = await desk(state);
+  const ids = () => d.$("reach-done-cards").children.map((e) => e.getAttribute("data-id"));
+  // 别处又点了 h5、h6、h7,刷新:服务器给 h7、h6,比 h6 早的还有 5 张(h5–h1);页面上留着 h4、h3,所以「还有 3 张」(h5、h2、h1)
+  Object.assign(state, { outreach: [hh(7), hh(6)], outreachMore: { handled: 5, after: cur(6) } });
+  state.donePages.push({ ok: true, items: [hh(5), hh(4)], more: 3, after: cur(4) }, { ok: true, items: [hh(3), hh(2)], more: 1, after: cur(2) }, { ok: true, items: [hh(1)], more: 0, after: cur(1) });
+  await d.$("refresh").fire("click");
+  await tick();
+  assert.deepEqual([ids(), d.$("reach-more").textContent], [["o-h7", "o-h6", "o-h4", "o-h3"], "再看早一点的(还有 3 张)"]);
+  // 从服务器给的 h6 往前翻:h5 翻出来了(从页面上最早的 h3 往前翻,h5 就永远翻不到)
+  await d.$("reach-more").fire("click");
+  await tick();
+  assert.deepEqual([ids(), d.$("reach-more").textContent], [["o-h7", "o-h6", "o-h5", "o-h4", "o-h3"], "再看早一点的(还有 2 张)"]);
+  await d.$("reach-more").fire("click");
+  await tick();
+  await d.$("reach-more").fire("click");
+  await tick();
+  assert.deepEqual([ids(), d.$("reach-more").hidden], [["o-h7", "o-h6", "o-h5", "o-h4", "o-h3", "o-h2", "o-h1"], true]);
+  assert.deepEqual(d.calls.filter(([p]) => p.startsWith("outreach-done")).map(([p]) => decodeURIComponent(p.split("&id=")[1])), ["o-h6", "o-h4", "o-h2"]);
+});
+
+test("宣传「发过的」翻页:翻出来的一页全是页面上已经有的,自动接着翻,点一下就看得到新的", async () => {
+  clipboard();
+  // 页面上翻到了 h6–h3;别处又点了 h7、h8,刷新以后服务器给 h8、h7,比 h7 早的还有 6 张,页面上已经有 4 张,还有 2 张(h2、h1)
+  const state = { ...base([]), outreach: [hh(6), hh(5)], outreachMore: { handled: 4, after: cur(5) }, donePages: [{ ok: true, items: [hh(4), hh(3)], more: 2, after: cur(3) }] };
+  const d = await desk(state);
+  const ids = () => d.$("reach-done-cards").children.map((e) => e.getAttribute("data-id"));
+  await d.$("reach-more").fire("click");
+  await tick();
+  Object.assign(state, { outreach: [hh(8), hh(7)], outreachMore: { handled: 6, after: cur(7) } });
+  state.donePages.push({ ok: true, items: [hh(6), hh(5)], more: 4, after: cur(5) }, { ok: true, items: [hh(4), hh(3)], more: 2, after: cur(3) }, { ok: true, items: [hh(2), hh(1)], more: 0, after: cur(1) });
+  await d.$("refresh").fire("click");
+  await tick();
+  assert.equal(d.$("reach-more").textContent, "再看早一点的(还有 2 张)");
+  await d.$("reach-more").fire("click");
+  await tick();
+  assert.deepEqual([ids(), d.$("reach-more").hidden], [["o-h8", "o-h7", "o-h6", "o-h5", "o-h4", "o-h3", "o-h2", "o-h1"], true]);
+});
+
 test("宣传卡片删除:先说清楚会删什么(只删这一张;写邮件的,以后写给这个邮箱的也不收),再点一次才删;删完重新读一遍", async () => {
   const realTimeout = globalThis.setTimeout;
   globalThis.setTimeout = (fn, ms, ...a) => (ms >= 1000 ? {} : realTimeout(fn, ms, ...a));

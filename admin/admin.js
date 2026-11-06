@@ -90,7 +90,7 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
   }
 
   // quota:今天对人的首回放出几条(上限、已发、排队的编号),每次摆待发卡片前重算;hits:网站自己数的体检次数
-  const S = { docs: {}, out: new Map(), inn: new Map(), reach: new Map(), reachMore: 0, cards: new Map(), ro: null, watchOff: new Set(), needs: [], leads: [], auto: {}, outStats: {}, hits: {}, quota: gate([], [], capOf(null)) };
+  const S = { docs: {}, out: new Map(), inn: new Map(), reach: new Map(), reachMore: 0, reachCursor: null, cards: new Map(), ro: null, watchOff: new Set(), needs: [], leads: [], auto: {}, outStats: {}, hits: {}, quota: gate([], [], capOf(null)) };
   // 三种卡片:待发(out)、收件(in)、宣传(reach);接口的名字 → 卡片的种类
   const KINDS = { outbox: "out", inbox: "in", outreach: "reach" };
   const storeOf = (k) => (k === "out" ? S.out : k === "in" ? S.inn : S.reach);
@@ -545,25 +545,38 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     }
     const done = all.filter(([, d]) => !isPend(d)).sort((a, b) => String(b[1].decided_at || "").localeCompare(String(a[1].decided_at || "")) || String(b[0]).localeCompare(String(a[0]))).map(([id, d]) => ["reach", id, d]);
     place("reach-done-cards", done);
-    $("reach-done").hidden = !done.length && !S.reachMore;
-    $("reach-more").hidden = !S.reachMore;
-    $("reach-more").textContent = "再看早一点的(还有 " + fmt(S.reachMore) + " 张)";
+    const left = reachLeft();
+    $("reach-done").hidden = !done.length && !left;
+    $("reach-more").hidden = !left;
+    $("reach-more").textContent = "再看早一点的(还有 " + fmt(left) + " 张)";
     $("reach-empty").hidden = pend.length > 0;
     $("reach-empty").textContent = done.length
       ? "要发的都发完了。发过的在下面:有回音了点「有回音」记一句。"
       : "还没有要发的宣传。我写好的媒体投稿、给项目团队的邮件、安全清单的提交、技术社区的帖子放在这里,按渠道分好。";
   }
 
-  // 点过的宣传卡片再往前翻一页:从页面上最早点的那张往前(服务器按点的时间、编号排,不会漏也不会重),翻出来的接在「发过的」下面
+  // 点过的宣传卡片翻页:S.reachCursor 是服务器上一次给的位置(state 那一页、或者上一次翻的那一页最早那张),S.reachMore 是比它更早的还有几张(库里数的)。
+  // 接着翻总是从服务器给的位置往前,不从页面上最早那张往前:刷新以后别处又点了几张,页面上留着的旧卡片和新的一页之间会空出几张,
+  // 从页面上最早那张往前翻就永远翻不到它们。翻出来的按编号去重;「还有几张」减掉页面上已经有的、比这个位置更早的
+  const olderThan = (d, c) => !!c && (String(d.decided_at || "") < String(c.at || "") || (String(d.decided_at || "") === String(c.at || "") && String(d.id) < String(c.id || "")));
+  function reachLeft() {
+    if (!S.reachCursor || !S.reachMore) return 0;
+    const shown = [...S.reach.values()].filter((d) => !isPend(d) && olderThan(d, S.reachCursor)).length;
+    return Math.max(0, S.reachMore - shown);
+  }
+  // 再往前翻:一页全是页面上已经有的,自动接着翻(最多 10 页),直到翻出新的或者翻完
   async function moreReach() {
-    const done = [...S.reach.values()].filter((d) => !isPend(d)).sort((a, b) => String(b.decided_at || "").localeCompare(String(a.decided_at || "")) || String(b.id).localeCompare(String(a.id)));
-    const last = done[done.length - 1];
-    if (!last) return;
-    const { status, json } = await api("outreach-done?at=" + encodeURIComponent(String(last.decided_at || "")) + "&id=" + encodeURIComponent(String(last.id)));
-    if (status === 401) return show("login");
-    if (status !== 200 || !json.ok) return note($("reach-msg"), "没翻出来:" + why(json), true);
-    for (const d of Array.isArray(json.items) ? json.items : []) if (d && d.id && !S.reach.has(d.id)) S.reach.set(d.id, d);
-    S.reachMore = Math.max(0, Number(json.more) || 0);
+    for (let i = 0; i < 10 && S.reachCursor && S.reachMore > 0; i++) {
+      const c = S.reachCursor;
+      const { status, json } = await api("outreach-done?at=" + encodeURIComponent(String(c.at || "")) + "&id=" + encodeURIComponent(String(c.id || "")));
+      if (status === 401) return show("login");
+      if (status !== 200 || !json.ok) { note($("reach-msg"), "没翻出来:" + why(json), true); break; }
+      let added = 0;
+      for (const d of Array.isArray(json.items) ? json.items : []) if (d && d.id && !S.reach.has(d.id)) { S.reach.set(d.id, d); added++; }
+      S.reachCursor = json.after && typeof json.after === "object" ? json.after : null;
+      S.reachMore = Math.max(0, Number(json.more) || 0);
+      if (added) break;
+    }
     syncReach();
   }
 
@@ -625,15 +638,14 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     S.problems = json.problems && typeof json.problems === "object" ? json.problems : null; // 问题记录的数(最近 7 天、30 天)
     S.out = new Map((json.outbox || []).map((d) => [d.id, d]));
     S.inn = new Map((json.inbox || []).map((d) => [d.id, d]));
-    // 宣传:服务器给全部还没点的、点过的最近一页(outreachMore.after 是这一页最早那张)。以前点「再看早一点的」翻出来、比这一页还早的
-    // 接着留着(切回来刷新,正在记回音的那张不会不见);reachMore:点过的还有几张没翻出来(库里数的,减掉留着的)
+    // 宣传:服务器给全部还没点的、点过的最近一页(outreachMore.after 是这一页最早那张,handled 是比它更早的还有几张)。以前点「再看早一点的」
+    // 翻出来、比这一页还早的接着留着(切回来刷新,正在记回音的那张不会不见);翻页的位置照服务器这次给的重来(见 reachLeft、moreReach)
     const prev = S.reach, page = (json.outreachMore && typeof json.outreachMore === "object") ? json.outreachMore : {};
     const after = page.after && typeof page.after === "object" ? page.after : null;
-    const older = (d) => !!after && (String(d.decided_at || "") < String(after.at || "") || (String(d.decided_at || "") === String(after.at || "") && String(d.id) < String(after.id || "")));
     S.reach = new Map((Array.isArray(json.outreach) ? json.outreach : []).map((d) => [d.id, d]));
-    let kept = 0;
-    for (const [id, d] of prev) if (!S.reach.has(id) && !isPend(d) && older(d)) { S.reach.set(id, d); kept++; }
-    S.reachMore = Math.max(0, (Number(page.handled) || 0) - kept);
+    for (const [id, d] of prev) if (!S.reach.has(id) && !isPend(d) && olderThan(d, after)) S.reach.set(id, d);
+    S.reachCursor = after;
+    S.reachMore = Math.max(0, Number(page.handled) || 0);
     sync("out");
     sync("in");
     syncReach();
