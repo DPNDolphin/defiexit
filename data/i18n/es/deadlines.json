@@ -507,5 +507,223 @@
       "Foro de Lazy Summer: RFC de cierre ordenado (5 de noviembre)",
       "Foro de Lazy Summer: bóvedas a solo retiros (29 de julio)"
     ]
+  },
+  "aster-apollox-offline": {
+    "name": "Aster: el sitio web y la API de ApolloX dejan de funcionar",
+    "summary": "Aster está cerrando el antiguo sitio web y la API de ApolloX, con cierre previsto alrededor del 5 de noviembre. Si todavía tienes saldo o posiciones ahí, ciérralas y retira ya.",
+    "deadlineNote": "Desde el 3 de noviembre a las 10:00 UTC, Aster empezó a cerrar los antiguos contratos de APX y dijo que el proceso tardaría unas 48 horas, así que termina alrededor del 5 de noviembre a las 10:00 UTC. El sitio web apollox.finance y la API dejan de funcionar con él.",
+    "who": "Quienes todavía tengan saldo o posiciones abiertas en ApolloX (`apollox.finance`).",
+    "todo": "Cierra tus posiciones y retira a tu propia billetera. Si algo sale mal, Aster dice que contactes a su soporte en Discord.",
+    "caution": "Aster no ha dicho si los contratos se podrán seguir usando directamente una vez terminado el cierre.",
+    "official": [
+      "Aster en X: publicación del cierre del 3 de noviembre"
+    ]
+  },
+  "lisk-chain-closed": {
+    "name": "La cadena Lisk cerró",
+    "summary": "La cadena Lisk cerró el 2 de noviembre. Los retiros en curso en el momento del cierre se acreditan en Ethereum; para los fondos que quedaron en la cadena, Lisk dice que en enero de 2027 se abrirá un proceso.",
+    "deadlineNote": "Primero se fijó el cierre de la cadena para el 31 de octubre; el último día real fue el 2 de noviembre. El 24 de octubre fue el último día para empezar a usar el puente (el puente tarda unos 8 días). Lisk dice que en enero de 2027 llegará un contrato dedicado para los fondos que quedaron en la cadena.",
+    "who": "Quienes todavía tenían activos en Lisk en el momento del cierre, o un retiro en curso.",
+    "todo": "Lisk dice que los retiros en curso en el momento del cierre se acreditarán directamente en la dirección de destino en Ethereum. Para los fondos que quedaron en la cadena, espera el proceso oficial de enero de 2027; por ahora no hay nada que hacer.",
+    "caution": "Lisk dice que nunca te contactará para ofrecerte ayuda a recuperar fondos y que nunca te pedirá tu frase semilla. Unos 5.2 millones de LSK del contrato de recompensas de staking (incluidas las recompensas ganadas pero aún no reclamadas) se quemarán; el LSK que los usuarios pusieron en staking por su cuenta no.",
+    "official": [
+      "Blog de Lisk: la cadena Lisk cerró",
+      "Lisk en X: el proceso de enero (3 de noviembre)",
+      "Lisk en X: recordatorio del último día (1 de noviembre)",
+      "Blog de Lisk: presentamos la nueva Lisk"
+    ]
+  },
+  "stratex-vaults": {
+    "name": "Cerraron las bóvedas de StratEx (en QuickSwap)",
+    "summary": "Las bóvedas de StratEx cerraron, y StratEx dice que el 3 de noviembre devolvió los fondos a todos los que no habían retirado. Revisa tu billetera para ver si llegaron.",
+    "deadlineNote": "Los retiros manuales se detuvieron el 1 de noviembre. El 3 de noviembre, StratEx dijo que había devuelto los fondos a todos los que no habían retirado.",
+    "who": "Quienes tenían dinero en bóvedas de StratEx y no retiraron antes del 1 de noviembre.",
+    "todo": "Revisa en tu billetera si llegaron los fondos devueltos.",
+    "official": [
+      "StratEx en X: fondos devueltos (3 de noviembre)",
+      "StratEx en X: corte de retiros (21 de octubre)",
+      "StratEx en X: aviso final (17 de septiembre)"
+    ]
+  },
+  "lista-cdp-winddown": {
+    "name": "Lista DAO: Lista CDP cerró y pasó a Lista Lending",
+    "summary": "Lista CDP cerró. Lista dice que las posiciones en mercados admitidos pasaron a Lista Lending automáticamente, sin que tengas que hacer nada. Comprueba si tu posición estaba en un mercado admitido.",
+    "deadlineNote": "Las posiciones se podían migrar o pagar del 30 de septiembre al 31 de octubre. El 1 y el 2 de noviembre, Lista dijo que las posiciones en mercados admitidos se habían migrado automáticamente.",
+    "who": "Quienes tenían una posición en Lista CDP.",
+    "todo": "El 2 de noviembre, Lista dijo que todos los mercados admitidos habían pasado a Lista Lending automáticamente, sin que haya que hacer nada. Comprueba que tu posición estaba en un mercado admitido.",
+    "caution": "Lista no ha dicho qué pasa con las posiciones en mercados no admitidos.",
+    "official": [
+      "Blog de Lista: qué hacer antes de que cierre el CDP",
+      "Lista en X: no hace falta hacer nada (2 de noviembre)",
+      "Lista en X: migración completada (1 de noviembre)",
+      "Lista en X: anuncio del 1 de octubre"
+    ]
+  },
+  "kyan-exchange": {
+    "name": "Cerró el exchange Kyan (antes Premia)",
+    "summary": "Kyan (antes Premia) cerró, y los saldos debían retirarse a más tardar el 31 de octubre. Si no puedes retirar, Kyan dice que preguntes en su Discord.",
+    "deadlineNote": "Anunciado el 19 de octubre: retira los saldos “antes de fin de mes”, es decir, a más tardar el 31 de octubre.",
+    "who": "Quienes tengan saldo pendiente en Kyan.",
+    "todo": "Si no puedes retirar, ve a #support en el Discord oficial de Kyan, donde el equipo lo gestiona a mano.",
+    "official": [
+      "Kyan en X: publicación del cierre del 19 de octubre"
+    ]
+  },
+  "stargate-hydra-chains": {
+    "name": "Stargate v2 y Hydra dejan un grupo de cadenas con poca actividad",
+    "summary": "Stargate v2 y Hydra dejaron un grupo de cadenas con poca actividad; el último grupo se detuvo el 23 de octubre.",
+    "deadlineNote": "Alrededor del 20 de septiembre, los activos de Hydra se detuvieron en un grupo de cadenas (entre ellas Sophon, Silicon, Arbitrum Nova, Degen y Superposition). Aurora, Taiko, LightLink y Gnosis se detuvieron el 23 de septiembre, y Gravity, Camp, GOAT y Metis el 23 de octubre.",
+    "who": "Los proveedores de liquidez de los pools de Stargate en estas cadenas y quienes tengan USDC.e o USDT de Hydra.",
+    "todo": "Antes de cada corte, los proveedores de liquidez (incluidos los pools de ETH) tenían que retirar, y quienes tenían USDC.e y USDT de Hydra tenían que pasarlos por el puente a un pool de Stargate para canjearlos.",
+    "caution": "Las publicaciones de Stargate no dicen si los activos de Hydra todavía se pueden canjear después del corte.",
+    "official": [
+      "Stargate en X: recordatorio del 25 de septiembre",
+      "Stargate en X: recordatorio del 10 de septiembre",
+      "Stargate en X: anuncio del 21 de agosto"
+    ]
+  },
+  "stargate-metis-pools": {
+    "name": "Stargate en Metis: la liquidez de los pools V1 y V2 tenía que salir a más tardar el 23 de octubre",
+    "summary": "El soporte de Stargate para Metis terminó el 23 de octubre, y antes había que retirar la liquidez de sus pools V1 y V2 ahí. Metis advierte que lo que quede puede ser difícil o imposible de retirar con la interfaz normal.",
+    "deadlineNote": "El soporte de Stargate para Metis Andromeda terminó el 23 de octubre, y el DVN y el Executor de LayerZero Labs dejaron de dar servicio a Metis el 30 de octubre. Pools afectados: los pools de USDT, ETH y METIS en Stargate V2, y los pools de USDT, METIS y MAI en Stargate V1.",
+    "who": "Los proveedores de liquidez de los pools V1 y V2 de Stargate en Metis, y quienes pasaron METIS, HERA, QI o MTVT a otra cadena a través de LayerZero V1.",
+    "todo": "Antes de la fecha límite: retira del staking los tokens LP si estaban en staking, luego retira la liquidez en la app de Stargate, y devuelve a Metis por la misma ruta el METIS, HERA, QI o MTVT que salió por LayerZero V1. Si no llegaste a tiempo, Metis dice que contactes al equipo de Metis.",
+    "caution": "Metis dice que la liquidez que quede en los pools de Stargate en Metis después de la fecha límite puede ser difícil o imposible de retirar con la interfaz normal de Stargate. El m.USDC, m.USDT, WETH y METIS emitidos por el puente canónico de Metis no se ven afectados.",
+    "official": [
+      "Blog de Metis: fin de Stargate y cambios de LayerZero en Metis Andromeda"
+    ]
+  },
+  "mint-blockchain-shutdown": {
+    "name": "Mint Blockchain cerró",
+    "summary": "Mint Blockchain cerró; la fecha límite fue el 20 de octubre. La página oficial de retiro solo devuelve ETH, WBTC, USDC y USDT a Ethereum.",
+    "deadlineNote": "La fecha límite fue el 20 de octubre.",
+    "who": "Quienes tengan activos en la cadena Mint.",
+    "todo": "La página oficial `mintchain.io/withdraw` solo permite retirar ETH, WBTC, USDC y USDT a Ethereum (el aviso de imToken dice que los retiros se procesan cada semana y llegan en unos 10 días).",
+    "caution": "Mint no ha dicho si se puede hacer algo más después de la fecha límite.",
+    "official": [
+      "Página de retiro de Mint"
+    ]
+  },
+  "coinex-csc-shutdown": {
+    "name": "Cerraron CoinEx Smart Chain (CSC) y OneSwap",
+    "summary": "CoinEx está cerrando. La cadena CSC y OneSwap se detuvieron el 29 de septiembre, y el dinero de las cuentas del exchange se debe retirar a más tardar el 22 de diciembre.",
+    "deadlineNote": "CSC y OneSwap se detuvieron el 29 de septiembre, y los canjes del puente cerraron al mismo tiempo. Los retiros del exchange CoinEx siguen abiertos hasta el 22 de diciembre a las 10:00 UTC+8.",
+    "who": "Quienes tengan activos en CSC o en OneSwap, y quienes tengan dinero en una cuenta del exchange CoinEx.",
+    "todo": "La fecha límite en la blockchain ya pasó. Retira el dinero de tu cuenta del exchange antes del 22 de diciembre. Después, el USDT pasa a una custodia aparte con una comisión de custodia del 5% mensual; para recuperarlo, escribe a support@coinex.com a más tardar el 22 de agosto de 2028.",
+    "caution": "CoinEx dice que este es su anuncio final, y que cualquier “nuevo anuncio” en su nombre después de este es falso.",
+    "official": [
+      "Anuncio de CoinEx"
+    ]
+  },
+  "awe-stpt-migration": {
+    "name": "AWE Network: de STPT a AWE (pasa a Base)",
+    "summary": "El cambio de STPT en Ethereum por AWE en Base cerró el 21 de septiembre, y AWE dice que no se pueden hacer cambios tardíos.",
+    "deadlineNote": "La fecha límite fue el 21 de septiembre. AWE dice que se migró alrededor del 99%.",
+    "who": "Quienes todavía tengan STPT.",
+    "todo": "AWE dice que no se pueden hacer cambios tardíos. Qué pasará con los tokens que no se cambiaron se decidirá en una propuesta de gobernanza de la comunidad.",
+    "official": [
+      "Blog de AWE: cierra el período de migración"
+    ]
+  },
+  "tether-alloy": {
+    "name": "Tether: cerraron Alloy by Tether y aUSD₮",
+    "summary": "Alloy by Tether y aUSD₮ cerraron el 17 de septiembre. Antes de esa fecha, los usuarios tenían que devolver el aUSD₮ y recuperar su garantía en XAU₮.",
+    "deadlineNote": "La fecha límite fue el 17 de septiembre.",
+    "who": "Quienes usaron XAU₮ como garantía en Alloy para acuñar aUSD₮.",
+    "todo": "Antes de la fecha límite, los usuarios tenían que devolver el aUSD₮ y recuperar su garantía en XAU₮. Tether dice que esto ya no se puede hacer a través de la plataforma.",
+    "caution": "Tether no ha dicho qué pasa con la garantía después de la fecha límite.",
+    "official": [
+      "Anuncio de Tether"
+    ]
+  },
+  "trust-wallet-networks": {
+    "name": "Trust Wallet deja de mostrar 24 redes",
+    "summary": "Desde el 15 de septiembre, Trust Wallet ya no muestra 24 redes, pero los activos siguen en la blockchain. En las cadenas EVM, puedes agregar la red por tu cuenta como red personalizada.",
+    "deadlineNote": "El 15 de septiembre estas redes desaparecieron de la lista de la billetera; Trust Handle se detuvo antes, el 7 de septiembre.",
+    "who": "Los usuarios de Trust Wallet con activos en estas redes: las 15 cadenas EVM indicadas arriba y 9 cadenas no EVM.",
+    "todo": "Tus activos siguen en la blockchain. En las cadenas EVM, agrega la red por tu cuenta como red personalizada usando un RPC verificado. En las cadenas no EVM, importa tu billetera en otra billetera que admita esa cadena.",
+    "caution": "Usa solo un RPC de la documentación oficial de la cadena. Escribe una frase semilla solo tú y solo dentro de una app de billetera de confianza, nunca en un sitio web.",
+    "official": [
+      "Blog de Trust Wallet"
+    ]
+  },
+  "vanar-vanry-migration": {
+    "name": "Vanar: VANRY pasa a Base",
+    "summary": "El período para pasar VANRY a Base cerró el 10 de septiembre, y la página de Vanar dice que no se procesarán más migraciones.",
+    "deadlineNote": "El período de cambio fue del 11 de agosto a las 13:00 UTC al 10 de septiembre a las 13:00 UTC. Los tokens que todavía estaban saliendo del staking se enviaron por airdrop en Base el 11 de septiembre.",
+    "who": "Quienes tengan VANRY en Ethereum, Polygon o Vanar Chain.",
+    "todo": "La página de Vanar dice que no hay migraciones después del cierre del período. Si empezaste a retirar del staking antes del 10 de septiembre y no recibiste tokens, escribe a Vanar.",
+    "official": [
+      "Página de cambio de Vanar"
+    ]
+  },
+  "superposition-shutdown": {
+    "name": "La cadena Superposition cerró y volvió a Arbitrum One",
+    "summary": "La cadena Superposition cerró el 8 de septiembre. Superposition dijo que los activos que quedaran en la cadena después “puede que ya no sean accesibles”.",
+    "deadlineNote": "La cadena cerró el 8 de septiembre.",
+    "who": "Quienes todavía tenían activos en Superposition cuando cerró.",
+    "todo": "Antes de la fecha límite, los usuarios tenían que salir de Camelot y de otras posiciones y luego volver a Arbitrum One por el puente nativo de Arbitrum o por Relay.",
+    "caution": "Al 5 de noviembre no se ha anunciado ninguna alternativa oficial.",
+    "official": [
+      "Superposition en X: anuncio del 4 de agosto"
+    ]
+  },
+  "arbitrum-nova-maintenance": {
+    "name": "Arbitrum Nova en modo de mantenimiento (no cerró)",
+    "summary": "Desde el 2 de septiembre, Arbitrum Nova está en modo de mantenimiento, no cerrada. La recomendación es pasar a Arbitrum One por el puente oficial.",
+    "deadlineNote": "El período de migración fue del 4 de junio al 2 de septiembre. Desde el 2 de septiembre la cadena solo tiene mantenimiento, y el acceso RPC está más limitado.",
+    "who": "Quienes tengan activos en Arbitrum Nova, incluidos los poseedores de MOON.",
+    "todo": "Pasa a Arbitrum One por el puente oficial del Arbitrum Portal. Para montos grandes, primero retira a Ethereum (hay un período de impugnación de 7 días). MOON no tiene ruta directa y primero tiene que ir a Ethereum.",
+    "caution": "El puente oficial sigue funcionando en la fase 3. Alchemy dejó de ofrecer su RPC para Nova.",
+    "official": [
+      "Foro de Arbitrum: preguntas frecuentes sobre Nova"
+    ]
+  },
+  "ton-old-bridge": {
+    "name": "El puente antiguo de TON (bridge-v3.ton.org) cerró para siempre",
+    "summary": "El puente antiguo de TON cerró para siempre el 1 de septiembre. El Wrapped TON en Ethereum y BSC, y el jUSDT y el jUSDC en TON, tenían que volver por el puente antes.",
+    "deadlineNote": "Desde el 1 de septiembre el puente antiguo ya no procesa ninguna transferencia.",
+    "who": "Quienes tengan Wrapped TON en Ethereum o BNB Chain, o jUSDT, jUSDC y tokens similares en TON.",
+    "todo": "Antes de la fecha límite, el Wrapped TON en Ethereum y BSC tenía que volver por el puente a TON, y el jUSDT, el jUSDC y tokens similares en TON, de vuelta a Ethereum.",
+    "caution": "Al 5 de noviembre, el canal oficial no ha publicado ninguna alternativa.",
+    "official": [
+      "Canal oficial de Telegram de TON Status"
+    ]
+  },
+  "dfk-chain-sunset": {
+    "name": "DeFi Kingdoms: cierre de DFK Chain",
+    "summary": "DFK Chain tenía previsto cerrar el 28 de agosto (ya pasó). DeFi Kingdoms dijo que no puede migrar JEWEL ni tokens que no son de DFK, como BTC, ETH, USDC y AVAX, así que sus poseedores tenían que sacarlos por el puente por su cuenta antes.",
+    "deadlineNote": "Anunciado el 31 de julio, con el cierre fijado para el 28 de agosto.",
+    "who": "Quienes tengan JEWEL, o tokens que no son de DFK como BTC, ETH, USDC y AVAX, en DFK Chain; los proveedores de liquidez de ahí; y los usuarios de billeteras inteligentes.",
+    "todo": "Lo que pidió DeFi Kingdoms: que los usuarios de billeteras inteligentes pasaran sus activos a una billetera estándar antes de usar el puente, y que deshicieran todos los LP, incluidos los pools de dos activos nativos de DFK. En ese momento, el equipo dijo que JEWEL se podía pasar por el puente a Avalanche C-Chain y que se estaba preparando la migración de los activos nativos de DFK, con detalles por anunciar.",
+    "caution": "DeFi Kingdoms dijo que no puede migrar, volver a emitir ni controlar JEWEL ni los tokens que no son de DFK. Su anuncio del 31 de julio no dice qué pasa con los que sigan en la cadena después del 28 de agosto.",
+    "official": [
+      "DeFi Kingdoms en X: anuncio del 31 de julio",
+      "DeFi Kingdoms en X: lo que tienes que hacer"
+    ]
+  },
+  "moonbeam-glmr-base": {
+    "name": "Moonbeam: GLMR pasa a Base",
+    "summary": "La fecha límite para pasar GLMR a Base fue el 31 de julio. Moonbeam pidió retirar primero los fondos de los protocolos de la cadena y luego pasar GLMR 1:1 a Base por el puente. El anuncio no dice qué pasa con el GLMR que no se pasó.",
+    "deadlineNote": "La fecha límite fue el 31 de julio (sin hora ni zona horaria). Moonbeam dijo que la cadena seguiría funcionando durante el período de transición hasta el 31 de julio, y que una vez que la cadena cierre, los fondos que queden en protocolos de la cadena “pueden quedar inaccesibles”. El anuncio no dice cuándo se detiene la cadena.",
+    "who": "Los poseedores de GLMR en Moonbeam y quienes tengan fondos en protocolos de esa cadena (liquidez, préstamos, contratos de staking, etc.). Para el GLMR en un exchange, Moonbeam dice que el exchange se encarga de la migración automáticamente.",
+    "todo": "Los pasos eran: retirar primero los fondos de los protocolos de la cadena y luego pasar GLMR 1:1 a Base por el puente en la página oficial de migración. El anuncio del 3 de julio no aclara si la migración sigue disponible después de la fecha límite ni qué se hará con los tokens que no se pasaron.",
+    "caution": "La página oficial de migración es `migrate.portal.moonbeam.network`; el anuncio del 3 de julio no dice si sigue funcionando después de la fecha límite. Ignora a cualquiera que te escriba por mensaje privado ofreciendo una “migración tardía”.",
+    "official": [
+      "Noticias de Moonbeam: “Moonbeam Network Relaunches on Base”",
+      "Moonbeam en X: anuncio del 3 de julio"
+    ]
+  },
+  "moonriver-movr-base": {
+    "name": "Moonriver: MOVR pasa a Base",
+    "summary": "La fecha límite para pasar MOVR a Base fue el 31 de julio. Moonriver pidió retirar primero los fondos de los protocolos de la cadena y luego pasar MOVR 1:1 a Base por el puente en dos pasos. El anuncio no dice qué pasa con el MOVR que no se pasó.",
+    "deadlineNote": "La fecha límite fue el 31 de julio (sin hora ni zona horaria). Moonriver dijo que una vez que la cadena cierre, los fondos que queden en protocolos de la cadena “pueden quedar inaccesibles para siempre”. El anuncio no dice cuándo se detiene la cadena.",
+    "who": "Los poseedores de MOVR en Moonriver y quienes tengan fondos en protocolos de esa cadena (liquidez, préstamos, contratos de staking, etc.). Para el MOVR en un exchange, Moonriver dice que no hay que hacer nada; el exchange se encarga automáticamente.",
+    "todo": "Los pasos eran: retirar primero los fondos de los protocolos de la cadena y luego pasar por el puente en dos saltos en la página oficial de migración. El MOVR pasa de Moonriver a Moonbeam (como xcMOVR) y luego el puente de migración lo convierte en MOVR en Base, 1:1 y sin comisión. El anuncio del 7 de julio no dice si la migración sigue siendo posible después de la fecha límite.",
+    "caution": "La página oficial de migración es `migrate.portal.moonbeam.network`, donde también se pueden verificar los contratos relacionados. El anuncio del 7 de julio no dice si el portal de migración sigue funcionando después de la fecha límite. Ignora a cualquiera que te escriba por mensaje privado ofreciendo una “migración tardía”.",
+    "official": [
+      "Noticias de Moonbeam: “MOVR is Migrating to Base”",
+      "Moonriver en X: anuncio del 7 de julio"
+    ]
   }
 }
