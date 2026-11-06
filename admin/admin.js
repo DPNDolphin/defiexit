@@ -473,12 +473,13 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
       fill(head, h("span", { class: "who" }, mm.target || "?"), url ? h("span", null, hostName(url)) : null, el._mail ? h("span", null, "写邮件") : null);
       chips.replaceChildren(...[CHANNEL[mm.channel] || mm.channel, langName(mm.lang)].filter(Boolean).map((x) => h("span", { class: "chip" }, x)));
       whyDd.textContent = mm.why || "";
-      toDd.textContent = mm.to || "";
+      // 点过「已发 / 跳过」满 180 天,服务器把收件邮箱删了(toGone):写明是到期删的,要再写叫我重新送一张
+      toDd.textContent = mm.to || (mm.toGone ? "点过「已发 / 跳过」满 180 天,邮箱已删" : "");
       fill(urlDd, url ? out(url, url) : null);
       whyDt.hidden = whyDd.hidden = !mm.why;
-      toDt.hidden = toDd.hidden = !mm.to;
+      toDt.hidden = toDd.hidden = !mm.to && !mm.toGone;
       urlDt.hidden = urlDd.hidden = !url;
-      kv.hidden = !mm.why && !mm.to && !url;
+      kv.hidden = !mm.why && !mm.to && !mm.toGone && !url;
       subj.textContent = mm.subject || "";
       subjWrap.hidden = !mm.subject;
       title.textContent = mm.title || "";

@@ -15,8 +15,9 @@
 //   对人的首回(待发里回别人的)一个链接、域名都不许带,连 defiexit.com 也不带(对方接着问了,续答再给);
 //   项目帖只许 defiexit.com(引用的原帖另放 quote);收件里的续答许 defiexit.com,加上运营规则(rules.officialHosts)列的官方网址。
 // 只查送进来的草稿,库里原有的不回头查(照常显示)。不合格的那一条不入库,回执里写明哪条为什么;回执不含任何库里的数据。
-// 宣传卡片(outreach,见 cleanReach):新建,或者改管理员还没点过的;点过「已发 / 跳过」的不再改。标题、邮件标题、正文照收件续答的规矩查
-// (敏感词、长得像的写法;链接只许 defiexit.com 和 rules.officialHosts)。这张卡片、它的收件邮箱按要求删过的不收(查和写同一句)。
+// 宣传卡片(outreach,见 cleanReach):新建,或者改管理员还没点过的;点过「已发 / 跳过」的不再改。标题、邮件标题、正文的链接照收件续答的规矩查
+// (长得像的写法;只许 defiexit.com 和 rules.officialHosts,另外放行我们自己的 GitHub 仓库),敏感词另用一份(REACH_WORDS:安全说明里的
+// 私钥、助记词、授权照常能写,只拦招揽和骗局的说法)。这张卡片、它的收件邮箱按要求删过的不收(查和写同一句)。
 // 一包最多 50 张,稿子加起来最多 10 万字(REACH_MAX.pack)。
 
 import { iso, plusDays, KEEP_DAYS, DOC_KEYS, docStmt, getKv, getDoc, getDocs, existing, goneKey, expKey, NOT_GONE, goneArg, outKeys, inKeys, sameRefs, sameInRefs, bjDay, problemKey, PROBLEM_TYPES, PROBLEM_SOURCES, reachKeys, reachCardKey, reachToKey } from "./db.js";
@@ -52,30 +53,48 @@ export const outHosts = (mine) => (mine && mine.kind === "post" ? ALLOWED_HOSTS 
 // 收件续答许带的网址:本站,加上运营规则里列的官方网址(入库时已经查过格式)
 const inHosts = (rules) => [...ALLOWED_HOSTS, ...(rules && Array.isArray(rules.officialHosts) ? rules.officialHosts : [])];
 // 链接的几种写法:带协议的(任何 xxx://)、英文域名(含 xn-- 编码的)、IP 地址、中文域名(汉字之间夹着英文句点);
-// 后几种和「长得像句点的」(DOTS)、「最后一段紧跟着别的文字」(TLD_GLUED)在 names.js,协议、链的名字检查也用
-const SCHEME = /[a-z][a-z0-9+.-]{1,20}:\/\/[^\s]*/gi;
+// 后几种和「长得像句点的」(DOTS)、「最后一段紧跟着别的文字」(TLD_GLUED)在 names.js,协议、链的名字检查也用。
+// 带协议的链接到哪儿为止:空白,和包着链接的符号(括号、尖括号、引号、反引号、反斜杠、中文的书名号引号、句号顿号)都不算链接;
+// 末尾的标点(. , ; : ! ? 和 markdown 的 ] * _ ~)也不算(TRAIL)。所以 [x](https://defiexit.com)、<https://defiexit.com>、
+// (see https://defiexit.com/deadlines/). 都读成 defiexit.com;括号后面紧跟着的字照普通文字再查一遍(…com/x)evil.com 里的 evil.com 照样拦)
+const SCHEME = /[a-z][a-z0-9+.-]{1,20}:\/\/[^\s<>"'`(){}|\\^「」『』【】《》〈〉“”‘’。、]*/gi;
+const TRAIL = /[.,;:!?\]*_~]+$/;
 // 英文域名前后紧挨着字母、数字(哪种文字都算)、附加符号、连字号或下划线:真正的主机名比找到的长(éblast.io 其实是 xn--blast-9ra.io),当可疑网址
 const GLUED_BEFORE = /[\p{L}\p{N}\p{M}_-]$/u, GLUED_AFTER = /^[\p{L}\p{N}\p{M}_-]/u;
 function hostOf(s) {
   try { return new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(s) ? s : "http://" + s).hostname.toLowerCase().replace(/\.$/, ""); } catch { return null; }
 }
+// 敏感词默认的找法:BANNED 按字面找,不分大小写(对人的回复、项目帖、收件续答都用它;宣传稿换成 reachWord,见下面「宣传卡片」)
+const bannedWord = (t) => { const low = t.toLowerCase(); return BANNED.find((w) => low.includes(w)) || null; };
+// 「主机名 + 路径开头」放行的带协议链接(宣传稿放行我们自己的 GitHub 仓库,见 REACH_PATHS):https、不带账号密码和端口、主机名一模一样,
+// 路径(按 URL 的标准写法,../ 先算掉;不分大小写)正好是这一段或者在它下面:/DPNDolphin/defiexit-x、/DPNDolphin 都不算
+function onPath(link, p) {
+  try {
+    const u = new URL(link);
+    if (u.protocol !== "https:" || u.username || u.password || u.port || u.hostname !== p.host) return false;
+    const path = u.pathname.toLowerCase(), pre = p.prefix.toLowerCase();
+    return path === pre || path.startsWith(pre + "/");
+  } catch { return false; }
+}
 
 // hosts:这份草稿许带的网址,主机名一模一样才算(blast.io 不放行 xblast.io、blast.io.evil.com),带协议的只认 https;
-// 给空的 = 一个链接、域名都不许带(对人的首回)
-export function checkText(s, max = MAX.draft, hosts = ALLOWED_HOSTS) {
+// 给空的 = 一个链接、域名都不许带(对人的首回)。
+// 另外两项只有宣传稿换:words 敏感词的找法(给回不许用的那个词,没有回 null),paths 另外放行的「主机名 + 路径开头」(只认带 https:// 的写法)
+export function checkText(s, max = MAX.draft, hosts = ALLOWED_HOSTS, { words = bannedWord, paths = [] } = {}) {
   if (typeof s !== "string") return "不是文字";
   const t = s.trim();
   if (!t) return "是空的";
   if (t.length > max) return `超过 ${max} 字`;
-  const low = t.toLowerCase();
-  const word = BANNED.find((w) => low.includes(w));
+  const word = words(t);
   if (word) return `含不许用的词「${word}」`;
   const off = (h) => (hosts.length ? `含站外链接「${h}」` : `含链接或域名「${h}」(对人的首回一个都不带,连 defiexit.com 也不带)`);
   // 先统一写法再找网址(三种规矩都一样):全角字母、全角的点换成半角(NFKC),英文之间的「。」换成点,长得像的绕不过去。敏感词照旧查原文
   const u = t.normalize("NFKC").replace(DOTS, ".");
   for (const m of u.matchAll(SCHEME)) {
-    const host = hostOf(m[0]);
-    if (!host || !hosts.includes(host) || !/^https:\/\//i.test(m[0])) return off(host || m[0].slice(0, 30));
+    const link = m[0].replace(TRAIL, "");
+    const host = hostOf(link);
+    if (host && /^https:\/\//i.test(link) && (hosts.includes(host) || paths.some((p) => onPath(link, p)))) continue;
+    return off(host || link.slice(0, 30));
   }
   const rest = u.replace(SCHEME, " ");
   for (const m of rest.matchAll(ASCII_HOST)) {
@@ -232,13 +251,30 @@ export function mailAddr(v) {
   const local = s.slice(0, at), domain = s.slice(at + 1).toLowerCase();
   return MAIL_LOCAL.test(local) && !local.includes("..") && okHost(domain) ? local + "@" + domain : null;
 }
+// 宣传稿的敏感词另用一份。BANNED 是给对陌生人的短回复定的;长文里「我们从不要你的私钥、助记词」「撤销授权」「seed phrase」「private key」
+// 「recovery phrase」这些安全说明照常要写,所以宣传稿只拦自己招揽、骗局常用的说法:叫人私下来找、拉人进群、找客服、返佣、领空投。
+// 中文按字面找;英文按整个词找(不分大小写,词中间几个空白都算):Disclaimer、reclaim 不算 claim,ADMIN me 不算 dm me
+export const REACH_WORDS = {
+  zh: ["私信我", "私聊我", "加我微信", "加我好友", "加群", "进群", "入群", "联系客服", "返佣", "领取空投", "空投领取", "转账给我"],
+  en: ["dm me", "pm me", "message me", "inbox me", "whatsapp me", "telegram me", "join our telegram", "join our whatsapp", "join our discord", "contact our support",
+    "rebate", "rebates", "airdrop claim", "claim airdrop", "claim your airdrop", "claim the airdrop"],
+};
+const REACH_EN = REACH_WORDS.en.map((w) => [w, new RegExp("(?<![\\p{L}\\p{N}])" + w.split(" ").join("\\s+") + "(?![\\p{L}\\p{N}])", "iu")]);
+export function reachWord(t) {
+  const s = t.normalize("NFKC");
+  return REACH_WORDS.zh.find((w) => s.includes(w)) || (REACH_EN.find(([, re]) => re.test(s)) || [])[0] || null;
+}
+// 宣传稿另外放行的链接:我们自己的开源仓库(https://github.com/DPNDolphin/defiexit 和它下面的页面);别的 GitHub 链接照样不收,
+// github.com 也不进运营规则的官方网址(收件续答不放行)
+export const REACH_PATHS = [{ host: "github.com", prefix: "/DPNDolphin/defiexit" }];
+const REACH_OFF = "(宣传稿只许带 defiexit.com、运营规则 officialHosts 里列的官方网址,和我们自己的仓库 https://github.com/DPNDolphin/defiexit)";
 const LANG = /^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8}){0,2}$/;
 const REACH_TEXT = ["channel", "target", "lang", "url", "to", "subject", "title", "body", "why"];
 const blank = (v) => v == null || (typeof v === "string" && !v.trim());
 // 一张宣传卡片:id(o-panews-1106 这种,不能全是数字)、channel、target(写给谁:「PANews 投稿」「Sophon 团队」)、lang(zh、en……)、
 // url(写邮件的可以不写,别的必须有)、to(写邮件才有)、subject(邮件标题)、title(标题)、body(正文,可以是 markdown,最长 2 万字)、why(我给管理员的说明)。
-// 标题、邮件标题、正文和收件续答一样查(hosts:本站 + 运营规则里的官方网址):不许敏感词,别的链接不许,长得像的写法绕不过去。
-// 写了的字段都得是文字(数字、true / false、对象、数组都不收),太长的不截、整条不收;不合格的只拒这一条
+// 标题、邮件标题、正文的链接和收件续答一样查(hosts:本站 + 运营规则里的官方网址,另加我们自己的仓库 REACH_PATHS),长得像的写法绕不过去;
+// 敏感词用宣传稿那一份(REACH_WORDS)。写了的字段都得是文字(数字、true / false、对象、数组都不收),太长的不截、整条不收;不合格的只拒这一条
 export function cleanReach(x, hosts = ALLOWED_HOSTS) {
   const id = itemId(x?.id);
   if (!id) return { error: "id 不合格" };
@@ -261,8 +297,8 @@ export function cleanReach(x, hosts = ALLOWED_HOSTS) {
   const text = {};
   for (const [f, name, max] of [["subject", "邮件标题", REACH_MAX.title], ["title", "标题", REACH_MAX.title], ["body", "正文", REACH_MAX.body]]) {
     if (blank(x[f])) continue;
-    const bad = checkText(x[f], max, hosts);
-    if (bad) return { id, error: name + bad + (bad.startsWith("含站外链接") ? "(宣传稿只许带 defiexit.com 和运营规则 officialHosts 里列的官方网址)" : "") };
+    const bad = checkText(x[f], max, hosts, { words: reachWord, paths: REACH_PATHS });
+    if (bad) return { id, error: name + bad + (bad.startsWith("含站外链接") ? REACH_OFF : "") };
     text[f] = x[f].trim();
   }
   const why = blank(x.why) ? undefined : x.why.trim();

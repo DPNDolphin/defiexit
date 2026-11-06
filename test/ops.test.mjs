@@ -2235,7 +2235,7 @@ test("宣传投递:合格的收下(投稿页的、写邮件的);网址、邮箱�
   const c = await w.login();
   const URL_WHY = "url 不合格(要 https:// 开头的网址,不带账号密码、IP 地址、端口,最长 500 字)";
   const TO_WHY = "to 不合格(写一个普通的邮箱地址,比如 team@example.org;不带名字、尖括号、逗号、问号)";
-  const OFF = "(宣传稿只许带 defiexit.com 和运营规则 officialHosts 里列的官方网址)";
+  const OFF = "(宣传稿只许带 defiexit.com、运营规则 officialHosts 里列的官方网址,和我们自己的仓库 https://github.com/DPNDolphin/defiexit)";
   const HN = REACH({ id: "o-hn-1106", channel: "community", target: "Hacker News", lang: "en", url: "https://news.ycombinator.com/submit", title: "Show HN: DeFiExit – a free calendar of DeFi exit deadlines", body: "好".repeat(20000), why: undefined });
   const r = await w.ingest({ docs: { rules: { officialHosts: ["sophon.example"] } }, outreach: [
     REACH(), MAILTO(), HN,
@@ -2249,8 +2249,8 @@ test("宣传投递:合格的收下(投稿页的、写邮件的);网址、邮箱�
     MAILTO({ id: "o-bad-8", to: "Sophon <team@sophon.example>" }), MAILTO({ id: "o-bad-9", to: "team@sophon.example,boss@evil.example" }),
     MAILTO({ id: "o-bad-10", to: "team@sophon.example?cc=boss@evil.example" }), MAILTO({ id: "o-bad-11", to: "not-an-email" }),
     // 敏感词、链接
-    REACH({ id: "o-bad-12", body: "加群领取空投" }), REACH({ id: "o-bad-13", title: "Claim your funds" }), MAILTO({ id: "o-bad-14", subject: "DM me for details" }),
-    REACH({ id: "o-bad-15", body: "源码在 https://github.com/DPNDolphin/defiexit 。" }), REACH({ id: "o-bad-16", body: "去 evil。com 看" }), MAILTO({ id: "o-bad-17", subject: "See app.example.org" }),
+    REACH({ id: "o-bad-12", body: "加群领取空投" }), REACH({ id: "o-bad-13", title: "Claim your airdrop now" }), MAILTO({ id: "o-bad-14", subject: "DM me for details" }),
+    REACH({ id: "o-bad-15", body: "源码在 https://github.com/someone-else/defiexit 。" }), REACH({ id: "o-bad-16", body: "去 evil。com 看" }), MAILTO({ id: "o-bad-17", subject: "See app.example.org" }),
     REACH({ id: "o-bad-26", body: "官方页面 https://sophon.example.evil.com/ 。" }),
     // 编号、渠道、语言、长度、类型
     REACH({ id: "2117000000000000901" }), REACH({ id: "o-bad-18", channel: "dm" }), REACH({ id: "o-bad-19", lang: "中文" }), REACH({ id: "o-bad-20", body: "x".repeat(20001) }),
@@ -2265,7 +2265,7 @@ test("宣传投递:合格的收下(投稿页的、写邮件的);网址、邮箱�
   assert.equal(why["o-bad-7"], "缺 url(投稿页、仓库或发帖页的网址;只有写邮件的(带 to)可以不写)");
   for (const n of [8, 9, 10, 11]) assert.equal(why["o-bad-" + n], TO_WHY, String(n));
   assert.equal(why["o-bad-12"], "正文含不许用的词「加群」");
-  assert.equal(why["o-bad-13"], "标题含不许用的词「claim」");
+  assert.equal(why["o-bad-13"], "标题含不许用的词「claim your airdrop」");
   assert.equal(why["o-bad-14"], "邮件标题含不许用的词「dm me」");
   assert.equal(why["o-bad-15"], "正文含站外链接「github.com」" + OFF);
   assert.equal(why["o-bad-16"], "正文含站外链接「evil.com」" + OFF);
@@ -2476,4 +2476,118 @@ test("宣传卡片:投递已经在路上,管理员这时按要求删了它:写�
   w.db = real;
   assert.deepEqual([r.json.outreach, r.json.rejected], [0, [{ kind: "outreach", id: "o-sophon-1106", why: GONE_WHY }]]);
   assert.equal(await reachOf(w, "o-sophon-1106"), null);
+});
+
+// ---------- 11-06 第二轮:链接末尾的标点不算链接、宣传稿另用一份敏感词、放行我们自己的仓库、收件邮箱 180 天删 ----------
+import { reachWord } from "../server/ops/ingest.js";
+import { REACH_TO_DAYS } from "../server/ops/db.js";
+
+test("带协议的链接到哪儿为止(三种规矩都一样):包着它的 markdown、尖括号、引号、括号和末尾的标点不算链接,[x](https://defiexit.com)、<https://defiexit.com>、(see https://defiexit.com/deadlines/). 都读成 defiexit.com;别的照旧:站外的照样拦,括号后面紧跟着的字照样查,紧挨着的可疑网址照样拦", () => {
+  const REPLY = [], POST = ["defiexit.com", "www.defiexit.com"], IN = [...POST, "blast.io"];
+  const ours = ["[x](https://defiexit.com)", "<https://defiexit.com>", "(see https://defiexit.com/deadlines/).", "**https://defiexit.com**", "\"https://defiexit.com\"", "'https://defiexit.com'",
+    "`https://defiexit.com`", "[https://defiexit.com]", "「https://defiexit.com」", "见 https://defiexit.com/deadlines/。", "（详见 https://defiexit.com/deadlines/）", "官网:https://defiexit.com，", "https://defiexit.com!", "_https://defiexit.com/_"];
+  for (const s of ours) {
+    assert.equal(checkText(s, undefined, POST), null, s);
+    assert.equal(checkText(s, undefined, IN), null, s);
+    assert.match(checkText(s, undefined, REPLY), /^含链接或域名「defiexit\.com」/, s); // 对人的首回照旧一个都不带
+  }
+  // 站外的,包着也一样拦,报的是真正的主机名
+  for (const s of ["[x](https://evil.com)", "<https://evil.com>", "(see https://evil.com/x).", "**https://evil.com**", "「https://evil.com」"]) {
+    for (const hosts of [POST, IN]) assert.equal(checkText(s, undefined, hosts), "含站外链接「evil.com」", s);
+    assert.match(checkText(s, undefined, REPLY), /^含链接或域名「evil\.com」/, s);
+  }
+  // 括号、尖括号、反斜杠后面紧跟着的字照普通文字再查:藏在链接后面的站外网址照样拦(以前会被当成链接的路径放过去)
+  for (const s of ["[x](https://defiexit.com)evil.com", "https://defiexit.com/x)evil.com", "https://defiexit.com\\@evil.com", "https://defiexit.com/x(https://evil.com)", "<https://defiexit.com>evil.com"]) {
+    for (const hosts of [POST, IN]) assert.equal(checkText(s, undefined, hosts), "含站外链接「evil.com」", s);
+  }
+  // 紧挨着别的字的可疑网址、长得像的写法、http、子域名、借道 @ 的、IP,照旧
+  assert.match(checkText("[x](https://defiexit.com)官网blast.io", undefined, IN), /^含可疑网址「blast\.io」/);
+  assert.match(checkText("(官网blast.io)", undefined, IN), /^含可疑网址「blast\.io」/);
+  for (const [s, want] of [["[x](http://defiexit.com/)", "defiexit.com"], ["(https://defiexit.com.evil.com/)", "defiexit.com.evil.com"], ["<https://blast.io@evil.com/>", "evil.com"], ["[x](https：／／evil．com)", "evil.com"], ["[x](https://1.2.3.4/)", "1.2.3.4"]]) {
+    for (const hosts of [POST, IN]) assert.equal(checkText(s, undefined, hosts), "含站外链接「" + want + "」", s);
+  }
+  assert.equal(checkText("(https://blast.io/withdraw).", undefined, IN), null);
+  assert.equal(checkText("(https://blast.io/withdraw).", undefined, POST), "含站外链接「blast.io」");
+});
+
+test("链接末尾的标点不算链接:投递和管理员改草稿也一样(项目帖、收件续答收,对人的首回照旧不收);原来那份敏感词照旧", async () => {
+  const w = world();
+  const c = await w.login();
+  const r = await w.ingest({
+    docs: { rules: { officialHosts: ["blast.io"] } },
+    outbox: [{ id: "p-md-1", kind: "post", topic: "提醒", draft: "步骤见(https://defiexit.com/r/woofi/)。" }, OUT({ id: "r-md-1", draft: "步骤见(https://defiexit.com/r/woofi/)。" })],
+    inbox: [{ id: "3000000000000000613", text: "怎么取?", author: "user_m", draft: "官方页面 <https://blast.io/withdraw>,步骤 [在这](https://defiexit.com/r/woofi/)。" }],
+  });
+  assert.deepEqual([r.json.outbox, r.json.inbox, r.json.rejected.map((x) => [x.id, x.why])], [1, 1, [["r-md-1", "草稿含链接或域名「defiexit.com」(对人的首回一个都不带,连 defiexit.com 也不带)"]]]);
+  const edit = (draft) => w.call("/api/admin/outbox", { method: "POST", body: { id: "p-md-1", draft }, cookie: c });
+  assert.equal((await edit("步骤 [在这](https://defiexit.com)。")).status, 200);
+  assert.equal((await edit("步骤 [在这](https://defiexit.com)evil.com")).json.why, "含站外链接「evil.com」");
+});
+
+test("宣传稿另用一份敏感词:安全说明照常能写(私钥、助记词、授权、seed phrase、private key、approval、recovery phrase、Disclaimer);只拦招揽和骗局的说法(中文按字面,英文按整词);X 上的回复、项目帖、收件续答照旧用原来那份", async () => {
+  const w = world();
+  const safe = "我们从不要你的私钥、助记词和密码,也不会让你授权给陌生合约;用完记得撤销授权。\n\nWe never ask for your seed phrase, private key or recovery phrase. Revoke approvals you no longer need.\n\nDisclaimer: this is not financial advice. How to recover funds from a sunset L2, and how to claim what is yours.";
+  for (const [s, want] of [["请私信我", "私信我"], ["有问题私聊我", "私聊我"], ["加我微信", "加我微信"], ["欢迎加群", "加群"], ["进群领福利", "进群"], ["加入群聊", "入群"], ["请联系客服", "联系客服"], ["返佣 20%", "返佣"], ["领取空投", "领取空投"], ["转账给我", "转账给我"],
+    ["Just DM me", "dm me"], ["DM  ME", "dm me"], ["pm me", "pm me"], ["Message me on X", "message me"], ["Join our Telegram", "join our telegram"], ["WhatsApp me", "whatsapp me"], ["get a rebate", "rebate"], ["Rebates!", "rebates"],
+    ["airdrop claim page", "airdrop claim"], ["Claim your airdrop", "claim your airdrop"], ["ｄｍ ｍｅ", "dm me"]]) assert.equal(reachWord(s), want, s);
+  for (const s of [safe, "ADMIN messages", "context menu", "reclaim", "the airdrop claimed by scammers", "我们不会私信你,也不用进任何群", "客服都是假的", "Telegram 上的骗子", "空投骗局"]) assert.equal(reachWord(s), null, s);
+  const r = await w.ingest({ outreach: [REACH({ id: "o-safe-1", body: safe, title: "We never ask for your private key" }), REACH({ id: "o-scam-1", body: "有问题私信我" }), MAILTO({ id: "o-scam-2", subject: "Join our Telegram" })] });
+  assert.deepEqual([r.json.outreach, reachWhy(r)], [1, { "o-scam-1": "正文含不许用的词「私信我」", "o-scam-2": "邮件标题含不许用的词「join our telegram」" }]);
+  assert.equal((await reachOf(w, "o-safe-1")).mine.body, safe);
+  // 原来那份照旧:对人的回复、项目帖、收件续答里,私钥、seed phrase、claim(连 Disclaimer 也算)都不许
+  assert.equal(checkText(safe), "含不许用的词「授权」");
+  w.clock += 1000;
+  const r2 = await w.ingest({ outbox: [OUT({ id: "r-key-1", draft: "我们不碰你的私钥。" }), { id: "p-key-1", kind: "post", topic: "提醒", draft: "Never share your seed phrase." }], inbox: [{ id: "3000000000000000611", text: "x", author: "user_s", draft: "Disclaimer: not advice." }] });
+  assert.deepEqual(r2.json.rejected.map((x) => [x.id, x.why]), [["r-key-1", "草稿含不许用的词「私钥」"], ["p-key-1", "草稿含不许用的词「seed phrase」"], ["3000000000000000611", "草稿含不许用的词「claim」"]]);
+});
+
+test("宣传稿放行我们自己的仓库:https://github.com/DPNDolphin/defiexit 和它下面的页面(不分大小写);别的 GitHub 链接、不带 https 的写法照样不收;项目帖、收件续答、管理员改的草稿不放行", async () => {
+  const w = world();
+  const c = await w.login();
+  const ok = ["https://github.com/DPNDolphin/defiexit", "https://github.com/DPNDolphin/defiexit/", "https://github.com/DPNDolphin/defiexit/blob/main/README.md", "https://github.com/dpndolphin/DeFiExit/issues?q=is%3Aopen",
+    "[源码](https://github.com/DPNDolphin/defiexit)", "<https://github.com/DPNDolphin/defiexit#readme>", "https://github.com:443/DPNDolphin/defiexit"];
+  const bad = ["https://github.com/DPNDolphin/defiexit-evil", "https://github.com/DPNDolphin", "https://github.com/DPNDolphin/other", "https://github.com/evil/defiexit", "https://github.com/DPNDolphin/defiexit/../../evil/repo",
+    "https://user@github.com/DPNDolphin/defiexit", "https://github.com:8443/DPNDolphin/defiexit", "http://github.com/DPNDolphin/defiexit", "https://gist.github.com/DPNDolphin/defiexit", "https://github.com.evil.com/DPNDolphin/defiexit",
+    "https://evil.com/github.com/DPNDolphin/defiexit", "github.com/DPNDolphin/defiexit", "https://github.com/DPNDolphin/defiexit.git"];
+  const r = await w.ingest({ outreach: [...ok.map((s, i) => REACH({ id: "o-repo-ok-" + i, body: "源码:" + s + " 。" })), ...bad.map((s, i) => REACH({ id: "o-repo-bad-" + i, body: "源码:" + s + " 。" }))] });
+  assert.equal(r.json.outreach, ok.length, JSON.stringify(r.json.rejected));
+  const why = reachWhy(r);
+  bad.forEach((s, i) => assert.match(why["o-repo-bad-" + i], /^正文含站外链接「[^」]+」\(宣传稿只许带 defiexit\.com、运营规则 officialHosts 里列的官方网址,和我们自己的仓库 https:\/\/github\.com\/DPNDolphin\/defiexit\)$/, s));
+  assert.equal(why["o-repo-bad-0"].startsWith("正文含站外链接「github.com」"), true);
+  // 只给宣传稿:项目帖、收件续答(运营规则里也不加 github.com)、管理员改的项目帖草稿,照旧不收
+  w.clock += 1000;
+  const REPO = "源码:https://github.com/DPNDolphin/defiexit 。";
+  const r2 = await w.ingest({ docs: { rules: { officialHosts: ["blast.io"] } }, outbox: [{ id: "p-repo-1", kind: "post", topic: "开源", draft: "开源项目。" }, { id: "p-repo-2", kind: "post", topic: "开源", draft: REPO }], inbox: [{ id: "3000000000000000612", text: "x", author: "user_r", draft: REPO }] });
+  assert.deepEqual(r2.json.rejected.map((x) => [x.id, x.why]), [["p-repo-2", "草稿含站外链接「github.com」"], ["3000000000000000612", "草稿含站外链接「github.com」"]]);
+  assert.equal((await w.call("/api/admin/outbox", { method: "POST", body: { id: "p-repo-1", draft: REPO }, cookie: c })).json.why, "含站外链接「github.com」");
+});
+
+test("宣传卡片的收件邮箱:点过「已发 / 跳过」满 180 天删掉(只删邮箱,记一个 toGone),没点的不删;改回待发、重新送来又能带上邮箱,重新点了从那时起算", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outreach: [MAILTO(), MAILTO({ id: "o-skip-1", to: "press@sophon.example" }), MAILTO({ id: "o-wait-1", to: "hello@sophon.example" }), REACH()] });
+  const set = (cookie, id, status) => w.call("/api/admin/outreach", { method: "POST", body: { id, status }, cookie });
+  for (const [id, st] of [["o-sophon-1106", "已发"], ["o-skip-1", "跳过"], ["o-panews-1106", "已发"]]) assert.equal((await set(c, id, st)).status, 200);
+  const toOf = async (id) => (await reachOf(w, id)).mine.to;
+  // 差一小时满 180 天:都还在
+  w.clock += REACH_TO_DAYS * 864e5 - 3600e3;
+  const c2 = await relogin(w);
+  await w.call("/api/admin/state", { cookie: c2 });
+  assert.deepEqual([await toOf("o-sophon-1106"), await toOf("o-skip-1"), await toOf("o-wait-1")], ["Team@sophon.example", "press@sophon.example", "hello@sophon.example"]);
+  // 满 180 天:点过的(已发、跳过)删掉,别的照留;没点过的不删;没有邮箱的不动
+  w.clock += 2 * 3600e3;
+  const st = (await w.call("/api/admin/state", { cookie: c2 })).json;
+  const a = await reachOf(w, "o-sophon-1106");
+  assert.deepEqual([a.mine.to, a.mine.toGone, a.mine.subject, a.mine.body, a.status, a.updated_at], [undefined, true, MAILTO().subject, MAILTO().body, "已发", new Date(w.clock).toISOString()]);
+  assert.deepEqual([await toOf("o-skip-1"), (await reachOf(w, "o-skip-1")).mine.toGone, await toOf("o-wait-1"), (await reachOf(w, "o-panews-1106")).mine.toGone], [undefined, true, "hello@sophon.example", undefined]);
+  assert.equal(st.outreach.find((x) => x.id === "o-sophon-1106").mine.toGone, true, "运营台读得到,页面上写明是到期删的");
+  assert.ok(!/team@sophon\.example|press@sophon\.example/i.test(await dumpDb(w)), "库里没有这两个邮箱了");
+  // 改回待发,我重新送一张带邮箱的:又有了;再点「已发」从那时起算
+  assert.equal((await set(c2, "o-sophon-1106", "待发")).status, 200);
+  w.clock += 1000;
+  assert.equal((await w.ingest({ outreach: [MAILTO()] })).json.outreach, 1);
+  assert.equal((await set(c2, "o-sophon-1106", "已发")).status, 200);
+  w.clock += 1000;
+  await w.call("/api/admin/state", { cookie: c2 });
+  assert.deepEqual([await toOf("o-sophon-1106"), (await reachOf(w, "o-sophon-1106")).mine.toGone], ["Team@sophon.example", undefined]);
 });

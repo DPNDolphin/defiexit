@@ -428,6 +428,17 @@ test("宣传的已发、跳过、改回待发、有回音:发了挪到「发过�
     { id: "o-a", result_note: "编辑回邮件说下周发", result_url: "https://www.panewslab.com/zh/articles/123" }, { id: "o-a", status: "待发" }, { id: "o-b", status: "跳过" }]);
 });
 
+test("宣传卡片的收件邮箱 180 天到了删掉以后:卡片上写明是到期删的,没有「复制收件人」;改回待发也不会拿一个空的收件人去写邮件", async () => {
+  clipboard();
+  const gone = { ...EMAIL, to: undefined, toGone: true };
+  const d = await desk({ ...base([]), outreach: [rc("o-old", gone, { status: "已发", decided_at: ago(181 * 1440) }), rc("o-back", gone)] });
+  const old = d.rcard("o-old");
+  assert.ok(old.el.textContent.includes("收件人点过「已发 / 跳过」满 180 天,邮箱已删"), old.el.textContent);
+  assert.deepEqual([old.btn("复制收件人").hidden, old.go.hidden], [true, true]);
+  const back = d.rcard("o-back");
+  assert.deepEqual([back.go.hidden, back.go.href, back.el.textContent.includes("写邮件")], [true, "", false], "没有收件人:不出写邮件的按钮");
+});
+
 test("宣传卡片删除:先说清楚会删什么(只删这一张;写邮件的,以后写给这个邮箱的也不收),再点一次才删;删完重新读一遍", async () => {
   const realTimeout = globalThis.setTimeout;
   globalThis.setTimeout = (fn, ms, ...a) => (ms >= 1000 ? {} : realTimeout(fn, ms, ...a));

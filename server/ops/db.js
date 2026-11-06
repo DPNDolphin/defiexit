@@ -8,7 +8,8 @@
 // 问题记录(problems):X 上说自己钱卡住的帖子,一条帖子一行(哪个协议、哪条链、哪种问题、从哪找到的、哪天发的、我们回没回),只用来数大家最常问什么;
 // 帖子编号只存哈希,帖子链接和账号 30 天后删,只留这几样能数的。运营台和导出只给数,不给单条。
 // 宣传卡片(outreach):我写好、管理员自己发出去的媒体投稿、给项目团队的邮件、安全资源清单的提交、技术社区的帖子。
-// 和待发一样两类字段分开(mine 是我写的,其余是管理员点的状态和他记下的回音);都是机构的公开信息和我们自己的文字,不自动删,按要求删的见 reachKeys。
+// 和待发一样两类字段分开(mine 是我写的,其余是管理员点的状态和他记下的回音);都是机构的公开信息和我们自己的文字。
+// 收件邮箱在点过「已发 / 跳过」180 天后删掉(见 purge),别的不自动删;按要求删的见 reachKeys。
 
 import { softName, safeLabel } from "./names.js";
 
@@ -290,6 +291,9 @@ export async function getReach(db, id) {
 //  以后按要求删这条,还删得掉问题记录里同一条帖子的那一行,那条帖子也照样记进 gone,收件、待发、问题记录都不再收)
 // (自己发的帖子没有目标帖子:留题目和草稿,引用的原帖链接也删)
 // 问题记录:删帖子链接和账号(编号本来就只存哈希),只留协议、链、种类、来源、日期、回没回。一句写完,到期的一次全删
+// 宣传卡片:点过「已发 / 跳过」满 REACH_TO_DAYS 天,收件邮箱删掉(mine 里只去掉 to,记一个 toGone,页面上写明是到期删的;别的留着)。
+// 还没点的、改回待发的不删(重新点「已发 / 跳过」从那时起算)。删过的再按要求删这张卡片,只记得住卡片编号,邮箱已经不在了
+export const REACH_TO_DAYS = 180;
 export async function purge(db, now) {
   const t = iso(now);
   const ins = (await db.prepare("SELECT id, mine, decision FROM inbox WHERE purge_after <= ?").bind(t).all()).results;
@@ -319,8 +323,12 @@ export async function purge(db, now) {
   stmts.push(db.prepare("DELETE FROM leads WHERE found_at <= ?").bind(plusDays(now, -90)));
   stmts.push(db.prepare("DELETE FROM sessions WHERE expires_at <= ?").bind(t));
   stmts.push(db.prepare("DELETE FROM nonces WHERE at <= ?").bind(plusDays(now, -2)));
+  const reachAt = stmts.length;
+  stmts.push(db.prepare("UPDATE outreach SET mine = json_set(json_remove(mine, '$.to'), '$.toGone', json('true')), updated_at = ? WHERE status != '待发' AND decided_at <= ? AND json_extract(mine, '$.to') IS NOT NULL")
+    .bind(t, plusDays(now, -REACH_TO_DAYS)));
   const res = await db.batch(stmts);
-  return { inbox: ins.length, outbox: outs.length, problems: Number((res && res[probAt] && res[probAt].meta && res[probAt].meta.changes) || 0) };
+  const n = (at) => Number((res && res[at] && res[at].meta && res[at].meta.changes) || 0);
+  return { inbox: ins.length, outbox: outs.length, problems: n(probAt), outreach: n(reachAt) };
 }
 // 以前到期留下的需求摘要,来源只换掉了 @账号(更早的一个都没换):库里已经有的,按编号一页页用 safeLabel 过一遍。
 // 只在定时任务里跑(每 6 小时那一次,见 task.js;打开运营台、投递都不跑),一次最多 NEEDS_FIX.pages 页,翻到哪记在 kv needs_v2_at;
