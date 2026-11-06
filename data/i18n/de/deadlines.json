@@ -507,5 +507,112 @@
       "Lazy-Summer-Forum: RFC zur geordneten Abwicklung (5. November)",
       "Lazy-Summer-Forum: Vaults nur noch für Auszahlungen (29. Juli)"
     ]
+  },
+  "aster-apollox-offline": {
+    "name": "Aster: Website und API von ApolloX gehen offline",
+    "summary": "Aster schaltet die alte Website und API von ApolloX ab, Abschluss etwa am 5. November. Wenn du dort noch Guthaben oder Positionen hast, schließ sie und heb jetzt ab.",
+    "deadlineNote": "Ab dem 3. November um 10:00 UTC begann Aster, die alten APX-Contracts abzuwickeln, und sagte, das dauere etwa 48 Stunden; es endet also etwa am 5. November um 10:00 UTC. Die Website apollox.finance und die API gehen damit offline.",
+    "who": "Alle, die noch Guthaben oder offene Positionen auf ApolloX (`apollox.finance`) haben.",
+    "todo": "Schließ deine Positionen und heb in deine eigene Wallet ab. Wenn etwas schiefgeht, sollst du laut Aster seinen Support auf Discord kontaktieren.",
+    "caution": "Ob sich die Contracts nach Abschluss der Abwicklung noch direkt nutzen lassen, hat Aster nicht gesagt.",
+    "official": [
+      "Aster auf X: Beitrag vom 3. November zur Abwicklung"
+    ]
+  },
+  "lisk-chain-closed": {
+    "name": "Die Lisk-Chain ist geschlossen",
+    "summary": "Die Lisk-Chain wurde am 2. November geschlossen. Auszahlungen, die bei der Schließung liefen, werden auf Ethereum gutgeschrieben; für Geld, das auf der Chain geblieben ist, öffnet laut Lisk im Januar 2027 ein Verfahren.",
+    "deadlineNote": "Die Schließung der Chain war zuerst für den 31. Oktober geplant; tatsächlicher letzter Tag war der 2. November. Der 24. Oktober war der letzte Tag, um eine Übertragung per Bridge zu starten (die Bridge braucht etwa 8 Tage). Laut Lisk kommt im Januar 2027 ein eigener Contract für Geld, das auf der Chain geblieben ist.",
+    "who": "Alle, die bei der Schließung noch Assets auf Lisk oder eine laufende Auszahlung hatten.",
+    "todo": "Laut Lisk werden Auszahlungen, die bei der Schließung liefen, direkt der Zieladresse auf Ethereum gutgeschrieben. Für Geld, das auf der Chain geblieben ist, warte auf das offizielle Verfahren im Januar 2027; im Moment ist nichts zu tun.",
+    "caution": "Laut Lisk wird es dich nie kontaktieren, um dir beim Zurückholen von Geld zu helfen, und nie nach deiner Seed-Phrase fragen. Etwa 5.2 Millionen LSK im Contract für Staking-Belohnungen (einschließlich verdienter, aber noch nicht abgeholter Belohnungen) werden verbrannt; LSK, das Nutzer selbst gestakt haben, nicht.",
+    "official": [
+      "Lisk-Blog: Die Lisk-Chain ist geschlossen",
+      "Lisk auf X: das Verfahren im Januar (3. November)",
+      "Lisk auf X: Erinnerung an den letzten Tag (1. November)",
+      "Lisk-Blog: Vorstellung des neuen Lisk"
+    ]
+  },
+  "stratex-vaults": {
+    "name": "Vaults von StratEx (auf QuickSwap) geschlossen",
+    "summary": "Die Vaults von StratEx sind geschlossen, und StratEx sagte am 3. November, es habe allen, die nicht abgehoben hatten, das Geld zurückgeschickt. Prüf deine Wallet, ob es angekommen ist.",
+    "deadlineNote": "Manuelle Auszahlungen endeten am 1. November. Am 3. November sagte StratEx, es habe allen, die nicht abgehoben hatten, das Geld zurückgeschickt.",
+    "who": "Alle, die Geld in Vaults von StratEx hatten und vor dem 1. November nicht abgehoben haben.",
+    "todo": "Prüf deine Wallet auf das zurückgeschickte Geld.",
+    "official": [
+      "StratEx auf X: Geld zurückgeschickt (3. November)",
+      "StratEx auf X: Ende der Auszahlungen (21. Oktober)",
+      "StratEx auf X: letzte Mitteilung (17. September)"
+    ]
+  },
+  "lista-cdp-winddown": {
+    "name": "Lista DAO: Lista CDP geschlossen, Umzug zu Lista Lending",
+    "summary": "Lista CDP ist geschlossen. Laut Lista sind Positionen in unterstützten Märkten automatisch zu Lista Lending umgezogen, ohne dass etwas zu tun ist. Prüf, ob deine Position in einem unterstützten Markt war.",
+    "deadlineNote": "Positionen konnten vom 30. September bis zum 31. Oktober migriert oder zurückgezahlt werden. Am 1. und 2. November sagte Lista, Positionen in unterstützten Märkten seien automatisch migriert worden.",
+    "who": "Alle, die eine Position in Lista CDP hatten.",
+    "todo": "Am 2. November sagte Lista, alle unterstützten Märkte seien automatisch zu Lista Lending umgezogen, ohne dass etwas zu tun sei. Prüf, ob deine Position in einem unterstützten Markt war.",
+    "caution": "Was mit Positionen in nicht unterstützten Märkten passiert, hat Lista nicht gesagt.",
+    "official": [
+      "Lista-Blog: Was vor der Schließung des CDP zu tun ist",
+      "Lista auf X: nichts zu tun (2. November)",
+      "Lista auf X: Migration abgeschlossen (1. November)",
+      "Lista auf X: Ankündigung vom 1. Oktober"
+    ]
+  },
+  "kyan-exchange": {
+    "name": "Börse Kyan (früher Premia) geschlossen",
+    "summary": "Kyan (früher Premia) wurde abgewickelt, und Guthaben mussten bis zum 31. Oktober abgehoben werden. Wenn du nicht abheben kannst, sollst du laut Kyan in seinem Discord nachfragen.",
+    "deadlineNote": "Am 19. Oktober angekündigt: Guthaben „bis Ende des Monats“ abheben, also bis zum 31. Oktober.",
+    "who": "Alle, die noch Guthaben auf Kyan haben.",
+    "todo": "Wenn du nicht abheben kannst, geh in #support im offiziellen Discord von Kyan; dort kümmert sich das Team manuell darum.",
+    "official": [
+      "Kyan auf X: Beitrag vom 19. Oktober zur Abwicklung"
+    ]
+  },
+  "stargate-hydra-chains": {
+    "name": "Stargate v2 und Hydra lassen eine Reihe wenig aktiver Chains fallen",
+    "summary": "Stargate v2 und Hydra haben eine Reihe wenig aktiver Chains fallen gelassen; die letzte Gruppe wurde am 23. Oktober eingestellt.",
+    "deadlineNote": "Um den 20. September wurden Hydra-Assets auf einer Reihe von Chains eingestellt (darunter Sophon, Silicon, Arbitrum Nova, Degen und Superposition). Aurora, Taiko, LightLink und Gnosis folgten am 23. September, Gravity, Camp, GOAT und Metis am 23. Oktober.",
+    "who": "Liquiditätsanbieter in Stargate-Pools auf diesen Chains und Inhaber von Hydra-USDC.e oder -USDT.",
+    "todo": "Vor dem jeweiligen Stichtag mussten Liquiditätsanbieter (auch in ETH-Pools) abheben, und Inhaber von Hydra-USDC.e und -USDT mussten per Bridge zu einem Stargate-Pool übertragen, um einzulösen.",
+    "caution": "Ob sich Hydra-Assets nach dem Stichtag noch einlösen lassen, sagen die Beiträge von Stargate nicht.",
+    "official": [
+      "Stargate auf X: Erinnerung vom 25. September",
+      "Stargate auf X: Erinnerung vom 10. September",
+      "Stargate auf X: Ankündigung vom 21. August"
+    ]
+  },
+  "stargate-metis-pools": {
+    "name": "Stargate auf Metis: Liquidität in V1- und V2-Pools musste bis zum 23. Oktober raus",
+    "summary": "Die Unterstützung von Stargate für Metis endete am 23. Oktober, und die Liquidität in den V1- und V2-Pools dort musste vorher abgezogen werden. Metis warnt, dass sich der Rest über die normale Oberfläche womöglich nur schwer oder gar nicht abheben lässt.",
+    "deadlineNote": "Die Unterstützung von Stargate für Metis Andromeda endete am 23. Oktober, und DVN und Executor von LayerZero Labs bedienen Metis seit dem 30. Oktober nicht mehr. Betroffene Pools: die USDT-, ETH- und METIS-Pools auf Stargate V2 und die USDT-, METIS- und MAI-Pools auf Stargate V1.",
+    "who": "Liquiditätsanbieter in Stargate-V1- und -V2-Pools auf Metis und alle, die METIS, HERA, QI oder MTVT über LayerZero V1 auf eine andere Chain übertragen haben.",
+    "todo": "Vor der Frist: LP-Token unstaken, falls gestakt, dann die Liquidität in der Stargate-App abziehen und METIS, HERA, QI oder MTVT, die über LayerZero V1 hinausgegangen sind, auf demselben Weg zurück auf Metis bringen. Hast du die Frist verpasst, sollst du laut Metis das Metis-Team kontaktieren.",
+    "caution": "Laut Metis lässt sich Liquidität, die nach der Frist in Stargate-Pools auf Metis liegt, über die normale Stargate-Oberfläche womöglich nur schwer oder gar nicht abheben. Von der kanonischen Bridge von Metis ausgegebene m.USDC, m.USDT, WETH und METIS sind nicht betroffen.",
+    "official": [
+      "Metis-Blog: Ende von Stargate und Änderungen bei LayerZero auf Metis Andromeda"
+    ]
+  },
+  "mint-blockchain-shutdown": {
+    "name": "Mint Blockchain abgeschaltet",
+    "summary": "Mint Blockchain ist abgeschaltet; die Frist war der 20. Oktober. Die offizielle Auszahlungsseite bringt nur ETH, WBTC, USDC und USDT zurück auf Ethereum.",
+    "deadlineNote": "Die Frist war der 20. Oktober.",
+    "who": "Alle mit Assets auf der Mint-Chain.",
+    "todo": "Die offizielle Seite `mintchain.io/withdraw` unterstützt nur das Abheben von ETH, WBTC, USDC und USDT auf Ethereum (laut Hinweis von imToken werden Auszahlungen wöchentlich bearbeitet und kommen nach etwa 10 Tagen an).",
+    "caution": "Ob nach der Frist noch etwas anderes möglich ist, hat Mint nicht gesagt.",
+    "official": [
+      "Auszahlungsseite von Mint"
+    ]
+  },
+  "coinex-csc-shutdown": {
+    "name": "CoinEx Smart Chain (CSC) und OneSwap abgeschaltet",
+    "summary": "CoinEx wird abgewickelt. Die CSC-Chain und OneSwap wurden am 29. September gestoppt, und Geld auf Konten der Börse muss bis zum 22. Dezember abgehoben werden.",
+    "deadlineNote": "CSC und OneSwap wurden am 29. September gestoppt, und Einlösungen über die Bridge endeten zur selben Zeit. Auszahlungen von der Börse CoinEx bleiben bis zum 22. Dezember, 10:00 Uhr UTC+8, möglich.",
+    "who": "Alle mit Assets auf CSC oder OneSwap und alle, die noch Geld auf einem Konto der Börse CoinEx haben.",
+    "todo": "Die Frist auf der Chain ist abgelaufen. Heb Geld von deinem Börsenkonto vor dem 22. Dezember ab. Danach kommt USDT in eine separate Verwahrung mit einer Verwahrgebühr von 5% pro Monat; um es zu bekommen, schreib bis zum 22. August 2028 an support@coinex.com.",
+    "caution": "Laut CoinEx ist das seine letzte Ankündigung, und jede „neue Ankündigung“ in seinem Namen danach ist gefälscht.",
+    "official": [
+      "Ankündigung von CoinEx"
+    ]
   }
 }
