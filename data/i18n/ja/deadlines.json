@@ -473,7 +473,7 @@
   },
   "stader-bnbx-redemption": {
     "name": "Stader：BNBxの償還はコントラクトからメールでの申請へ",
-    "summary": "10月29日から、StaderのBNBxはコントラクトで償還できなくなりました。代わりにStaderの公式ブログに従ってメールで申請します：1 BNBxにつき1.1099 BNB、申請ごとに0.2 BNBxの手数料を差し引き、四半期ごとに精算されます。",
+    "summary": "10月29日から、StaderのBNBxはコントラクトで償還できず、Staderの公式ブログに従いメールで申請します：1 BNBxにつき1.1099 BNB、申請ごとに手数料0.2 BNBx、四半期ごとに精算。",
     "deadlineNote": "BNBxは1月29日にサポートが終了し、それ以降は償還のみになっています。比率は3月からBNBx一つにつき1.1099 BNBに固定されています。10月29日より前は、コントラクトで即時・無料で償還できました（経過済み）。10月29日からは、償還はメールでの申請だけになり、四半期ごとに精算されます。申請をいつまで受け付けるかは、お知らせに書かれていません。",
     "who": "BNB Chain上にまだBNBxを持っている人。DEXのプールやレンディングプロトコルにある場合は、先にご自身のウォレットに引き出すようStaderは案内しています。",
     "todo": "Staderの公式ブログ（`staderlabs.com/blog`）のお知らせにある手順だけに従ってください：BNBxを持っているウォレットから、BNB Chainでだけ送り、投稿が説明する形式で取引をメールで送ります。Staderはトークンを送ったウォレットにしか支払わないので、取引所のアカウントからは送らないでください。手数料は0.2 BNBxで固定なので、残高が少ないほど割合が大きくなります。",
@@ -623,6 +623,107 @@
     "todo": "AWEは、遅れての交換はできないとしています。交換されなかったトークンの扱いは、コミュニティのガバナンス提案で決められます。",
     "official": [
       "AWEブログ：移行期間の終了"
+    ]
+  },
+  "tether-alloy": {
+    "name": "Tether：Alloy by TetherとaUSD₮の終了",
+    "summary": "Alloy by TetherとaUSD₮は9月17日に終了しました。それまでに、ユーザーはaUSD₮を返し、XAU₮の担保を取り戻す必要がありました。",
+    "deadlineNote": "期限は9月17日でした。",
+    "who": "AlloyでXAU₮を担保にaUSD₮を発行した人。",
+    "todo": "期限前に、ユーザーはaUSD₮を返し、XAU₮の担保を取り戻す必要がありました。Tetherによると、今はプラットフォームからはこの操作ができません。",
+    "caution": "期限後に担保がどうなるかは、Tetherは明らかにしていません。",
+    "official": [
+      "Tetherのお知らせ"
+    ]
+  },
+  "trust-wallet-networks": {
+    "name": "Trust Wallet、24のネットワークへの対応を終了",
+    "summary": "9月15日から、Trust Walletには24のネットワークが表示されなくなりましたが、資産はチェーン上にそのまま残っています。EVMチェーンは、カスタムネットワークとしてご自身で追加できます。",
+    "deadlineNote": "9月15日に、これらのネットワークはウォレットの一覧から消えました。Trust Handleはそれより先、9月7日に止まりました。",
+    "who": "これらのネットワークに資産があるTrust Walletの利用者：上に挙げた15のEVMチェーンと、9つの非EVMチェーン。",
+    "todo": "資産はチェーン上にそのまま残っています。EVMチェーンは、検証済みのRPCを使ってカスタムネットワークとしてご自身で追加してください。非EVMチェーンは、そのチェーンに対応するほかのウォレットにウォレットをインポートしてください。",
+    "caution": "RPCは、そのチェーンの公式ドキュメントにあるものだけを使ってください。シードフレーズは必ず信頼できるウォレットアプリの中でご自身で入力し、ウェブサイトには絶対に入力しないでください。",
+    "official": [
+      "Trust Walletブログ"
+    ]
+  },
+  "vanar-vanry-migration": {
+    "name": "Vanar：VANRYはBaseへ移行",
+    "summary": "VANRYをBaseに移す期間は9月10日に終わり、Vanarのページには、これ以上の移行は処理しないと書かれています。",
+    "deadlineNote": "交換の期間は8月11日13:00 UTCから9月10日13:00 UTCまででした。まだステーキング解除中だったトークンは、9月11日にBaseでエアドロップされました。",
+    "who": "Ethereum、Polygon、Vanar ChainにVANRYを持っている人。",
+    "todo": "Vanarのページによると、期間の終了後は移行できません。9月10日より前にステーキング解除を始めたのにトークンを受け取っていない場合は、Vanarにメールしてください。",
+    "official": [
+      "Vanarの交換ページ"
+    ]
+  },
+  "superposition-shutdown": {
+    "name": "Superpositionチェーンの終了、Arbitrum Oneへ",
+    "summary": "Superpositionチェーンは9月8日に終了しました。Superpositionは、その後チェーンに残った資産には「アクセスできなくなる可能性がある」としていました。",
+    "deadlineNote": "チェーンは9月8日に終了しました。",
+    "who": "終了時点で、まだSuperpositionに資産があった人。",
+    "todo": "期限前に、ユーザーはCamelotなどのポジションから抜け、ArbitrumのネイティブブリッジかRelayでArbitrum Oneに戻る必要がありました。",
+    "caution": "11月5日時点で、公式の代わりの手段は発表されていません。",
+    "official": [
+      "SuperpositionのX投稿：8月4日のお知らせ"
+    ]
+  },
+  "arbitrum-nova-maintenance": {
+    "name": "Arbitrum Novaはメンテナンスモード（終了ではない）",
+    "summary": "9月2日から、Arbitrum Novaは終了ではなくメンテナンスモードです。公式ブリッジでArbitrum Oneに移すことが推奨されています。",
+    "deadlineNote": "移行期間は6月4日から9月2日まででした。9月2日からチェーンはメンテナンスのみとなり、RPCへのアクセスはより制限されています。",
+    "who": "Arbitrum Novaに資産がある人（MOONの保有者を含む）。",
+    "todo": "公式のArbitrum PortalのブリッジでArbitrum Oneに移してください。金額が大きい場合は、先にEthereumに引き出してください（7日間のチャレンジ期間があります）。MOONには直接の経路がないので、先にEthereumに移す必要があります。",
+    "caution": "公式ブリッジは第3段階でも使えます。AlchemyはNovaのRPCを停止しました。",
+    "official": [
+      "Arbitrumフォーラム：NovaのFAQ"
+    ]
+  },
+  "ton-old-bridge": {
+    "name": "旧TONブリッジ（bridge-v3.ton.org）が完全に終了",
+    "summary": "旧TONブリッジは9月1日に完全に閉鎖されました。EthereumとBSCのWrapped TON、TON上のjUSDTとjUSDCは、それまでにブリッジで戻す必要がありました。",
+    "deadlineNote": "9月1日から、旧ブリッジはどの送金も処理しません。",
+    "who": "EthereumかBNB ChainにWrapped TONを持っている人、またはTON上にjUSDT、jUSDCなどのトークンを持っている人。",
+    "todo": "期限前に、EthereumとBSCのWrapped TONはTONへ、TON上のjUSDT、jUSDCなどのトークンはEthereumへ、ブリッジで戻す必要がありました。",
+    "caution": "11月5日時点で、公式チャンネルに代わりの手段は投稿されていません。",
+    "official": [
+      "TON Statusの公式Telegramチャンネル"
+    ]
+  },
+  "dfk-chain-sunset": {
+    "name": "DeFi Kingdoms：DFK Chainの終了",
+    "summary": "DFK Chainは8月28日に終了予定でした（経過済み）。DeFi Kingdomsは、JEWELやBTC、ETH、USDC、AVAXなどDFK外のトークンは移行できないとし、保有者が事前に自分でブリッジする必要があるとしていました。",
+    "deadlineNote": "7月31日に発表され、終了日は8月28日とされました。",
+    "who": "DFK Chain上でJEWEL、またはBTC、ETH、USDC、AVAXなどのDFK外のトークンを持っている人、そこでの流動性提供者、スマートウォレットの利用者。",
+    "todo": "DeFi Kingdomsの求めたこと：スマートウォレットの利用者は、ブリッジの前に資産を通常のウォレットに移し、DFKネイティブの資産二つのプールを含め、すべてのLPを解消すること。当時チームは、JEWELはAvalanche C-Chainにブリッジでき、DFKネイティブの資産の移行は準備中で、詳細は追って知らせるとしていました。",
+    "caution": "DeFi Kingdomsは、JEWELやDFK外のトークンを移行することも、再発行することも、管理することもできないとしていました。7月31日のお知らせには、8月28日以降もチェーンに残っているものがどうなるかは書かれていません。",
+    "official": [
+      "DeFi KingdomsのX投稿：7月31日のお知らせ",
+      "DeFi KingdomsのX投稿：やるべきこと"
+    ]
+  },
+  "moonbeam-glmr-base": {
+    "name": "Moonbeam：GLMRはBaseへ移行",
+    "summary": "GLMRをBaseに移す期限は7月31日に過ぎました。Moonbeamは、先にチェーン上のプロトコルから資金を引き出し、GLMRをBaseへ1:1でブリッジするよう求めていました。ブリッジされなかったGLMRの扱いは、お知らせにありません。",
+    "deadlineNote": "期限は7月31日でした（時刻とタイムゾーンは示されていません）。Moonbeamは、7月31日までの移行期間中はチェーンが動き続け、チェーンの運用が終わるとオンチェーンのプロトコルに残った資金には「アクセスできなくなる可能性がある」としていました。チェーンがいつ止まるかは、お知らせに書かれていません。",
+    "who": "Moonbeam上のGLMRの保有者と、そのチェーンのプロトコル（流動性、レンディング、ステーキングのコントラクトなど）に資金がある人。取引所にあるGLMRは、取引所が自動で移行を処理するとMoonbeamはしています。",
+    "todo": "手順は次のとおりでした：先にチェーン上のプロトコルから資金を引き出し、公式の移行ページでGLMRをBaseへ1:1でブリッジする。7月3日のお知らせは、期限後も移行できるかどうか、ブリッジされなかったトークンをどう扱うかを明らかにしていません。",
+    "caution": "公式の移行ページは`migrate.portal.moonbeam.network`です。7月3日のお知らせは、期限後もこのページが使えるかどうかを明らかにしていません。「遅れての移行」を持ちかけてDMしてくる人は無視してください。",
+    "official": [
+      "Moonbeamニュース：「Moonbeam Network Relaunches on Base」",
+      "MoonbeamのX投稿：7月3日のお知らせ"
+    ]
+  },
+  "moonriver-movr-base": {
+    "name": "Moonriver：MOVRはBaseへ移行",
+    "summary": "MOVRをBaseに移す期限は7月31日に過ぎました。Moonriverは、先にチェーン上のプロトコルから資金を引き出し、MOVRを二段階でBaseへ1:1でブリッジするよう求めていました。ブリッジされなかったMOVRの扱いは、お知らせにありません。",
+    "deadlineNote": "期限は7月31日でした（時刻とタイムゾーンは示されていません）。Moonriverは、チェーンの運用が終わるとオンチェーンのプロトコルに残った資金には「永久にアクセスできなくなる可能性がある」としていました。チェーンがいつ止まるかは、お知らせに書かれていません。",
+    "who": "Moonriver上のMOVRの保有者と、そのチェーンのプロトコル（流動性、レンディング、ステーキングのコントラクトなど）に資金がある人。取引所にあるMOVRはやることがなく、取引所が自動で処理するとMoonriverはしています。",
+    "todo": "手順は次のとおりでした：先にチェーン上のプロトコルから資金を引き出し、公式の移行ページで二回に分けてブリッジする。MOVRはMoonriverからMoonbeamへ（xcMOVRとして）移り、その後、移行用のブリッジがBase上のMOVRに1:1、手数料なしで替えます。7月7日のお知らせは、期限後も移行できるかどうかを明らかにしていません。",
+    "caution": "公式の移行ページは`migrate.portal.moonbeam.network`で、関連するコントラクトもそこで確認できます。7月7日のお知らせは、期限後も移行ポータルが使えるかどうかを明らかにしていません。「遅れての移行」を持ちかけてDMしてくる人は無視してください。",
+    "official": [
+      "Moonbeamニュース：「MOVR is Migrating to Base」",
+      "MoonriverのX投稿：7月7日のお知らせ"
     ]
   }
 }
