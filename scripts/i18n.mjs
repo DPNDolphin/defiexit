@@ -72,7 +72,9 @@ const missing = (a, b) => {
 
 // 译文和英文比:英文里的这几样,译文里一样不少、原样都在;译文也不能多出来网址、地址、代码、币符号、常见顶级域的域名。
 // 数字:英文里的每个数,译文里都要有(一个都不能改、不能丢);译文多出来的数,只能是英文里月份名、数字词说的那个数。回的是错在哪,对就回 null
-export function tokenDiff(en, tr) {
+// code:译文是哪种语言(认这种语言的月份名用;不给就只认英文月份名)
+export function tokenDiff(en, tr, code = null) {
+  [en, tr] = isoDates(String(en), String(tr), code);
   const a = tokens(en), b = tokens(tr);
   const NAMES = { codes: "`代码`", vars: "{{变量}}", urls: "网址", addrs: "0x 地址", domains: "域名", syms: "$币符号", marks: "编号", bold: "**粗体** 标记" };
   for (const k of Object.keys(NAMES)) {
@@ -86,6 +88,40 @@ export function tokenDiff(en, tr) {
   const ok = explained(a.prose);
   const byDigits = sameNums(a.nums, b.nums, ok);
   return byDigits && sameNums(numValues(a.prose), numValues(b.prose), ok) ? byDigits : null;
+}
+
+// 英文里写成 2026-11-05 的日子:译文可以照原样写,也可以按这种语言的习惯写(「5 November 2026」「2026年11月5日」「5. Nov. 2026」):
+// 年、日(前面的 0 可以不写)都在,月写成数字或者这种语言的月份名(按 Intl 的长、短写法认,俄文这种还认「5 ноября」里的变格)就算对。
+// 对上的这几个数从两边拿掉,不再按一个个数去比;对不上的照常比(会报少了哪个数)
+const MONTH_NAMES = new Map();
+function monthNames(code, m) {
+  const loc = (code && langInfo(code)?.locale) || "en-US", key = `${loc} ${m}`;
+  if (!MONTH_NAMES.has(key)) {
+    const d = new Date(Date.UTC(2026, m - 1, 15));
+    const names = [{ month: "long" }, { month: "short" }].map((o) => new Intl.DateTimeFormat(loc, { ...o, timeZone: "UTC" }).format(d));
+    for (const month of ["long", "short"]) names.push(...new Intl.DateTimeFormat(loc, { day: "numeric", month, year: "numeric", timeZone: "UTC" }).formatToParts(d).filter((p) => p.type === "month").map((p) => p.value));
+    MONTH_NAMES.set(key, [...new Set(names.map((x) => x.toLowerCase().replace(/\.$/, "")).filter((x) => !/^\d+$/.test(x)))]);
+  }
+  return MONTH_NAMES.get(key);
+}
+function isoDates(en, tr, code) {
+  for (const [iso, y, mo, d] of [...en.matchAll(/(?<!\d)(\d{4})-(\d{2})-(\d{2})(?!\d)/g)]) {
+    if (tr.includes(iso)) {
+      en = en.replace(iso, " ");
+      tr = tr.replace(iso, " ");
+      continue;
+    }
+    const num = (n) => new RegExp(`(?<!\\d)0?${Number(n)}(?!\\d)`);
+    // 月份名里也可能带着数字(越南文「tháng 11」、日文「11月」):对上的那个月份名整个拿掉,里面的数不再算
+    const name = monthNames(code, Number(mo)).find((x) => tr.toLowerCase().includes(x));
+    let t = name ? tr.replace(new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"), " ") : tr;
+    if (!new RegExp(`(?<!\\d)${y}(?!\\d)`).test(t) || !num(d).test(t) || !(name || num(mo).test(t))) continue;
+    t = t.replace(new RegExp(`(?<!\\d)${y}(?!\\d)`), " ").replace(num(d), " ");
+    if (!name) t = t.replace(num(mo), " ");
+    en = en.replace(iso, " ");
+    tr = t;
+  }
+  return [en, tr];
 }
 
 // 英文里月份名、数字词说的数(Nov 是 11、two 是 2、a thousand 是 1000):译文把它们写成数字,多出来的这些不算错
@@ -147,12 +183,14 @@ const HAN = /[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]+/; // 汉字(含扩展 A 
 // 只有简体中文才用的字(日文写作「説、時、銭、確、認……」):日文译文里出现这些,多半是中文没换掉
 const SIMPLIFIED = /[们这说时钱链币账户务项页网么吗呢还进过发问题关闭开设计请认证签权确实处给让对应击该显钮单输读选择错误类转换资额价钥词记态现场询结产帮图动钟从个长见间线续种无报险骗领质锁桥]/;
 
-// 回的是混进去的那一段中文,没有就回 null。zhSrc 是这一条的中文原文(有的话):日文里和中文原文一模一样的一长句,也算没翻
+// 回的是混进去的那一段中文,没有就回 null。zhSrc 是这一条的中文原文(有的话):日文里和中文原文一模一样、汉字有 6 个以上的,也算没翻
+// (「数量 × 0.995」「注意」这种日文本来就这么写的不算)
+const hanCount = (s) => (s.match(new RegExp(HAN.source, "g")) || []).join("").length;
 export function chineseIn(code, s, zhSrc = null) {
   s = String(s);
   if (code === "zh") return null;
   if (code === "ja") {
-    if (zhSrc && s === zhSrc && s.length >= 8 && HAN.test(s)) return s.slice(0, 24);
+    if (zhSrc && s === zhSrc && hanCount(s) >= 6) return s.slice(0, 24);
     return s.match(SIMPLIFIED)?.[0] || null;
   }
   if (code === "ko") return s.match(HAN)?.[0] || null;
@@ -171,7 +209,7 @@ const guideKind = (path) => (/images\[\d+\](\.caption)?$/.test(path) ? "caption"
 // kind:指南里的截图说明("caption")、步骤条目("item"),记号要和英文一样
 export function checkText(code, en, tr, path, fail, zhSrc = null, kind = null) {
   if (typeof tr !== "string" || !tr.trim()) return fail(`${path} 要是不空的一段文字`);
-  const diff = tokenDiff(en, tr);
+  const diff = tokenDiff(en, tr, code);
   if (diff) fail(`${path}:${diff}`);
   const cjk = chineseIn(code, tr, zhSrc);
   if (cjk) fail(`${path} 里有中文「${cjk}」`);
@@ -311,7 +349,7 @@ function sameOut(code, en, tr, path, fail, full) {
     if (cjk) fail(`${path} 回的文字里有中文「${cjk}」`);
     if (!full) return;
     for (const m of new Set(en.match(MARK) || [])) if (!tr.includes(m)) fail(`${path}:英文显示了参数 ${m},这里没显示:${tr}`);
-    const diff = tokenDiff(en.replace(MARK, " "), tr.replace(MARK, " "));
+    const diff = tokenDiff(en.replace(MARK, " "), tr.replace(MARK, " "), code);
     if (diff) fail(`${path}:${diff}`);
     return;
   }

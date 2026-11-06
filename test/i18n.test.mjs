@@ -100,6 +100,20 @@ test("译文里不能改的:数字、网址、域名、0x 地址、`代码`、{{
     ["About 5.2 million USDC is stuck", "約52万 USDC が残っています", /数字/],
   ];
   for (const [en, tr, re] of bad) assert.match(tokenDiff(en, tr) || "", re, tr);
+  // 英文写成 2026-11-05 的日子,译文可以按这种语言的习惯写:年、日都在,月写成数字或这种语言的月份名(含变格、带数字的月份名)
+  const iso = "Below is what the official docs say (checked 2026-11-05). Numbers change.";
+  for (const [code, tr] of [
+    ["id", "Berikut isi dokumentasi resmi (dicek 5 November 2026). Angkanya bisa berubah."],
+    ["vi", "Đây là tài liệu chính thức (kiểm tra ngày 5 tháng 11 năm 2026). Con số có thể thay đổi."],
+    ["ja", "公式ドキュメントの内容(2026年11月5日確認)。数字は変わります。"],
+    ["ko", "공식 문서 내용입니다(2026년 11월 5일 확인). 숫자는 바뀝니다."],
+    ["ru", "Вот что пишут документы (проверено 5 ноября 2026 г.). Цифры меняются."],
+    ["de", "Das steht in den Dokumenten (geprüft am 05.11.2026). Zahlen ändern sich."],
+    ["tr", "Resmi belgelerde yazanlar (5 Kasım 2026 tarihinde kontrol edildi). Rakamlar değişir."],
+    ["fr", "Voici ce que disent les docs (vérifié le 2026-11-05). Les chiffres changent."],
+  ]) assert.equal(tokenDiff(iso, tr, code), null, `${code}: ${tr}`);
+  assert.match(tokenDiff(iso, "Esto dicen los documentos (revisado el 6 de noviembre de 2026).", "es") || "", /数字/, "日子写错了");
+  assert.match(tokenDiff(iso, "Veja os documentos (verificado em 5 de dezembro de 2026).", "pt") || "", /数字「11」/, "月写错了");
   // 中文:拼音文字里一个汉字、中文标点都不能有;日文可以有汉字,不能有只有简体中文才用的字,也不能整句照抄中文;韩文不能有汉字
   assert.equal(chineseIn("es", "Hola 你好"), "你好");
   assert.equal(chineseIn("de", "Gebühr：0"), "：");
@@ -107,6 +121,7 @@ test("译文里不能改的:数字、网址、域名、0x 地址、`代码`、{{
   assert.equal(chineseIn("ja", "这一步会动你的资产"), "这");
   assert.equal(chineseIn("ja", "退出截止日历暂停服务", "退出截止日历暂停服务"), "退出截止日历暂停服务");
   assert.equal(chineseIn("ja", "注意", "注意"), null, "短的词日文和中文一样写,不算没翻");
+  assert.equal(chineseIn("ja", "数量 × 0.995", "数量 × 0.995"), null, "汉字少的,日文和中文一样写也不算没翻");
   assert.equal(chineseIn("ko", "수수료는 0.01달러 미만"), null);
   assert.equal(chineseIn("ko", "手數料"), "手數料");
   assert.equal(chineseIn("ko", String.fromCodePoint(0xf900)), String.fromCodePoint(0xf900), "兼容汉字也算汉字");
