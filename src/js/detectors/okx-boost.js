@@ -7,8 +7,8 @@
 import { shortAddr, floorTo, fmt } from "../lib/net.js";
 import { readBoost, boostUnlocked, prices } from "../lib/xlayer.js";
 import { TEXT } from "./okx-boost.text.js";
-import { locale } from "../lib/langs.js";
-import { pickText } from "../lib/dtext.js";
+import { locale, listSep } from "../lib/langs.js";
+import { pickText, textLang } from "../lib/dtext.js";
 
 const MIN_GAS = 0.00001; // 一笔解除质押实测约 0.0000008 OKB(gas 4.5 万 × 0.02 gwei),留十几倍余量
 // 给用户看的话:中英两套在 okx-boost.text.js,别的语言在 detectors/i18n/okx-boost.<编号>.js(缺的退回英文,见 lib/dtext.js);
@@ -41,7 +41,7 @@ async function load(address) {
 function lines(a, T, lang) {
   const out = [];
   if (a.held.length) {
-    out.push(T.line.lock(a.held.map((x) => `${qty(x.qty)} ${x.sym}`).join(zhText(lang) ? "、" : ", ")));
+    out.push(T.line.lock(a.held.map((x) => `${qty(x.qty)} ${x.sym}`).join(listSep(textLang("okx-boost", TEXT, lang)))));
     const end = Math.max(...a.held.map((x) => x.end));
     out.push(T.line.end(when(end, lang), Date.now() / 1000 >= end));
   } else {

@@ -214,6 +214,7 @@ test("检测器译文文件:照抄英文的能过;键拼错、类型和参数个
   assert.doesNotThrow(() => checkDText("es", "okx-boost", { arr: { list: (items) => (items || []).map((x) => `${x.amount} ${x.sym}`).join(", ") } }, "okx-boost.es.js"));
   assert.doesNotThrow(() => checkDText("es", "hyperliquid", { choice: { sellBody: (amount, s) => (s ? HLen.choice.sellBody(amount, s) : "") } }, "hyperliquid.es.js"));
   assert.doesNotThrow(() => checkDText("es", "xlayer", { "okx-boost": (v) => (v ? h["okx-boost"](v) : {}) }, "xlayer.es.js"));
+  assert.doesNotThrow(() => checkDText("ru", "okx-boost", { arr: { list: (items) => (Array.isArray(items) ? items : []).map((x) => `${x?.amount} ${x?.sym}`).join(", ") } }, "okx-boost.ru.js"), "Array.isArray 防着不是列表的,替身参数照样是列表");
   // 文件名:<名字>.<编号>.js
   const dir = tmp("dx-dt-");
   try {
@@ -580,5 +581,44 @@ test("样例语言从头到尾走一遍构建:页面、hreflang、og:locale、�
   } finally {
     rmSync(out, { recursive: true, force: true });
     rmSync(fixRoot, { recursive: true, force: true });
+  }
+});
+
+// 放在最后:会把十种语言的界面文字都换成空的(全用英文),别的测试装的样例就被盖掉了
+test("每一种语言都出一遍(都还没有译文,全用英文):中文以外的页面上,除了语言菜单,一个汉字、中文标点都没有;体检结果页顶上的截止提醒卡也一样", async () => {
+  const root = tmp("dx-all-"), out = tmp("dx-allout-");
+  try {
+    writeFileSync(join(root, "package.json"), '{ "type": "module" }\n');
+    mkdirSync(join(root, "src", "js", "lib", "i18n"), { recursive: true });
+    const codes = LANGS.map((l) => l.code).filter((c) => !BASE.includes(c));
+    for (const c of codes) writeFileSync(join(root, "src", "js", "lib", "i18n", `${c}.js`), "export default {};\n");
+    const langs = await loadUI(root);
+    assert.equal(langs.length, 12);
+    build({ out, i18nRoot: root, langs, dtexts: {} });
+    const pages = (dir) => readdirSync(dir).flatMap((f) => {
+      const p = join(dir, f);
+      return statSync(p).isDirectory() ? pages(p) : f.endsWith(".html") ? [p] : [];
+    });
+    // 体检结果页顶上的提醒卡:浏览器里按嵌进页面的截止日历现画(lib/due.js),这里用很小的假页面画一遍
+    class N { constructor(tag) { this.tag = tag; this.children = []; } setAttribute() {} append(...x) { this.children.push(...x); } }
+    globalThis.Node = N;
+    globalThis.document = { documentElement: { lang: "en" }, createElement: (t) => new N(t), createElementNS: (_, t) => new N(t) };
+    const { dueCard } = await import("../src/js/lib/due.js");
+    const text = (n) => (typeof n === "string" ? n : n.children.map(text).join(" "));
+    const unesc = (s) => s.replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+    for (const c of ["en", ...codes]) {
+      const list = pages(join(out, c));
+      assert.equal(list.length, 2 + 4 + 2 + TOPICS.length, c); // 首页、体检结果、四份指南、截止日历、专题列表、每篇专题
+      for (const f of list) assert.equal(noMenu(read(f)).match(CJK), null, f);
+      document.documentElement.lang = LANGS.find((l) => l.code === c).html;
+      const events = [...read(join(out, c, "check", "index.html")).matchAll(/<li data-event="([^"]*)"><\/li>/g)].map((m) => JSON.parse(unesc(m[1])));
+      for (const e of events) {
+        const card = text(dueCard({ e, where: e.chains.slice(0, 2), tokens: (e.tokenContracts || []).slice(0, 2).map((x) => ({ sym: x.symbol, loan: false })) }, makeT(c), c, new Date()));
+        assert.equal(card.match(CJK), null, `${c} ${e.id}: ${card}`);
+      }
+    }
+  } finally {
+    rmSync(out, { recursive: true, force: true });
+    rmSync(root, { recursive: true, force: true });
   }
 });

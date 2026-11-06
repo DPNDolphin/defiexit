@@ -10,8 +10,8 @@ import "./site.js";
 import { detectors } from "./detectors/index.js";
 import { isEvmAddress, shortAddr, floorTo } from "./lib/net.js";
 import { el, icon, rowsTable, setText, copy, toast } from "./lib/ui.js";
-import { makeT, pageLang, prefix, errText } from "./lib/i18n.js";
-import { locale, listSep } from "./lib/langs.js";
+import { makeT, pageLang, prefix, errText, sepFor } from "./lib/i18n.js";
+import { locale } from "./lib/langs.js";
 import { chainLogo, chainKey, gasSym, mergeDefi, EXTRA } from "./lib/chains.js";
 import { HOW } from "./lib/xlayer.text.js";
 import { pickText } from "./lib/dtext.js";
@@ -214,7 +214,7 @@ function paint() {
   if (assets.state === "busy" || assets.state === "error") nodes.push(failRow(t("assetsH"), t(assets.state === "busy" ? "assetsBusy" : "assetsFail"), "assets"));
   if (done && !nDefi && !dust.length && !wallets.length && !partial) {
     // 什么都没查到。查了全部资产的,照实说查了多少;没接全部资产(off)才叫用户自己去 DeBank 看
-    const list = recipes.map((r) => r.protocol).join(listSep(lang));
+    const list = recipes.map((r) => r.protocol).join(sepFor(lang, "nothingP"));
     nodes.push(el("section", { class: "nothing" },
       el("h2", {}, assets.state === "empty" ? t("nothingAllH") : t("nothingH", recipes.length)),
       el("p", { class: "sub" }, assets.state === "empty" ? t("nothingAllP") : t("nothingP", list)),

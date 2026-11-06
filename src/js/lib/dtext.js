@@ -15,6 +15,9 @@ export function addText(name, code, dict) {
 // 译文盖在英文上:两边都是一组(对象)的往下一层接着盖;别的(文字、函数)有译文就用译文
 export const overlay = (en, x) => Object.fromEntries(Object.keys(en).map((k) => [k, !(k in x) ? en[k] : isObj(en[k]) && isObj(x[k]) ? overlay(en[k], x[k]) : x[k]]));
 
+// 这一块实际用的是哪种语言的话(有这种语言的就是它,不然是英文):拼列表的分隔符跟着它走
+export const textLang = (name, TEXT, lang) => (TEXT[lang] || (EXTRA[name] && EXTRA[name][lang]) ? lang : "en");
+
 export function pickText(name, TEXT, lang) {
   if (TEXT[lang]) return TEXT[lang];
   const x = EXTRA[name] && EXTRA[name][lang];

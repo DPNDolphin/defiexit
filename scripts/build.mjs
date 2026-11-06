@@ -8,8 +8,8 @@ import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { site } from "./site.mjs";
 import { zh as zhPunct } from "../src/js/lib/zh.js";
-import { makeT, hasText } from "../src/js/lib/i18n.js";
-import { BASE, langInfo, listSep } from "../src/js/lib/langs.js";
+import { makeT, hasText, sepFor } from "../src/js/lib/i18n.js";
+import { BASE, langInfo } from "../src/js/lib/langs.js";
 import { loadUI, loadDTexts, readDataOverlays, applyDeadlines, applyTopic, checkRecipeOverlay, recipeLeftover, recipeLangs, readRecipeOverlay } from "./i18n.mjs";
 import { upcoming, httpsHost, DUE_KINDS } from "../src/js/lib/due.js";
 import { svgString as ico } from "../src/js/lib/icons.js";
@@ -215,7 +215,7 @@ function home(tx, recipes) {
       <p class="err" id="addrErr" role="alert" hidden></p>
       <button class="btn primary block" type="submit">${tx.h("checkFree")}${ico("arrowRight")}</button>
       <p class="hint" id="addrHint">${tx.h("addrHint")}</p>
-      <p class="hint">${tx.h("scopeNow", recipes.map((r) => r.protocol).join(listSep(tx.lang)))}</p>
+      <p class="hint">${tx.h("scopeNow", recipes.map((r) => r.protocol).join(sepFor(tx.lang, "scopeNow")))}</p>
     </form>
     <ul class="feats">
       <li>${ico("eye")}<span>${tx.h("feat1")}</span></li>

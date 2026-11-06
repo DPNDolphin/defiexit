@@ -364,3 +364,16 @@ test("账户模式名原样显示前先过滤", async () => {
   });
   await assert.rejects(detect(ADDR), (e) => e.message.includes("(?)") && !e.message.includes("evil"));
 });
+
+test("Hyperliquid:别的语言没有自己的译文时用英文那套;一个汉字都没有", async () => {
+  mockAll(account({
+    spotClearinghouseState: { balances: [{ coin: "USDH", total: "40", hold: "0" }, { coin: "USDC", total: "20", hold: "0" }] },
+    l2Book: { levels: [[{ px: "0.985", sz: "1000" }], []] },
+  }));
+  const d = await diagnose(ADDR, NOW, "es");
+  assert.deepEqual(codes(d), ["low-bid"]);
+  mockAll(account({ userNonFundingLedgerUpdates: [withdrawal(5)] }));
+  const p = await diagnose(ADDR, NOW, "es");
+  assert.ok(p.findings[0].text.includes("Don't withdraw again"));
+  assert.ok(!/[　-〿一-鿿＀-￯]/.test(JSON.stringify([d, p])));
+});

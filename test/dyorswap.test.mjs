@@ -179,3 +179,10 @@ test("DYORSwap 诊断:只有 USDT 授权说明不了有过 LP(换币也要授权
   assert.deepEqual(limited.findings.map((x) => x.code), ["no-lp"]);
   assert.equal(limited.arrival, null);
 });
+
+test("DYORSwap:别的语言没有自己的译文时用英文那套,连接词跟着英文;一个汉字都没有", async () => {
+  const r = await withFetch(node({}), () => detect(addr("6"), "es"));
+  const d = await withFetch(node({ gas: 0n, grow: 1.05 }), () => diagnose(addr("c"), Date.now(), "es"));
+  assert.ok(!/[　-〿一-鿿＀-￯]/.test(JSON.stringify([r, d])));
+  assert.equal(r.vars.got, "10 USDT + 0.1 OKB");
+});

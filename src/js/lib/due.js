@@ -28,8 +28,7 @@
 // 页面开着不动时,体检结果页每分钟重算一遍(check.js),过了的卡跟着去掉。
 import { el, icon } from "./ui.js";
 import { chainKey } from "./chains.js";
-import { prefix } from "./i18n.js";
-import { listSep } from "./langs.js";
+import { prefix, sepFor } from "./i18n.js";
 import { daysLeft, timeLeft, nextMilestone } from "./deadline.js";
 
 // 还没过的和还没定日子的(now 是现在的时间;0 就是最后一天)
@@ -163,7 +162,7 @@ export function dueCard({ e, where, tokens = [], unnamed = false }, t, lang, now
   });
   // 按币对上的,说不出是哪个币(合约没写币名)就说得中性,不退回「还有资产」那种说法
   const title = e.matchBy === "token" && (unnamed || !tokens.length) ? t("dueTitle", "other", "", "")
-    : t("dueTitle", titleKind(e), where.join(listSep(lang)), date, { tokens: tokens.map((x) => t("dueToken", x.sym, x.loan)), before: startOfDay(e) });
+    : t("dueTitle", titleKind(e), where.join(sepFor(lang, "dueTitle")), date, { tokens: tokens.map((x) => t("dueToken", x.sym, x.loan)), before: startOfDay(e) });
   return el("article", { class: "due", "data-due": e.id },
     el("div", { class: "due-h" }, icon("alert"), el("h2", {}, title)),
     el("p", { class: "due-when" }, el("b", {}, left === null ? t("dueNoDate") : t("dueLeft", left)), e.name ? el("span", {}, e.name) : null),

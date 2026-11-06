@@ -145,3 +145,15 @@ test("OKX Boost:英文版没有中文", async () => {
   assert.ok(!/[　-〿一-鿿＀-￯]/.test(JSON.stringify([r, d])));
   assert.equal(r.rows[0].label, "Locked OKB");
 });
+
+test("OKX Boost:别的语言没有自己的译文时用英文那套,连接词、列表分隔符跟着英文,日期按页面语言写;一个汉字都没有", async () => {
+  const start = now() - 300 * DAY;
+  const r = await withFetch(node({ gas: 0n, locks: [w(5n * OKB, 2 * DAY, start, 0), w(200_000_000, 2 * DAY, start, 1), none] }), () => detect(addr("d"), "es"));
+  const d = await withFetch(node({ locks: [w(0, 2 * DAY, start, 0), none, none] }), () => diagnose(addr("e"), Date.now(), "es"));
+  assert.ok(!/[　-〿一-鿿＀-￯]/.test(JSON.stringify([r, d])));
+  assert.equal(r.rows[0].label, "Locked OKB");
+  assert.equal(r.vars.got, "0.5 OKB + 200 USDT0");
+  assert.ok(r.lines[0].endsWith("0.5 OKB, 200 USDT0"), r.lines[0]);
+  const end = new Date((start + 2 * DAY) * 1000).toLocaleString("es", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false });
+  assert.equal(r.rows.find((x) => x.label === "Unlocks").value, end);
+});

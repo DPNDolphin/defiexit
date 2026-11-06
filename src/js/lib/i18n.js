@@ -2,7 +2,7 @@
 // 构建脚本(拼静态页面)和浏览器(动态内容)共用这一份。
 // 中文照常写半角标点,显示前由 zh() 统一换成全角。英文按英文习惯写,不逐字对译。
 // 中英两套的键必须一一对应(测试会查);中英缺键直接报错,不悄悄退回另一种语言。别的语言缺的键退回英文。
-import { BASE, langInfo, langOf, prefixOf } from "./langs.js";
+import { BASE, langInfo, langOf, prefixOf, listSep } from "./langs.js";
 
 // 中文句子里嵌进一个词:词的头尾是英文就和汉字空一格,是汉字就不空(「由 Hyperliquid 执行」「由 WOOFi 的合约执行」)
 const embed = (w) => `${/^[一-鿿]/.test(w) ? "" : " "}${w}${/[一-鿿]$/.test(w) ? "" : " "}`;
@@ -772,6 +772,8 @@ export function addUI(code, dict) {
 }
 // 这种语言自己有没有这一条(没有就是退回英文的)
 export const hasText = (lang, key) => Object.prototype.hasOwnProperty.call(STR[lang] || UI[lang] || {}, key);
+// 塞进这一条里的列表(项目名、链名)用什么隔开:这一条翻了的用这种语言的(日文「、」),退回英文的用英文的逗号
+export const sepFor = (lang, key) => listSep(hasText(lang, key) ? lang : "en");
 
 export function makeT(lang) {
   const d = STR[lang] || (langInfo(lang) ? { ...STR.en, ...UI[lang] } : null);

@@ -314,7 +314,8 @@ const DTEXT_SRC = (name) => (name === "xlayer" ? "src/js/lib/xlayer.text.js 的 
 const MARK = /⟦[^⟧]*⟧/g;
 function stand(path, empty = false) {
   const item = () => stand(`${path}[0]`, empty);
-  return new Proxy(function () {}, {
+  // 底下是个数组:译文写了 Array.isArray(items) 这种防着不是列表的,照样当列表用
+  return new Proxy([], {
     get(_, k) {
       if (k === Symbol.toPrimitive) return (hint) => (hint === "number" ? (empty ? 0 : 7) : empty ? "" : `⟦${path}⟧`);
       if (k === Symbol.iterator) return function* () { if (!empty) yield item(); };
@@ -330,7 +331,6 @@ function stand(path, empty = false) {
       if (["slice", "concat", "sort", "reverse"].includes(k)) return () => (empty ? [] : [item()]);
       return empty ? "" : stand(`${path}.${k}`);
     },
-    apply: () => (empty ? "" : stand(`${path}()`)),
   });
 }
 // 每个函数跑四遍:参数都在、参数是 null、参数在但里面是空的、参数是 1(单数那一句);英文这样调用也会出错的那一遍不比
