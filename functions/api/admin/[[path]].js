@@ -1,5 +1,6 @@
 // 运营台接口(Cloudflare Pages Function,路径 /api/admin/*),只在 admin 主机上应答,别的主机一律 404。
 // GET  state            看板数据、待发、收件、宣传卡片、体检次数、问题记录的数(要登录;没设管理员就回 need: setup)
+// GET  outreach-done?at=&id=   点过的宣传卡片,比 (at, id) 那张更早的下一页(state 只给最近的一页,见 db.js 的 listReach)
 // POST setup / login / logout / logout-all
 // POST outbox / inbox    管理员点的状态、决定、备注、改过的草稿
 // POST outreach         宣传卡片:管理员点的状态(已发 / 跳过 / 改回待发)、发出去以后记下的回音(一句话、一个链接)
@@ -12,7 +13,7 @@
 // 改东西的请求(ingest 除外)必须同源、JSON、已登录;登录凭证是只给本主机的 __Host- cookie(SameSite=Strict)。
 
 import { reply, gone, hostOk, sameOrigin, readJson, clientIp } from "../../../server/ops/http.js";
-import { ensure, iso, getKv, getDocs, listOut, listIn, getOut, getIn, outRow, existing, purge, goneKey, goneStmt, markStmt, NOT_GONE, goneArg, outKeys, inKeys, sameRefs, sameInRefs, rowsAbout, hitCounts, problemCounts, problemKey, listReach, getReach, reachCardKey, reachToKey } from "../../../server/ops/db.js";
+import { ensure, iso, getKv, getDocs, listOut, listIn, getOut, getIn, outRow, existing, purge, goneKey, goneStmt, markStmt, NOT_GONE, goneArg, outKeys, inKeys, sameRefs, sameInRefs, rowsAbout, hitCounts, problemCounts, problemKey, listReach, reachDone, getReach, reachCardKey, reachToKey } from "../../../server/ops/db.js";
 import { MIN_PASSWORD, hashPassword, checkPassword, newSession, hasSession, endSession, endAll, cookie, mustWait, failed, succeeded, same } from "../../../server/ops/auth.js";
 import { ingest, checkText, outHosts, webUrl } from "../../../server/ops/ingest.js";
 import { sync } from "../../../server/ops/sync.js";
@@ -25,7 +26,7 @@ const hex = async (s) => [...new Uint8Array(await crypto.subtle.digest("SHA-256"
 
 async function state(db, admin, now) {
   await purge(db, now);
-  const [docs, outbox, inbox, syncAt, syncNote, off, needs, leads, auto, outStats, hits, p7, p30, outreach] = await Promise.all([
+  const [docs, outbox, inbox, syncAt, syncNote, off, needs, leads, auto, outStats, hits, p7, p30, reach] = await Promise.all([
     getDocs(db), listOut(db), listIn(db), getKv(db, "sync_at_ms"), getKv(db, "sync_note"),
     db.prepare("SELECT id FROM watch WHERE on_ = 0").all(),
     db.prepare("SELECT month, v FROM needs ORDER BY month DESC LIMIT 100").all(),
@@ -37,7 +38,8 @@ async function state(db, admin, now) {
   const past = needs.results.map((r) => { try { return { month: r.month, ...JSON.parse(r.v) }; } catch { return null; } }).filter(Boolean);
   let stats = {};
   try { stats = JSON.parse(outStats || "{}") || {}; } catch { stats = {}; }
-  return reply({ ok: true, me: { name: admin.name }, docs, outbox, inbox, outreach, needs: past, leads, auto, outStats: stats, hits, problems: { d7: p7, d30: p30 }, watchOff: off.results.map((r) => r.id), synced: { at: syncAt ? iso(Number(syncAt)) : null, note: syncNote || "" } });
+  // 宣传卡片:没点过的全给,点过的给最近一页;outreachMore.handled 是点过、这一页没给的张数(库里数的),after 是这一页最早那张
+  return reply({ ok: true, me: { name: admin.name }, docs, outbox, inbox, outreach: reach.items, outreachMore: { handled: reach.more, after: reach.after }, needs: past, leads, auto, outStats: stats, hits, problems: { d7: p7, d30: p30 }, watchOff: off.results.map((r) => r.id), synced: { at: syncAt ? iso(Number(syncAt)) : null, note: syncNote || "" } });
 }
 
 // 管理员贴的帖子链接:只收 x.com(或 twitter.com)上的帖子链接,统一成 https://x.com/<账号>/status/<编号>,去掉 ?s=20 这类尾巴
@@ -182,12 +184,13 @@ async function editReach(db, b, now) {
 }
 
 // 按要求删掉一张宣传卡片:先记这张卡片的编号(记下以后投递改不了、写不回这一行),再读它的收件邮箱,和删这一行同一批记进 gone。
-// 以后这个编号、写给这个邮箱的卡片都不再收(都只存哈希,见 db.js 的 reachKeys)
+// 以后这个编号、写给这个邮箱的卡片都不再收(都只存哈希,见 db.js 的 reachKeys)。邮箱已经 180 天到期删了的,用到期时留下的哈希(toKey)
 async function delReach(db, id, now) {
   await markStmt(db, await reachCardKey(id), now).run();
   const cur = await getReach(db, id);
-  const to = cur && typeof cur.mine.to === "string" && cur.mine.to ? cur.mine.to : null;
-  await db.batch([db.prepare("DELETE FROM outreach WHERE id = ?").bind(id), ...(to ? [markStmt(db, await reachToKey(to), now)] : [])]);
+  const m = (cur && cur.mine) || {};
+  const key = typeof m.to === "string" && m.to ? await reachToKey(m.to) : /^[0-9a-f]{64}$/.test(String(m.toKey || "")) ? String(m.toKey) : null;
+  await db.batch([db.prepare("DELETE FROM outreach WHERE id = ?").bind(id), ...(key ? [markStmt(db, key, now)] : [])]);
   return reply({ ok: true });
 }
 
@@ -201,9 +204,14 @@ export async function handle(request, env, fetchImpl = fetch, now = new Date()) 
   const admin = await db.prepare("SELECT name FROM admin WHERE id = 1").first();
 
   if (request.method === "GET") {
-    if (path !== "state") return gone();
+    if (path !== "state" && path !== "outreach-done") return gone();
     if (!admin) return reply({ need: "setup" }, 401);
     if (!(await hasSession(db, request, now))) return reply({ need: "login" }, 401);
+    if (path === "outreach-done") {
+      const at = url.searchParams.get("at") || "", id = url.searchParams.get("id") || "";
+      if (at.length > 40 || !id || id.length > 64) return reply({ error: "bad" }, 400);
+      return reply({ ok: true, ...(await reachDone(db, at, id)) });
+    }
     return state(db, admin, now);
   }
   if (request.method !== "POST") return reply({ error: "method" }, 405, { Allow: "GET, POST" });

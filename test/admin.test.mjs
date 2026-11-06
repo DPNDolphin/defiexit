@@ -79,6 +79,8 @@ async function desk(state, status = 200) {
     const path = String(url).replace("/api/admin/", ""), b = opt.body ? JSON.parse(opt.body) : {};
     calls.push([path, b]);
     if (path === "state") return res(status, state);
+    // 点过的宣传卡片往前翻一页:按顺序回 state.donePages 里准备好的
+    if (path.startsWith("outreach-done")) return res(200, (state.donePages || []).shift() || { ok: true, items: [], more: 0, after: null });
     if (path === "outreach") {
       const it = state.outreach.find((x) => x.id === b.id), at = new Date().toISOString();
       if ("status" in b) Object.assign(it, { status: b.status, decided_at: b.status === "待发" ? null : at }, b.status === "已发" ? {} : { result_note: null, result_url: null, result_at: null });
@@ -437,6 +439,43 @@ test("宣传卡片的收件邮箱 180 天到了删掉以后:卡片上写明是�
   assert.deepEqual([old.btn("复制收件人").hidden, old.go.hidden], [true, true]);
   const back = d.rcard("o-back");
   assert.deepEqual([back.go.hidden, back.go.href, back.el.textContent.includes("写邮件")], [true, "", false], "没有收件人:不出写邮件的按钮");
+});
+
+test("宣传卡片里有坏掉的字符(以前收进来的):写邮件的链接照样编得出来(换成替换符);哪张卡片画的时候出错,只坏那一张,后面的卡片和顶上的数照常", async () => {
+  clipboard();
+  const HI = String.fromCharCode(0xd800);
+  const d = await desk({ ...base([]), outreach: [rc("o-bad-1", { ...EMAIL, body: "hello" + HI }), rc("o-ok-1"), rc("o-ok-2", EMAIL)] });
+  assert.ok(d.rcard("o-bad-1").go.href.endsWith("&body=hello%EF%BF%BD"), d.rcard("o-bad-1").go.href);
+  assert.deepEqual([d.rcard("o-ok-1").go.textContent, d.rcard("o-ok-2").go.href.startsWith("mailto:"), d.$("n-reach").textContent], ["打开投稿页 ↗", true, "3"]);
+  // 编链接当场出错(模拟别的毛病):只坏这一张,后面照常
+  const real = globalThis.encodeURIComponent;
+  globalThis.encodeURIComponent = (s) => { if (String(s).includes("BOOM")) throw new URIError("URI malformed"); return real(s); };
+  try {
+    const d2 = await desk({ ...base([]), outreach: [rc("o-a", { ...EMAIL, body: "BOOM" }), rc("o-b"), rc("o-c", EMAIL)] });
+    assert.equal(d2.rcard("o-a").el.classList.contains("broken"), true);
+    assert.deepEqual([d2.rcard("o-b").go.textContent, d2.rcard("o-c").go.href.startsWith("mailto:"), d2.$("n-reach").textContent], ["打开投稿页 ↗", true, "3"]);
+  } finally {
+    globalThis.encodeURIComponent = real;
+  }
+});
+
+test("宣传「发过的」分页:还有更早的就出「再看早一点的(还有 N 张)」,点了从页面上最早那张往前接着翻;刷新以后翻出来的那些还在,不再说还有", async () => {
+  clipboard();
+  const sent = (id, min) => rc(id, {}, { status: "已发", decided_at: ago(min) });
+  const state = { ...base([]), outreach: [rc("o-p"), sent("o-s1", 10), sent("o-s2", 20)], outreachMore: { handled: 2, after: { at: ago(20), id: "o-s2" } },
+    donePages: [{ ok: true, items: [sent("o-s3", 30), sent("o-s4", 40)], more: 0, after: { at: ago(40), id: "o-s4" } }] };
+  const d = await desk(state);
+  const more = d.$("reach-more");
+  assert.deepEqual([more.hidden, more.textContent, d.$("n-reach").textContent], [false, "再看早一点的(还有 2 张)", "1"]);
+  await more.fire("click");
+  await tick();
+  assert.deepEqual(d.calls.filter(([p]) => p.startsWith("outreach-done")).map(([p]) => p), ["outreach-done?at=" + encodeURIComponent(ago(20)) + "&id=o-s2"]);
+  const ids = () => d.$("reach-done-cards").children.map((e) => e.getAttribute("data-id"));
+  assert.deepEqual([ids(), more.hidden], [["o-s1", "o-s2", "o-s3", "o-s4"], true]);
+  // 刷新:服务器照旧只给最近一页,翻出来的(比那一页还早的)留着
+  await d.$("refresh").fire("click");
+  await tick();
+  assert.deepEqual([ids(), d.$("reach-more").hidden], [["o-s1", "o-s2", "o-s3", "o-s4"], true]);
 });
 
 test("宣传卡片删除:先说清楚会删什么(只删这一张;写邮件的,以后写给这个邮箱的也不收),再点一次才删;删完重新读一遍", async () => {

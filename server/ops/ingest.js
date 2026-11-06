@@ -60,6 +60,28 @@ const inHosts = (rules) => [...ALLOWED_HOSTS, ...(rules && Array.isArray(rules.o
 // (see https://defiexit.com/deadlines/). 都读成 defiexit.com;括号后面紧跟着的字照普通文字再查一遍(…com/x)evil.com 里的 evil.com 照样拦)
 const SCHEME = /[a-z][a-z0-9+.-]{1,20}:\/\/[^\s<>"'`(){}|\\^「」『』【】《》〈〉“”‘’。、]*/gi;
 const TRAIL = /[.,;:!?\]*_~]+$/;
+// 链接到哪儿为止只管「在哪儿结束」,不能让前面一段主机名顶替真正的主机名:同一个链接按浏览器的读法再看一遍整串(到空白为止)。
+// 主机名那一段(:// 后面到第一个 / ? # 为止;反斜杠不算结束,有的程序把它前面当账号名)里有 @ 的(@ 前面会被当成账号名,
+// 真正去的是后面,比如 https://defiexit.com(a)@evil%2ecom/ 去的是 evil.com)、有 % 的(编码过的主机名,解码以后可能是别的网址),一律不收;
+// 整串解析出来的主机名是个正常的网址、又和认出来的不一样的,也不收;带端口的不收(:443 这种默认端口浏览器自己去掉,照收)
+const AT_WHY = "含带 @ 的链接(@ 前面会被当成账号名,真正去的是 @ 后面的网址)";
+const PCT_WHY = "含编码过的网址(主机名里有 %,解码以后可能是别的网址)";
+// 「正常的网址」:只有英文字母、数字、连字号的几段。xn-- 那种是括号、汉字这些乱字被浏览器编出来的(defiexit.com」 → defiexit.xn--com-k03b),
+// 不算(藏在乱字后面的网址,下面查普通文字时照样找得出来)
+const DNS_NAME = /^(?!(?:.*\.)?xn--)[a-z0-9-]+(?:\.[a-z0-9-]+)+$/;
+const authOf = (s) => { const a = s.replace(/^[a-z][a-z0-9+.-]*:\/\//i, ""), end = a.search(/[/?#]/); return end < 0 ? a : a.slice(0, end); };
+const portOf = (s) => { try { return new URL(s).port; } catch { return ""; } };
+// 看不见的字符:零宽空格、零宽连接符、方向标记、BOM、变体选择符、词连接符这一类(Unicode 的格式字符 Cf 和「默认可忽略」的字符)。
+// 查词、查网址之前先去掉:私\u200b信我、evil.c\u200bom 显示出来(浏览器解析网址时也一样)就是私信我、evil.com。原文照存(表情里的连接符照常显示);
+// 韩文的几个填充符看着像空格,换成空格。会把字倒过来、挪位置显示的方向控制字符(LRE RLE PDF LRO RLO、LRI RLI FSI PDI)看到的和存的不是一个顺序,不收
+const FILLER = /[\u115f\u1160\u3164\uffa0]/g;
+const INVISIBLE = /[\p{Cf}\p{Default_Ignorable_Code_Point}]/gu;
+const BIDI = /[\u202a-\u202e\u2066-\u2069]/;
+const BIDI_WHY = "含会把字倒过来、挪位置显示的方向控制字符(U+202A–202E、U+2066–2069),删掉再送";
+const visible = (s) => s.replace(FILLER, " ").replace(INVISIBLE, "");
+// 不成对的代理项(坏掉的 UTF-16):浏览器把它编进链接时会报错,整个列表都画不出来,不收
+const LONE = /[\ud800-\udbff](?![\udc00-\udfff])|(?<![\ud800-\udbff])[\udc00-\udfff]/;
+const LONE_WHY = "含坏掉的字符(不成对的 UTF-16 代理项),重新复制一遍再送";
 // 英文域名前后紧挨着字母、数字(哪种文字都算)、附加符号、连字号或下划线:真正的主机名比找到的长(éblast.io 其实是 xn--blast-9ra.io),当可疑网址
 const GLUED_BEFORE = /[\p{L}\p{N}\p{M}_-]$/u, GLUED_AFTER = /^[\p{L}\p{N}\p{M}_-]/u;
 function hostOf(s) {
@@ -86,14 +108,27 @@ export function checkText(s, max = MAX.draft, hosts = ALLOWED_HOSTS, { words = b
   const t = s.trim();
   if (!t) return "是空的";
   if (t.length > max) return `超过 ${max} 字`;
-  const word = words(t);
+  if (LONE.test(t)) return LONE_WHY;
+  if (BIDI.test(t)) return BIDI_WHY;
+  // 下面都查看得见的那些字(去掉零宽字符这一类,见 visible);全是看不见的字,算空的
+  const c = visible(t);
+  if (!c.trim()) return "是空的";
+  const word = words(c);
   if (word) return `含不许用的词「${word}」`;
   const off = (h) => (hosts.length ? `含站外链接「${h}」` : `含链接或域名「${h}」(对人的首回一个都不带,连 defiexit.com 也不带)`);
-  // 先统一写法再找网址(三种规矩都一样):全角字母、全角的点换成半角(NFKC),英文之间的「。」换成点,长得像的绕不过去。敏感词照旧查原文
-  const u = t.normalize("NFKC").replace(DOTS, ".");
+  // 先统一写法再找网址(三种规矩都一样):全角字母、全角的点换成半角(NFKC),英文之间的「。」换成点,长得像的绕不过去
+  const u = visible(c.normalize("NFKC")).replace(DOTS, ".");
   for (const m of u.matchAll(SCHEME)) {
-    const link = m[0].replace(TRAIL, "");
-    const host = hostOf(link);
+    const full = /^\S*/.exec(u.slice(m.index))[0], link = m[0].replace(TRAIL, "");
+    const auth = authOf(full), host = hostOf(link), real = hostOf(full), port = portOf(link);
+    if (auth.includes("@") || auth.includes("%")) {
+      // 真正去的网址(整串按浏览器读出来的主机名;读出来是乱字的,用认出来的)不在名单里:照旧说是哪个站外链接;在名单里也不收(账号名、编码过的写法看不清)
+      const dest = real && DNS_NAME.test(real) ? real : host;
+      if (dest && !hosts.includes(dest)) return off(dest);
+      return auth.includes("@") ? AT_WHY : PCT_WHY;
+    }
+    if (real && real !== host && DNS_NAME.test(real)) return off(real);
+    if (port) return `含带端口的链接「${host}:${port}」`;
     if (host && /^https:\/\//i.test(link) && (hosts.includes(host) || paths.some((p) => onPath(link, p)))) continue;
     return off(host || link.slice(0, 30));
   }
@@ -261,8 +296,10 @@ export const REACH_WORDS = {
     "rebate", "rebates", "airdrop claim", "claim airdrop", "claim your airdrop", "claim the airdrop"],
 };
 const REACH_EN = REACH_WORDS.en.map((w) => [w, new RegExp("(?<![\\p{L}\\p{N}])" + w.split(" ").join("\\s+") + "(?![\\p{L}\\p{N}])", "iu")]);
+// 自己也先去掉看不见的字符(checkText 送来的已经去过,单独用的时候一样不会被零宽字符绕过去)
+const seen = (t) => visible(visible(t).normalize("NFKC"));
 export function reachWord(t) {
-  const s = t.normalize("NFKC");
+  const s = seen(t);
   return REACH_WORDS.zh.find((w) => s.includes(w)) || (REACH_EN.find(([, re]) => re.test(s)) || [])[0] || null;
 }
 // 诊所的第 8 条硬规矩:对外的标题避开「找回 / 领取 / recover / claim」。宣传稿的标题、邮件标题在上面那份之外再照这条查(正文不查):
@@ -273,7 +310,7 @@ const TITLE_EN = TITLE_WORDS.en.map((w) => [w, new RegExp("(?<![\\p{L}\\p{N}])" 
 export function titleWord(t) {
   const hit = reachWord(t);
   if (hit) return hit;
-  const s = t.normalize("NFKC");
+  const s = seen(t);
   return TITLE_WORDS.zh.find((w) => s.includes(w)) || (TITLE_EN.find(([, re]) => re.test(s)) || [])[0] || null;
 }
 const TITLE_WHY = "(标题、邮件标题避开找回、领取、recover、claim,正文可以写)";
@@ -296,6 +333,11 @@ export function cleanReach(x, hosts = ALLOWED_HOSTS) {
   if (odd) return { id, error: odd + ODD };
   const notText = REACH_TEXT.find((f) => x[f] != null && typeof x[f] !== "string");
   if (notText) return { id, error: notText + " 要是文字" };
+  // 每个字段都查:坏掉的字符(页面编邮件链接会报错)、会把字倒过来显示的方向控制字符(目标、说明里也不许)
+  const broken = REACH_TEXT.find((f) => typeof x[f] === "string" && LONE.test(x[f]));
+  if (broken) return { id, error: broken + " " + LONE_WHY };
+  const flipped = REACH_TEXT.find((f) => typeof x[f] === "string" && BIDI.test(x[f]));
+  if (flipped) return { id, error: flipped + " " + BIDI_WHY };
   if (!REACH_CHANNELS.includes(x.channel)) return { id, error: "channel 只能是 " + REACH_CHANNELS.join("、") };
   const target = (x.target || "").trim();
   if (!target) return { id, error: "缺 target(写给谁,比如「PANews 投稿」「Sophon 团队」)" };
