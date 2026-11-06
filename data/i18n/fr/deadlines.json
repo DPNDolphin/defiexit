@@ -106,5 +106,125 @@
       "ThunderCore : dernier bloc et site de migration",
       "ThunderCore sur X : 1er septembre"
     ]
+  },
+  "zetachain-shutdown": {
+    "name": "Fermeture de ZetaChain : le ZETA passe sur Solana",
+    "summary": "ZetaChain prévoit de s'arrêter vers le 9 décembre et de faire passer le ZETA sur Solana. Avant l'instantané, convertissez vos wZETA en ZETA et sortez des pools et du staking liquide.",
+    "deadlineNote": "Le vote sur la proposition 70 se termine le 7 novembre, et elle ne prend effet que si elle est adoptée. Selon la proposition, un instantané est pris et la chaîne s'arrête au bloc 20 755 000 vers le 9 décembre, et le portail de migration du ZETA ainsi que la page des actifs transférés par pont ouvrent le même jour. Les transferts inter-chaînes sont déjà arrêtés (dépôts en juin, retraits le 1er juillet). Des nœuds d'archive en lecture seule restent en service jusqu'au 31 octobre 2027.",
+    "who": "Toute personne détenant des ZETA ou des wZETA sur ZetaChain, ou ayant des ZETA dans des pools ou en staking liquide, et toute personne ayant des actifs transférés par pont (ZRC-20) bloqués sur ZetaChain. Le ZETA ERC-20 sur Ethereum n'est pas concerné.",
+    "todo": "Avant l'instantané, convertissez vos wZETA en ZETA et sortez des pools et du staking liquide (les ZETA détenus dans des contrats ne peuvent pas être récupérés par adresse). À partir du 9 décembre, signez sur `hub.zetachain.com/migrate` pour recevoir vos ZETA sur Solana (au moins 10 ZETA, pas besoin de SOL). Pour les jetons ZRC-20, signez sur `hub.zetachain.com/bridged-assets` pour les récupérer sur leur chaîne d'origine.",
+    "caution": "La proposition 70 ne prend effet que si elle est adoptée le 7 novembre. Les jetons ZRC-20 valant moins de $5 chacun, ou détenus dans des pools, des coffres ou des portefeuilles de contrat, ne peuvent pas être récupérés. ZetaChain indique que le portail ne demande qu'une signature, jamais une transaction ni votre phrase de récupération.",
+    "official": [
+      "ZetaChain sur X : publication du 4 novembre",
+      "Gouvernance de ZetaChain : proposition 68",
+      "Blog de ZetaChain : le ZETA arrive sur Solana"
+    ]
+  },
+  "astralabs-astra-migration": {
+    "name": "AstraLabs : l'ASTRA passe sur un nouveau contrat",
+    "summary": "AstraLabs fait passer l'ASTRA sur un nouveau contrat : instantané le 7 novembre, et les nouveaux jetons doivent être collectés au plus tard le 10 décembre. Les demandes tardives ne seront pas acceptées.",
+    "deadlineNote": "Le 7 novembre, la liquidité passe sur le nouveau contrat et un instantané est pris. Le nouveau contrat entre en service entre le 7 et le 10 novembre, et les échanges reprennent le 10 novembre. La date limite est le 10 décembre ; AstraLabs indique que les demandes tardives ne seront ni acceptées ni remboursées.",
+    "who": "Toute personne détenant d'anciens ASTRA au moment de l'instantané.",
+    "todo": "Gardez vos anciens jetons pendant l'instantané, puis collectez les nouveaux au plus tard le 10 décembre selon la procédure annoncée par AstraLabs sur son compte X.",
+    "caution": "Le ratio d'échange, l'adresse du nouveau contrat et la façon de collecter n'avaient pas encore été annoncés. AstraLabs indique que les liens ne seront publiés que sur son compte X : méfiez-vous des fausses pages.",
+    "official": [
+      "AstraLabs sur X : annonce du 15 octobre"
+    ],
+    "milestones": [
+      "Instantané : détenez les anciens jetons avant cette date"
+    ]
+  },
+  "abstract-chain-shutdown": {
+    "name": "Fermeture de la chaîne Abstract",
+    "summary": "La chaîne Abstract ferme le 15 décembre, et les fonds non sortis via un pont d'ici là deviendront inaccessibles. Sortez d'abord des applications, puis passez par le pont.",
+    "deadlineNote": "Abstract ferme le 15 décembre. Selon ses propres mots, les fonds non sortis via un pont d'ici là « seront inaccessibles ».",
+    "who": "Toute personne ayant des actifs sur Abstract, y compris dans les applications de la chaîne.",
+    "todo": "Retirez d'abord vos fonds des applications de la chaîne, puis sortez-les via le Migration Hub (`migrate.abs.xyz`) ou le pont natif (`native-bridge.abs.xyz`, environ 3 heures). La page de migration cite aussi Stargate, Relay et Jumper.",
+    "caution": "Abstract met en garde contre les faux sites de migration et les messages privés d'usurpateurs.",
+    "official": [
+      "Page de migration d'Abstract",
+      "Abstract sur X : « Abstract is Winding Down »"
+    ]
+  },
+  "stargate-v1-pools": {
+    "name": "Fin des pools Stargate V1",
+    "summary": "Les pools Stargate V1 cessent de fonctionner le 15 décembre. Les fournisseurs de liquidité V1 doivent retirer leurs fonds avant ; les retraits sont actuellement sans frais.",
+    "deadlineNote": "Annoncé le 4 septembre : après une pause d'environ deux semaines de la messagerie V1, les retraits sans frais ont ouvert. Le 15 décembre, le Relayer LayerZero V1 passe hors ligne et les pools V1 cessent définitivement de fonctionner. Stargate V2 et Hydra ne sont pas concernés. Sur Metis, les pools ont pris fin plus tôt, le 23 octobre ; voir l'entrée Metis sur cette page.",
+    "who": "Les fournisseurs de liquidité des pools Stargate V1, sauf sur Metis, où la date limite était le 23 octobre.",
+    "todo": "Retirez votre liquidité des pools V1 avant le 15 décembre.",
+    "official": [
+      "Stargate sur X : annonce du 4 septembre",
+      "Blog de Metis : les pools V1 ferment sur toutes les chaînes le 15 décembre, plus tôt sur Metis"
+    ]
+  },
+  "stargate-stg-zro": {
+    "name": "Stargate : dernier jour pour échanger le STG contre du ZRO",
+    "summary": "L'échange de STG contre le ZRO de LayerZero prend fin le 15 décembre, sans prise en charge ensuite.",
+    "deadlineNote": "L'échange a ouvert le 26 août 2025 et ferme le 15 décembre ; LayerZero indique que les échanges ne seront plus pris en charge ensuite.",
+    "who": "Toute personne détenant encore des STG. Les plateformes d'échange s'occupent des soldes qu'elles détiennent, généralement avec une date limite plus précoce.",
+    "todo": "Échangez vos STG contre des ZRO avant le 15 décembre. Le guide de conversion officiel de Stargate donne le taux fixe : 1 STG = 0.08634 ZRO.",
+    "caution": "La page de conversion officielle de Stargate indique que vos STG doivent être sur Ethereum pour être convertis ; s'ils sont sur un autre réseau, transférez-les d'abord vers Ethereum via un pont. N'utilisez que le point d'entrée indiqué sur les pages officielles.",
+    "official": [
+      "Blog de LayerZero : point sur l'écosystème de septembre",
+      "Stargate sur X : ouverture de l'échange (août 2025)",
+      "Page de conversion officielle de Stargate"
+    ]
+  },
+  "fluxtra-frontend": {
+    "name": "Fermeture du site Fluxtra, les coffres passent sur OMies",
+    "summary": "Le site Fluxtra ferme le 31 décembre. Retirez dès maintenant vos fonds du coffre QuickSwap LP ; les deux autres coffres apparaissent déjà sur OMies.",
+    "deadlineNote": "Le 31 décembre est le dernier jour pour retirer via l'interface Fluxtra ; ensuite, le site ferme complètement. Le coffre QuickSwap LP a été retiré du service, et Fluxtra conseille d'en retirer vos fonds dès maintenant.",
+    "who": "Toute personne ayant utilisé les coffres Fluxtra sur la chaîne MANTRA.",
+    "todo": "Les dépôts dans les coffres wmantraUSD et stMANTRA apparaissent déjà sur `onchainomies.com` : vous pouvez donc les laisser. Retirez dès maintenant vos fonds du coffre QuickSwap LP.",
+    "official": [
+      "Fluxtra sur X : annonce du 30 octobre"
+    ]
+  },
+  "neon-evm-shutdown": {
+    "name": "Fermeture de Neon EVM",
+    "summary": "Neon EVM (une EVM qui tourne sur Solana) ferme. Utilisez NeonPass pour transférer vos actifs vers Solana avant le 31 décembre.",
+    "deadlineNote": "Le développement et le support se sont arrêtés le 1er octobre. Le 31 décembre est la date limite pour migrer et retirer.",
+    "who": "Toute personne ayant des actifs sur Neon EVM.",
+    "todo": "Avant le 31 décembre, utilisez NeonPass pour transférer vos actifs de Neon EVM vers Solana. La documentation officielle détaille les étapes.",
+    "caution": "Neon indique que le jeton NEON sur Solana ne sera pas supprimé. Il n'a pas dit si les retraits fonctionneront encore après le 31 décembre.",
+    "official": [
+      "Avis sur le site de Neon EVM",
+      "Documentation de Neon EVM : retirer avec NeonPass"
+    ]
+  },
+  "quickswap-soneium-frontend": {
+    "name": "QuickSwap : l'interface sur Soneium passe hors ligne",
+    "summary": "L'interface de QuickSwap sur Soneium passe hors ligne le 31 décembre. Retirez votre liquidité avant ; ensuite, il faudrait appeler les contrats via l'explorateur de blocs.",
+    "deadlineNote": "Le vote de gouvernance a été adopté le 21 octobre (99.22% pour). L'interface du déploiement sur Soneium passe hors ligne le 31 décembre. Ensuite, QuickSwap indique que les fonds pourront être retirés en appelant directement les contrats via l'explorateur de blocs officiel de Soneium.",
+    "who": "Toute personne ayant de la liquidité ou des actifs dans QuickSwap sur Soneium.",
+    "todo": "Avant le 31 décembre, retirez votre liquidité et vos actifs sur Soneium via l'interface de QuickSwap. Ensuite, utilisez `soneium.blockscout.com` pour appeler directement les contrats.",
+    "official": [
+      "QuickSwap sur X : annonce du 22 octobre",
+      "Vote de gouvernance de QuickSwap (Snapshot)"
+    ]
+  },
+  "relay-vaults": {
+    "name": "Fermeture des Relay Vaults",
+    "summary": "Les coffres de liquidité de Relay ferment. La page de retrait ferme le 31 décembre : retirez vos fonds sur la page officielle avant.",
+    "deadlineNote": "Les nouveaux dépôts sont arrêtés. La page de retrait ferme le 31 décembre ; ensuite, il ne restera que les appels directs au contrat.",
+    "who": "Toute personne ayant des dépôts dans les Relay Vaults (coffres WETH sur Ethereum et Arbitrum).",
+    "todo": "Retirez vos fonds sur `relay.link/vaults`. Après le 31 décembre, suivez la documentation officielle pour appeler directement `redeem(shares, receiver, owner)` sur le contrat ERC4626, ou utilisez la passerelle native pour obtenir de l'ETH natif.",
+    "caution": "Le montant que vous pouvez retirer d'un coup dépend de la liquidité disponible du coffre. Les contrats acceptent encore les dépôts ; ce qui est déposé par erreur ressort de la même manière.",
+    "official": [
+      "Documentation de Relay : retirer des coffres",
+      "Relay sur X : annonce du 9 octobre"
+    ]
+  },
+  "silicon-network-shutdown": {
+    "name": "Fermeture de Silicon Network (avec le portefeuille Web3 de Korbit)",
+    "summary": "La chaîne Silicon ferme le 31 décembre, et les fonds laissés sur place ne pourront plus être récupérés ensuite. Les actifs venus d'Ethereum par le pont doivent repartir par le pont officiel.",
+    "deadlineNote": "Silicon ferme le 31 décembre à 12:00 UTC+9 (03:00 UTC). L'explorateur de blocs ferme alors et le réseau prend fin. Selon ses propres mots, les fonds non retirés d'ici là « ne pourront pas être récupérés ».",
+    "who": "Toute personne ayant des actifs sur Silicon, y compris les utilisateurs du portefeuille Web3 de Korbit.",
+    "todo": "Actifs venus d'Ethereum par le pont : retirez-les vers Ethereum via le pont officiel avant la date limite, et gardez un peu d'ETH pour les frais. Utilisateurs du portefeuille Web3 de Korbit : suivez la procédure de Korbit. Le jeton natif de Silicon ne peut pas passer directement par le pont : échangez-le d'abord sur la chaîne.",
+    "official": [
+      "Documentation de Silicon : avis de fin de service",
+      "Documentation de Silicon : guide de retrait",
+      "Silicon sur X : le portefeuille Web3 de Korbit s'arrête le 31 décembre"
+    ]
   }
 }
