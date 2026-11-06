@@ -9,6 +9,8 @@ const lc = (s) => s.charAt(0).toLowerCase() + s.slice(1);
 const leftId = ({ days, hours, day }) => (day ? `Menurut UTC, hari ini hari tenggat (${md(day)[1]} ${BULAN[md(day)[0] - 1]})` : hours != null ? (hours ? `Sisa ${hours} jam` : "Sisa kurang dari 1 jam") : days >= 0 ? `Sisa ${days} hari` : "Tenggat sudah lewat");
 
 export default {
+  guideInEn: "Panduan ini belum diterjemahkan ke bahasa ini, jadi ditampilkan dalam bahasa Inggris.",
+  partlyInEn: "Sebagian isi halaman ini belum diterjemahkan ke bahasa ini, jadi ditampilkan dalam bahasa Inggris.",
   brandSub: "Jalan keluar aman",
   skip: "Langsung ke konten",
   langNav: "Bahasa",

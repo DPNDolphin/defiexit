@@ -8,6 +8,8 @@ const lc = (s) => s.charAt(0).toLowerCase() + s.slice(1);
 const leftVi = ({ days, hours, day }) => (day ? `Theo giờ UTC, hôm nay là hạn chót (${md(day)[1]}/${md(day)[0]})` : hours != null ? (hours ? `Còn ${hours} giờ` : "Còn chưa đến 1 giờ") : days >= 0 ? `Còn ${days} ngày` : "Đã qua hạn chót");
 
 export default {
+  guideInEn: "Hướng dẫn này chưa được dịch sang ngôn ngữ này, nên đang hiển thị bằng tiếng Anh.",
+  partlyInEn: "Một số phần của trang này chưa được dịch sang ngôn ngữ này, nên đang hiển thị bằng tiếng Anh.",
   brandSub: "Lối thoát an toàn",
   skip: "Chuyển đến nội dung chính",
   langNav: "Ngôn ngữ",
