@@ -2591,3 +2591,20 @@ test("宣传卡片的收件邮箱:点过「已发 / 跳过」满 180 天删掉(�
   await w.call("/api/admin/state", { cookie: c2 });
   assert.deepEqual([await toOf("o-sophon-1106"), (await reachOf(w, "o-sophon-1106")).mine.toGone], ["Team@sophon.example", undefined]);
 });
+
+import { titleWord } from "../server/ops/ingest.js";
+
+test("宣传稿的标题、邮件标题照诊所第 8 条另外避开找回、领取、recover、claim(中文按字面;英文看词头:recovered、recovery、claiming 都算,Disclaimer、reclaim 不算);正文照常能写", async () => {
+  const w = world();
+  for (const [s, want] of [["如何找回被困资产", "找回"], ["领取指南", "领取"], ["How to recover funds", "recover"], ["Recovered: 52 USDT", "recover"], ["Recovery after a chain shutdown", "recover"],
+    ["Claim your USDT", "claim"], ["Claimed!", "claim"], ["CLAIMING guide", "claim"], ["领取空投", "领取空投"], ["Just DM me", "dm me"]]) assert.equal(titleWord(s), want, s);
+  for (const s of ["Disclaimer and FAQ", "How to reclaim nothing", "到期金库可自助调用官方合约提取", "Exit deadlines for sunset L2s", "We never ask for your private key"]) assert.equal(titleWord(s), null, s);
+  const WHY = "(标题、邮件标题避开找回、领取、recover、claim,正文可以写)";
+  const r = await w.ingest({ outreach: [
+    REACH({ id: "o-t-1", title: "如何找回被困资产" }), REACH({ id: "o-t-2", title: "How we recovered 52 USDT" }), MAILTO({ id: "o-t-3", subject: "Claiming guide for Sophon users" }),
+    REACH({ id: "o-t-4", title: "Claim your airdrop" }),
+    REACH({ id: "o-t-ok", title: "Disclaimer: exit deadlines", body: "How to recover funds and claim what is yours. 找回、领取都写在正文里。" }),
+  ] });
+  assert.deepEqual([r.json.outreach, reachWhy(r)], [1, { "o-t-1": "标题含不许用的词「找回」" + WHY, "o-t-2": "标题含不许用的词「recover」" + WHY, "o-t-3": "邮件标题含不许用的词「claim」" + WHY, "o-t-4": "标题含不许用的词「claim your airdrop」" }]);
+  assert.equal((await reachOf(w, "o-t-ok")).mine.body, "How to recover funds and claim what is yours. 找回、领取都写在正文里。");
+});

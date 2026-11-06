@@ -17,7 +17,8 @@
 // 只查送进来的草稿,库里原有的不回头查(照常显示)。不合格的那一条不入库,回执里写明哪条为什么;回执不含任何库里的数据。
 // 宣传卡片(outreach,见 cleanReach):新建,或者改管理员还没点过的;点过「已发 / 跳过」的不再改。标题、邮件标题、正文的链接照收件续答的规矩查
 // (长得像的写法;只许 defiexit.com 和 rules.officialHosts,另外放行我们自己的 GitHub 仓库),敏感词另用一份(REACH_WORDS:安全说明里的
-// 私钥、助记词、授权照常能写,只拦招揽和骗局的说法)。这张卡片、它的收件邮箱按要求删过的不收(查和写同一句)。
+// 私钥、助记词、授权照常能写,只拦招揽和骗局的说法;标题、邮件标题另外避开找回、领取、recover、claim,见 TITLE_WORDS)。
+// 这张卡片、它的收件邮箱按要求删过的不收(查和写同一句)。
 // 一包最多 50 张,稿子加起来最多 10 万字(REACH_MAX.pack)。
 
 import { iso, plusDays, KEEP_DAYS, DOC_KEYS, docStmt, getKv, getDoc, getDocs, existing, goneKey, expKey, NOT_GONE, goneArg, outKeys, inKeys, sameRefs, sameInRefs, bjDay, problemKey, PROBLEM_TYPES, PROBLEM_SOURCES, reachKeys, reachCardKey, reachToKey } from "./db.js";
@@ -264,6 +265,18 @@ export function reachWord(t) {
   const s = t.normalize("NFKC");
   return REACH_WORDS.zh.find((w) => s.includes(w)) || (REACH_EN.find(([, re]) => re.test(s)) || [])[0] || null;
 }
+// 诊所的第 8 条硬规矩:对外的标题避开「找回 / 领取 / recover / claim」。宣传稿的标题、邮件标题在上面那份之外再照这条查(正文不查):
+// 中文按字面找;英文看词头(前面不挨着字母、数字):recover、recovered、recovering、recovery,claim、claims、claimed、claiming 都算,
+// Disclaimer、reclaim 不算
+export const TITLE_WORDS = { zh: ["找回", "领取"], en: ["recover", "claim"] };
+const TITLE_EN = TITLE_WORDS.en.map((w) => [w, new RegExp("(?<![\\p{L}\\p{N}])" + w, "iu")]);
+export function titleWord(t) {
+  const hit = reachWord(t);
+  if (hit) return hit;
+  const s = t.normalize("NFKC");
+  return TITLE_WORDS.zh.find((w) => s.includes(w)) || (TITLE_EN.find(([, re]) => re.test(s)) || [])[0] || null;
+}
+const TITLE_WHY = "(标题、邮件标题避开找回、领取、recover、claim,正文可以写)";
 // 宣传稿另外放行的链接:我们自己的开源仓库(https://github.com/DPNDolphin/defiexit 和它下面的页面);别的 GitHub 链接照样不收,
 // github.com 也不进运营规则的官方网址(收件续答不放行)
 export const REACH_PATHS = [{ host: "github.com", prefix: "/DPNDolphin/defiexit" }];
@@ -274,7 +287,7 @@ const blank = (v) => v == null || (typeof v === "string" && !v.trim());
 // 一张宣传卡片:id(o-panews-1106 这种,不能全是数字)、channel、target(写给谁:「PANews 投稿」「Sophon 团队」)、lang(zh、en……)、
 // url(写邮件的可以不写,别的必须有)、to(写邮件才有)、subject(邮件标题)、title(标题)、body(正文,可以是 markdown,最长 2 万字)、why(我给管理员的说明)。
 // 标题、邮件标题、正文的链接和收件续答一样查(hosts:本站 + 运营规则里的官方网址,另加我们自己的仓库 REACH_PATHS),长得像的写法绕不过去;
-// 敏感词用宣传稿那一份(REACH_WORDS)。写了的字段都得是文字(数字、true / false、对象、数组都不收),太长的不截、整条不收;不合格的只拒这一条
+// 敏感词用宣传稿那一份(REACH_WORDS),标题、邮件标题再加诊所第 8 条(TITLE_WORDS)。写了的字段都得是文字(数字、true / false、对象、数组都不收),太长的不截、整条不收;不合格的只拒这一条
 export function cleanReach(x, hosts = ALLOWED_HOSTS) {
   const id = itemId(x?.id);
   if (!id) return { error: "id 不合格" };
@@ -295,10 +308,11 @@ export function cleanReach(x, hosts = ALLOWED_HOSTS) {
   if (!url && !to) return { id, error: "缺 url(投稿页、仓库或发帖页的网址;只有写邮件的(带 to)可以不写)" };
   if (blank(x.body)) return { id, error: "缺 body(正文)" };
   const text = {};
-  for (const [f, name, max] of [["subject", "邮件标题", REACH_MAX.title], ["title", "标题", REACH_MAX.title], ["body", "正文", REACH_MAX.body]]) {
+  for (const [f, name, max, words] of [["subject", "邮件标题", REACH_MAX.title, titleWord], ["title", "标题", REACH_MAX.title, titleWord], ["body", "正文", REACH_MAX.body, reachWord]]) {
     if (blank(x[f])) continue;
-    const bad = checkText(x[f], max, hosts, { words: reachWord, paths: REACH_PATHS });
-    if (bad) return { id, error: name + bad + (bad.startsWith("含站外链接") ? REACH_OFF : "") };
+    const bad = checkText(x[f], max, hosts, { words, paths: REACH_PATHS });
+    const rule8 = words === titleWord && [...TITLE_WORDS.zh, ...TITLE_WORDS.en].some((w) => bad === `含不许用的词「${w}」`);
+    if (bad) return { id, error: name + bad + (bad.startsWith("含站外链接") ? REACH_OFF : rule8 ? TITLE_WHY : "") };
     text[f] = x[f].trim();
   }
   const why = blank(x.why) ? undefined : x.why.trim();
