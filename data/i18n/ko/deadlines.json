@@ -119,5 +119,129 @@
       "ZetaChain 거버넌스: 제안 68",
       "ZetaChain 블로그: ZETA를 Solana로"
     ]
+  },
+  "astralabs-astra-migration": {
+    "name": "AstraLabs: ASTRA 새 컨트랙트로 이전",
+    "summary": "AstraLabs가 ASTRA를 새 컨트랙트로 옮겨요. 11월 7일에 스냅샷을 찍고, 새 토큰은 12월 10일까지 받아야 해요. 늦은 요청은 받지 않아요.",
+    "deadlineNote": "11월 7일에 유동성이 새 컨트랙트로 옮겨지고 스냅샷을 찍어요. 새 컨트랙트는 11월 7일에서 10일 사이에 가동되고, 거래는 11월 10일에 재개돼요. 마감은 12월 10일이에요. AstraLabs는 늦은 요청은 받지 않고 환불도 하지 않는다고 해요.",
+    "who": "스냅샷 시점에 예전 ASTRA를 가진 사람.",
+    "todo": "스냅샷까지 예전 토큰을 그대로 들고 있다가, AstraLabs가 X 계정에 안내하는 방법으로 12월 10일까지 새 토큰을 받으세요.",
+    "caution": "교환 비율, 새 컨트랙트 주소, 받는 방법은 아직 발표되지 않았어요. AstraLabs는 링크를 X 계정에만 올린다고 하니 가짜 페이지를 조심하세요.",
+    "official": [
+      "AstraLabs X 게시물: 10월 15일 공지"
+    ],
+    "milestones": [
+      "스냅샷: 그 전에 예전 토큰을 들고 있어야 해요"
+    ]
+  },
+  "abstract-chain-shutdown": {
+    "name": "Abstract 체인 종료",
+    "summary": "Abstract 체인이 12월 15일에 종료되고, 그때까지 브릿지로 빼내지 않은 자금은 접근할 수 없게 돼요. 먼저 앱에서 빠져나온 뒤 브릿지하세요.",
+    "deadlineNote": "Abstract는 12월 15일에 종료돼요. Abstract의 표현으로는 그때까지 브릿지로 빼내지 않은 자금은 ‘접근할 수 없게 됩니다’.",
+    "who": "Abstract에 자산이 있는 사람(체인 위 앱 안의 자산 포함).",
+    "todo": "먼저 체인 위의 앱에서 출금한 뒤, Migration Hub(`migrate.abs.xyz`)나 네이티브 브릿지(`native-bridge.abs.xyz`, 약 3시간)로 빼내세요. 마이그레이션 페이지에는 Stargate, Relay, Jumper도 나와 있어요.",
+    "caution": "Abstract는 가짜 마이그레이션 사이트와 사칭 DM을 경고해요.",
+    "official": [
+      "Abstract 마이그레이션 페이지",
+      "Abstract X 게시물: ‘Abstract is Winding Down’"
+    ]
+  },
+  "stargate-v1-pools": {
+    "name": "Stargate V1 풀 종료",
+    "summary": "Stargate V1 풀이 12월 15일에 작동을 멈춰요. V1 유동성 공급자는 그 전에 출금해야 하고, 지금은 수수료 없이 출금할 수 있어요.",
+    "deadlineNote": "9월 4일 공지: V1 메시징을 약 두 주간 멈춘 뒤 수수료 없는 출금이 열렸어요. 12월 15일에 LayerZero V1 Relayer가 내려가고 V1 풀은 완전히 작동을 멈춰요. Stargate V2와 Hydra는 영향을 받지 않아요. Metis에서는 풀이 더 이른 10월 23일에 끝났어요. 이 페이지의 Metis 항목을 보세요.",
+    "who": "Stargate V1 풀의 유동성 공급자. 단, 마감이 10월 23일이었던 Metis는 제외.",
+    "todo": "12월 15일 전에 V1 풀에서 유동성을 출금하세요.",
+    "official": [
+      "Stargate X 게시물: 9월 4일 공지",
+      "Metis 블로그: V1 풀은 모든 체인에서 12월 15일에 닫히고, Metis는 더 일찍 닫힘"
+    ]
+  },
+  "stargate-stg-zro": {
+    "name": "Stargate: STG를 ZRO로 교환하는 마지막 날",
+    "summary": "STG를 LayerZero의 ZRO로 교환하는 기간이 12월 15일에 끝나고, 그 뒤로는 지원하지 않아요.",
+    "deadlineNote": "교환은 2025년 8월 26일에 열렸고 12월 15일에 닫혀요. LayerZero는 그 뒤에는 교환을 지원하지 않는다고 해요.",
+    "who": "아직 STG를 가진 사람. 거래소에 맡긴 잔액은 거래소가 처리하며, 보통 마감이 더 일러요.",
+    "todo": "12월 15일 전에 STG를 ZRO로 교환하세요. Stargate의 공식 전환 가이드에 고정 비율이 나와 있어요: 1 STG = 0.08634 ZRO.",
+    "caution": "Stargate 공식 전환 페이지에 따르면 STG가 Ethereum에 있어야 전환할 수 있어요. 다른 네트워크에 있다면 먼저 Ethereum으로 브릿지하세요. 공식 페이지에 링크된 입구만 쓰세요.",
+    "official": [
+      "LayerZero 블로그: 9월 생태계 업데이트",
+      "Stargate X 게시물: 교환 시작(2025년 8월)",
+      "Stargate 공식 전환 페이지"
+    ]
+  },
+  "fluxtra-frontend": {
+    "name": "Fluxtra 웹사이트 폐쇄, 볼트는 OMies로 이전",
+    "summary": "Fluxtra 웹사이트가 12월 31일에 닫혀요. QuickSwap LP 볼트에서는 지금 출금하세요. 나머지 볼트 두 개는 이미 OMies에 표시돼요.",
+    "deadlineNote": "12월 31일이 Fluxtra 화면으로 출금할 수 있는 마지막 날이고, 그 뒤 웹사이트는 완전히 닫혀요. QuickSwap LP 볼트는 이미 운영이 끝났고, Fluxtra는 지금 출금하라고 해요.",
+    "who": "MANTRA 체인에서 Fluxtra 볼트를 쓴 사람.",
+    "todo": "wmantraUSD와 stMANTRA 볼트의 예치금은 이미 `onchainomies.com`에 표시되니 그대로 두어도 돼요. QuickSwap LP 볼트에서는 지금 출금하세요.",
+    "official": [
+      "Fluxtra X 게시물: 10월 30일 공지"
+    ]
+  },
+  "neon-evm-shutdown": {
+    "name": "Neon EVM 종료",
+    "summary": "Neon EVM(Solana 위에서 돌아가는 EVM)이 종료돼요. 12월 31일 전에 NeonPass로 자산을 Solana로 옮기세요.",
+    "deadlineNote": "개발과 지원은 10월 1일에 멈췄어요. 12월 31일이 이전과 출금의 마감일이에요.",
+    "who": "Neon EVM에 자산이 있는 사람.",
+    "todo": "12월 31일 전에 NeonPass로 Neon EVM의 자산을 Solana로 옮기세요. 단계는 공식 문서에 나와 있어요.",
+    "caution": "Neon은 Solana의 NEON 토큰은 없어지지 않는다고 해요. 12월 31일 이후에도 출금이 되는지는 밝히지 않았어요.",
+    "official": [
+      "Neon EVM 웹사이트 공지",
+      "Neon EVM 문서: NeonPass로 출금하기"
+    ]
+  },
+  "quickswap-soneium-frontend": {
+    "name": "QuickSwap: Soneium 화면 종료",
+    "summary": "Soneium의 QuickSwap 화면이 12월 31일에 내려가요. 그 전에 유동성을 빼세요. 그 뒤에는 블록 익스플로러에서 컨트랙트를 직접 호출해야 해요.",
+    "deadlineNote": "거버넌스 투표가 10월 21일에 통과됐어요(찬성 99.22%). Soneium 배포의 화면은 12월 31일에 내려가요. 그 뒤에는 Soneium 공식 블록 익스플로러에서 컨트랙트를 직접 호출해 자금을 출금할 수 있다고 QuickSwap은 말해요.",
+    "who": "Soneium의 QuickSwap에 유동성이나 자산이 있는 사람.",
+    "todo": "12월 31일 전에 QuickSwap 화면에서 Soneium의 유동성과 자산을 빼세요. 그 뒤에는 `soneium.blockscout.com`에서 컨트랙트를 직접 호출하세요.",
+    "official": [
+      "QuickSwap X 게시물: 10월 22일 공지",
+      "QuickSwap 거버넌스 투표(Snapshot)"
+    ]
+  },
+  "relay-vaults": {
+    "name": "Relay Vaults 종료",
+    "summary": "Relay의 유동성 볼트가 종료돼요. 출금 페이지는 12월 31일에 닫히니, 그 전에 공식 페이지에서 출금하세요.",
+    "deadlineNote": "새 예치는 중단됐어요. 출금 페이지는 12월 31일에 닫히고, 그 뒤에는 컨트랙트를 직접 호출하는 방법만 남아요.",
+    "who": "Relay Vaults(Ethereum과 Arbitrum의 WETH 볼트)에 예치금이 있는 사람.",
+    "todo": "`relay.link/vaults`에서 출금하세요. 12월 31일 이후에는 공식 문서를 따라 ERC4626 컨트랙트의 `redeem(shares, receiver, owner)`를 직접 호출하거나, 네이티브 게이트웨이를 써서 네이티브 ETH로 받으세요.",
+    "caution": "한 번에 출금할 수 있는 양은 볼트의 가용 유동성에 따라 달라요. 컨트랙트는 여전히 예치를 받으니, 실수로 예치한 것도 같은 방법으로 빼내면 돼요.",
+    "official": [
+      "Relay 문서: 볼트에서 출금하기",
+      "Relay X 게시물: 10월 9일 공지"
+    ]
+  },
+  "silicon-network-shutdown": {
+    "name": "Silicon Network 종료(Korbit Web3 지갑 포함)",
+    "summary": "Silicon 체인이 12월 31일에 종료되고, 남겨 둔 자금은 그 뒤에 되찾을 수 없어요. Ethereum에서 브릿지한 자산은 공식 브릿지로 돌려보내야 해요.",
+    "deadlineNote": "Silicon은 12월 31일 12:00 UTC+9(03:00 UTC)에 종료돼요. 그다음 블록 익스플로러가 닫히고 네트워크가 끝나요. Silicon의 표현으로는 그때까지 출금하지 않은 자금은 ‘복구할 수 없습니다’.",
+    "who": "Silicon에 자산이 있는 사람(Korbit Web3 지갑 사용자 포함).",
+    "todo": "Ethereum에서 브릿지한 자산: 마감 전에 공식 브릿지로 Ethereum에 출금하고, 수수료로 쓸 ETH를 조금 남겨 두세요. Korbit Web3 지갑 사용자: Korbit의 절차를 따르세요. Silicon의 네이티브 토큰은 바로 브릿지할 수 없으니, 먼저 체인 위에서 교환하세요.",
+    "official": [
+      "Silicon 문서: 서비스 종료 공지",
+      "Silicon 문서: 출금 가이드",
+      "Silicon X 게시물: Korbit Web3 지갑 12월 31일 종료"
+    ]
+  },
+  "standx-winddown": {
+    "name": "StandX 운영 종료: DUSD 에어드롭, 포지션, 상환 마감",
+    "summary": "StandX가 운영을 종료해요. DUSD 에어드롭은 12월 31일에 끝나고, 포지션은 2027년 1월 15일에 강제 청산되며, 출금과 상환은 2027년 1월 31일에 마감돼요.",
+    "deadlineNote": "10월 15일부터 수익 지급이 멈췄고 볼트는 예치를 받지 않아요. 10월 20일부터 포지션은 줄이기만 할 수 있어요. DUSD 에어드롭은 11월 2일 00:00부터 12월 31일 08:00 UTC까지 열려 있고, 그 뒤에는 소멸돼요. 2027년 1월 15일에 모든 포지션이 강제 청산되고 볼트가 정산돼요. 출금과 DUSD 상환은 2027년 1월 31일에 마감돼요(상환에는 7일이 걸려 2월 7일까지 끝나요).",
+    "who": "StandX(BNB Chain 또는 Solana)에 포지션, 잔액, DUSD가 있는 사람, 그리고 PancakeSwap이나 Raydium에서 DUSD 유동성을 공급하는 사람.",
+    "todo": "에어드롭 받기 → 포지션 정리 → Perps 지갑에서 Cash 지갑으로 자금 이동 → 내 지갑으로 출금. USDT로 받으려면 2027년 1월 31일 전에 상환을 요청하고, PancakeSwap과 Raydium의 DUSD 유동성도 1월 31일 전에 빼세요.",
+    "caution": "DUSD는 USDT로 상환돼요. 2027년 1월 31일 이후에도 잔액은 주인의 것이지만, support@standx.com으로 이메일을 보내야 해요.",
+    "official": [
+      "StandX X 게시물: 운영 종료 안내",
+      "StandX X 게시물: 포지션 축소만 가능(reduce-only) 모드",
+      "StandX X 게시물: 에어드롭 시작"
+    ],
+    "milestones": [
+      "DUSD 에어드롭 소멸",
+      "모든 포지션 강제 청산, 볼트 정산"
+    ]
   }
 }
