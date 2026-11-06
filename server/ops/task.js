@@ -6,7 +6,7 @@
 //                                           顺手把以前的需求摘要按页过一遍(db.js 的 fixNeeds,翻完为止)
 //   改不了待发、收件、看板,也设不了管理员。钥匙丢了,别人最多让它多刷新几次、塞几条线索(来源链接只认白名单里的网站)。
 // POST /api/admin/export  维护者(Claude 主窗口)用投递那把钥匙读:管理员点的决定、状态、时间,管理员自己写的备注(可能提到别人),
-//   我们自己发出去的回复的链接和读数(浏览、点赞、回复数),线索(公开信息),定时任务的情况,
+//   我们自己发出去的回复的链接和读数(浏览、点赞、回复数),线索(公开信息),定时任务的情况(auto:刷新、监控、巡检),巡检的暂停开关 patrol: { paused, at },
 //   体检次数 hits(每种的总数、开始数的那天、最近 60 天每天的数,北京时间;见 db.js 的 hitCounts),
 //   问题记录 problems(最近 90 天的数:每种、问得多的 20 个协议、每周几条、回了几成;见 db.js 的 problemCounts,只有数,不带编号、账号、链接),
 //   宣传卡片 outreach(编号、渠道、目标、状态、点的时间,管理员记下的回音:一句话、链接、记的时间;不带正文和收件邮箱,那些是我自己写的)。
@@ -147,8 +147,16 @@ export async function listLeads(db, n = 30) {
   return results.map((r) => ({ id: r.id, found_at: r.found_at, ...(parse(r.v, {}) || {}) }));
 }
 
+// 定时任务的情况:GitHub 上的刷新、监控,和 3070 上的巡检(patrol:{ at, ok, note },巡检每轮结束单独送一包顶层的 patrol,见 ingest.js)
 export async function autoState(db) {
-  return { sync: parse(await getKv(db, "auto_sync_last")), monitor: parse(await getKv(db, "monitor_last")) };
+  return { sync: parse(await getKv(db, "auto_sync_last")), monitor: parse(await getKv(db, "monitor_last")), patrol: parse(await getKv(db, "patrol_last")) };
+}
+
+// 巡检的暂停开关(管理员在运营台点「暂停巡检 / 恢复巡检」,存在 kv 的 patrol_pause):{ paused, at: 点的时间 },没点过是 { paused: false, at: null }。
+// 运营台页面和导出都带它;巡检每轮开头读导出,暂停中只报到、别的都不做
+export async function patrolPause(db) {
+  const p = parse(await getKv(db, "patrol_pause"));
+  return { paused: !!(p && p.paused === true), at: p && typeof p.at === "string" ? p.at : null };
 }
 
 export async function exportFor(db, { raw, sig, envName, method, path, pubkeys }, now) {
@@ -174,5 +182,5 @@ export async function exportFor(db, { raw, sig, envName, method, path, pubkeys }
   // 体检次数不看 since:总是给总数和最近 60 天;问题记录也不看 since:总是最近 90 天的数
   // 核实队列(sentQueue):还没核实的「已发」全给,一页 500 条,按点开的时间往前翻(请求里带 queueAfter: 上一页的 next)
   const q = c.body.queueAfter && typeof c.body.queueAfter === "object" && !Array.isArray(c.body.queueAfter) ? c.body.queueAfter : null;
-  return { status: 200, body: { ok: true, at: iso(now), inbox, outbox, outreach, leads, auto: await autoState(db), outStats, hits: await hitCounts(db, now), problems: await problemCounts(db, now, PROBLEM_DAYS, 20), sentRule: rule, sent: await sentCounts(db, rule, now), sentQueue: await sentQueue(db, rule, now, q) } };
+  return { status: 200, body: { ok: true, at: iso(now), inbox, outbox, outreach, leads, auto: await autoState(db), patrol: await patrolPause(db), outStats, hits: await hitCounts(db, now), problems: await problemCounts(db, now, PROBLEM_DAYS, 20), sentRule: rule, sent: await sentCounts(db, rule, now), sentQueue: await sentQueue(db, rule, now, q) } };
 }

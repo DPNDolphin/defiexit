@@ -10,7 +10,7 @@ import { checkText, signedText, SKEW_MS } from "../server/ops/ingest.js";
 import { waitFor, MIN_PASSWORD } from "../server/ops/auth.js";
 import { hostOk } from "../server/ops/http.js";
 import { taskText, exportText, LIMIT } from "../server/ops/task.js";
-import { capOf, gate, waitText, paceNote } from "../admin/pace.js";
+import { capOf, gate, waitText, paceNote, dayHours, patrolLate } from "../admin/pace.js";
 import { handle as hit } from "../functions/api/hit.js";
 
 const HOST = "https://defiexit.com";
@@ -210,7 +210,7 @@ test("投递:签名、环境、时间、nonce、旧包", async () => {
   const r = await handle(new Request(HOST + "/api/admin/ingest", { method: "POST", headers: { "X-DX-Sig": ok.sig }, body: ok.raw.replace("2026", "2027") }), baseEnv(w.db), w.edge, w.now());
   assert.equal((await r.json()).error, "sig");
   // 没登录的人拿不到数据:回执里没有库里的内容
-  assert.deepEqual(Object.keys(again.json).sort(), ["docs", "inbox", "ok", "outbox", "outreach", "problems", "receipt", "rejected", "sent", "setup"]);
+  assert.deepEqual(Object.keys(again.json).sort(), ["docs", "inbox", "ok", "outbox", "outreach", "patrol", "problems", "receipt", "rejected", "sent", "setup"]);
 });
 
 test("草稿检查:站外链接、敏感词一律不收", () => {
@@ -3721,3 +3721,86 @@ test("刷新:上游慢、读到一半 45 秒就到了,留给旧帖子的名额�
   }
 });
 
+
+// 巡检(3070 的 tools/ops_patrol.py):每轮结束单独送一包顶层的 patrol(ops_push --only patrol),存进 kv;暂停开关管理员点,导出带给巡检
+test("巡检状态:单独一包顶层的 patrol,形状不对不收(回执写明);收下的进「定时任务」(auto.patrol),不碰看板;晚到的旧包不盖新的;将来的时间存成收到的时间(不挡以后的报到);看板的投递盖不掉它", async () => {
+  const w = world();
+  const c = await w.login();
+  const send = async (patrol) => { w.clock += 1000; return w.ingest({ patrol }); };
+  w.clock += 1000;
+  await w.ingest({ docs: { summary: { updatedAt: "2026-11-03T10:00:00Z", asks: [{ text: "主窗口写的", when: "今天" }] } } });
+  for (const bad of [{ at: "2026-11-03T18:17:00+08:00", ok: "yes", note: "x" }, { at: "不是时间", ok: true, note: "x" }, { ok: true, note: "x" }, { at: "2026-11-03T18:17:00+08:00", ok: true, note: "长".repeat(201) }, { at: "2026-11-03T18:17:00+08:00", ok: true }, "没有新评论", null, []]) {
+    const r = await send(bad);
+    assert.equal(r.status, 200);
+    assert.deepEqual([r.json.patrol, r.json.rejected], [0, [{ kind: "patrol", id: "patrol", why: "格式不对" }]], JSON.stringify(bad));
+  }
+  assert.equal((await w.call("/api/admin/state", { cookie: c })).json.auto.patrol, null);
+  const r = await send({ at: "2026-11-03T17:47:00+08:00", ok: true, note: "没有新评论" });
+  assert.deepEqual([r.json.patrol, r.json.docs, r.json.rejected], [1, 0, []]);
+  let st = (await w.call("/api/admin/state", { cookie: c })).json;
+  assert.deepEqual(st.auto.patrol, { at: "2026-11-03T09:47:00.000Z", ok: true, note: "没有新评论" });
+  assert.deepEqual(st.docs.summary, { updatedAt: "2026-11-03T10:00:00Z", asks: [{ text: "主窗口写的", when: "今天" }] }, "看板不动");
+  await send({ at: "2026-11-03T17:17:00+08:00", ok: false, note: "旧的" }); // 晚到的旧包
+  w.clock += 1000;
+  await w.ingest({ docs: { summary: { updatedAt: "2026-11-03T10:00:30Z", asks: [] } } }); // 主窗口送看板
+  st = (await w.call("/api/admin/state", { cookie: c })).json;
+  assert.equal(st.auto.patrol.note, "没有新评论");
+  // 3070 的钟快了 9 分钟:收下,时间记成收到的那一刻;半小时后真实的那一轮照样更新
+  const got = new Date(w.clock + 1000).toISOString();
+  await send({ at: "2026-11-03T18:09:00+08:00", ok: true, note: "钟快了" });
+  assert.deepEqual((await w.call("/api/admin/state", { cookie: c })).json.auto.patrol, { at: got, ok: true, note: "钟快了" });
+  w.clock += 30 * 60e3;
+  await send({ at: new Date(w.clock + 1000).toISOString(), ok: false, note: "出错:读不了运营台" });
+  w.clock += 1000;
+  assert.deepEqual((await w.exp({})).json.auto.patrol, { at: new Date(w.clock - 1000).toISOString(), ok: false, note: "出错:读不了运营台" });
+});
+
+test("暂停巡检开关:管理员登录才能改(同源、JSON);只收 { paused: true|false };运营台和导出都带 patrol: { paused, at }", async () => {
+  const w = world();
+  assert.equal((await w.call("/api/admin/patrol", { method: "POST", body: { paused: true } })).status, 401, "没设管理员");
+  const c = await w.login();
+  assert.deepEqual((await w.exp({})).json.patrol, { paused: false, at: null }, "没点过:没暂停");
+  assert.deepEqual((await w.call("/api/admin/state", { cookie: c })).json.patrol, { paused: false, at: null });
+  assert.equal((await w.call("/api/admin/patrol", { method: "POST", body: { paused: true } })).json.need, "login");
+  assert.equal((await w.call("/api/admin/patrol", { method: "POST", body: { paused: true }, cookie: c, origin: null })).json.error, "origin");
+  assert.equal((await w.call("/api/admin/patrol", { method: "POST", body: { paused: true }, cookie: c, origin: "https://evil.example" })).json.error, "origin");
+  assert.equal((await w.call("/api/admin/patrol", { method: "POST", body: { paused: true }, cookie: c, type: "text/plain" })).status, 415);
+  for (const bad of [{}, { paused: "true" }, { paused: 1 }, { paused: true, at: "2026-11-03T10:00:00Z" }]) {
+    assert.equal((await w.call("/api/admin/patrol", { method: "POST", body: bad, cookie: c })).status, 400, JSON.stringify(bad));
+  }
+  w.clock += 60e3;
+  const r = await w.call("/api/admin/patrol", { method: "POST", body: { paused: true }, cookie: c });
+  assert.deepEqual(r.json, { ok: true, patrol: { paused: true, at: "2026-11-03T10:01:00.000Z" } });
+  assert.deepEqual((await w.call("/api/admin/state", { cookie: c })).json.patrol, { paused: true, at: "2026-11-03T10:01:00.000Z" });
+  w.clock += 1000;
+  assert.deepEqual((await w.exp({ since: new Date(w.clock).toISOString() })).json.patrol, { paused: true, at: "2026-11-03T10:01:00.000Z" }, "导出不看 since");
+  assert.equal((await w.exp({}, { key: TASK.privateKey })).json.error, "sig", "定时任务的小钥匙读不了");
+  w.clock += 60e3;
+  await w.call("/api/admin/patrol", { method: "POST", body: { paused: false }, cookie: c });
+  w.clock += 1000;
+  assert.deepEqual((await w.exp({})).json.patrol, { paused: false, at: "2026-11-03T10:02:01.000Z" });
+  // 投递改不了开关(顶层的 patrol 是巡检的报到,{ paused } 不合那个形状)
+  w.clock += 1000;
+  assert.deepEqual((await w.ingest({ patrol: { paused: true } })).json.rejected, [{ kind: "patrol", id: "patrol", why: "格式不对" }]);
+  w.clock += 1000;
+  assert.equal((await w.exp({})).json.patrol.paused, false);
+});
+
+test("巡检多久没报到:只数北京时间 8:00–24:00(夜里不跑不算),白天超过 2 小时才算没跑;暂停中不算;没报到过不算", () => {
+  const bj = (s) => Date.parse(s + "+08:00");
+  assert.equal(dayHours(bj("2026-11-07T10:00:00"), bj("2026-11-07T12:30:00")), 2.5);
+  assert.equal(dayHours(bj("2026-11-07T23:47:00"), bj("2026-11-08T08:17:00")).toFixed(2), "0.50", "夜里不算:23:47 到 24:00、8:00 到 8:17");
+  assert.equal(dayHours(bj("2026-11-07T02:00:00"), bj("2026-11-07T07:59:00")), 0);
+  assert.equal(dayHours(bj("2026-11-06T12:00:00"), bj("2026-11-07T12:00:00")), 16);
+  assert.equal(dayHours(bj("2026-10-01T12:00:00"), bj("2026-11-07T12:00:00")) > 2, true, "隔得很久的也算没跑");
+  assert.equal(dayHours(bj("2026-11-07T12:00:00"), bj("2026-11-07T11:00:00")), 0);
+  const at = (s) => ({ at: new Date(bj(s)).toISOString(), ok: true, note: "没有新评论" });
+  assert.equal(patrolLate(at("2026-11-07T10:17:00"), null, bj("2026-11-07T12:16:00")), false);
+  assert.equal(patrolLate(at("2026-11-07T10:17:00"), null, bj("2026-11-07T12:18:00")), true);
+  assert.equal(patrolLate(at("2026-11-07T23:47:00"), null, bj("2026-11-08T09:40:00")), false, "早上 9:40:白天才过了 1 小时 53 分");
+  assert.equal(patrolLate(at("2026-11-07T23:47:00"), null, bj("2026-11-08T09:50:00")), true);
+  assert.equal(patrolLate(at("2026-11-07T10:17:00"), { paused: true, at: "2026-11-07T02:00:00Z" }, bj("2026-11-07T20:00:00")), false, "暂停中不提醒");
+  assert.equal(patrolLate(at("2026-11-07T10:17:00"), { paused: false, at: "2026-11-07T02:00:00Z" }, bj("2026-11-07T20:00:00")), true);
+  assert.equal(patrolLate(null, null, bj("2026-11-07T20:00:00")), false);
+  assert.equal(patrolLate({ at: "坏的" }, null, bj("2026-11-07T20:00:00")), false);
+});

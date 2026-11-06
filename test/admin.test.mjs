@@ -105,6 +105,8 @@ async function desk(state, status = 200) {
       }
       return res(200, { ok: true, item: it });
     }
+    // 巡检开关:照服务器回(记下点的时间);state.patrolFail 写了就回那个错
+    if (path === "patrol") return state.patrolFail ? res(state.patrolFail[0], state.patrolFail[1]) : res(200, { ok: true, patrol: (state.patrol = { paused: b.paused, at: new Date().toISOString() }) });
     if (path !== "outbox") return res(200, { ok: true });
     const it = state.outbox.find((x) => x.id === b.id);
     if (typeof b.draft === "string") { const why = checkText(b.draft, undefined, outHosts(it.mine)); if (why) return res(400, { error: "draftbad", why }); }
@@ -934,4 +936,72 @@ test("点「复制」:页面顺手告诉服务器这一批发送从现在算起(
   await d.card("r1").copy.fire("click");
   await tick();
   assert.deepEqual(d.calls.filter(([p, b]) => p === "outbox" && b.copied), [["outbox", { id: "r1", copied: true }]]);
+});
+
+test("巡检:「定时任务」里写上次报到的时间和一句话;白天超过 2 小时没报到首页提醒(暂停中、没报到过不提醒);点「暂停巡检」一下就存,按钮变「恢复巡检」,不再提醒", async () => {
+  const todo = (d) => d.$("todo").textContent;
+  const btn = (d, text) => find(d.$("data-body"), (e) => e.tagName === "BUTTON" && e.textContent === text);
+  const LATE = "巡检超过 2 小时没跑,看「数据」最下面";
+  // 刚报到过:不提醒,写上次的时间和那句话
+  let d = await desk({ ...base([]), auto: { patrol: { at: ago(1), ok: true, note: "新评论 2 条,起草 1 条" } } });
+  assert.equal(todo(d).includes(LATE), false);
+  assert.ok(d.$("data-body").textContent.includes("上次 "), d.$("data-body").textContent);
+  assert.ok(d.$("data-body").textContent.includes(" · 新评论 2 条,起草 1 条"));
+  // 两天前报到的(不管现在几点,白天都过了 16 小时以上):提醒、标红
+  const old = { at: ago(2 * 24 * 60), ok: true, note: "没有新评论" };
+  d = await desk({ ...base([]), auto: { patrol: old } });
+  assert.ok(todo(d).includes(LATE));
+  assert.ok(d.$("data-body").textContent.includes("超过 2 小时没跑"));
+  // 没报到过:不提醒
+  d = await desk({ ...base([]), auto: {} });
+  assert.equal(todo(d).includes(LATE), false);
+  assert.ok(d.$("data-body").textContent.includes("还没报到过"));
+  // 暂停中:不提醒,写「暂停中」,按钮是「恢复巡检」
+  d = await desk({ ...base([]), auto: { patrol: old }, patrol: { paused: true, at: ago(60) } });
+  assert.equal(todo(d).includes(LATE), false);
+  assert.ok(d.$("data-body").textContent.includes("暂停中"));
+  assert.ok(btn(d, "恢复巡检"));
+  // 点「暂停巡检」:存进服务器,按钮变「恢复巡检」,首页的提醒去掉;再点恢复,提醒回来
+  const st = { ...base([]), auto: { patrol: old } };
+  d = await desk(st);
+  assert.ok(todo(d).includes(LATE));
+  await btn(d, "暂停巡检").fire("click");
+  await tick();
+  assert.deepEqual(d.calls.filter(([p]) => p === "patrol"), [["patrol", { paused: true }]]);
+  assert.ok(btn(d, "恢复巡检"));
+  assert.equal(todo(d).includes(LATE), false);
+  await btn(d, "恢复巡检").fire("click");
+  await tick();
+  assert.deepEqual(d.calls.filter(([p]) => p === "patrol").at(-1), ["patrol", { paused: false }]);
+  assert.ok(btn(d, "暂停巡检"));
+  assert.ok(todo(d).includes(LATE));
+  // 服务器没存上:按钮照旧能点,说为什么;登录过期回登录页
+  st.patrolFail = [403, { error: "origin" }];
+  await btn(d, "暂停巡检").fire("click");
+  await tick();
+  assert.ok(btn(d, "暂停巡检") && !btn(d, "暂停巡检").disabled);
+  assert.ok(d.$("data-body").textContent.includes("请求来源不对"));
+  st.patrolFail = [401, { need: "login" }];
+  await btn(d, "暂停巡检").fire("click");
+  await tick();
+  assert.equal(d.$("desk").hidden, true);
+});
+
+test("巡检开关:刷新还在路上时点了「暂停巡检」,那次刷新晚回来也不把开关显示反;再读一次,照服务器的", async () => {
+  const btn = (d, text) => find(d.$("data-body"), (e) => e.tagName === "BUTTON" && e.textContent === text);
+  const st = { ...base([]), auto: { patrol: { at: ago(1), ok: true, note: "没有新评论" } } };
+  const d = await desk(st);
+  const held = holdFirstState(st);
+  await d.$("refresh").fire("click"); // 刷新:读的是点「暂停巡检」以前的(没暂停)
+  await tick();
+  assert.equal(held.length, 1);
+  await btn(d, "暂停巡检").fire("click");
+  await tick();
+  assert.equal(st.patrol.paused, true);
+  held[0](); // 点以前读的那次这时候才回来:不用
+  await tick();
+  assert.ok(btn(d, "恢复巡检"), d.$("data-body").textContent);
+  assert.ok(d.$("data-body").textContent.includes("暂停中"));
+  const paths = d.calls.map(([p]) => p).filter((p) => p === "state" || p === "patrol");
+  assert.deepEqual(paths.slice(-2), ["patrol", "state"]);
 });

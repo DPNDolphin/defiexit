@@ -7,17 +7,18 @@
 // POST watch / delete    帖子看不看评论;按要求删掉一条(同一条帖子在收件、待发、问题记录里的几行一起删,以后都不再收;
 //                        宣传卡片只删那一张,以后这个编号、写给它那个收件邮箱的都不再收)
 // POST sync              经 fxtwitter 刷新读数和评论
+// POST patrol            暂停 / 恢复 3070 上的巡检:{ paused: true | false },存进 kv 的 patrol_pause(导出带给巡检,见 server/ops/task.js)
 // POST ingest            Claude 主窗口的签名投递(不靠登录,靠签名;见 server/ops/ingest.js)
 // POST task              定时任务的小钥匙:只能刷新、加线索(见 server/ops/task.js)
 // POST export            Claude 主窗口用投递钥匙读管理员点过的决定、状态和线索(见 server/ops/task.js)
 // 改东西的请求(ingest 除外)必须同源、JSON、已登录;登录凭证是只给本主机的 __Host- cookie(SameSite=Strict)。
 
 import { reply, gone, hostOk, sameOrigin, readJson, clientIp } from "../../../server/ops/http.js";
-import { ensure, iso, getKv, getDocs, sentRule, listOut, listIn, getOut, getIn, outRow, existing, purge, goneKey, goneStmt, markStmt, NOT_GONE, goneArg, outKeys, inKeys, sameRefs, sameInRefs, rowsAbout, hitCounts, problemCounts, problemKey, listReach, reachDone, getReach, reachCardKey, reachToKey } from "../../../server/ops/db.js";
+import { ensure, iso, getKv, setKv, getDocs, sentRule, listOut, listIn, getOut, getIn, outRow, existing, purge, goneKey, goneStmt, markStmt, NOT_GONE, goneArg, outKeys, inKeys, sameRefs, sameInRefs, rowsAbout, hitCounts, problemCounts, problemKey, listReach, reachDone, getReach, reachCardKey, reachToKey } from "../../../server/ops/db.js";
 import { MIN_PASSWORD, hashPassword, checkPassword, newSession, hasSession, endSession, endAll, cookie, mustWait, failed, succeeded, same } from "../../../server/ops/auth.js";
 import { ingest, checkText, outHosts, webUrl } from "../../../server/ops/ingest.js";
 import { sync } from "../../../server/ops/sync.js";
-import { task, exportFor, listLeads, autoState } from "../../../server/ops/task.js";
+import { task, exportFor, listLeads, autoState, patrolPause } from "../../../server/ops/task.js";
 
 const STATUS = ["待发", "已发", "跳过"];
 const DECISIONS = ["采纳", "以后再说", "不采纳"];
@@ -26,7 +27,7 @@ const hex = async (s) => [...new Uint8Array(await crypto.subtle.digest("SHA-256"
 
 async function state(db, admin, now) {
   await purge(db, now);
-  const [docs, outbox, inbox, syncAt, syncNote, off, needs, leads, auto, outStats, hits, p7, p30, reach, sent] = await Promise.all([
+  const [docs, outbox, inbox, syncAt, syncNote, off, needs, leads, auto, outStats, hits, p7, p30, reach, sent, patrol] = await Promise.all([
     getDocs(db), listOut(db), listIn(db), getKv(db, "sync_at_ms"), getKv(db, "sync_note"),
     db.prepare("SELECT id FROM watch WHERE on_ = 0").all(),
     db.prepare("SELECT month, v FROM needs ORDER BY month DESC LIMIT 100").all(),
@@ -35,13 +36,14 @@ async function state(db, admin, now) {
     problemCounts(db, now, 7, 10), problemCounts(db, now, 30, 10),
     listReach(db),
     sentRule(db),
+    patrolPause(db),
   ]);
   const past = needs.results.map((r) => { try { return { month: r.month, ...JSON.parse(r.v) }; } catch { return null; } }).filter(Boolean);
   let stats = {};
   try { stats = JSON.parse(outStats || "{}") || {}; } catch { stats = {}; }
   // 宣传卡片:没点过的全给,点过的给最近一页;outreachMore.handled 是点过、这一页没给的张数(库里数的),after 是这一页最早那张。
   // sentRule:页面照它把「已发」分成已打开 / 待核实 / 核实已发(admin/pace.js 的 sentState)
-  return reply({ ok: true, me: { name: admin.name }, sentRule: sent, docs, outbox, inbox, outreach: reach.items, outreachMore: { handled: reach.more, after: reach.after }, needs: past, leads, auto, outStats: stats, hits, problems: { d7: p7, d30: p30 }, watchOff: off.results.map((r) => r.id), synced: { at: syncAt ? iso(Number(syncAt)) : null, note: syncNote || "" } });
+  return reply({ ok: true, me: { name: admin.name }, sentRule: sent, docs, outbox, inbox, outreach: reach.items, outreachMore: { handled: reach.more, after: reach.after }, needs: past, leads, auto, patrol, outStats: stats, hits, problems: { d7: p7, d30: p30 }, watchOff: off.results.map((r) => r.id), synced: { at: syncAt ? iso(Number(syncAt)) : null, note: syncNote || "" } });
 }
 
 // 这张卡片现在是不是「核实已发」:核到的是这一次点开的(mine.sent.opened 和 decided_at 一模一样,见 admin/pace.js 的 sentState)
@@ -361,6 +363,12 @@ export async function handle(request, env, fetchImpl = fetch, now = new Date()) 
     if (pk) stmts.push(db.prepare("DELETE FROM problems WHERE id = ?").bind(pk));
     await db.batch(stmts);
     return reply({ ok: true });
+  }
+  if (path === "patrol") {
+    if (typeof b.paused !== "boolean" || Object.keys(b).length !== 1) return reply({ error: "bad" }, 400);
+    const p = { paused: b.paused, at: iso(now) };
+    await setKv(db, "patrol_pause", JSON.stringify(p));
+    return reply({ ok: true, patrol: p });
   }
   if (path === "sync") {
     const r = await sync(db, fetchImpl, now);

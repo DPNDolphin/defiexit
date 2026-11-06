@@ -69,3 +69,21 @@ export function paceNote(times) {
   const burst = ts.filter((t) => ts[0] - t <= PACE.burstMs).length;
   return burst >= PACE.burst ? "30 分钟里已经发了 " + burst + " 条,歇一会儿" : null;
 }
+
+// 4. 巡检(3070 上每半小时一轮,北京时间 8:00–24:00 跑,夜里不跑)多久没报到:只数白天的时间,超过 PATROL.lateH 小时首页提醒。
+//    暂停中不提醒(暂停时它照样每轮报到,只是别的都不做)。x 是 auto.patrol({ at, ok, note }),pause 是 { paused, at }
+export const PATROL = { lateH: 2, from: 8, to: 24 };
+// from、to 两个时间之间,落在北京时间 8:00–24:00 里的有几小时(隔得太久的按每天 16 小时算,不一天天数)
+export function dayHours(from, to) {
+  const H = 3600e3, D = 24 * H, a = +from + H8, b = +to + H8;
+  if (!(Number.isFinite(a) && Number.isFinite(b) && b > a)) return 0;
+  if (b - a > 7 * D) return ((b - a) / D) * (PATROL.to - PATROL.from);
+  let ms = 0;
+  for (let d = Math.floor(a / D) * D; d < b; d += D) ms += Math.max(0, Math.min(b, d + PATROL.to * H) - Math.max(a, d + PATROL.from * H));
+  return ms / H;
+}
+export function patrolLate(x, pause, now = Date.now()) {
+  if (pause && pause.paused === true) return false;
+  const t = x && typeof x.at === "string" ? Date.parse(x.at) : NaN;
+  return Number.isFinite(t) && dayHours(t, now) > PATROL.lateH;
+}

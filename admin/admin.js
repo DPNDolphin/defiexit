@@ -1,7 +1,7 @@
 // 运营台(只在 admin 主机上打开):登录 → 读 /api/admin/state → 待发、收件、宣传、数据、已处理。管理员点的「已发 / 采纳」、改的草稿,
 // 都经 /api/admin/* 存进数据库。页面里的评论、帖子是别人写的:一律用 textContent 放进页面,不当 HTML(宣传稿的正文也一样,markdown 照原样显示)。
 // 每天放出几条回复、发得快了提醒、「已发」分成已打开 / 待核实 / 核实已发,算法在 pace.js(服务器的导出和测试也用它)。
-import { capOf, gate, waitText, paceNote, sentState, SENT_LABEL } from "./pace.js";
+import { capOf, gate, waitText, paceNote, sentState, SENT_LABEL, patrolLate, bjDay } from "./pace.js";
 (function () {
   "use strict";
   const H8 = 8 * 3600e3;
@@ -96,7 +96,7 @@ import { capOf, gate, waitText, paceNote, sentState, SENT_LABEL } from "./pace.j
   // quota:今天对人的首回放出几条(上限、已发、排队的编号),每次摆待发卡片前重算;hits:网站自己数的体检次数
   // loadSeq:第几次刷新(只认最后一次的),loadBusy:还在路上的那次(见 wrote);reachReq:正在翻的那一页(同一时刻只有一个,见 moreReach)
   // sentRule:服务器给的「待核实」时限和这一版上线的时间(sentState 照它算)
-  const S = { sentRule: null, docs: {}, out: new Map(), inn: new Map(), reach: new Map(), reachMore: 0, reachCursor: null, reachGen: 0, reachReq: null, loadSeq: 0, loadBusy: 0, cards: new Map(), ro: null, watchOff: new Set(), needs: [], leads: [], auto: {}, outStats: {}, hits: {}, quota: gate([], [], capOf(null)) };
+  const S = { sentRule: null, docs: {}, out: new Map(), inn: new Map(), reach: new Map(), reachMore: 0, reachCursor: null, reachGen: 0, reachReq: null, loadSeq: 0, loadBusy: 0, cards: new Map(), ro: null, watchOff: new Set(), needs: [], leads: [], auto: {}, patrol: { paused: false, at: null }, outStats: {}, hits: {}, quota: gate([], [], capOf(null)) };
   // 三种卡片:待发(out)、收件(in)、宣传(reach);接口的名字 → 卡片的种类
   const KINDS = { outbox: "out", inbox: "in", outreach: "reach" };
   const storeOf = (k) => (k === "out" ? S.out : k === "in" ? S.inn : S.reach);
@@ -713,6 +713,7 @@ import { capOf, gate, waitText, paceNote, sentState, SENT_LABEL } from "./pace.j
     S.needs = Array.isArray(json.needs) ? json.needs : [];
     S.leads = Array.isArray(json.leads) ? json.leads : [];
     S.auto = json.auto && typeof json.auto === "object" ? json.auto : {};
+    S.patrol = json.patrol && typeof json.patrol === "object" ? json.patrol : { paused: false, at: null }; // 巡检的暂停开关(旧服务器没有:当没暂停)
     S.outStats = json.outStats && typeof json.outStats === "object" ? json.outStats : {};
     S.hits = json.hits && typeof json.hits === "object" ? json.hits : {};
     S.problems = json.problems && typeof json.problems === "object" ? json.problems : null; // 问题记录的数(最近 7 天、30 天)
@@ -765,6 +766,7 @@ import { capOf, gate, waitText, paceNote, sentState, SENT_LABEL } from "./pace.j
     if (late(S.auto.sync, 3) || (S.auto.sync && S.auto.sync.ok === false)) items.push({ text: "自动刷新没跑成,看「数据」最下面的「定时任务」", href: "#data", when: "今天" });
     else if (syncBlind(S.auto.sync)) items.push({ text: "自动刷新一条帖子都没读到,看「数据」最下面的「定时任务」", href: "#data", when: "今天" });
     if (late(S.auto.monitor, 14)) items.push({ text: "项目变动监控超过 14 小时没跑,看「数据」最下面的「定时任务」", href: "#data", when: "今天" });
+    if (patrolLate(S.auto.patrol, S.patrol)) items.push({ text: "巡检超过 2 小时没跑,看「数据」最下面", href: "#data", when: "今天" });
     const asks = S.docs.summary && S.docs.summary.asks;
     for (const a of Array.isArray(asks) ? asks : []) if (a && typeof a.text === "string") items.push(a);
     $("todo").replaceChildren(...(items.length ? items.map((a) => h("li", null,
@@ -1082,10 +1084,32 @@ import { capOf, gate, waitText, paceNote, sentState, SENT_LABEL } from "./pace.j
         h("span", { class: "sub" }, "上次 " + mdhm(x.at)));
     };
     return h("div", { class: "panel" }, h("h3", null, "定时任务"),
-      h("div", { class: "list" },
+      h("div", { class: "list" }, patrolRow(a.patrol),
         row("刷新", a.sync, 3, (x) => (x.ok === false ? "没刷成:" + (x.error || "原因不明") : (x.read == null ? "" : "读到 " + x.read + " 条帖子,") + "新评论 " + (x.newReplies || 0) + " 条" + (x.failed ? ",有 " + x.failed + " 条没读到" + (Array.isArray(x.errors) && x.errors.length ? ":" + x.errors.join("、") : "") : "")), syncBlind),
         row("监控", a.monitor, 14, (x) => "读了 " + (x.read == null ? "?" : x.read) + " 个来源,新线索 " + (x.stored || 0) + " 条" + (Array.isArray(x.failed) && x.failed.length ? ";没读到:" + x.failed.join("、") : ""), (x) => x.read === 0)),
-      h("p", { class: "src" }, "GitHub 上的定时任务:每小时刷新一次评论和读数,每 6 小时盯一次项目变动。超过时间没跑会标红,顶上「今天要你做的」也会提醒。"));
+      h("p", { class: "src" }, "GitHub 上的定时任务:每小时刷新一次评论和读数,每 6 小时盯一次项目变动。巡检在 3070 上:每天 8 点到 24 点每半小时一轮,有新评论才叫 AI 起草,白天超过 2 小时没报到算没跑(暂停中不算)。超过时间没跑会标红,顶上「今天要你做的」也会提醒。"));
+  }
+
+  // 巡检(3070 上每半小时一轮读新评论、有才叫 AI 起草):上次报到的时间和一句话,加「暂停巡检 / 恢复巡检」(点一下就存进服务器,下一轮起生效)
+  function patrolRow(x) {
+    const pause = S.patrol || {}, paused = pause.paused === true, late = patrolLate(x, pause), bad = !!(x && x.ok === false);
+    const when = x && x.at ? (bjDay(x.at) === bjDay(Date.now()) ? mdhm(x.at).slice(6) : mdhm(x.at)) : "";
+    const msg = h("span", { class: "sub" }, paused ? "已暂停(" + (pause.at ? mdhm(pause.at) + " 点的" : "") + "):每轮只报到,不读评论、不叫 AI" : "");
+    const btn = h("button", { type: "button", class: "btn small" }, paused ? "恢复巡检" : "暂停巡检");
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      const { status, json } = await api("patrol", { paused: !paused });
+      if (status === 401) return show("login");
+      // 存上了:还在路上的那次刷新是存以前读的,回来会把开关显示反(见 wrote)
+      if (status === 200 && json.ok && json.patrol) { wrote(); S.patrol = json.patrol; renderTop(); renderData(); return; }
+      btn.disabled = false;
+      note(msg, why(json), true);
+    });
+    return h("div", { class: "li" + (late || bad || paused ? "" : " muted") },
+      h("span", { class: "k" }, "巡检"),
+      h("span", { class: "nm" }, "3070 · " + (x && x.at ? "上次 " + when + " · " + (x.note || "") : "还没报到过")),
+      h("span", { class: "pill " + (paused ? "warn" : late || bad ? "stop" : x && x.at ? "ok" : "warn") }, paused ? "暂停中" : late ? "超过 2 小时没跑" : bad ? "没成功" : x && x.at ? "正常" : "等第一次"),
+      msg, h("span", { class: "sub" }, btn));
   }
 
   // 某一块的数据格式不对,只让那一块显示一句话,别的照常

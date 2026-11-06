@@ -343,6 +343,10 @@ const okNum = (v, nullable) => (nullable && v === null) || v === undefined || (t
 const okArr = (v, n, each) => Array.isArray(v) && v.length <= n && v.every((x) => isObj(x) && each(x));
 const HOST = /^(?=.{4,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/;
 const okHost = (h) => typeof h === "string" && HOST.test(h) && !h.split(".").some((l) => l.startsWith("xn--"));
+// 巡检(3070 的 tools/ops_patrol.py)每轮结束单独送一包(ops_push --only patrol),包里只有顶层的 patrol: { at: 这一轮结束的时间, ok, note: 一句话 }。
+// 收下存进 kv 的 patrol_last(和定时刷新、监控的情况放一起,见 task.js 的 autoState);不碰看板
+const PATROL_NOTE_MAX = 200;
+const okPatrol = (p) => isObj(p) && typeof p.at === "string" && p.at.length <= 40 && Number.isFinite(Date.parse(p.at)) && typeof p.ok === "boolean" && typeof p.note === "string" && p.note.length <= PATROL_NOTE_MAX;
 const SHAPES = {
   summary: (v) => okStr(v.updatedAt, 40) && (v.asks === undefined || okArr(v.asks, 12, (a) => typeof a.text === "string" && a.text.length <= 200 && okStr(a.when, 10) && (a.href === undefined || /^#[a-z]+$/.test(a.href)))),
   x_posts: (v) => okArr(v.posts, 10, (p) => /^\d{1,25}$/.test(String(p.id)) && okStr(p.name, 40) && okStr(p.url, 120) && (p.points === undefined || okArr(p.points, 300, (r) => typeof r.at === "string" && ["views", "likes", "replies", "reposts", "bookmarks"].every((f) => okNum(r[f], true)))))
@@ -556,6 +560,18 @@ async function locked(db, raw, body, now) {
       stmts.push(db.prepare("INSERT INTO kv (k, v) VALUES ('setup_hash', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(s.hash));
       stmts.push(db.prepare("INSERT INTO kv (k, v) VALUES ('setup_exp', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(String(+now + s.hours * 3600e3)));
       setup = true;
+    }
+  }
+  // 巡检状态(见上面的 okPatrol):只认比库里新的(晚到的旧包不把「上次报到」往回挪);时间存 min(at, 现在):
+  // 3070 的钟快几秒也收下,又不会存成将来的时间、把以后真实的报到挡在外面
+  let patrol = 0;
+  if (body.patrol !== undefined) {
+    const p = body.patrol;
+    if (!okPatrol(p)) rejected.push({ kind: "patrol", id: "patrol", why: "格式不对" });
+    else {
+      stmts.push(db.prepare("INSERT INTO kv (k, v) VALUES ('patrol_last', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v WHERE json_extract(kv.v, '$.at') IS NULL OR json_extract(kv.v, '$.at') < json_extract(excluded.v, '$.at')")
+        .bind(JSON.stringify({ at: iso(Math.min(Date.parse(p.at), +now)), ok: p.ok, note: p.note })));
+      patrol = 1;
     }
   }
   const current = body.docs && body.docs.x_posts ? await getDocs(db) : {};
@@ -791,5 +807,5 @@ async function locked(db, raw, body, now) {
       : "这次没写进去,下一包再送";
     rejected.push({ kind: w.kind, id: w.id, why });
   }
-  return { status: 200, body: { ok: true, receipt: (await sha256(raw)).slice(0, 16), docs, outbox: count.outbox, inbox: count.inbox, problems: count.problems, outreach: count.outreach, sent: count.sent, setup, rejected } };
+  return { status: 200, body: { ok: true, receipt: (await sha256(raw)).slice(0, 16), docs, outbox: count.outbox, inbox: count.inbox, problems: count.problems, outreach: count.outreach, sent: count.sent, patrol, setup, rejected } };
 }
