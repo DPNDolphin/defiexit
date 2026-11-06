@@ -1,6 +1,7 @@
 // 测试用:在 dir 下照仓库的样子摆一套「[de]」样例译文(不是真译文,只在英文前面加个记号),给构建从头到尾走一遍:
 //   src/js/lib/i18n/de.js           拷这个目录里的那份(几条文字、几个函数,别的键退回英文)
-//   data/i18n/de/deadlines.json     两条事件:Sophon(名字、一句话、官方链接)、StandX(该做什么、分几步截止)
+//   src/js/detectors/i18n/okx-boost.de.js  同上,OKX Boost 检测器的几句话
+//   data/i18n/de/deadlines.json     三条事件:Sophon(名字、一句话、官方链接)、StandX(该做什么、分几步截止)、Balancer(谁受影响,里面有 $500,000)
 //   data/i18n/de/topics/<slug>.json 一篇专题,整篇都换
 //   recipes/okx-boost/i18n/de.json  从 en.json 换出来,结构一样;别的三份指南不给,页面上要退回英文
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from "node:fs";
@@ -26,12 +27,16 @@ export function makeFixtureRoot(dir, root) {
   put("package.json", '{ "type": "module" }\n'); // 界面文字是 ES 模块(仓库根目录的 package.json 也这么写)
   mkdirSync(join(dir, "src", "js", "lib", "i18n"), { recursive: true });
   copyFileSync(join(HERE, "src", "js", "lib", "i18n", "de.js"), join(dir, "src", "js", "lib", "i18n", "de.js"));
+  mkdirSync(join(dir, "src", "js", "detectors", "i18n"), { recursive: true });
+  copyFileSync(join(HERE, "src", "js", "detectors", "i18n", "okx-boost.de.js"), join(dir, "src", "js", "detectors", "i18n", "okx-boost.de.js"));
   const D = JSON.parse(readFileSync(join(root, "data", "deadlines.json"), "utf8"));
   const e = (id) => D.events.find((x) => x.id === id);
-  const so = e("sophon-chain-shutdown"), sx = e("standx-winddown");
+  const so = e("sophon-chain-shutdown"), sx = e("standx-winddown"), bal = e("balancer-winddown");
   put("data/i18n/de/deadlines.json", {
     "sophon-chain-shutdown": { name: tag(so.name.en), summary: tag(so.summary.en), official: so.official.map((o) => tag(o.label.en)) },
     "standx-winddown": { todo: tag(sx.todo.en), milestones: sx.milestones.map((m) => tag(m.note.en)) },
+    // 带千分位的金额($500,000):构建时换成德文写法
+    "balancer-winddown": { who: tag(bal.who.en) },
   });
   const T = JSON.parse(readFileSync(join(root, "data", "topics", `${FIX_TOPIC}.json`), "utf8"));
   put(`data/i18n/de/topics/${FIX_TOPIC}.json`, {

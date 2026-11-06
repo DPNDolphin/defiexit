@@ -11,6 +11,12 @@ import { join, relative } from "node:path";
 import { pathToFileURL } from "node:url";
 import { LANGS, BASE, langInfo } from "../src/js/lib/langs.js";
 import { STR, addUI } from "../src/js/lib/i18n.js";
+import { addText } from "../src/js/lib/dtext.js";
+import { TEXT as HL } from "../src/js/detectors/hyperliquid.text.js";
+import { TEXT as WF } from "../src/js/detectors/woofi.text.js";
+import { TEXT as DY } from "../src/js/detectors/dyorswap.text.js";
+import { TEXT as OK } from "../src/js/detectors/okx-boost.text.js";
+import { HOW } from "../src/js/lib/xlayer.text.js";
 
 const EXTRA = LANGS.filter((l) => !BASE.includes(l.code)).map((l) => l.code);
 const isObj = (v) => !!v && typeof v === "object" && !Array.isArray(v);
@@ -75,13 +81,63 @@ export function tokenDiff(en, tr) {
     const extra = missing(k === "domains" ? b[k].filter((d) => TLDS.has(d.split(".").pop())) : b[k], a[k]);
     if (extra !== null) return `译文里多了英文没有的${NAMES[k]}「${extra}」`;
   }
-  const lost = missing(a.nums, b.nums);
+  // 数:先按一段段数字比(千分位写成逗号、空格、不换行空格、撇号都一样);对不上再按数值比
+  // (45,818 和 45818、5.2 million 和 520万 / 520만、500,000 和 50万):两样都对不上才算错
+  const ok = explained(a.prose);
+  const byDigits = sameNums(a.nums, b.nums, ok);
+  return byDigits && sameNums(numValues(a.prose), numValues(b.prose), ok) ? byDigits : null;
+}
+
+// 英文里月份名、数字词说的数(Nov 是 11、two 是 2、a thousand 是 1000):译文把它们写成数字,多出来的这些不算错
+const norm = (v) => String(Number(Number(v).toPrecision(12)));
+const explained = (prose) => new Set([...prose.matchAll(/\b[A-Za-z]+\b/g)].flatMap(([w]) => [MONTHS[w], ...(WORDS[w.toLowerCase()] || [])]).filter((x) => x !== undefined).map(norm));
+// 英文的每一个译文里都要有;译文多出来的只能是 ok 里的。回的是错在哪,对就回 null
+function sameNums(en, tr, ok) {
+  const lost = missing(en, tr);
   if (lost !== null) return `英文里的数字「${lost}」译文里要原样留着(数字、金额、日期、时间都不改)`;
-  const nb = count(b.nums);
-  for (const [x, n] of count(a.nums)) nb.set(x, nb.get(x) - n);
-  const ok = new Set([...a.prose.matchAll(/\b[A-Za-z]+\b/g)].flatMap(([w]) => [MONTHS[w], ...(WORDS[w.toLowerCase()] || [])]).filter((x) => x !== undefined).map(String));
-  for (const [x, n] of nb) if (n > 0 && !ok.has(String(Number(x)))) return `译文里多了英文没有的数字「${x}」`;
+  const nb = count(tr);
+  for (const [x, n] of count(en)) nb.set(x, nb.get(x) - n);
+  for (const [x, n] of nb) if (n > 0 && !ok.has(norm(x))) return `译文里多了英文没有的数字「${x}」`;
   return null;
+}
+// 一句话里的数按数值列出来:千分位可以是逗号、空格、不换行空格、窄空格、撇号(后面正好三位),小数点是英文的点;
+// 后面紧跟的量级一起算:英文 thousand / million / billion / trillion,日文、韩文的 千/천、万/萬/만、億/亿/억、兆/조
+const VALUE_RE = /\d{1,3}(?:[,  ' ]\d{3})+(?:\.\d+)?(?!\d)|\d+(?:\.\d+)?/g;
+const SCALE = { thousand: 1e3, million: 1e6, billion: 1e9, trillion: 1e12, "千": 1e3, "천": 1e3, "万": 1e4, "萬": 1e4, "만": 1e4, "億": 1e8, "亿": 1e8, "억": 1e8, "兆": 1e12, "조": 1e12 };
+function numValues(prose) {
+  return [...prose.matchAll(VALUE_RE)].map((m) => {
+    const s = /^\s?(thousand|million|billion|trillion|千|천|万|萬|만|億|亿|억|兆|조)/i.exec(prose.slice(m.index + m[0].length));
+    return norm(Number(m[0].replace(/[,  ' ]/g, "")) * (s ? SCALE[s[1].toLowerCase()] : 1));
+  });
+}
+
+// ---------- 截止日历、专题译文里的数,换成这种语言的写法 ----------
+
+// 只换照英文写的数:带千分位逗号的(344,056、$500,000、1,707.26)、带小数点的(0.2、0.5%),小数位数照原样,
+// 用 Intl.NumberFormat 按这种语言写(德文 344.056、0,2;法文 344 056、0,2;日文、韩文和英文一样);千分位已经换成不换行空格、
+// 小数还是英文点的(45 818.5),只换小数点。给了英文原文 en 的,只换原文里有的那几个数(按数值和小数位数对):
+// 译文自己换过写法的(德文的 344.056 是 344056)不会被当成小数再换一遍。
+// 网址、`代码`、{{变量}}、日子(2026-11-25)、时间(10:00)、粘着字母的(V3、L2、USDT0、0x…)不动;别的字(不换行空格之类)一个不改。
+// 指南、界面文字不换(要和官网、钱包上看到的一样)
+const EN_NUM = /(^|[^\p{L}\p{N}_.,])(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d{1,3}(?:[  ]\d{3})+\.\d+|\d+\.\d+)(?![\p{L}\p{N}_]|[.,]\d)/gu;
+const KEEP_RE = /(`[^`]*`|https?:\/\/[A-Za-z0-9\-._~:/?#[\]@!$&'()*+,;=%]*|\{\{\w+\}\})/;
+const prose = (s) => String(s).split(KEEP_RE).filter((_, i) => i % 2 === 0).join(" ");
+// 一个数的「数值 + 小数位数」:344,056 → 344056.;45 818.5 和 45,818.5 → 45818.5
+const numKey = (num) => {
+  const [a, f = ""] = num.replace(/[,  ]/g, "").split(".");
+  return `${BigInt(a)}.${f}`;
+};
+export function localNumbers(s, locale, en = null) {
+  const dec = new Intl.NumberFormat(locale).formatToParts(1.5).find((p) => p.type === "decimal")?.value || ".";
+  const int = (digits, group) => new Intl.NumberFormat(locale, { useGrouping: group ? "auto" : false, maximumFractionDigits: 0 }).format(BigInt(digits));
+  const seen = en == null ? null : new Set([...prose(en).matchAll(EN_NUM)].map((m) => numKey(m[2])));
+  return String(s).split(KEEP_RE).map((seg, i) => (i % 2 ? seg : seg.replace(EN_NUM, (m, pre, num) => {
+    if (seen && !seen.has(numKey(num))) return m;
+    const [a, frac] = num.split(".");
+    // 千分位已经是不换行空格的:整数部分原样留着,只换小数点
+    const head = /[  ]/.test(a) ? a : int(a.replace(/,/g, ""), a.includes(","));
+    return pre + head + (frac === undefined ? "" : dec + frac);
+  }))).join("");
 }
 
 // ---------- 译文里不能混着中文 ----------
@@ -209,6 +265,118 @@ export async function loadUI(root) {
   return [...BASE, ...codes];
 }
 
+// ---------- 检测器、X Layer 取法给用户看的话:src/js/detectors/i18n/<名字>.<编号>.js ----------
+
+// 名字 → 英文那一套(译文照它的结构写,可以只翻一部分,见 src/js/lib/dtext.js)
+export const DTEXT = { hyperliquid: HL.en, woofi: WF.en, dyorswap: DY.en, "okx-boost": OK.en, xlayer: HOW.en };
+const DTEXT_SRC = (name) => (name === "xlayer" ? "src/js/lib/xlayer.text.js 的 HOW.en" : `src/js/detectors/${name}.text.js 的 TEXT.en`);
+
+// 替身参数:函数拿参数做什么(显示、取属性、map、join、比大小)都不出错;显示出来的是「⟦a⟧」「⟦a.amount⟧」这样的记号
+// (第几个参数、取了哪个属性),英文显示了的记号译文里也要有。empty:参数本身在,里面取出来的都是空的(v.ready 这种判断走另一边)
+const MARK = /⟦[^⟧]*⟧/g;
+function stand(path, empty = false) {
+  const item = () => stand(`${path}[0]`, empty);
+  return new Proxy(function () {}, {
+    get(_, k) {
+      if (k === Symbol.toPrimitive) return (hint) => (hint === "number" ? (empty ? 0 : 7) : empty ? "" : `⟦${path}⟧`);
+      if (k === Symbol.iterator) return function* () { if (!empty) yield item(); };
+      if (typeof k === "symbol" || k === "then") return undefined;
+      if (["toString", "toLocaleString", "toFixed", "toPrecision", "join", "trim", "toUpperCase", "toLowerCase"].includes(k)) return () => (empty ? "" : `⟦${path}⟧`);
+      if (k === "valueOf") return () => (empty ? 0 : 7);
+      if (k === "length") return empty ? 0 : 1;
+      if (k === "map" || k === "flatMap") return (fn) => (empty ? [] : [fn(item(), 0)].flat());
+      if (k === "filter") return (fn) => (empty || !fn(item(), 0) ? [] : [item()]);
+      if (k === "forEach") return (fn) => { if (!empty) fn(item(), 0); };
+      if (k === "reduce") return (fn, init) => (empty ? init : fn(init, item(), 0));
+      if (["some", "every", "includes"].includes(k)) return () => !empty;
+      if (["slice", "concat", "sort", "reverse"].includes(k)) return () => (empty ? [] : [item()]);
+      return empty ? "" : stand(`${path}.${k}`);
+    },
+    apply: () => (empty ? "" : stand(`${path}()`)),
+  });
+}
+// 每个函数跑四遍:参数都在、参数是 null、参数在但里面是空的、参数是 1(单数那一句);英文这样调用也会出错的那一遍不比
+const RUNS = [
+  ["参数都在", (n) => Array.from({ length: n }, (_, i) => stand(String.fromCharCode(97 + i)))],
+  ["参数是 null", (n) => Array(n).fill(null)],
+  ["参数里的值是空的", (n) => Array.from({ length: n }, (_, i) => stand(String.fromCharCode(97 + i), true))],
+  ["参数是 1", (n) => Array(n).fill(1)],
+];
+// 英文回什么样,译文就回什么样:文字对文字(英文显示的参数都要显示,不能改的都留着);对象、列表一样的字段、一样的条数
+function sameOut(code, en, tr, path, fail, full) {
+  if (typeof en === "string") {
+    if (typeof tr !== "string" || (en.trim() && !tr.trim())) return fail(`${path} 要和英文一样回一段文字`);
+    for (const bad of ["undefined", "NaN", "[object Object]"]) if (tr.includes(bad) && !en.includes(bad)) fail(`${path} 回的文字里有「${bad}」:${tr}`);
+    const cjk = chineseIn(code, tr);
+    if (cjk) fail(`${path} 回的文字里有中文「${cjk}」`);
+    if (!full) return;
+    for (const m of new Set(en.match(MARK) || [])) if (!tr.includes(m)) fail(`${path}:英文显示了参数 ${m},这里没显示:${tr}`);
+    const diff = tokenDiff(en.replace(MARK, " "), tr.replace(MARK, " "));
+    if (diff) fail(`${path}:${diff}`);
+    return;
+  }
+  if (Array.isArray(en)) {
+    if (!Array.isArray(tr) || tr.length !== en.length) return fail(`${path} 要和英文一样是 ${en.length} 条的列表`);
+    return en.forEach((x, i) => sameOut(code, x, tr[i], `${path}[${i}]`, fail, full));
+  }
+  if (isObj(en)) {
+    if (!isObj(tr)) return fail(`${path} 要和英文一样是 { … }`);
+    for (const k of Object.keys(tr)) if (!(k in en)) fail(`${path}.${k}:英文回的没有这一项`);
+    for (const k of Object.keys(en)) {
+      if (!(k in tr)) fail(`${path} 缺 ${k}(英文回的有)`);
+      sameOut(code, en[k], tr[k], `${path}.${k}`, fail, full);
+    }
+    return;
+  }
+  if (typeof tr !== typeof en || (typeof en === "boolean" && tr !== en)) fail(`${path} 要和英文一样:${JSON.stringify(en)}`);
+}
+
+export function checkDText(code, name, dict, file) {
+  const fail = (m) => { throw new Error(`${file}: ${m}`); };
+  if (!isObj(dict)) fail(`要 export default 一个对象,结构和 ${DTEXT_SRC(name)} 一样`);
+  const walk = (en, x, path) => {
+    for (const [k, v] of Object.entries(x)) {
+      const p = path ? `${path}.${k}` : k, e = en[k];
+      if (!(k in en)) fail(`${p}:${DTEXT_SRC(name)} 里没有这个键(拼错了?)`);
+      if (isObj(e)) {
+        if (!isObj(v)) fail(`${p} 要和英文一样是一组 { … }`);
+        walk(e, v, p);
+        continue;
+      }
+      if (typeof v !== typeof e) fail(`${p} 要和英文一样是${typeof e === "function" ? "函数" : "一段文字"}`);
+      if (typeof e === "string") {
+        checkText(code, e, v, p, fail);
+        continue;
+      }
+      if (v.length !== e.length) fail(`${p} 的参数要和英文一样(英文的函数有 ${e.length} 个参数,这里是 ${v.length} 个)`);
+      RUNS.forEach(([what, args], i) => {
+        const a = args(e.length);
+        let want, got;
+        try { want = e(...a); } catch { return; }
+        try { got = v(...a); } catch (err) { fail(`${p}(${what})出错了:${err.message}`); }
+        sameOut(code, want, got, `${p}(${what})`, fail, i === 0);
+      });
+    }
+  };
+  walk(DTEXT[name], dict, "");
+  return dict;
+}
+
+// 读 src/js/detectors/i18n/:文件名 <名字>.<编号>.js;核对过就装进 lib/dtext.js。回 { 编号: [名字…] }(构建时给页面生成装译文的那一段)
+export async function loadDTexts(root) {
+  const dir = join(root, "src", "js", "detectors", "i18n");
+  const out = {};
+  if (!existsSync(dir)) return out;
+  for (const f of readdirSync(dir).sort()) {
+    const m = /^([a-z-]+)\.([a-z]+)\.js$/.exec(f), file = rel(root, join(dir, f));
+    if (!m || !DTEXT[m[1]] || !EXTRA.includes(m[2])) throw new Error(`${file}: 文件名要是 <名字>.<编号>.js(名字:${Object.keys(DTEXT).join("、")};编号:${EXTRA.join("、")})`);
+    const mod = await import(pathToFileURL(join(dir, f)).href);
+    addText(m[1], m[2], checkDText(m[2], m[1], mod.default, file));
+    (out[m[2]] = out[m[2]] || []).push(m[1]);
+  }
+  return out;
+}
+
 // ---------- 截止日历:data/i18n/<编号>/deadlines.json ----------
 
 export const DL_TEXT = ["name", "summary", "deadlineNote", "who", "todo", "caution"];
@@ -240,12 +408,24 @@ export function checkDeadlineOverlay(code, O, D, file, { xLen, flat, ban }) {
 }
 
 // 把译文合进截止日历:每一处中英两套的文字 { zh, en } 加上 [编号](没翻的用英文)。改的是传进来的这一份
+// 译文里照英文写的数换成这种语言的写法(见 localNumbers);没翻的用英文,并记下这一页有没翻的(D.partial / T.partial:哪几种语言)
+function filler(code, mark) {
+  const loc = langInfo(code).locale;
+  return (v, tr) => {
+    if (typeof tr === "string") return localNumbers(tr, loc, v.en);
+    mark();
+    return v.en;
+  };
+}
+const flag = (o, k, code) => () => { (o[k] = o[k] || new Set()).add(code); };
+
 export function applyDeadlines(D, code, O = {}) {
+  const fill = filler(code, flag(D, "partial", code));
   for (const e of D.events) {
     const x = O[e.id] || {};
-    for (const k of DL_TEXT) if (e[k]) e[k][code] = x[k] ?? e[k].en;
-    e.official.forEach((o, j) => { o.label[code] = x.official?.[j] ?? o.label.en; });
-    (e.milestones || []).forEach((m, j) => { m.note[code] = x.milestones?.[j] ?? m.note.en; });
+    for (const k of DL_TEXT) if (e[k]) e[k][code] = fill(e[k], x[k]);
+    e.official.forEach((o, j) => { o.label[code] = fill(o.label, x.official?.[j]); });
+    (e.milestones || []).forEach((m, j) => { m.note[code] = fill(m.note, x.milestones?.[j]); });
   }
   return D;
 }
@@ -288,15 +468,18 @@ export function checkTopicOverlay(code, O, T, file, { ban }) {
   return O;
 }
 
+// T.partialHead:标题、一句话有没翻的(专题列表上看得到);T.partial:整篇有没翻的
 export function applyTopic(T, code, O = {}) {
-  for (const k of ["title", "summary"]) T[k][code] = O[k] ?? T[k].en;
+  const head = filler(code, () => { flag(T, "partialHead", code)(); flag(T, "partial", code)(); });
+  const fill = filler(code, flag(T, "partial", code));
+  for (const k of ["title", "summary"]) T[k][code] = head(T[k], O[k]);
   T.sections.forEach((s, i) => {
     const y = O.sections?.[i] || {};
-    s.h[code] = y.h ?? s.h.en;
-    for (const k of ["p", "list"]) (s[k] || []).forEach((x, j) => { x[code] = y[k]?.[j] ?? x.en; });
+    s.h[code] = fill(s.h, y.h);
+    for (const k of ["p", "list"]) (s[k] || []).forEach((x, j) => { x[code] = fill(x, y[k]?.[j]); });
   });
-  (T.faq || []).forEach((x, i) => { x.q[code] = O.faq?.[i]?.q ?? x.q.en; x.a[code] = O.faq?.[i]?.a ?? x.a.en; });
-  T.sources.forEach((s, i) => { s.label[code] = O.sources?.[i] ?? s.label.en; });
+  (T.faq || []).forEach((x, i) => { x.q[code] = fill(x.q, O.faq?.[i]?.q); x.a[code] = fill(x.a, O.faq?.[i]?.a); });
+  T.sources.forEach((s, i) => { s.label[code] = fill(s.label, O.sources?.[i]); });
   return T;
 }
 

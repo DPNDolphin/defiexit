@@ -266,6 +266,18 @@ test("诊断:到账要逐笔对上收款地址和金额", async () => {
   assert.deepEqual(codes(await diagnose(ADDR, NOW)), ["withdraw-mismatch"]);
 });
 
+test("诊断:提现时间中英照原来写「11-05 14:05」;别的语言按页面语言写、月份写成字(日在前的读者不会看成 5 月 11 日)", async () => {
+  const w = withdrawal(10), at = new Date(w.time), two = (n) => String(n).padStart(2, "0");
+  const mmdd = `${two(at.getMonth() + 1)}-${two(at.getDate())} ${two(at.getHours())}:${two(at.getMinutes())}`;
+  const facts = async (lang) => {
+    mockAll(account({ userNonFundingLedgerUpdates: [w] }), { [w.hash]: receipt(ADDR, 52_500_000n) });
+    return (await diagnose(ADDR, NOW, lang)).facts.join("\n");
+  };
+  for (const l of ["zh", "en"]) assert.ok((await facts(l)).includes(mmdd), l);
+  const de = await facts("de");
+  assert.ok(de.includes(at.toLocaleString("de", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false })) && !de.includes(mmdd), de);
+});
+
 test("诊断:超过一天的旧提现不当成这一次,也不去查链上", async () => {
   mockAll(account({ userNonFundingLedgerUpdates: [withdrawal(60 * 30)] }));
   const d = await diagnose(ADDR, NOW);

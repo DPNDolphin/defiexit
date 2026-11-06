@@ -14,6 +14,7 @@ import { makeT, pageLang, prefix, errText } from "./lib/i18n.js";
 import { locale, listSep } from "./lib/langs.js";
 import { chainLogo, chainKey, gasSym, mergeDefi, EXTRA } from "./lib/chains.js";
 import { HOW } from "./lib/xlayer.text.js";
+import { pickText } from "./lib/dtext.js";
 import { countCheckup } from "./lib/count.js";
 import { holdings, dueView, dueCard } from "./lib/due.js";
 
@@ -99,8 +100,8 @@ const itemRows = (g) => g.items.map((x) => ({
 }));
 
 // 我们自己核对过取法、还没做成一步一图的仓位(X Layer 的 OKX Boost、DYORSwap):弹层里给专门的取法。
-// 取法只有中英两套,别的语言用英文那套(日期照样按页面语言写)
-const how = HOW[lang] || HOW.en;
+// 取法:中英两套在 lib/xlayer.text.js,别的语言在 detectors/i18n/xlayer.<编号>.js(缺的退回英文);日期照样按页面语言写
+const how = pickText("xlayer", HOW, lang);
 const when = (sec) => new Date(sec * 1000).toLocaleString(LOC, { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false });
 const howOf = (g) => g.how && how[g.how]?.({
   ready: g.ready, date: g.end ? when(g.end) : "",

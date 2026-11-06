@@ -247,8 +247,9 @@ export const STR = {
     stuckHint: "卡住了就点右上角「遇到问题」:实时查你账户的情况,告诉你实际做到了哪一步。",
     proToggle: "老司机版:一张卡看完",
     lastVerified: (d, v) => `最后核验:${d}。${v}`,
-    // 别的语言还没有这份指南的译文时,页面照英文版出,最上面说一句(中文页面用不到,和英文对齐键)
+    // 别的语言还没有这份指南的译文时,页面照英文版出,最上面说一句;截止日历、专题有几处没翻、照英文出的,也说一句(中文页面都用不到,和英文对齐键)
     guideInEn: "这份指南还没有译成这种语言,下面是英文版。",
+    partlyInEn: "这一页有些内容还没有译成这种语言,先显示英文。",
     sourcesH: "依据",
     checkArrival: "查到账",
     finish: "完成",
@@ -615,6 +616,7 @@ export const STR = {
     proToggle: "Know the drill? Everything on one card",
     lastVerified: (d, v) => `Last verified: ${d}. ${v}`,
     guideInEn: "This guide hasn't been translated into this language yet, so it's shown in English.",
+    partlyInEn: "Parts of this page haven't been translated into this language yet, so they're shown in English.",
     sourcesH: "Sources",
     checkArrival: "Check arrival",
     finish: "Done",

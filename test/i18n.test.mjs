@@ -3,14 +3,17 @@
 // 单独一个文件:要往 i18n.js 里装样例语言、换掉全局的 document(node --test 每个文件一个进程,不影响别的测试)
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, existsSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { readFileSync, existsSync, mkdtempSync, mkdirSync, writeFileSync, rmSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import vm from "node:vm";
 import { LANGS, BASE, langOf, prefixOf, locale, listSep } from "../src/js/lib/langs.js";
 import { STR, makeT, addUI, hasText } from "../src/js/lib/i18n.js";
-import { tokenDiff, chineseIn, checkUI, SAMPLES, loadUI, checkDeadlineOverlay, applyDeadlines, checkTopicOverlay, applyTopic, checkRecipeOverlay, recipeLangs, readDataOverlays } from "../scripts/i18n.mjs";
-import { build, localize, langSwitch, texts, checkDeadlines, loadTopics, TITLE_BAN } from "../scripts/build.mjs";
+import { tokenDiff, chineseIn, checkUI, SAMPLES, loadUI, checkDeadlineOverlay, applyDeadlines, checkTopicOverlay, applyTopic, checkRecipeOverlay, recipeLangs, readDataOverlays, localNumbers, DTEXT, checkDText, loadDTexts } from "../scripts/i18n.mjs";
+import { build, localize, langSwitch, texts, checkDeadlines, loadTopics, deadlinesPage, TITLE_BAN } from "../scripts/build.mjs";
+import { addText, pickText } from "../src/js/lib/dtext.js";
+import { TEXT as OKX } from "../src/js/detectors/okx-boost.text.js";
+import { HOW } from "../src/js/lib/xlayer.text.js";
 import { makeFixtureRoot, tag, FIX_TOPIC, FIX_RECIPE } from "./fixtures/i18n/make.mjs";
 
 const read = (f) => readFileSync(f, "utf8");
@@ -19,6 +22,7 @@ const TOPICS = loadTopics();
 const CJK = /[　-〿一-鿿＀-￯]/;
 const noMenu = (h) => h.replace(/<nav class="langs"[\s\S]*?<\/nav>/g, "");
 const tmp = (p) => mkdtempSync(join(tmpdir(), p));
+const NBSP = String.fromCharCode(0xa0), NNBSP = String.fromCharCode(0x202f);
 // 构建脚本传给截止日历译文检查的几样(和 build 里的一样:转发到 X 的字数按 X 的算法,标题里不写领取类的词)
 const xLen = (s) => [...s].reduce((n, c) => { const p = c.codePointAt(0); return n + (p <= 0x10ff || (p >= 0x2000 && p <= 0x200d) || (p >= 0x2010 && p <= 0x201f) || (p >= 0x2032 && p <= 0x2037) ? 1 : 2); }, 0);
 const CHECKS = { xLen, flat: (s) => String(s).replace(/\*\*|`/g, ""), ban: TITLE_BAN };
@@ -72,6 +76,13 @@ test("译文里不能改的:数字、网址、域名、0x 地址、`代码`、{{
     ["more than a thousand addresses", "1,000 以上のアドレス"],
     ["Over $500,000 in old positions", "Más de 500.000 $ en posiciones antiguas"],
     ["e.g. Abstract", "p.ej. Abstract"],
+    // 按数值也算对:千分位写成不换行空格、不写千分位;日文韩文的万、億
+    ["344,056 FIL is still locked", `344${NBSP}056 FIL sont encore bloqués`],
+    ["344,056 FIL is still locked", "344056 FIL bleiben gesperrt"],
+    ["About 5.2 million USDC is stuck", "約520万 USDC が残っています"],
+    ["About 5.2 million USDC is stuck", "약 520만 USDC가 남아 있습니다"],
+    ["Over $500,000 in old positions", "古いポジションに 50万ドル以上"],
+    ["$1.5 billion in TVL", "TVL は 15億ドル"],
   ];
   for (const [en, tr] of ok) assert.equal(tokenDiff(en, tr), null, tr);
   const bad = [
@@ -86,6 +97,7 @@ test("译文里不能改的:数字、网址、域名、0x 地址、`代码`、{{
     ["**Never** share it", "Nunca lo compartas", /粗体/],
     ["Visit `app.x.io`", "Visita `app.x.io` o https://scam.example.com", /多了英文没有的网址/],
     ["Hold $CAKE", "Ten CAKE", /\$CAKE/],
+    ["About 5.2 million USDC is stuck", "約52万 USDC が残っています", /数字/],
   ];
   for (const [en, tr, re] of bad) assert.match(tokenDiff(en, tr) || "", re, tr);
   // 中文:拼音文字里一个汉字、中文标点都不能有;日文可以有汉字,不能有只有简体中文才用的字,也不能整句照抄中文;韩文不能有汉字
@@ -98,6 +110,123 @@ test("译文里不能改的:数字、网址、域名、0x 地址、`代码`、{{
   assert.equal(chineseIn("ko", "수수료는 0.01달러 미만"), null);
   assert.equal(chineseIn("ko", "手數料"), "手數料");
   assert.equal(chineseIn("ko", String.fromCodePoint(0xf900)), String.fromCodePoint(0xf900), "兼容汉字也算汉字");
+});
+
+test("截止日历、专题译文里照英文写的数,构建时换成这种语言的写法:小数位数不变;已经本地化的、网址、代码、日子、时间、粘着字母的不动;不换行空格原样留着", () => {
+  const show = (s) => s.replaceAll(NBSP, "[NB]").replaceAll(NNBSP, "[NNB]");
+  const all = "344,056 FIL, 0.2 BNBx, $500,000, 1,707.26 USDH, 0.5%, 2026-11-25 10:00 UTC, V3.5, L2, USDT0, 0xDA63…FD2b, `1,234.5`, https://x.com/a/1.5, 2026, 1:750, Nov 30.";
+  assert.equal(localNumbers(all, "de"), "344.056 FIL, 0,2 BNBx, $500.000, 1.707,26 USDH, 0,5%, 2026-11-25 10:00 UTC, V3.5, L2, USDT0, 0xDA63…FD2b, `1,234.5`, https://x.com/a/1.5, 2026, 1:750, Nov 30.");
+  assert.equal(show(localNumbers("344,056 и 0.25", "ru")), "344[NB]056 и 0,25");
+  assert.equal(localNumbers("US$ 1,234.50", "pt-BR"), "US$ 1.234,50");
+  assert.equal(localNumbers("1,000 y 12,345.67", "es"), "1000 y 12.345,67", "西文四位数不分组(Intl 的写法)");
+  assert.equal(localNumbers("344,056 と 0.2", "ja"), "344,056 と 0.2", "日文、韩文和英文写法一样");
+  // 法文:千分位已经换成不换行空格的不动,带英文小数点的只换小数点;标点前的不换行空格、« » 里的都原样
+  const fr = `Il reste 45${NBSP}818 FIL et 45${NBSP}818.5 FIL${NBSP}; « 0.2${NBSP}BNBx »${NBSP}?`;
+  assert.equal(show(localNumbers(fr, "fr", "45,818 FIL and 45,818.5 FIL; 0.2 BNBx?")), "Il reste 45[NB]818 FIL et 45[NB]818,5 FIL[NB]; « 0,2[NB]BNBx »[NB]?");
+  // 给了英文原文:只换原文里有的数;译文自己换成德文写法的 344.056(就是 344056)不当小数再换
+  assert.equal(localNumbers("Noch 344.056 FIL und 0.2 BNBx", "de", "Still 344,056 FIL and 0.2 BNBx"), "Noch 344.056 FIL und 0,2 BNBx");
+  assert.equal(localNumbers("Noch 344,056 FIL", "de", "Still 344,056 FIL"), "Noch 344.056 FIL");
+  // 换过的再换一遍不变
+  assert.equal(localNumbers(localNumbers("344,056 FIL, 0.2", "de", "344,056 FIL, 0.2"), "de", "344,056 FIL, 0.2"), "344.056 FIL, 0,2");
+  // 合进截止日历:翻了的换写法,没翻的(英文)原样;没翻的记下来(页面上说一句)
+  const bal = D.events.find((e) => e.id === "balancer-winddown"), so = D.events.find((e) => e.id === "sophon-chain-shutdown");
+  assert.ok(bal.who.en.includes("$500,000"));
+  const X = applyDeadlines(structuredClone(D), "de", { [bal.id]: { who: tag(bal.who.en) } });
+  assert.ok(X.events.find((e) => e.id === bal.id).who.de.includes("$500.000"));
+  assert.ok(X.events.find((e) => e.id === bal.id).summary.de === bal.summary.en);
+  assert.ok(X.partial.has("de"));
+  const full = Object.fromEntries(D.events.map((e) => [e.id, {
+    ...Object.fromEntries(["name", "summary", "deadlineNote", "who", "todo", "caution"].filter((k) => e[k]).map((k) => [k, e[k].en])),
+    official: e.official.map((o) => o.label.en), ...(e.milestones ? { milestones: e.milestones.map((m) => m.note.en) } : {}),
+  }]));
+  assert.equal(applyDeadlines(structuredClone(D), "de", full).partial, undefined, "全翻了的不记");
+  assert.equal(applyDeadlines(structuredClone(D), "de", full).events.find((e) => e.id === so.id).name.de, so.name.en);
+  // 专题:标题、一句话没翻的记 partialHead(专题列表上看得到),哪儿没翻都记 partial
+  const T = TOPICS.find((x) => x.slug === FIX_TOPIC);
+  const t1 = applyTopic(structuredClone(T), "de", { title: tag(T.title.en), summary: tag(T.summary.en) });
+  assert.ok(t1.partial.has("de") && !t1.partialHead);
+  const t2 = applyTopic(structuredClone(T), "de", {});
+  assert.ok(t2.partial.has("de") && t2.partialHead.has("de"));
+});
+
+test("截止日历顶上三个数和后面的字:中文、日文、韩文不空格,别的语言空一格;有没翻的地方时,标题下面说一句", () => {
+  addUI("ja", {});
+  addUI("ko", {});
+  const data = (l) => (BASE.includes(l) ? D : applyDeadlines(structuredClone(D), l, {}));
+  const jump = (h) => [...h.matchAll(/<li><a href="#(open|nodate|passed)"><b[^>]*>\d+<\/b>( ?)/g)].map((m) => m[2]);
+  for (const l of ["zh", "ja", "ko"]) assert.deepEqual(jump(deadlinesPage(texts(l), data(l))), ["", "", ""], l);
+  for (const l of ["en", "fr"]) assert.deepEqual(jump(deadlinesPage(texts(l), data(l))), [" ", " ", " "], l);
+  assert.ok(deadlinesPage(texts("fr"), data("fr")).includes(`<p class="lead">${texts("fr").h("dlLead")}</p><p class="lang-note" lang="en">`), "没翻的地方:说一句(这句也没翻,标 lang=en)");
+  assert.ok(!deadlinesPage(texts("en"), D).includes("lang-note"));
+});
+
+test("检测器、X Layer 取法的译文:盖在英文上(一组一组、一条一条),缺的退回英文;中英两套照旧", () => {
+  addText("okx-boost", "fr", { total: "[fr] total", row: { locked: (s) => `[fr] ${s}` } });
+  const T = pickText("okx-boost", OKX, "fr");
+  assert.equal(T.total, "[fr] total");
+  assert.equal(T.row.locked("OKB"), "[fr] OKB");
+  assert.equal(T.row.end, OKX.en.row.end, "同一组里没翻的用英文");
+  assert.equal(T.say.nothing, OKX.en.say.nothing, "没翻的一组用英文");
+  assert.equal(pickText("okx-boost", OKX, "fr"), T, "合一次就记住");
+  assert.equal(pickText("okx-boost", OKX, "zh"), OKX.zh);
+  assert.equal(pickText("okx-boost", OKX, "es"), OKX.en, "没有译文:整套英文");
+  addText("xlayer", "fr", { foot: "[fr] foot" });
+  assert.equal(pickText("xlayer", HOW, "fr").foot, "[fr] foot");
+  assert.equal(pickText("xlayer", HOW, "fr")["okx-boost"], HOW.en["okx-boost"]);
+});
+
+test("检测器译文文件:照抄英文的能过;键拼错、类型和参数个数不对、数字网址改了、混中文、函数出错、漏了参数、取法的步骤条数和要复制的网址不对,都报错;文件名要对", async () => {
+  for (const code of LANGS.map((l) => l.code).filter((c) => !BASE.includes(c))) for (const [name, en] of Object.entries(DTEXT)) assert.doesNotThrow(() => checkDText(code, name, en, `${name}.${code}.js`), `${code} ${name}`);
+  const bad = (name, dict, re, code = "es") => assert.throws(() => checkDText(code, name, dict, `src/js/detectors/i18n/${name}.${code}.js`), re);
+  bad("okx-boost", [], /export default/);
+  bad("okx-boost", { head: { arrivd: "Llegó" } }, /okx-boost\.es\.js: head\.arrivd:src\/js\/detectors\/okx-boost\.text\.js 的 TEXT\.en 里没有这个键/);
+  bad("okx-boost", { row: "x" }, /row 要和英文一样是一组/);
+  bad("okx-boost", { total: () => "x" }, /total 要和英文一样是一段文字/);
+  bad("okx-boost", { line: { end: (d) => `Desbloqueo: ${d}` } }, /line\.end 的参数要和英文一样/);
+  bad("okx-boost", { warn: { lowGas: (x) => `Solo ${x} OKB; envía un poco (0.01 basta)` } }, /warn\.lowGas\(参数都在\):英文里的数字/);
+  bad("okx-boost", { row: { locked: (sym) => "Bloqueado" } }, /row\.locked\(参数都在\):英文显示了参数 ⟦a⟧/);
+  bad("okx-boost", { arr: { list: (items) => items.map((x) => `${x.amount}`).join(", ") } }, /英文显示了参数 ⟦a\[0\]\.sym⟧/);
+  bad("okx-boost", { line: { end: (d, ready) => `${d}${ready.x.y ? "!" : ""}` } }, /line\.end\(参数是 null\)出错了/);
+  bad("okx-boost", { say: { nothing: "这个地址没有锁仓" } }, /say\.nothing 里有中文/);
+  bad("hyperliquid", { say: { pending: (m) => `Enviado hace ${m} min. Llega en 15 minutos.` } }, /say\.pending\(参数都在\):英文里的数字「5」/);
+  const h = HOW.en;
+  bad("xlayer", { "okx-boost": (v) => ({ ...h["okx-boost"](v), steps: h["okx-boost"](v).steps.slice(1) }) }, /okx-boost\(参数都在\)\.steps 要和英文一样是 4 条的列表/);
+  bad("xlayer", { "okx-boost": (v) => { const o = h["okx-boost"](v); return { ...o, steps: [{ ...o.steps[0], copy: "https://web3.okx.com/es-es/boost/x-launch/plasma" }, ...o.steps.slice(1)] }; } }, /steps\[0\]\.copy:英文里的网址/);
+  bad("xlayer", { dyorswap: (v) => ({ ...h.dyorswap(v), extra: "x" }) }, /dyorswap\(参数都在\)\.extra:英文回的没有这一项/);
+  assert.doesNotThrow(() => checkDText("es", "xlayer", { foot: "Estos pasos se comprobaron en el sitio oficial y en los contratos." }, "xlayer.es.js"));
+  // 译文自己防着参数为空(英文这样调用会出错的那一遍不比):不算错
+  const HLen = DTEXT.hyperliquid;
+  assert.doesNotThrow(() => checkDText("es", "okx-boost", { arr: { list: (items) => (items || []).map((x) => `${x.amount} ${x.sym}`).join(", ") } }, "okx-boost.es.js"));
+  assert.doesNotThrow(() => checkDText("es", "hyperliquid", { choice: { sellBody: (amount, s) => (s ? HLen.choice.sellBody(amount, s) : "") } }, "hyperliquid.es.js"));
+  assert.doesNotThrow(() => checkDText("es", "xlayer", { "okx-boost": (v) => (v ? h["okx-boost"](v) : {}) }, "xlayer.es.js"));
+  // 文件名:<名字>.<编号>.js
+  const dir = tmp("dx-dt-");
+  try {
+    const at = join(dir, "src", "js", "detectors", "i18n");
+    mkdirSync(at, { recursive: true });
+    assert.deepEqual(await loadDTexts(dir), {});
+    writeFileSync(join(at, "okx.es.js"), "export default {};");
+    await assert.rejects(loadDTexts(dir), /okx\.es\.js: 文件名要是 <名字>\.<编号>\.js/);
+    rmSync(join(at, "okx.es.js"));
+    writeFileSync(join(at, "woofi.zh.js"), "export default {};");
+    await assert.rejects(loadDTexts(dir), /woofi\.zh\.js: 文件名要是/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("页面代码、构建脚本里不再按「不是英文就是中文」分支:日期数字的写法、列举的分隔符、网址前缀都从 lib/langs.js 取", () => {
+  const files = [];
+  const walk = (d) => { for (const f of readdirSync(d)) { const p = join(d, f); if (statSync(p).isDirectory()) walk(p); else if (/\.m?js$/.test(f)) files.push(p); } };
+  walk("src/js");
+  walk("scripts");
+  for (const f of files) {
+    if (f.replace(/\\/g, "/").endsWith("src/js/lib/langs.js")) continue;
+    const s = read(f);
+    assert.ok(!/(lang|code|l)\s*[!=]==?\s*"en"\s*\?/.test(s), `${f}:按是不是英文分支`);
+    assert.ok(!/toLocaleString\("(zh-CN|en-US)"/.test(s), `${f}:写死了地区`);
+    assert.ok(!/\|\|\s*TEXT\.zh\b/.test(s), `${f}:没有译文时退回了中文`);
+  }
 });
 
 test("界面文字文件:每个函数都有样例参数;照抄英文的一份能过;键拼错、类型不对、参数个数不对、空的、数字和网址改了、混着中文、函数出错或漏了参数,都报错", () => {
@@ -360,9 +489,10 @@ test("样例语言从头到尾走一遍构建:页面、hreflang、og:locale、�
   const fixRoot = makeFixtureRoot(tmp("dx-fix-"), process.cwd());
   const out = tmp("dx-out-");
   try {
-    const langs = await loadUI(fixRoot);
+    const langs = await loadUI(fixRoot), dtexts = await loadDTexts(fixRoot);
     assert.deepEqual(langs, ["zh", "en", "de"]);
-    build({ out, i18nRoot: fixRoot, langs });
+    assert.deepEqual(dtexts, { de: ["okx-boost"] });
+    build({ out, i18nRoot: fixRoot, langs, dtexts });
     const P = (p) => read(join(out, p));
     const home = P("de/index.html");
     assert.match(home, /<html lang="de" data-page="home">/);
@@ -372,7 +502,9 @@ test("样例语言从头到尾走一遍构建:页面、hreflang、og:locale、�
     assert.ok(home.includes('<script type="module" src="/assets/js/lang/de.js"></script>\n<script type="module" src="/assets/js/home.js"></script>'));
     assert.ok(!P("index.html").includes("/assets/js/lang/") && !P("en/index.html").includes("/assets/js/lang/"));
     assert.equal(P("assets/js/lib/i18n/de.js"), read("test/fixtures/i18n/src/js/lib/i18n/de.js"));
-    assert.match(P("assets/js/lang/de.js"), /import ui from "\.\.\/lib\/i18n\/de\.js";\nimport \{ addUI \} from "\.\.\/lib\/i18n\.js";\n\naddUI\("de", ui\);/);
+    assert.equal(P("assets/js/detectors/i18n/okx-boost.de.js"), read("test/fixtures/i18n/src/js/detectors/i18n/okx-boost.de.js"));
+    // 装译文的那一段:界面文字进 i18n.js,检测器的话进 lib/dtext.js
+    assert.match(P("assets/js/lang/de.js"), /import ui from "\.\.\/lib\/i18n\/de\.js";\nimport \{ addUI \} from "\.\.\/lib\/i18n\.js";\nimport \{ addText \} from "\.\.\/lib\/dtext\.js";\nimport t0 from "\.\.\/detectors\/i18n\/okx-boost\.de\.js";\n\naddUI\("de", ui\);\naddText\("okx-boost", "de", t0\);\n$/);
     // 界面文字:写了的用样例,没写的用英文
     assert.ok(home.includes("[de] Read-only · Open source · Free") && home.includes(`<h1 class="display">${STR.en.heroH1a} <span class="hl">${STR.en.heroH1b}</span></h1>`));
     // 语言菜单:三种都在,德文标成当前;中英页面也列出德文
@@ -392,6 +524,11 @@ test("样例语言从头到尾走一遍构建:页面、hreflang、og:locale、�
     assert.equal(share.searchParams.get("text"), `[de] ${txt(so.summary.en)}\nhttps://defiexit.com/de/deadlines/#sophon-chain-shutdown`);
     const sx = D.events.find((e) => e.id === "standx-winddown");
     assert.ok(dl.includes(tag(sx.milestones[0].note.en)), "分几步截止的那几步也换了");
+    // 译文里照英文写的金额换成德文写法($500,000 → $500.000);没翻的(英文)不换;有没翻的地方,标题下面说一句(样例没翻这一句,标 lang=en)
+    const bal = dl.slice(dl.indexOf('<article class="dl" id="balancer-winddown"'), dl.indexOf("</article>", dl.indexOf('<article class="dl" id="balancer-winddown"')));
+    assert.ok(bal.includes("$500.000") && !bal.includes("$500,000"), "译文里的金额换了写法");
+    assert.ok(dl.includes(`<p class="lead">${STR.en.dlLead}</p><p class="lang-note" lang="en">`), "有没翻的地方:说一句");
+    assert.match(dl, /<a href="#open"><b data-n="open">\d+<\/b> /, "德文:数和后面的字空一格");
     // 体检结果页嵌的截止日历也是这一种语言的(翻了的用译文,没翻的用英文;只嵌还没过的,哪天跑测试都对)
     const due = [...P("de/check/index.html").matchAll(/<li data-event="([^"]*)"><\/li>/g)].map((m) => JSON.parse(m[1].replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&")));
     assert.ok(due.length > 0);
@@ -401,6 +538,10 @@ test("样例语言从头到尾走一遍构建:页面、hreflang、og:locale、�
     assert.ok(P(`de/topics/${FIX_TOPIC}/index.html`).includes(`<title>[de] ${txt(T.title.en)} · DeFiExit</title>`));
     assert.ok(P(`de/topics/${other.slug}/index.html`).includes(`<title>${txt(other.title.en)} · DeFiExit</title>`));
     assert.ok(P("de/topics/index.html").includes(`<a href="/de/topics/${FIX_TOPIC}/">`));
+    // 整篇翻了的不说;没翻的那几篇、列表(有几篇的标题没翻)说一句
+    assert.ok(!P(`de/topics/${FIX_TOPIC}/index.html`).includes("lang-note") && P(`de/topics/${other.slug}/index.html`).includes('<p class="lang-note" lang="en">'));
+    assert.ok(P("de/topics/index.html").includes('<p class="lang-note" lang="en">'));
+    assert.ok(!P("topics/index.html").includes("lang-note") && !P("en/deadlines/index.html").includes("lang-note"), "中英页面不说");
     // 指南:翻了的(okx-boost)用译文、不说「英文版」;没翻的用英文,标题下面说一句
     const ok = P(`de/r/${FIX_RECIPE}/index.html`), hl = P("de/r/hyperliquid/index.html");
     const enTitle = (id) => JSON.parse(read(`recipes/${id}/i18n/en.json`)).title;

@@ -8,10 +8,12 @@ import { shortAddr, floorTo, fmt } from "../lib/net.js";
 import { readBoost, boostUnlocked, prices } from "../lib/xlayer.js";
 import { TEXT } from "./okx-boost.text.js";
 import { locale } from "../lib/langs.js";
+import { pickText } from "../lib/dtext.js";
 
 const MIN_GAS = 0.00001; // 一笔解除质押实测约 0.0000008 OKB(gas 4.5 万 × 0.02 gwei),留十几倍余量
-// 给用户看的话只有中英两套:别的语言用英文那套,连接词跟着用的那套走;日期按页面语言写
-const text = (lang) => TEXT[lang] || TEXT.en;
+// 给用户看的话:中英两套在 okx-boost.text.js,别的语言在 detectors/i18n/okx-boost.<编号>.js(缺的退回英文,见 lib/dtext.js);
+// 连接词跟着用的那套走(只有中文用「和」「、」);日期按页面语言写
+const text = (lang) => pickText("okx-boost", TEXT, lang);
 const zhText = (lang) => text(lang) === TEXT.zh;
 const money = (x) => floorTo(x, 2).toFixed(2);
 const qty = (x) => String(+x.toFixed(6)); // 0.5、200:不带多余的 0

@@ -10,7 +10,7 @@ import { site } from "./site.mjs";
 import { zh as zhPunct } from "../src/js/lib/zh.js";
 import { makeT, hasText } from "../src/js/lib/i18n.js";
 import { BASE, langInfo, listSep } from "../src/js/lib/langs.js";
-import { loadUI, readDataOverlays, applyDeadlines, applyTopic, checkRecipeOverlay, recipeLeftover, recipeLangs, readRecipeOverlay } from "./i18n.mjs";
+import { loadUI, loadDTexts, readDataOverlays, applyDeadlines, applyTopic, checkRecipeOverlay, recipeLeftover, recipeLangs, readRecipeOverlay } from "./i18n.mjs";
 import { upcoming, httpsHost, DUE_KINDS } from "../src/js/lib/due.js";
 import { svgString as ico } from "../src/js/lib/icons.js";
 import { ICON, FILE } from "../src/js/lib/chains.js";
@@ -21,6 +21,8 @@ const DIST = join(ROOT, "dist");
 // 要出页面的语言:中英两套,加上 src/js/lib/i18n/<编号>.js 在的(读的时候就逐条核对过,写错了这里直接报错)。
 // SITE 是这一次构建出的语言,页面上的语言菜单、hreflang 都按它;build({ langs }) 可以换一套(测试用)
 const DEFAULT_LANGS = await loadUI(ROOT);
+// 检测器、X Layer 取法的译文(src/js/detectors/i18n/<名字>.<编号>.js,读的时候也核对过):{ 编号: [名字…] }
+const DEFAULT_DTEXTS = await loadDTexts(ROOT);
 let SITE = DEFAULT_LANGS;
 const pre = (lang) => langInfo(lang).prefix;
 
@@ -794,6 +796,9 @@ function dlEntry(tx, e, today) {
 </article></li>`;
 }
 
+// 这一页有些地方这种语言还没翻、照英文出的时候(截止日历、专题,见 scripts/i18n.mjs 的 partial),标题下面说一句;这句本身没翻的也是英文,标上 lang
+const enPart = (tx, on) => (on ? `<p class="lang-note"${hasText(tx.lang, "partlyInEn") ? "" : ' lang="en"'}>${ico("info")}<span>${tx.h("partlyInEn")}</span></p>` : "");
+
 // today:按哪一天分「还没到 / 已过」、算还有几天(构建时是构建那天;页面打开时 deadlines.js 再按当天重算)
 export function deadlinesPage(tx, D, today = new Date()) {
   const P = pre(tx.lang);
@@ -804,6 +809,8 @@ export function deadlinesPage(tx, D, today = new Date()) {
   const none = D.events.filter((e) => !e.deadline).sort((a, b) => (b.announced || "").localeCompare(a.announced || ""));
   const list = (es, id) => `<ol class="dl-list"${id ? ` id="${id}"` : ""}>${es.map((e) => dlEntry(tx, e, today)).join("\n")}</ol>`;
   const count = (n, k) => `<span class="count"${k ? ` data-n="${k}"` : ""}>${n}</span>`;
+  // 顶上三个数和后面的字:中文、日文、韩文不空格(「27件」),别的语言空一格
+  const gap = langInfo(tx.lang).cjk ? "" : " ";
   return page({
     tx, kind: "deadlines", path: "/deadlines/", script: "deadlines.js",
     title: `${punct(tx.t("dlTitle"), tx.lang)} · ${site.name}`, desc: punct(tx.t("dlDesc"), tx.lang),
@@ -813,11 +820,11 @@ export function deadlinesPage(tx, D, today = new Date()) {
   <section class="page-head">
     <span class="badge"><span class="dot"></span>${tx.h("lastChecked", D.checked)}</span>
     <h1 class="display">${tx.h("dlH1")}</h1>
-    <p class="lead">${tx.h("dlLead")}</p>
+    <p class="lead">${tx.h("dlLead")}</p>${enPart(tx, D.partial?.has(tx.lang))}
     <ul class="dl-jump">
-      <li><a href="#open"><b data-n="open">${open.length}</b> ${tx.h("dlJumpOpen")}</a></li>
-      <li><a href="#nodate"><b>${none.length}</b> ${tx.h("dlJumpNoDate")}</a></li>
-      <li><a href="#passed"><b data-n="passed">${passed.length}</b> ${tx.h("dlJumpPassed")}</a></li>
+      <li><a href="#open"><b data-n="open">${open.length}</b>${gap}${tx.h("dlJumpOpen")}</a></li>
+      <li><a href="#nodate"><b>${none.length}</b>${gap}${tx.h("dlJumpNoDate")}</a></li>
+      <li><a href="#passed"><b data-n="passed">${passed.length}</b>${gap}${tx.h("dlJumpPassed")}</a></li>
     </ul>
     <p class="tip">${ico("alert")}<span>${tx.h("dlOfficialOnly")}</span></p>
   </section>
@@ -926,7 +933,7 @@ export function topicPage(tx, T, ctx) {
 <article class="wrap narrow topic">
   <a class="back" href="${P}/topics/">${ico("arrowLeft")}${tx.h("tpBack")}</a>
   <h1 class="display">${r(T.title)}</h1>
-  <p class="lead">${r(T.summary)}</p>
+  <p class="lead">${r(T.summary)}</p>${enPart(tx, T.partial?.has(lang))}
   <p class="fine">${tx.h("lastChecked", T.checked)}</p>
   ${toc}
   ${secs}
@@ -951,7 +958,7 @@ export function topicsIndex(tx, topics) {
 <div class="wrap narrow">
   <section class="page-head">
     <h1 class="display">${tx.h("tpH1")}</h1>
-    <p class="lead">${tx.h("tpLead")}</p>
+    <p class="lead">${tx.h("tpLead")}</p>${enPart(tx, topics.some((T) => T.partialHead?.has(L)))}
   </section>
   ${items ? `<ul class="tp-list">${items}</ul>` : `<p class="sub">${tx.h("tpEmpty")}</p>`}
   <p class="sub tp-more">${tx.h("tpSeeDl")} <a href="${P}/deadlines/">${tx.h("dlH1")}</a></p>
@@ -1170,28 +1177,31 @@ export function shotData(r) {
 
 // out:产物放哪(默认 dist/);i18nRoot:别的语言的译文从哪一层读(默认仓库根目录;测试用 test/fixtures 下面照仓库排的一套);
 // langs:出哪几种语言(默认中英,加上 src/js/lib/i18n/ 下面界面文字在的;别的根目录的界面文字要先用 scripts/i18n.mjs 的 loadUI 装好)
-export function build({ out = DIST, i18nRoot = ROOT, langs = DEFAULT_LANGS } = {}) {
+// dtexts:检测器译文 { 编号: [名字…] }(默认是仓库里的;别的根目录的要先用 loadDTexts 装好)
+export function build({ out = DIST, i18nRoot = ROOT, langs = DEFAULT_LANGS, dtexts = DEFAULT_DTEXTS } = {}) {
   for (const l of langs) if (!langInfo(l)) throw new Error(`build: ${l} 不是登记过的语言(见 src/js/lib/langs.js)`);
   const prev = SITE;
   SITE = langs;
   try {
-    buildAll(out, i18nRoot, langs);
+    buildAll(out, i18nRoot, langs, dtexts);
   } finally {
     SITE = prev;
   }
 }
 
-function buildAll(OUT, i18nRoot, langs) {
+function buildAll(OUT, i18nRoot, langs, dtexts) {
   const recipes = loadRecipes(i18nRoot);
   const D0 = loadDeadlines();
   const topics0 = loadTopics();
   // 别的语言的截止日历、专题译文:在的都核对一遍(还没出页面的语言也核对);要出页面的语言合进数据,没翻的地方用英文
   const overlays = readDataOverlays(i18nRoot, D0, topics0, { xLen, flat, ban: TITLE_BAN });
   const D = structuredClone(D0), topics = structuredClone(topics0);
+  // 合进去的时候,译文里照英文写的数换成这种语言的写法(见 scripts/i18n.mjs 的 localNumbers);换完的一句话转发到 X 也不能超 280
   for (const l of langs) {
     if (BASE.includes(l)) continue;
     applyDeadlines(D, l, overlays[l]?.deadlines || {});
     for (const T of topics) applyTopic(T, l, overlays[l]?.topics[T.slug] || {});
+    for (const e of D.events) if (xLen(flat(e.summary[l], l)) + 24 > 280) throw new Error(`data/i18n/${l}/deadlines.json: ${e.id}.summary 换成这种语言的数字写法以后,转发到 X 会超过 280 字`);
   }
   const shots = new Map(recipes.map((r) => [r.zh.id, shotData(r)]));
   rmSync(OUT, { recursive: true, force: true });
@@ -1210,12 +1220,24 @@ function buildAll(OUT, i18nRoot, langs) {
     mkdirSync(dirname(f), { recursive: true });
     writeFileSync(f, html);
   };
-  // 中英以外的语言:界面文字拷进网站(译文不在仓库根目录时,上面拷 src/ 时没有它),再生成一小段先把它装进 i18n.js 的脚本,
-  // 页面上排在主脚本前面(见 page)。浏览器里没装上(文件没加载成)就整套用英文
+  // 中英以外的语言:界面文字、检测器的话拷进网站(译文不在仓库根目录时,上面拷 src/ 时没有它们),再生成一小段先把它们装进来的脚本
+  // (界面文字进 i18n.js,检测器的话进 lib/dtext.js),页面上排在主脚本前面(见 page)。浏览器里没装上(文件没加载成)就用英文
   for (const l of langs) {
     if (BASE.includes(l)) continue;
     write(`assets/js/lib/i18n/${l}.js`, readFileSync(join(i18nRoot, "src", "js", "lib", "i18n", `${l}.js`)));
-    write(`assets/js/lang/${l}.js`, `// 构建时生成(scripts/build.mjs):先把这种语言的界面文字装进 i18n.js,页面上排在后面的主脚本用到时就有了\nimport ui from "../lib/i18n/${l}.js";\nimport { addUI } from "../lib/i18n.js";\n\naddUI(${JSON.stringify(l)}, ui);\n`);
+    const names = dtexts[l] || [];
+    for (const n of names) write(`assets/js/detectors/i18n/${n}.${l}.js`, readFileSync(join(i18nRoot, "src", "js", "detectors", "i18n", `${n}.${l}.js`)));
+    const code = JSON.stringify(l);
+    write(`assets/js/lang/${l}.js`, [
+      "// 构建时生成(scripts/build.mjs):先把这种语言的界面文字、检测器的话装进来,页面上排在后面的主脚本用到时就有了",
+      `import ui from "../lib/i18n/${l}.js";`,
+      'import { addUI } from "../lib/i18n.js";',
+      ...(names.length ? ['import { addText } from "../lib/dtext.js";', ...names.map((n, i) => `import t${i} from "../detectors/i18n/${n}.${l}.js";`)] : []),
+      "",
+      `addUI(${code}, ui);`,
+      ...names.map((n, i) => `addText(${JSON.stringify(n)}, ${code}, t${i});`),
+      "",
+    ].join("\n"));
   }
   const today = new Date();
   for (const lang of langs) {

@@ -35,8 +35,10 @@
 - **中英两套**:中文在 `/`,英文在 `/en/`。界面文字在 `src/js/lib/i18n.js`;每份配方都要带英文版 `recipes/<协议>/i18n/en.json`,缺一条、条数对不上、或者英文版里混着中文,构建直接报错。
 - **多语言**:别的语言登记在 `src/js/lib/langs.js`(编号、网址前缀 `/<编号>/`、`<html lang>`、og:locale、菜单上的名字),都照英文翻,只加文件、不改原文件:
   - 界面文字 `src/js/lib/i18n/<编号>.js`(`export default { … }`,键和 `STR.en` 一样)。**有这个文件的语言才出页面、进语言菜单**;
-  - 截止日历 `data/i18n/<编号>/deadlines.json`、专题 `data/i18n/<编号>/topics/<slug>.json`、指南 `recipes/<协议>/i18n/<编号>.json`(和 en.json 结构一样)。
-  - 缺的(整个文件、某一条、某个字段)退回英文,没翻的指南页面上会说一句;有的就逐条和英文核对:数字、网址、域名、0x 地址、`代码`、`{{变量}}`、截图编号、**粗体** 都要原样留着,不能混着中文,条数要对上,写错了构建报错(规则在 `scripts/i18n.mjs`)。
+  - 截止日历 `data/i18n/<编号>/deadlines.json`、专题 `data/i18n/<编号>/topics/<slug>.json`、指南 `recipes/<协议>/i18n/<编号>.json`(和 en.json 结构一样);
+  - 体检和现场诊断里检测器说的话、X Layer 的取法 `src/js/detectors/i18n/<名字>.<编号>.js`(名字:hyperliquid、woofi、dyorswap、okx-boost、xlayer;和 `*.text.js` 里英文那一套一样的结构,可以只翻一部分)。
+  - 缺的(整个文件、某一条、某个字段)退回英文,页面上会说一句;有的就逐条和英文核对:数字、网址、域名、0x 地址、`代码`、`{{变量}}`、截图编号、**粗体** 都要原样留着,不能混着中文,条数要对上,函数要能跑、该显示的参数都显示,写错了构建报错(规则在 `scripts/i18n.mjs`)。
+  - 截止日历、专题的译文里照英文写的数(344,056、0.2),构建时换成这种语言的写法(德文 344.056、0,2);指南、界面文字不换(要和官网、钱包上看到的一样)。
 - **字体**:Barlow Semi Condensed(标题)、Atkinson Hyperlegible Next(正文)、Atkinson Hyperlegible Mono(地址和数字),都放在本站 `static/fonts/`,SIL Open Font License,授权文件在同一目录;汉字用系统字体。
 
 ## 本地运行

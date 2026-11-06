@@ -5,6 +5,7 @@
 // 给用户看的话都在 woofi.text.js(中英两套),这里只管算。
 import { postJSON, shortAddr, floorTo, fmt } from "../lib/net.js";
 import { TEXT } from "./woofi.text.js";
+import { pickText } from "../lib/dtext.js";
 
 const RPC = "https://arb1.arbitrum.io/rpc";
 export const C = {
@@ -54,7 +55,7 @@ const STALE = 2 * 86400;      // 喂价两天没更新就不用它报美元
 const LOG_SPAN = 30000;       // 公共节点一次 eth_getLogs 最多查 3 万个区块(约 2 小时)
 const LOG_WINDOWS = 2;        // 查两段,约 4 小时
 
-const text = (lang) => TEXT[lang] || TEXT.en; // 只有中英两套:别的语言用英文那套
+const text = (lang) => pickText("woofi", TEXT, lang); // 中英两套在 woofi.text.js,别的语言在 detectors/i18n/woofi.<编号>.js,缺的退回英文
 const arg = (a) => a.slice(2).toLowerCase().padStart(64, "0");
 
 // 一次请求发多条查询(JSON-RPC 批量),按 id 对回去;任何一条出错都整体报错,不拿半截数据去算

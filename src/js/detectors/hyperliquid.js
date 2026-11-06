@@ -3,6 +3,8 @@
 // 给用户看的话都在 hyperliquid.text.js(中英两套),这里只管算。
 import { postJSON, shortAddr, floorTo, fmt } from "../lib/net.js";
 import { TEXT } from "./hyperliquid.text.js";
+import { pickText } from "../lib/dtext.js";
+import { BASE, langInfo, locale } from "../lib/langs.js";
 
 const API = "https://api.hyperliquid.xyz/info";
 const ARB_RPC = "https://arb1.arbitrum.io/rpc";
@@ -18,7 +20,7 @@ const SPLIT = ["default"];                             // 分开账户:现货、
 const UNIFIED = ["unifiedAccount", "portfolioMargin"]; // 统一账户:余额都在现货那本账里
 const MIN = 60000, DAY = 86400000;
 
-const text = (lang) => TEXT[lang] || TEXT.en; // 只有中英两套:别的语言用英文那套
+const text = (lang) => pickText("hyperliquid", TEXT, lang); // 中英两套在 hyperliquid.text.js,别的语言在 detectors/i18n/hyperliquid.<编号>.js,缺的退回英文
 const info = (body) => postJSON(API, body);
 const num = (x) => Number(x || 0);
 // 接口返回的数字字符串要显示给用户、甚至让用户照着填进官网:只认纯数字,别的一律不用
@@ -184,7 +186,12 @@ async function arrivalOf(w, user, T) {
 }
 
 const two = (n) => String(n).padStart(2, "0");
-const when = (t) => { const d = new Date(t); return `${two(d.getMonth() + 1)}-${two(d.getDate())} ${two(d.getHours())}:${two(d.getMinutes())}`; };
+// 提现时间:中英两套照原来写成「11-05 14:05」;别的语言按页面语言写、月份写成字(德文「5. Nov., 14:05」),日在前的读者不会看成 5 月 11 日
+const when = (t, lang) => {
+  const d = new Date(t);
+  if (!langInfo(lang) || BASE.includes(lang)) return `${two(d.getMonth() + 1)}-${two(d.getDate())} ${two(d.getHours())}:${two(d.getMinutes())}`;
+  return d.toLocaleString(locale(lang), { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false });
+};
 const ago = (t, now) => Math.max(0, Math.round((now - t) / MIN));
 
 // 现场诊断:用户实际做到了哪一步、卡在哪。
@@ -217,7 +224,7 @@ export async function diagnose(address, now = Date.now(), lang = "zh") {
   const arrival = last && now - last.time < DAY ? await arrivalOf(last, user, T) : null;
   if (last) {
     const tail = !arrival ? "" : arrival.state === "arrived" ? T.fact.arrived(arrival.block) : arrival.state === "pending" ? T.fact.pending : T.fact.mismatch;
-    facts.push(T.fact.withdraw(when(last.time), shown(last.delta.usdc), shown(last.delta.fee), tail));
+    facts.push(T.fact.withdraw(when(last.time, lang), shown(last.delta.usdc), shown(last.delta.fee), tail));
   }
 
   // 要卖的数量:没挂单的 + 挂着没成交的(改价要先撤掉原来那一单)
@@ -276,7 +283,7 @@ export async function diagnose(address, now = Date.now(), lang = "zh") {
     if (arrival.state === "arrived") {
       if (!step) step = "arrive";
       // 绿色只给「已经完成」的事:逐笔对上了的到账
-      say("withdraw-arrived", "done", T.say.arrived(when(last.time), shown(last.delta.usdc)));
+      say("withdraw-arrived", "done", T.say.arrived(when(last.time, lang), shown(last.delta.usdc)));
     } else if (arrival.state === "mismatch") {
       step = null;
       say("withdraw-mismatch", "stop", T.say.mismatch);

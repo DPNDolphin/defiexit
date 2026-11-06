@@ -7,11 +7,12 @@
 import { shortAddr, floorTo, fmt } from "../lib/net.js";
 import { readDyor, dyorRemoved, prices } from "../lib/xlayer.js";
 import { TEXT } from "./dyorswap.text.js";
+import { pickText } from "../lib/dtext.js";
 
 const MIN_GAS = 0.00002; // 撤出的 gas 上限约 33 万 × 0.023 gwei ≈ 0.0000076 OKB,留两倍多余量
 const SLIP = 1; // 指南里让用户设的滑点(%)
-// 给用户看的话只有中英两套:别的语言用英文那套,连接词跟着用的那套走
-const text = (lang) => TEXT[lang] || TEXT.en;
+// 给用户看的话:中英两套在 dyorswap.text.js,别的语言在 detectors/i18n/dyorswap.<编号>.js(缺的退回英文,见 lib/dtext.js);连接词跟着用的那套走
+const text = (lang) => pickText("dyorswap", TEXT, lang);
 const money = (x) => floorTo(x, 2).toFixed(2);
 const qty = (x) => String(+x.toPrecision(6)); // 12.5、0.0312:不带多余的 0
 const okb = (x) => fmt(x, 8).replace(/\.?0+$/, ""); // 钱包里的 OKB:0、0.1169、0.00000012(不写成 0.00000000,也不用科学计数法)
