@@ -72,6 +72,7 @@
     <nav class="nav" aria-label="分区">
       <a href="#outbox">待发 <span class="n" id="n-out">0</span></a>
       <a href="#inbox">收件 <span class="n" id="n-in">0</span></a>
+      <a href="#reach">宣传 <span class="n" id="n-reach">0</span></a>
       <a href="#data">数据</a>
       <a href="#done">已处理 <span class="n" id="n-done">0</span></a>
     </nav>
@@ -89,6 +90,18 @@
       <p class="saved" id="in-msg" aria-live="polite"></p>
       <div class="cards" id="in-cards"></div>
       <p class="empty" id="in-empty">还没有评论。每 20 分钟自动刷新一次,也可以点上面的「刷新」。</p>
+    </section>
+
+    <section id="reach" aria-labelledby="h-reach">
+      <div class="sec-h"><h2 id="h-reach">宣传</h2><span class="hint">我写好的媒体投稿、给项目团队的邮件、安全清单的提交、技术社区的帖子,按渠道分好。点「写邮件」或「打开投稿页」,标题、正文点「复制」贴进去;发出去以后点「已发」,有回音了点「有回音」记一句。</span></div>
+      <p class="saved" id="reach-msg" aria-live="polite"></p>
+      <div id="reach-cards"></div>
+      <p class="empty" id="reach-empty">还没有要发的宣传。我写好的媒体投稿、给项目团队的邮件、安全清单的提交、技术社区的帖子放在这里,按渠道分好。</p>
+      <div class="group" id="reach-done" hidden>
+        <h3 class="group-h">发过的(已发、跳过;最近点的在上面)</h3>
+        <div class="cards" id="reach-done-cards"></div>
+        <div class="row"><button class="btn" type="button" id="reach-more" hidden>再看早一点的</button></div>
+      </div>
     </section>
 
     <section id="data" aria-labelledby="h-data">

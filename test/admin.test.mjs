@@ -3,7 +3,7 @@
 // 单独一个文件:要换掉全局的 document、fetch(node --test 每个文件一个进程,不影响别的测试)。
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { checkText, outHosts } from "../server/ops/ingest.js";
+import { checkText, outHosts, webUrl } from "../server/ops/ingest.js";
 
 class FakeNode {
   constructor() { this.parentNode = null; this.kids = []; }
@@ -59,7 +59,8 @@ class FakeEl extends FakeNode {
 const find = (el, ok) => { for (const k of el.children) { if (ok(k)) return k; const x = find(k, ok); if (x) return x; } return null; };
 const tick = () => new Promise((r) => setTimeout(r, 5));
 
-// 起一个运营台:state 是 /api/admin/state 回的(status 不是 200 就是没登进去);改待发照服务器的规矩回(草稿过 checkText,不合格回 400 draftbad)
+// 起一个运营台:state 是 /api/admin/state 回的(status 不是 200 就是没登进去);改待发照服务器的规矩回(草稿过 checkText,不合格回 400 draftbad);
+// 改宣传卡片也照服务器的规矩回(回音只给已发的记,链接过 webUrl;改成已发以外的清掉回音)
 let copies = 0;
 async function desk(state, status = 200) {
   const els = new Map();
@@ -72,12 +73,38 @@ async function desk(state, status = 200) {
   const $ = (id) => document.getElementById(id);
   $("desk").hidden = true; // index.html 里一开始都收着
   $("pace").hidden = true;
-  const calls = [];
+  const calls = [], signals = [];
   const res = (status, json) => ({ status, json: async () => JSON.parse(JSON.stringify(json)) });
   globalThis.fetch = async (url, opt) => {
     const path = String(url).replace("/api/admin/", ""), b = opt.body ? JSON.parse(opt.body) : {};
     calls.push([path, b]);
     if (path === "state") return res(status, state);
+    // 点过的宣传卡片往前翻一页:按顺序回 state.donePages 里准备好的;signals 记下每一次的取消信号
+    // (写成函数的:测试自己控制什么时候回,用来造「刷新以前发出去、刷新以后才回来」的那一页。
+    // 和浏览器一样,请求被取消就当场报错;函数上标了 slow 的不理取消,用来造「取消了、过一会儿才报错回来」)
+    if (path.startsWith("outreach-done")) {
+      const p = (state.donePages || []).shift(), sig = opt.signal || null;
+      signals.push(sig);
+      if (typeof p !== "function") return res(200, p || { ok: true, items: [], more: 0, after: null });
+      if (p.slow || !sig) return p();
+      return new Promise((ok, no) => {
+        const stop = () => no(new DOMException("The operation was aborted.", "AbortError"));
+        if (sig.aborted) return stop();
+        sig.addEventListener("abort", stop);
+        p().then(ok, no);
+      });
+    }
+    if (path === "outreach") {
+      const it = state.outreach.find((x) => x.id === b.id), at = new Date().toISOString();
+      if ("status" in b) Object.assign(it, { status: b.status, decided_at: b.status === "待发" ? null : at }, b.status === "已发" ? {} : { result_note: null, result_url: null, result_at: null });
+      else {
+        if (it.status !== "已发") return res(409, { error: "notsent" });
+        const url = b.result_url ? webUrl(b.result_url) : null;
+        if (b.result_url && !url) return res(400, { error: "badurl" });
+        Object.assign(it, { result_note: b.result_note || null, result_url: url, result_at: b.result_note || url ? at : null });
+      }
+      return res(200, { ok: true, item: it });
+    }
     if (path !== "outbox") return res(200, { ok: true });
     const it = state.outbox.find((x) => x.id === b.id);
     if (typeof b.draft === "string") { const why = checkText(b.draft, undefined, outHosts(it.mine)); if (why) return res(400, { error: "draftbad", why }); }
@@ -95,7 +122,16 @@ async function desk(state, status = 200) {
   };
   // 「在 X 打开」点不点得了:有链接、没被收起来
   const canOpen = (id) => { const { open } = card(id); return !!open.href && !open.classList.contains("off"); };
-  return { $, card, canOpen, calls };
+  // 宣传卡片:在渠道分组里,或者下面「发过的」里
+  const rcard = (id) => {
+    const c = find($("reach-cards"), (e) => e.getAttribute("data-id") === id) || find($("reach-done-cards"), (e) => e.getAttribute("data-id") === id);
+    if (!c) return null;
+    const byId = (x) => find(c, (e) => e.getAttribute("id") === x);
+    return { el: c, go: find(c, (e) => e.tagName === "A" && e.classList.contains("primary")), btn: (text) => find(c, (e) => e.tagName === "BUTTON" && e.textContent === text),
+      fold: find(c, (e) => e.tagName === "DETAILS"), saved: find(c, (e) => e.classList.contains("saved")), said: find(c, (e) => e.classList.contains("result")), tip: find(c, (e) => e.classList.contains("count")),
+      note: byId("echo-note-" + id), link: byId("echo-url-" + id), form: find(c, (e) => e.classList.contains("echo")) };
+  };
+  return { $, card, canOpen, calls, rcard, signals };
 }
 
 const now = Date.now();
@@ -287,4 +323,552 @@ test("删除还没查完(服务器回 more):提示还有记录没查完、再点
   } finally {
     globalThis.setTimeout = realTimeout;
   }
+});
+
+// ---------- 宣传(11-06):媒体投稿、给项目团队的邮件、安全清单的提交、技术社区的帖子 ----------
+const RM = { channel: "media", target: "PANews 投稿", lang: "zh", url: "https://www.panewslab.com/zh/contribute", title: "链关停了,钱怎么取", body: "短正文。", why: "页面底部有投稿入口" };
+const rc = (id, mine = {}, over = {}) => ({ id, mine: { ...RM, ...mine }, status: "待发", decided_at: null, result_note: null, result_url: null, result_at: null, created_at: ago(100), ...over });
+const EMAIL = { channel: "project", target: "Sophon 团队", lang: "en", url: undefined, title: undefined, to: "team@sophon.example", subject: "Corrections welcome", body: "Hi team,\nSee https://defiexit.com/deadlines/ ." };
+// 剪贴板换成假的,记下复制了什么;on 是 false 就是这个浏览器用不了剪贴板
+function clipboard(on = true) {
+  const got = [];
+  Object.defineProperty(globalThis.navigator, "clipboard", { value: on ? { writeText: async (t) => { got.push(t); } } : undefined, configurable: true });
+  return got;
+}
+const chipsOf = (c) => find(c.el, (e) => e.className === "chips").children.map((x) => x.textContent);
+
+test("宣传:按渠道分组(媒体投稿、项目团队、安全清单、技术社区),每组带数;卡片上有目标、渠道、语言、标题、正文(长的收起来)、说明;「打开投稿页」新标签打开;「写邮件」把收件人、邮件标题、正文填进 mailto;顶上的数和「今天要你做的」", async () => {
+  clipboard();
+  const d = await desk({ ...base([]), outreach: [
+    rc("o-media-1"),
+    rc("o-mail-1", EMAIL),
+    rc("o-list-1", { channel: "list", target: "SlowMist 区块链黑暗森林自救手册", lang: "en", url: "https://github.com/slowmist/Blockchain-dark-forest-selfguard-handbook", title: "Add DeFiExit", body: "长".repeat(401) }),
+    rc("o-hn-1", { channel: "community", target: "Hacker News", lang: "en", url: "https://news.ycombinator.com/submit", title: "Show HN: DeFiExit", body: "一\n二\n三\n四\n五\n六\n七\n八\n九\n十\n十一" }),
+    rc("o-media-2", { target: "Odaily 投稿", lang: "zh-TW" }, { created_at: ago(50) }),
+    rc("o-sent-1", {}, { status: "已发", decided_at: ago(10) }),
+  ] });
+  // 分组按固定顺序,只显示有卡片的;组里先送来的在上面
+  const groups = d.$("reach-cards").children;
+  assert.deepEqual(groups.map((g) => [g.hidden, g.children[0].textContent]), [[false, "媒体投稿2"], [false, "项目团队1"], [false, "安全清单1"], [false, "技术社区1"], [true, "其他0"]]);
+  assert.deepEqual(groups[0].children[1].children.map((e) => e.getAttribute("data-id")), ["o-media-1", "o-media-2"]);
+  assert.deepEqual([d.$("n-reach").textContent, d.$("n-reach").classList.contains("due"), d.$("reach-empty").hidden, d.$("reach-done").hidden], ["5", true, true, false]);
+  assert.match(d.$("todo").textContent, /5 份宣传等你发/);
+  // 投稿页:新标签打开,不带来源
+  const m = d.rcard("o-media-1");
+  assert.ok(m.el.textContent.includes("PANews 投稿") && m.el.textContent.includes("页面底部有投稿入口") && m.el.textContent.includes("链关停了,钱怎么取"));
+  assert.deepEqual([m.go.textContent, m.go.href, m.go.getAttribute("target"), m.go.getAttribute("rel"), m.go.hidden], ["打开投稿页 ↗", RM.url, "_blank", "noopener noreferrer", false]);
+  assert.deepEqual(chipsOf(m), ["媒体投稿", "中文"]);
+  assert.deepEqual(chipsOf(d.rcard("o-media-2")), ["媒体投稿", "中文(zh-TW)"]);
+  assert.deepEqual([m.fold.open, m.btn("复制标题").hidden, m.btn("复制收件人").hidden, m.btn("复制邮件标题").hidden], [true, false, true, true]);
+  // 长的正文收起来(超过 400 字,或者超过 10 行)
+  const list = d.rcard("o-list-1");
+  assert.deepEqual([list.fold.open, find(list.fold, (e) => e.tagName === "SUMMARY").textContent], [false, "正文(共 401 字,点开看全文)"]);
+  assert.equal(d.rcard("o-hn-1").fold.open, false);
+  // 写邮件:同一个窗口里打开邮件程序;换行写成 \r\n
+  const e = d.rcard("o-mail-1");
+  assert.equal(e.go.href, "mailto:team@sophon.example?subject=Corrections%20welcome&body=" + encodeURIComponent("Hi team,\r\nSee https://defiexit.com/deadlines/ ."));
+  assert.deepEqual([e.go.getAttribute("target"), e.go.textContent, e.tip.hidden], [null, "写邮件,字已填好 ↗", true]);
+  assert.deepEqual([e.btn("复制收件人").hidden, e.btn("复制标题").hidden, chipsOf(e)], [false, false, ["项目团队", "英文"]]);
+  // 发过的在下面:主按钮收起来,能记回音
+  const s = d.rcard("o-sent-1");
+  assert.ok(find(d.$("reach-done-cards"), (x) => x.getAttribute("data-id") === "o-sent-1"));
+  assert.deepEqual([s.go.hidden, s.btn("有回音").hidden, s.btn("改回待发").hidden], [true, false, false]);
+});
+
+test("写邮件:整条链接超过 1800 字就不放正文(点「写邮件」时先把正文复制好),再长连邮件标题也不放;复制正文、标题、收件人;剪贴板用不了就说一声", async () => {
+  const got = clipboard();
+  const fits = "a".repeat(1700), long = "中".repeat(200);
+  const d = await desk({ ...base([]), outreach: [rc("o-fit", { ...EMAIL, body: fits }), rc("o-long", { ...EMAIL, body: long }), rc("o-huge", { ...EMAIL, subject: "标".repeat(200), body: long })] });
+  const fit = d.rcard("o-fit");
+  assert.ok(fit.go.href.length <= 1800 && fit.go.href.endsWith("&body=" + fits), fit.go.href.length);
+  const L = d.rcard("o-long");
+  assert.deepEqual([L.go.href, L.go.textContent, L.tip.hidden], ["mailto:team@sophon.example?subject=Corrections%20welcome", "写邮件,正文先复制好 ↗", false]);
+  assert.match(L.tip.textContent, /^正文太长,放不进邮件链接/);
+  await L.go.fire("click");
+  await tick();
+  assert.deepEqual([got, L.saved.textContent], [[long], "正文已复制:邮件窗口打开后,长按粘贴进正文"]);
+  assert.deepEqual(d.calls.filter(([p]) => p === "outreach"), [], "打开邮件不算发了");
+  const H = d.rcard("o-huge");
+  assert.equal(H.go.href, "mailto:team@sophon.example");
+  assert.match(H.tip.textContent, /^邮件标题和正文太长.*先点「复制标题」/);
+  for (const [text, want] of [["复制收件人", "team@sophon.example"], ["复制标题", "Corrections welcome"], ["复制正文", long]]) {
+    await L.btn(text).fire("click");
+    await tick();
+    assert.equal(got.at(-1), want, text);
+  }
+  // 剪贴板用不了:收起来的正文打开,请他长按复制
+  clipboard(false);
+  await d.rcard("o-long").btn("复制正文").fire("click");
+  await tick();
+  assert.deepEqual([L.saved.textContent, L.saved.classList.contains("bad"), L.fold.open], ["复制不了:长按上面的字自己复制", true, true]);
+});
+
+test("宣传的已发、跳过、改回待发、有回音:发了挪到「发过的」;回音的链接服务器拒了留着表单、说为什么;不看发帖节奏,也不占对人首回的名额", async () => {
+  clipboard();
+  const sent = [1, 2, 3, 4, 5].map((i) => reply("s" + i, 10 + i, { status: "已发", decided_at: ago(25 - 4 * i) }));
+  const d = await desk({ ...base([...sent, reply("r1", 20)], { dailyReplyCap: 6 }), outreach: [rc("o-a"), rc("o-b", EMAIL)] });
+  await d.rcard("o-a").btn("已发").fire("click");
+  await tick();
+  assert.equal(d.$("pace").hidden, true, "宣传不看发帖节奏");
+  assert.equal(d.canOpen("r1"), true, "也不占对人首回的名额");
+  let a = d.rcard("o-a");
+  assert.ok(find(d.$("reach-done-cards"), (x) => x.getAttribute("data-id") === "o-a"), "挪到「发过的」");
+  assert.deepEqual([d.$("n-reach").textContent, d.$("reach-msg").textContent, a.go.hidden], ["1", "点了「已发」,这条挪到下面的「发过的」了", true]);
+  // 有回音:http 的链接服务器不收,表单留着;改好了记下
+  await a.btn("有回音").fire("click");
+  assert.equal(a.form.hidden, false);
+  a.note.value = "编辑回邮件说下周发";
+  a.link.value = "http://www.panewslab.com/a";
+  await a.btn("记下").fire("click");
+  await tick();
+  assert.deepEqual([a.form.hidden, a.saved.textContent], [false, "没存上:链接不对:要 https:// 开头的完整网址(不带账号密码、IP 地址、端口)"]);
+  a.link.value = "https://www.panewslab.com/zh/articles/123";
+  await a.btn("记下").fire("click");
+  await tick();
+  a = d.rcard("o-a");
+  const link = find(a.said, (e) => e.tagName === "A");
+  assert.deepEqual([a.form.hidden, a.said.hidden, a.saved.textContent, link.href, link.getAttribute("rel"), a.btn("改回音").hidden], [true, false, "回音记下了", "https://www.panewslab.com/zh/articles/123", "noopener noreferrer", false]);
+  assert.match(a.said.textContent, /^回音:编辑回邮件说下周发 · 看 ↗ · \d\d-\d\d 记$/);
+  // 改回待发:回到上面的分组,回音清掉
+  await a.btn("改回待发").fire("click");
+  await tick();
+  a = d.rcard("o-a");
+  assert.ok(find(d.$("reach-cards"), (x) => x.getAttribute("data-id") === "o-a"));
+  assert.deepEqual([a.said.hidden, a.btn("有回音").hidden, a.go.hidden, d.$("n-reach").textContent, d.$("reach-msg").textContent], [true, true, false, "2", "这条挪回上面了"]);
+  await d.rcard("o-b").btn("跳过").fire("click");
+  await tick();
+  assert.equal(d.rcard("o-b").btn("有回音").hidden, true, "跳过的没有回音");
+  assert.deepEqual(d.calls.filter(([p]) => p === "outreach").map(([, b]) => b), [
+    { id: "o-a", status: "已发" }, { id: "o-a", result_note: "编辑回邮件说下周发", result_url: "http://www.panewslab.com/a" },
+    { id: "o-a", result_note: "编辑回邮件说下周发", result_url: "https://www.panewslab.com/zh/articles/123" }, { id: "o-a", status: "待发" }, { id: "o-b", status: "跳过" }]);
+});
+
+test("宣传卡片的收件邮箱 180 天到了删掉以后:卡片上写明是到期删的,没有「复制收件人」;改回待发也不会拿一个空的收件人去写邮件", async () => {
+  clipboard();
+  const gone = { ...EMAIL, to: undefined, toGone: true };
+  const d = await desk({ ...base([]), outreach: [rc("o-old", gone, { status: "已发", decided_at: ago(181 * 1440) }), rc("o-back", gone)] });
+  const old = d.rcard("o-old");
+  assert.ok(old.el.textContent.includes("收件人点过「已发 / 跳过」满 180 天,邮箱已删"), old.el.textContent);
+  assert.deepEqual([old.btn("复制收件人").hidden, old.go.hidden], [true, true]);
+  const back = d.rcard("o-back");
+  assert.deepEqual([back.go.hidden, back.go.href, back.el.textContent.includes("写邮件")], [true, "", false], "没有收件人:不出写邮件的按钮");
+});
+
+test("宣传卡片里有坏掉的字符(以前收进来的):写邮件的链接照样编得出来(换成替换符);哪张卡片画的时候出错,只坏那一张,后面的卡片和顶上的数照常", async () => {
+  clipboard();
+  const HI = String.fromCharCode(0xd800);
+  const d = await desk({ ...base([]), outreach: [rc("o-bad-1", { ...EMAIL, body: "hello" + HI }), rc("o-ok-1"), rc("o-ok-2", EMAIL)] });
+  assert.ok(d.rcard("o-bad-1").go.href.endsWith("&body=hello%EF%BF%BD"), d.rcard("o-bad-1").go.href);
+  assert.deepEqual([d.rcard("o-ok-1").go.textContent, d.rcard("o-ok-2").go.href.startsWith("mailto:"), d.$("n-reach").textContent], ["打开投稿页 ↗", true, "3"]);
+  // 编链接当场出错(模拟别的毛病):只坏这一张,后面照常
+  const real = globalThis.encodeURIComponent;
+  globalThis.encodeURIComponent = (s) => { if (String(s).includes("BOOM")) throw new URIError("URI malformed"); return real(s); };
+  try {
+    const d2 = await desk({ ...base([]), outreach: [rc("o-a", { ...EMAIL, body: "BOOM" }), rc("o-b"), rc("o-c", EMAIL)] });
+    assert.equal(d2.rcard("o-a").el.classList.contains("broken"), true);
+    assert.deepEqual([d2.rcard("o-b").go.textContent, d2.rcard("o-c").go.href.startsWith("mailto:"), d2.$("n-reach").textContent], ["打开投稿页 ↗", true, "3"]);
+  } finally {
+    globalThis.encodeURIComponent = real;
+  }
+});
+
+test("宣传「发过的」分页:还有更早的就出「再看早一点的(还有 N 张)」,点了从服务器给的位置往前翻;刷新以后照服务器这一次给的重来(翻出来的更早的几页不留,还有几张照服务器说的)", async () => {
+  clipboard();
+  const sent = (id, min) => rc(id, {}, { status: "已发", decided_at: ago(min) });
+  const state = { ...base([]), outreach: [rc("o-p"), sent("o-s1", 10), sent("o-s2", 20)], outreachMore: { handled: 2, after: { at: ago(20), id: "o-s2" } },
+    donePages: [{ ok: true, items: [sent("o-s3", 30), sent("o-s4", 40)], more: 0, after: { at: ago(40), id: "o-s4" } }] };
+  const d = await desk(state);
+  const more = d.$("reach-more");
+  assert.deepEqual([more.hidden, more.textContent, d.$("n-reach").textContent], [false, "再看早一点的(还有 2 张)", "1"]);
+  await more.fire("click");
+  await tick();
+  assert.deepEqual(d.calls.filter(([p]) => p.startsWith("outreach-done")).map(([p]) => p), ["outreach-done?at=" + encodeURIComponent(ago(20)) + "&id=o-s2"]);
+  const ids = () => d.$("reach-done-cards").children.map((e) => e.getAttribute("data-id"));
+  assert.deepEqual([ids(), more.hidden], [["o-s1", "o-s2", "o-s3", "o-s4"], true]);
+  // 刷新:服务器照旧给最近一页、还有 2 张;翻出来的那一页不留,按钮照服务器说的回来
+  await d.$("refresh").fire("click");
+  await tick();
+  assert.deepEqual([ids(), d.$("reach-more").hidden, d.$("reach-more").textContent], [["o-s1", "o-s2"], false, "再看早一点的(还有 2 张)"]);
+});
+
+// 点过的宣传卡片 h1…hN:编号越大越新;cur(n) 是服务器给的翻页位置(那一页最早那张)
+const hh = (n) => rc("o-h" + n, {}, { status: "已发", decided_at: ago(100 - n) });
+const cur = (n) => ({ at: ago(100 - n), id: "o-h" + n });
+const doneIds = (d) => d.$("reach-done-cards").children.map((e) => e.getAttribute("data-id"));
+
+test("宣传「发过的」翻页不漏:别处又点了几张以后刷新,接着翻从服务器这一次给的位置往前,一张不漏", async () => {
+  clipboard();
+  // 一开始库里点过的是 h1–h4,一页 2 张:页面上 h4、h3
+  const state = { ...base([]), outreach: [hh(4), hh(3)], outreachMore: { handled: 2, after: cur(3) }, donePages: [] };
+  const d = await desk(state);
+  // 别处又点了 h5、h6、h7,刷新:服务器给 h7、h6,比 h6 早的还有 5 张
+  Object.assign(state, { outreach: [hh(7), hh(6)], outreachMore: { handled: 5, after: cur(6) } });
+  state.donePages.push({ ok: true, items: [hh(5), hh(4)], more: 3, after: cur(4) }, { ok: true, items: [hh(3), hh(2)], more: 1, after: cur(2) }, { ok: true, items: [hh(1)], more: 0, after: cur(1) });
+  await d.$("refresh").fire("click");
+  await tick();
+  assert.deepEqual([doneIds(d), d.$("reach-more").textContent], [["o-h7", "o-h6"], "再看早一点的(还有 5 张)"]);
+  for (const [want, text] of [[["o-h7", "o-h6", "o-h5", "o-h4"], "再看早一点的(还有 3 张)"], [["o-h7", "o-h6", "o-h5", "o-h4", "o-h3", "o-h2"], "再看早一点的(还有 1 张)"]]) {
+    await d.$("reach-more").fire("click");
+    await tick();
+    assert.deepEqual([doneIds(d), d.$("reach-more").textContent], [want, text]);
+  }
+  await d.$("reach-more").fire("click");
+  await tick();
+  assert.deepEqual([doneIds(d), d.$("reach-more").hidden], [["o-h7", "o-h6", "o-h5", "o-h4", "o-h3", "o-h2", "o-h1"], true]);
+  assert.deepEqual(d.calls.filter(([p]) => p.startsWith("outreach-done")).map(([p]) => decodeURIComponent(p.split("&id=")[1])), ["o-h6", "o-h4", "o-h2"]);
+});
+
+test("宣传「发过的」:别处删了一张以后刷新,还有几张照服务器说的(不拿页面上的去减),删了的那张不再显示,最后一张也翻得到;正在记回音的那张刷新时留着", async () => {
+  clipboard();
+  // 库里点过的 h1–h5,一页 2 张:页面上 h5、h4,再翻一页 h3、h2
+  const state = { ...base([]), outreach: [hh(5), hh(4)], outreachMore: { handled: 3, after: cur(4) }, donePages: [{ ok: true, items: [hh(3), hh(2)], more: 1, after: cur(2) }] };
+  const d = await desk(state);
+  await d.$("reach-more").fire("click");
+  await tick();
+  assert.deepEqual([doneIds(d), d.$("reach-more").textContent], [["o-h5", "o-h4", "o-h3", "o-h2"], "再看早一点的(还有 1 张)"]);
+  // 管理员在 h2 上点了「有回音」(框开着);别处删了 h3;刷新:服务器给 h5、h4,比 h4 早的还有 2 张(h2、h1)
+  await d.rcard("o-h2").btn("有回音").fire("click");
+  Object.assign(state, { outreach: [hh(5), hh(4)], outreachMore: { handled: 2, after: cur(4) } });
+  state.donePages.push({ ok: true, items: [hh(2), hh(1)], more: 0, after: cur(1) });
+  await d.$("refresh").fire("click");
+  await tick();
+  assert.deepEqual([doneIds(d), d.$("reach-more").textContent, d.rcard("o-h2").form.hidden], [["o-h5", "o-h4", "o-h2"], "再看早一点的(还有 2 张)", false]);
+  await d.$("reach-more").fire("click");
+  await tick();
+  assert.deepEqual([doneIds(d), d.$("reach-more").hidden], [["o-h5", "o-h4", "o-h2", "o-h1"], true]);
+});
+
+test("宣传「发过的」:同一时刻只翻一页(翻的时候按钮点不了);刷新以前发出去、刷新以后才回来的那一页不要,位置和还有几张照刷新给的", async () => {
+  clipboard();
+  let release;
+  const gate = new Promise((r) => { release = r; });
+  const state = { ...base([]), outreach: [hh(4), hh(3)], outreachMore: { handled: 2, after: cur(3) },
+    donePages: [async () => { await gate; return { status: 200, json: async () => ({ ok: true, items: [hh(2), hh(1)], more: 0, after: cur(1) }) }; }] };
+  const d = await desk(state);
+  const more = d.$("reach-more");
+  const pages = () => d.calls.filter(([p]) => p.startsWith("outreach-done")).map(([p]) => decodeURIComponent(p.split("&id=")[1]));
+  const pending = more.fire("click");
+  await tick();
+  assert.deepEqual([more.disabled, more.textContent], [true, "正在翻…"]);
+  await more.fire("click"); // 翻的时候再点:点不了,不多发
+  await more.on.click[0](); // 绕过按钮直接调(比如别的地方触发):也不多发
+  assert.deepEqual(pages(), ["o-h3"]);
+  // 别处又点了 h5、h6、h7,这边刷新了:刷新以前那一页当场取消,按钮马上放开,位置和还有几张照刷新给的(11-06 第六轮)
+  Object.assign(state, { outreach: [hh(7), hh(6)], outreachMore: { handled: 5, after: cur(6) } });
+  state.donePages.push({ ok: true, items: [hh(5), hh(4)], more: 3, after: cur(4) });
+  await d.$("refresh").fire("click");
+  await tick();
+  assert.deepEqual([d.signals[0].aborted, doneIds(d), more.disabled, more.textContent], [true, ["o-h7", "o-h6"], false, "再看早一点的(还有 5 张)"]);
+  // 服务器那一页这时候才回来:已经取消了,不要
+  release();
+  await pending;
+  await tick();
+  assert.deepEqual([doneIds(d), more.disabled, more.textContent, d.$("reach-msg").textContent], [["o-h7", "o-h6"], false, "再看早一点的(还有 5 张)", ""]);
+  await more.fire("click");
+  await tick();
+  assert.deepEqual([doneIds(d), pages()], [["o-h7", "o-h6", "o-h5", "o-h4"], ["o-h3", "o-h6"]]);
+});
+
+// ---------- 11-06 第六轮:两次刷新回来的顺序反了、刷新时取消正在翻的那一页、翻页 20 秒没回来 ----------
+const pagesOf = (d) => d.calls.filter(([p]) => p.startsWith("outreach-done")).map(([p]) => decodeURIComponent(p.split("&id=")[1]));
+
+test("宣传「发过的」:两次刷新回来的顺序反了,只认后发的那一次(先发的晚回来,不拿旧的盖掉新的)", async () => {
+  clipboard();
+  const state = { ...base([]), outreach: [hh(4), hh(3)], outreachMore: { handled: 2, after: cur(3) }, donePages: [] };
+  const d = await desk(state);
+  // 读 state 的请求先扣住(发出去那一刻服务器是什么样就回什么样),测试自己决定哪一次先回来
+  const inner = globalThis.fetch, held = [];
+  globalThis.fetch = async (url, opt) => {
+    if (!String(url).endsWith("/state")) return inner(url, opt);
+    const snap = JSON.parse(JSON.stringify(state));
+    await new Promise((go) => held.push(go));
+    return { status: 200, json: async () => snap };
+  };
+  // 第一次刷新:服务器那时候给 h5、h4,还有 3 张;第二次刷新:别处又点了 h6、h7,给 h7、h6,还有 5 张
+  Object.assign(state, { outreach: [hh(5), hh(4)], outreachMore: { handled: 3, after: cur(4) } });
+  await d.$("refresh").fire("click");
+  Object.assign(state, { outreach: [hh(7), hh(6)], outreachMore: { handled: 5, after: cur(6) } });
+  await d.$("refresh").fire("click");
+  await tick();
+  assert.equal(held.length, 2);
+  held[1]();
+  await tick();
+  assert.deepEqual([doneIds(d), d.$("reach-more").textContent], [["o-h7", "o-h6"], "再看早一点的(还有 5 张)"]);
+  held[0](); // 先发的那次这时候才回来:不用
+  await tick();
+  assert.deepEqual([doneIds(d), d.$("reach-more").textContent], [["o-h7", "o-h6"], "再看早一点的(还有 5 张)"]);
+  // 接着翻,从后发的那次给的位置
+  state.donePages.push({ ok: true, items: [hh(5), hh(4)], more: 3, after: cur(4) });
+  await d.$("reach-more").fire("click");
+  await tick();
+  assert.deepEqual([doneIds(d), pagesOf(d)], [["o-h7", "o-h6", "o-h5", "o-h4"], ["o-h6"]]);
+});
+
+test("宣传「发过的」:翻页还没回来就刷新了,接着又翻了一页;取消了的那一次过一会儿才报错回来,也不会放掉后来那一次的锁", async () => {
+  clipboard();
+  // 第一页:不理取消(浏览器偶尔这样:取消了,过一会儿才报错回来)
+  let failOld, release;
+  const slow = Object.assign(() => new Promise((_, no) => { failOld = () => no(new DOMException("The operation was aborted.", "AbortError")); }), { slow: true });
+  const gate = new Promise((r) => { release = r; });
+  const state = { ...base([]), outreach: [hh(4), hh(3)], outreachMore: { handled: 2, after: cur(3) }, donePages: [slow] };
+  const d = await desk(state);
+  const more = d.$("reach-more");
+  const first = more.fire("click");
+  await tick();
+  assert.deepEqual([more.disabled, more.textContent], [true, "正在翻…"]);
+  // 刷新:别处又点了 h5、h6、h7。第一页当场取消,按钮放开
+  Object.assign(state, { outreach: [hh(7), hh(6)], outreachMore: { handled: 5, after: cur(6) } });
+  state.donePages.push(async () => { await gate; return { status: 200, json: async () => ({ ok: true, items: [hh(5), hh(4)], more: 3, after: cur(4) }) }; });
+  await d.$("refresh").fire("click");
+  await tick();
+  assert.deepEqual([d.signals[0].aborted, more.disabled, more.textContent], [true, false, "再看早一点的(还有 5 张)"]);
+  // 接着翻(第二次,还没回来);这时候第一次才报错回来:第二次的锁还在,按钮照样点不了、不多发,也不报错
+  const second = more.fire("click");
+  await tick();
+  failOld();
+  await first;
+  await tick();
+  assert.deepEqual([more.disabled, more.textContent, d.$("reach-msg").textContent], [true, "正在翻…", ""]);
+  await more.on.click[0]();
+  assert.deepEqual(pagesOf(d), ["o-h3", "o-h6"]);
+  assert.equal(d.signals[1].aborted, false);
+  release();
+  await second;
+  await tick();
+  assert.deepEqual([doneIds(d), more.disabled, more.textContent], [["o-h7", "o-h6", "o-h5", "o-h4"], false, "再看早一点的(还有 3 张)"]);
+});
+
+test("宣传「发过的」:翻页 20 秒还没回来就取消,说一声,按钮放开;再点从同一个位置接着翻", async () => {
+  clipboard();
+  const realTimeout = globalThis.setTimeout, alarms = [];
+  globalThis.setTimeout = (fn, ms, ...a) => (ms === 20000 ? (alarms.push(fn), {}) : realTimeout(fn, ms, ...a));
+  try {
+    const never = () => new Promise(() => {});
+    const state = { ...base([]), outreach: [hh(4), hh(3)], outreachMore: { handled: 2, after: cur(3) }, donePages: [never, { ok: true, items: [hh(2), hh(1)], more: 0, after: cur(1) }] };
+    const d = await desk(state);
+    const more = d.$("reach-more");
+    const pending = more.fire("click");
+    await tick();
+    assert.deepEqual([alarms.length, more.disabled], [1, true]);
+    alarms[0](); // 20 秒到了
+    await pending;
+    await tick();
+    assert.deepEqual([d.signals[0].aborted, more.disabled, more.textContent, d.$("reach-msg").textContent], [true, false, "再看早一点的(还有 2 张)", "没翻出来:等了 20 秒没等到,再点一次"]);
+    await more.fire("click");
+    await tick();
+    assert.deepEqual([doneIds(d), more.hidden, pagesOf(d)], [["o-h4", "o-h3", "o-h2", "o-h1"], true, ["o-h3", "o-h3"]]);
+  } finally {
+    globalThis.setTimeout = realTimeout;
+  }
+});
+
+test("宣传卡片删除:先说清楚会删什么(只删这一张;写邮件的,以后写给这个邮箱的也不收),再点一次才删;删完重新读一遍", async () => {
+  const realTimeout = globalThis.setTimeout;
+  globalThis.setTimeout = (fn, ms, ...a) => (ms >= 1000 ? {} : realTimeout(fn, ms, ...a));
+  try {
+    const state = { ...base([]), outreach: [rc("o-b", EMAIL)] };
+    const d = await desk(state);
+    const c = d.rcard("o-b"), del = c.btn("删除这条");
+    await del.fire("click");
+    assert.deepEqual([del.textContent, c.saved.textContent], ["确定删除?再点一次", "只删这一张宣传卡片,以后不再收;写邮件的,以后写给这个邮箱的也不再收(对方要求删时用;不想发点「跳过」)"]);
+    state.outreach = [];
+    await del.fire("click");
+    await tick();
+    assert.deepEqual(d.calls.filter(([p]) => p === "delete"), [["delete", { kind: "outreach", id: "o-b" }]]);
+    assert.equal(d.rcard("o-b"), null);
+    assert.deepEqual([d.$("n-reach").textContent, d.$("reach-empty").hidden], ["0", false]);
+  } finally {
+    globalThis.setTimeout = realTimeout;
+  }
+});
+
+// ---------- 11-06 第七轮:存上了以后,还在路上的刷新回来不盖掉 ----------
+// 读 state 的头一次扣住(发出去那一刻服务器是什么样就回什么样),测试自己决定什么时候回来;后面的照常
+function holdFirstState(state) {
+  const inner = globalThis.fetch, held = [];
+  let hold = true;
+  globalThis.fetch = async (url, opt) => {
+    if (!String(url).endsWith("/state") || !hold) return inner(url, opt);
+    hold = false;
+    const snap = JSON.parse(JSON.stringify(state));
+    await new Promise((go) => held.push(go));
+    return { status: 200, json: async () => snap };
+  };
+  return held;
+}
+
+test("待发:刷新还在路上时点了「已发」,那次刷新晚回来也不盖掉(库里已发,页面不会变回待发、「在 X 打开」不会又出来);再读一次,照服务器的", async () => {
+  clipboard();
+  const state = base([reply("r-w1", 1), reply("r-w2", 2)]);
+  const d = await desk(state);
+  const held = holdFirstState(state);
+  await d.$("refresh").fire("click"); // 刷新:读的是点「已发」以前的
+  await tick();
+  assert.equal(held.length, 1);
+  await d.card("r-w1").sent.fire("click");
+  await tick();
+  held[0](); // 点「已发」以前读的那次这时候才回来:不用
+  await tick();
+  const inOut = (id) => !!find(d.$("out-cards"), (e) => e.getAttribute("data-id") === id);
+  assert.deepEqual([state.outbox[0].status, inOut("r-w1"), d.card("r-w1").open.hidden, inOut("r-w2")], ["已发", false, true, true]);
+  // 存上以后重新读了一次(照服务器的)
+  const paths = d.calls.map(([p]) => p).filter((p) => p === "state" || p === "outbox");
+  assert.deepEqual(paths.slice(-2), ["outbox", "state"]);
+});
+
+test("宣传:刷新还在路上时点了「已发」、记了回音,那次刷新晚回来也不盖掉;没有刷新在路上时,存东西不多读一次", async () => {
+  clipboard();
+  const state = { ...base([]), outreach: [rc("o-w1"), rc("o-w2")] };
+  const d = await desk(state);
+  const states = () => d.calls.filter(([p]) => p === "state").length;
+  // 没有刷新在路上:点「已发」不多读
+  const before = states();
+  await d.rcard("o-w2").btn("已发").fire("click");
+  await tick();
+  assert.equal(states(), before);
+  // 刷新在路上:点「已发」
+  const held = holdFirstState(state);
+  await d.$("refresh").fire("click");
+  await tick();
+  await d.rcard("o-w1").btn("已发").fire("click");
+  await tick();
+  held[0]();
+  await tick();
+  const inDone = (id) => !!find(d.$("reach-done-cards"), (e) => e.getAttribute("data-id") === id);
+  assert.deepEqual([state.outreach[0].status, inDone("o-w1"), d.rcard("o-w1").go.hidden], ["已发", true, true]);
+  // 刷新在路上:记回音
+  const held2 = holdFirstState(state);
+  await d.$("refresh").fire("click");
+  await tick();
+  const c = d.rcard("o-w1");
+  await c.btn("有回音").fire("click");
+  c.note.value = "编辑回信了";
+  await c.btn("记下").fire("click");
+  await tick();
+  held2[0]();
+  await tick();
+  assert.deepEqual([state.outreach[0].result_note, d.rcard("o-w1").said.textContent.includes("编辑回信了")], ["编辑回信了", true]);
+});
+
+// ---------- 11-06 第八轮:一张卡片一次只存一个,晚回来的旧结果不盖掉 ----------
+// 头一个合 pred 的请求:服务器当场照它改(回的结果那时候就定了),回到页面上扣住,测试自己决定什么时候放
+function holdCall(pred) {
+  const inner = globalThis.fetch, held = [];
+  let taken = false;
+  globalThis.fetch = async (url, opt) => {
+    const path = String(url).replace("/api/admin/", ""), b = opt.body ? JSON.parse(opt.body) : {};
+    if (taken || !pred(path, b)) return inner(url, opt);
+    taken = true;
+    const r = await inner(url, opt), j = await r.json();
+    await new Promise((go) => held.push(go));
+    return { status: r.status, json: async () => j };
+  };
+  return held;
+}
+const statusCalls = (d, path) => d.calls.filter(([p, b]) => p === path && "status" in b).map(([, b]) => b.status);
+const inBox = (d, box, id) => !!find(d.$(box), (e) => e.getAttribute("data-id") === id);
+
+test("待发:草稿自动存的那次还没回来就点了「已发」:等它回来再发「已发」,卡片不会被晚回来的那次盖回待发(「在 X 打开」不会又出来)", async () => {
+  clipboard();
+  const state = base([reply("r-q1", 1)]);
+  const d = await desk(state);
+  const held = holdCall((p, b) => p === "outbox" && "draft" in b);
+  const c = d.card("r-q1");
+  c.ta.value = "改过的草稿,到期金库可以在官方合约上自己取出。";
+  await c.ta.fire("input");
+  const typed = c.ta.fire("blur"); // 离开输入框就存(这一次慢)
+  await tick();
+  assert.equal(held.length, 1);
+  const click = c.sent.fire("click");
+  await tick();
+  assert.deepEqual(statusCalls(d, "outbox"), [], "草稿那次还没回来,「已发」先不发");
+  held[0]();
+  await typed;
+  await click;
+  await tick();
+  assert.deepEqual([statusCalls(d, "outbox"), state.outbox[0].status, state.outbox[0].draft_admin, inBox(d, "out-cards", "r-q1"), d.card("r-q1").open.hidden],
+    [["已发"], "已发", "改过的草稿,到期金库可以在官方合约上自己取出。", false, true]);
+});
+
+test("待发:备注存的那次还没回来就点了「已发」:排在它后面发,晚回来的那次不盖掉已发", async () => {
+  clipboard();
+  const state = base([reply("r-q2", 2)]);
+  const d = await desk(state);
+  const held = holdCall((p, b) => p === "outbox" && "note" in b);
+  const el = find(d.$("out-cards"), (e) => e.getAttribute("data-id") === "r-q2");
+  const memo = find(el, (e) => e.getAttribute("id") === "memo-out-r-q2");
+  memo.value = "这条先发";
+  const noted = memo.fire("change");
+  await tick();
+  const click = d.card("r-q2").sent.fire("click");
+  await tick();
+  assert.deepEqual(statusCalls(d, "outbox"), [], "备注那次还没回来,「已发」排在后面");
+  held[0]();
+  await noted;
+  await click;
+  await tick();
+  assert.deepEqual([d.calls.filter(([p]) => p === "outbox").map(([, x]) => x.note || x.status), state.outbox[0].status, inBox(d, "out-cards", "r-q2"), d.card("r-q2").open.hidden], [["这条先发", "已发"], "已发", false, true]);
+});
+
+test("宣传:点了「已发」还没回来又点「跳过」:排在后面发,页面照最后那次(跳过),不被晚回来的「已发」盖掉", async () => {
+  clipboard();
+  const state = { ...base([]), outreach: [rc("o-q1")] };
+  const d = await desk(state);
+  const held = holdCall((p, b) => p === "outreach" && b.status === "已发");
+  const sent = d.rcard("o-q1").btn("已发").fire("click");
+  await tick();
+  const skip = d.rcard("o-q1").btn("跳过").fire("click");
+  await tick();
+  assert.deepEqual(statusCalls(d, "outreach"), ["已发"], "「已发」还没回来,「跳过」排在后面");
+  held[0]();
+  await sent;
+  await skip;
+  await tick();
+  assert.deepEqual([statusCalls(d, "outreach"), state.outreach[0].status, inBox(d, "reach-done-cards", "o-q1"), d.rcard("o-q1").el.textContent.includes("跳过")], [["已发", "跳过"], "跳过", true, true]);
+});
+
+test("宣传:存的那次还没回来就删了这张卡片:晚回来的不让它又冒出来", async () => {
+  clipboard();
+  const realTimeout = globalThis.setTimeout;
+  globalThis.setTimeout = (fn, ms, ...a) => (ms >= 1000 ? {} : realTimeout(fn, ms, ...a));
+  try {
+    const state = { ...base([]), outreach: [rc("o-q2"), rc("o-q3")] };
+    const d = await desk(state);
+    const held = holdCall((p, b) => p === "outreach" && b.id === "o-q2");
+    const sent = d.rcard("o-q2").btn("已发").fire("click");
+    await tick();
+    const del = d.rcard("o-q2").btn("删除这条");
+    await del.fire("click");
+    state.outreach = state.outreach.filter((x) => x.id !== "o-q2");
+    await del.fire("click");
+    await tick();
+    assert.equal(d.rcard("o-q2"), null);
+    held[0](); // 删以前那次存这时候才回来
+    await sent;
+    await tick();
+    assert.deepEqual([d.rcard("o-q2"), !!d.rcard("o-q3")], [null, true]);
+  } finally {
+    globalThis.setTimeout = realTimeout;
+  }
+});
+
+test("待发:草稿自动存的那次还没回来就点了「已发」,那次被服务器拒了:「已发」不发,说一声草稿没存上(字还在框里)", async () => {
+  clipboard();
+  const state = base([reply("r-q4", 4)]);
+  const d = await desk(state);
+  const held = holdCall((p, b) => p === "outbox" && "draft" in b);
+  const c = d.card("r-q4");
+  c.ta.value = "有问题可以私信我";
+  await c.ta.fire("input");
+  const typed = c.ta.fire("blur");
+  await tick();
+  const click = c.sent.fire("click");
+  await tick();
+  held[0](); // 拒了(草稿里有不许用的词)
+  await typed;
+  await click;
+  await tick();
+  const el = find(d.$("out-cards"), (e) => e.getAttribute("data-id") === "r-q4");
+  assert.deepEqual([statusCalls(d, "outbox"), state.outbox[0].status, c.ta.value, find(el, (e) => e.classList.contains("saved")).textContent],
+    [[], "待发", "有问题可以私信我", "草稿没存上,先别点「已发」;字还在框里"]);
 });

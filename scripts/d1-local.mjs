@@ -37,10 +37,11 @@ export class LocalD1 {
   prepare(sql) {
     return new Stmt(this.db, sql);
   }
+  // 和 D1 一样:每一句回一个结果,查询的(SELECT)带 results;整批是一个事务,中间插不进别的写
   async batch(stmts) {
     this.db.exec("BEGIN");
     try {
-      const out = stmts.map((s) => s.runSync());
+      const out = stmts.map((s) => (/^\s*(SELECT|WITH)\b/i.test(s.sql) ? { success: true, results: this.db.prepare(s.sql).all(...s.args).map(plain), meta: { changes: 0 } } : s.runSync()));
       this.db.exec("COMMIT");
       return out;
     } catch (e) {
