@@ -1,8 +1,10 @@
 // 运营台接口(Cloudflare Pages Function,路径 /api/admin/*),只在 admin 主机上应答,别的主机一律 404。
-// GET  state            看板数据、待发、收件、体检次数、问题记录的数(要登录;没设管理员就回 need: setup)
+// GET  state            看板数据、待发、收件、宣传卡片、体检次数、问题记录的数(要登录;没设管理员就回 need: setup)
 // POST setup / login / logout / logout-all
 // POST outbox / inbox    管理员点的状态、决定、备注、改过的草稿
-// POST watch / delete    帖子看不看评论;按要求删掉一条(同一条帖子在收件、待发、问题记录里的几行一起删,以后都不再收)
+// POST outreach         宣传卡片:管理员点的状态(已发 / 跳过 / 改回待发)、发出去以后记下的回音(一句话、一个链接)
+// POST watch / delete    帖子看不看评论;按要求删掉一条(同一条帖子在收件、待发、问题记录里的几行一起删,以后都不再收;
+//                        宣传卡片只删那一张,以后这个编号、写给它那个收件邮箱的都不再收)
 // POST sync              经 fxtwitter 刷新读数和评论
 // POST ingest            Claude 主窗口的签名投递(不靠登录,靠签名;见 server/ops/ingest.js)
 // POST task              定时任务的小钥匙:只能刷新、加线索(见 server/ops/task.js)
@@ -10,9 +12,9 @@
 // 改东西的请求(ingest 除外)必须同源、JSON、已登录;登录凭证是只给本主机的 __Host- cookie(SameSite=Strict)。
 
 import { reply, gone, hostOk, sameOrigin, readJson, clientIp } from "../../../server/ops/http.js";
-import { ensure, iso, getKv, getDocs, listOut, listIn, getOut, getIn, outRow, existing, purge, goneKey, goneStmt, markStmt, NOT_GONE, goneArg, outKeys, inKeys, sameRefs, sameInRefs, rowsAbout, hitCounts, problemCounts, problemKey } from "../../../server/ops/db.js";
+import { ensure, iso, getKv, getDocs, listOut, listIn, getOut, getIn, outRow, existing, purge, goneKey, goneStmt, markStmt, NOT_GONE, goneArg, outKeys, inKeys, sameRefs, sameInRefs, rowsAbout, hitCounts, problemCounts, problemKey, listReach, getReach, reachCardKey, reachToKey } from "../../../server/ops/db.js";
 import { MIN_PASSWORD, hashPassword, checkPassword, newSession, hasSession, endSession, endAll, cookie, mustWait, failed, succeeded, same } from "../../../server/ops/auth.js";
-import { ingest, checkText, outHosts } from "../../../server/ops/ingest.js";
+import { ingest, checkText, outHosts, webUrl } from "../../../server/ops/ingest.js";
 import { sync } from "../../../server/ops/sync.js";
 import { task, exportFor, listLeads, autoState } from "../../../server/ops/task.js";
 
@@ -23,18 +25,19 @@ const hex = async (s) => [...new Uint8Array(await crypto.subtle.digest("SHA-256"
 
 async function state(db, admin, now) {
   await purge(db, now);
-  const [docs, outbox, inbox, syncAt, syncNote, off, needs, leads, auto, outStats, hits, p7, p30] = await Promise.all([
+  const [docs, outbox, inbox, syncAt, syncNote, off, needs, leads, auto, outStats, hits, p7, p30, outreach] = await Promise.all([
     getDocs(db), listOut(db), listIn(db), getKv(db, "sync_at_ms"), getKv(db, "sync_note"),
     db.prepare("SELECT id FROM watch WHERE on_ = 0").all(),
     db.prepare("SELECT month, v FROM needs ORDER BY month DESC LIMIT 100").all(),
     listLeads(db, 30), autoState(db), getKv(db, "out_stats"), hitCounts(db, now),
     // 「大家最常问」:最近 7 天、30 天的数,各带问得多的 10 个协议(只有数)
     problemCounts(db, now, 7, 10), problemCounts(db, now, 30, 10),
+    listReach(db),
   ]);
   const past = needs.results.map((r) => { try { return { month: r.month, ...JSON.parse(r.v) }; } catch { return null; } }).filter(Boolean);
   let stats = {};
   try { stats = JSON.parse(outStats || "{}") || {}; } catch { stats = {}; }
-  return reply({ ok: true, me: { name: admin.name }, docs, outbox, inbox, needs: past, leads, auto, outStats: stats, hits, problems: { d7: p7, d30: p30 }, watchOff: off.results.map((r) => r.id), synced: { at: syncAt ? iso(Number(syncAt)) : null, note: syncNote || "" } });
+  return reply({ ok: true, me: { name: admin.name }, docs, outbox, inbox, outreach, needs: past, leads, auto, outStats: stats, hits, problems: { d7: p7, d30: p30 }, watchOff: off.results.map((r) => r.id), synced: { at: syncAt ? iso(Number(syncAt)) : null, note: syncNote || "" } });
 }
 
 // 管理员贴的帖子链接:只收 x.com(或 twitter.com)上的帖子链接,统一成 https://x.com/<账号>/status/<编号>,去掉 ?s=20 这类尾巴
@@ -144,6 +147,50 @@ async function editIn(db, b, now) {
   return reply({ ok: true, item: await getIn(db, cur.id) });
 }
 
+// 宣传卡片:管理员只改自己那几样(状态、回音),我写的部分(mine)这里不碰,也没有发帖节奏的限制(那只管 X 上的回复)。
+// 状态:已发 / 跳过 / 待发(改回待发);改成「已发」以外的,回音一起清掉(没发出去就没有回音)。
+// 回音:只给「已发」的记,一句话(最长 300 字)加一个链接(可不填:发出来的文章、合并的 PR;只收 https、普通的英文主机名,
+// 不带账号密码、IP、端口,见 ingest.js 的 webUrl);两样都空着就是清掉。状态和回音不能同一次改。
+// 条件写在语句里:读和写之间状态变了(比如另一台手机点了「改回待发」),回音就不记
+const NOTE_MAX = 300;
+async function editReach(db, b, now) {
+  const cur = await getReach(db, String(b.id || ""));
+  if (!cur) return reply({ error: "none" }, 404);
+  const result = "result_note" in b || "result_url" in b;
+  const sets = [], args = [];
+  let cond = "";
+  if ("status" in b) {
+    if (result || !STATUS.includes(b.status)) return reply({ error: "bad" }, 400);
+    sets.push("status = ?", "decided_at = ?");
+    args.push(b.status, b.status === "待发" ? null : iso(now));
+    if (b.status !== "已发") sets.push("result_note = NULL", "result_url = NULL", "result_at = NULL");
+  } else if (result) {
+    const note = b.result_note == null ? "" : b.result_note, link = b.result_url == null ? "" : b.result_url;
+    if (typeof note !== "string" || note.length > NOTE_MAX || typeof link !== "string") return reply({ error: "bad" }, 400);
+    const url = link.trim() ? webUrl(link) : null;
+    if (link.trim() && !url) return reply({ error: "badurl" }, 400);
+    if (cur.status !== "已发") return reply({ error: "notsent" }, 409);
+    const text = note.trim() || null;
+    sets.push("result_note = ?", "result_url = ?", "result_at = ?");
+    args.push(text, url, text || url ? iso(now) : null);
+    cond = " AND status = '已发'";
+  }
+  if (!sets.length) return reply({ error: "bad" }, 400);
+  const r = await db.prepare(`UPDATE outreach SET ${sets.join(", ")}, updated_at = ? WHERE id = ?${cond}`).bind(...args, iso(now), cur.id).run();
+  if (!(r.meta && r.meta.changes)) return (await getReach(db, cur.id)) ? reply({ error: "notsent" }, 409) : reply({ error: "none" }, 404);
+  return reply({ ok: true, item: await getReach(db, cur.id) });
+}
+
+// 按要求删掉一张宣传卡片:先记这张卡片的编号(记下以后投递改不了、写不回这一行),再读它的收件邮箱,和删这一行同一批记进 gone。
+// 以后这个编号、写给这个邮箱的卡片都不再收(都只存哈希,见 db.js 的 reachKeys)
+async function delReach(db, id, now) {
+  await markStmt(db, await reachCardKey(id), now).run();
+  const cur = await getReach(db, id);
+  const to = cur && typeof cur.mine.to === "string" && cur.mine.to ? cur.mine.to : null;
+  await db.batch([db.prepare("DELETE FROM outreach WHERE id = ?").bind(id), ...(to ? [markStmt(db, await reachToKey(to), now)] : [])]);
+  return reply({ ok: true });
+}
+
 export async function handle(request, env, fetchImpl = fetch, now = new Date()) {
   if (!hostOk(request, env)) return gone();
   const db = env.OPS;
@@ -228,12 +275,14 @@ export async function handle(request, env, fetchImpl = fetch, now = new Date()) 
   if (path === "logout-all") { await endAll(db); return reply({ ok: true }, 200, { "Set-Cookie": cookie("", 0) }); }
   if (path === "outbox") return editOut(db, b, now);
   if (path === "inbox") return editIn(db, b, now);
+  if (path === "outreach") return editReach(db, b, now);
   if (path === "watch") {
     if (!/^\d{1,25}$/.test(String(b.id || "")) || typeof b.on !== "boolean") return reply({ error: "bad" }, 400);
     await db.prepare("INSERT INTO watch (id, on_) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET on_ = excluded.on_").bind(String(b.id), b.on ? 1 : 0).run();
     return reply({ ok: true });
   }
   if (path === "delete") {
+    if (b.kind === "outreach") return typeof b.id === "string" && b.id && b.id.length <= 64 ? delReach(db, b.id, now) : reply({ error: "bad" }, 400);
     const table = { inbox: "inbox", outbox: "outbox" }[b.kind];
     if (!table || typeof b.id !== "string" || b.id.length > 64) return reply({ error: "bad" }, 400);
     // 这一行删掉,编号记进 gone(goneKey,这条以后不再收)。说的是哪条帖子(收件:这条评论本身;回帖的待发:要回的那条帖子;

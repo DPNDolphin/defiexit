@@ -206,7 +206,7 @@ test("投递:签名、环境、时间、nonce、旧包", async () => {
   const r = await handle(new Request(HOST + "/api/admin/ingest", { method: "POST", headers: { "X-DX-Sig": ok.sig }, body: ok.raw.replace("2026", "2027") }), baseEnv(w.db), w.edge, w.now());
   assert.equal((await r.json()).error, "sig");
   // 没登录的人拿不到数据:回执里没有库里的内容
-  assert.deepEqual(Object.keys(again.json).sort(), ["docs", "inbox", "ok", "outbox", "problems", "receipt", "rejected", "setup"]);
+  assert.deepEqual(Object.keys(again.json).sort(), ["docs", "inbox", "ok", "outbox", "outreach", "problems", "receipt", "rejected", "setup"]);
 });
 
 test("草稿检查:站外链接、敏感词一律不收", () => {
@@ -2198,4 +2198,282 @@ test("同时点了两次删除(只剩哈希、要翻好几页):慢的那次不�
   assert.deepEqual([a.status, a.json.ok], [200, true], JSON.stringify(a.json));
   assert.equal(await raw.prepare("SELECT v FROM kv WHERE k LIKE 'del_scan:%'").first(), null, "没有留下旧进度");
   assert.deepEqual((await raw.prepare("SELECT id FROM outbox ORDER BY id").all()).results.map((x) => x.id), ["r-x-1", "r-x-2", "r-x-3", "r-x-4"]);
+});
+
+// ---------- 宣传卡片(11-06):媒体投稿、给项目团队的邮件、安全清单的提交、技术社区的帖子 ----------
+import { webUrl, mailAddr } from "../server/ops/ingest.js";
+
+const REACH = (over = {}) => ({ id: "o-panews-1106", channel: "media", target: "PANews 投稿", lang: "zh", url: "https://www.panewslab.com/zh/contribute", title: "链关停了,钱怎么取", body: "很多人不知道,链关停以后钱还在链上。\n\n## 怎么查\n\n我们做了一个免费的退出截止日历:https://defiexit.com/deadlines/ 。", why: "PANews 接受投稿,页面底部有投稿入口", ...over });
+const MAILTO = (over = {}) => ({ id: "o-sophon-1106", channel: "project", target: "Sophon 团队", lang: "en", to: "Team@Sophon.example", subject: "Your exit deadline on DeFiExit: corrections welcome", body: "Hi Sophon team,\n\nOur free exit-deadline calendar lists your shutdown date: https://defiexit.com/deadlines/ . If anything is off, just reply and we will fix it. Would you consider sharing it with your users?", why: "公告里写的联系邮箱", ...over });
+const reachOf = async (w, id) => { const r = await w.db.prepare("SELECT * FROM outreach WHERE id = ?").bind(id).first(); return r && { ...r, mine: JSON.parse(r.mine) }; };
+const reachWhy = (r) => Object.fromEntries(r.json.rejected.filter((x) => x.kind === "outreach").map((x) => [x.id, x.why]));
+
+test("宣传卡片:表在第一次用到时自动建好", async () => {
+  const db = new LocalD1();
+  await ensure(db);
+  await ensure(new Proxy(db, {})); // 换一个对象再跑一遍建表:已经有了不报错
+  const cols = (await db.prepare("SELECT name FROM pragma_table_info('outreach') ORDER BY cid").all()).results.map((r) => r.name);
+  assert.deepEqual(cols, ["id", "mine", "status", "decided_at", "result_note", "result_url", "result_at", "created_at", "updated_at"]);
+});
+
+test("宣传卡片的网址、邮箱:网址只收 https、普通的英文主机名(不收账号密码、端口、IP、xn--),存标准写法;邮箱只收一个普通地址,域名统一成小写", () => {
+  for (const [s, want] of [
+    ["https://news.ycombinator.com/submit", "https://news.ycombinator.com/submit"],
+    ["  https://WWW.PanewsLab.com:443/zh/contribute  ", "https://www.panewslab.com/zh/contribute"],
+    ["https://github.com/slowmist/Blockchain-dark-forest-selfguard-handbook/issues/new?title=Add DeFiExit", "https://github.com/slowmist/Blockchain-dark-forest-selfguard-handbook/issues/new?title=Add%20DeFiExit"],
+  ]) assert.equal(webUrl(s), want, s);
+  for (const s of ["http://a.org/", "https://u@a.org/", "https://u:p@a.org/", "https://a.org:8443/", "https://1.2.3.4/", "https://[::1]/", "https://xn--80ak6aa92e.com/", "https://localhost/",
+    "ftp://a.org/", "javascript:alert(1)", "data:text/html,x", "www.a.org/x", "https://a.org/" + "x".repeat(500), "", "  ", null, 5, { toString: null }]) assert.equal(webUrl(s), null, typeof s === "string" ? s : typeof s);
+  assert.equal(mailAddr("team@sophon.xyz"), "team@sophon.xyz");
+  assert.equal(mailAddr(" First.Last+tag@Example.ORG "), "First.Last+tag@example.org");
+  for (const s of ["a@b", "a@@b.org", "a@b@c.org", "a b@c.org", "<a@b.org>", "Name <a@b.org>", "a@b.org,c@d.org", "a@b.org?cc=c@d.org", "a%40b@c.org", "\"a\"@b.org",
+    ".a@b.org", "a.@b.org", "a..b@c.org", "a@1.2.3.4", "a@xn--80ak6aa92e.com", "a@b.org\n?x", "@b.org", "", 5, null]) assert.equal(mailAddr(s), null, String(s));
+});
+
+test("宣传投递:合格的收下(投稿页的、写邮件的);网址、邮箱不合格的不收;标题、邮件标题、正文过敏感词和链接检查(只许本站和运营规则里的官方网址,长得像的绕不过去);编号不能全是数字;字段类型不对只拒那一条", async () => {
+  const w = world();
+  const c = await w.login();
+  const URL_WHY = "url 不合格(要 https:// 开头的网址,不带账号密码、IP 地址、端口,最长 500 字)";
+  const TO_WHY = "to 不合格(写一个普通的邮箱地址,比如 team@example.org;不带名字、尖括号、逗号、问号)";
+  const OFF = "(宣传稿只许带 defiexit.com 和运营规则 officialHosts 里列的官方网址)";
+  const HN = REACH({ id: "o-hn-1106", channel: "community", target: "Hacker News", lang: "en", url: "https://news.ycombinator.com/submit", title: "Show HN: DeFiExit – a free calendar of DeFi exit deadlines", body: "好".repeat(20000), why: undefined });
+  const r = await w.ingest({ docs: { rules: { officialHosts: ["sophon.example"] } }, outreach: [
+    REACH(), MAILTO(), HN,
+    MAILTO({ id: "o-sophon-2", url: "https://sophon.example/blog/sunset", body: "Your announcement (https://sophon.example/blog/sunset) says withdrawals close on 2026-12-01." }),
+    REACH({ id: "o-norm-1", url: "  https://WWW.PanewsLab.com:443/zh/contribute  ", lang: "zh-TW", subject: "  ", why: "" }),
+    // 网址
+    REACH({ id: "o-bad-1", url: "http://www.panewslab.com/zh/contribute" }), REACH({ id: "o-bad-2", url: "https://user:pw@www.panewslab.com/" }),
+    REACH({ id: "o-bad-3", url: "javascript:alert(1)" }), REACH({ id: "o-bad-4", url: "https://1.2.3.4/submit" }), REACH({ id: "o-bad-5", url: "https://xn--pnews-9ra.com/" }),
+    REACH({ id: "o-bad-6", url: "https://www.panewslab.com:8443/" }), REACH({ id: "o-bad-7", url: undefined }),
+    // 邮箱
+    MAILTO({ id: "o-bad-8", to: "Sophon <team@sophon.example>" }), MAILTO({ id: "o-bad-9", to: "team@sophon.example,boss@evil.example" }),
+    MAILTO({ id: "o-bad-10", to: "team@sophon.example?cc=boss@evil.example" }), MAILTO({ id: "o-bad-11", to: "not-an-email" }),
+    // 敏感词、链接
+    REACH({ id: "o-bad-12", body: "加群领取空投" }), REACH({ id: "o-bad-13", title: "Claim your funds" }), MAILTO({ id: "o-bad-14", subject: "DM me for details" }),
+    REACH({ id: "o-bad-15", body: "源码在 https://github.com/DPNDolphin/defiexit 。" }), REACH({ id: "o-bad-16", body: "去 evil。com 看" }), MAILTO({ id: "o-bad-17", subject: "See app.example.org" }),
+    REACH({ id: "o-bad-26", body: "官方页面 https://sophon.example.evil.com/ 。" }),
+    // 编号、渠道、语言、长度、类型
+    REACH({ id: "2117000000000000901" }), REACH({ id: "o-bad-18", channel: "dm" }), REACH({ id: "o-bad-19", lang: "中文" }), REACH({ id: "o-bad-20", body: "x".repeat(20001) }),
+    REACH({ id: "o-bad-21", target: { toString: null } }), REACH({ id: "o-bad-22", title: 7 }), REACH({ id: "o-bad-23", body: undefined }), REACH({ id: "o-bad-24", target: "  " }),
+    REACH({ id: "o-bad-25", why: "x".repeat(501) }), MAILTO({ id: "o-bad-27", to: ["team@sophon.example"] }), REACH({ id: "o-bad-28", url: true }),
+    null, 7, "o-x", [],
+  ] });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  assert.equal(r.json.outreach, 5);
+  const why = reachWhy(r);
+  for (const n of [1, 2, 3, 4, 5, 6]) assert.equal(why["o-bad-" + n], URL_WHY, String(n));
+  assert.equal(why["o-bad-7"], "缺 url(投稿页、仓库或发帖页的网址;只有写邮件的(带 to)可以不写)");
+  for (const n of [8, 9, 10, 11]) assert.equal(why["o-bad-" + n], TO_WHY, String(n));
+  assert.equal(why["o-bad-12"], "正文含不许用的词「加群」");
+  assert.equal(why["o-bad-13"], "标题含不许用的词「claim」");
+  assert.equal(why["o-bad-14"], "邮件标题含不许用的词「dm me」");
+  assert.equal(why["o-bad-15"], "正文含站外链接「github.com」" + OFF);
+  assert.equal(why["o-bad-16"], "正文含站外链接「evil.com」" + OFF);
+  assert.equal(why["o-bad-17"], "邮件标题含站外链接「app.example.org」" + OFF);
+  assert.equal(why["o-bad-26"], "正文含站外链接「sophon.example.evil.com」" + OFF);
+  assert.equal(why["2117000000000000901"], "id 不能全是数字(会和帖子编号混在一起),写成 o-panews-1106 这种");
+  assert.equal(why["o-bad-18"], "channel 只能是 media、project、list、community");
+  assert.equal(why["o-bad-19"], "lang 要写语言代码(zh、en、ja 这种)");
+  assert.equal(why["o-bad-20"], "正文超过 20000 字");
+  assert.equal(why["o-bad-21"], "target 格式不对(不能是对象或数组)");
+  assert.equal(why["o-bad-22"], "title 要是文字");
+  assert.equal(why["o-bad-23"], "缺 body(正文)");
+  assert.equal(why["o-bad-24"], "缺 target(写给谁,比如「PANews 投稿」「Sophon 团队」)");
+  assert.equal(why["o-bad-25"], "why 超过 500 字");
+  assert.equal(why["o-bad-27"], "to 格式不对(不能是对象或数组)");
+  assert.equal(why["o-bad-28"], "url 要是文字");
+  assert.deepEqual(r.json.rejected.filter((x) => x.id === "?").map((x) => x.why), ["id 不合格", "id 不合格", "id 不合格", "id 不合格"]);
+  assert.equal(r.json.rejected.length, 33);
+  // 存下来的:我写的放 mine(网址存标准写法,邮箱的域名统一成小写,空着的不存),状态是待发
+  const t = new Date(w.clock).toISOString();
+  assert.deepEqual(await reachOf(w, "o-panews-1106"), { id: "o-panews-1106", mine: { channel: "media", target: "PANews 投稿", lang: "zh", url: REACH().url, title: REACH().title, body: REACH().body, why: REACH().why }, status: "待发", decided_at: null, result_note: null, result_url: null, result_at: null, created_at: t, updated_at: t });
+  assert.equal((await reachOf(w, "o-sophon-1106")).mine.to, "Team@sophon.example");
+  assert.deepEqual(Object.keys((await reachOf(w, "o-norm-1")).mine), ["channel", "target", "lang", "url", "title", "body"]);
+  assert.equal((await reachOf(w, "o-norm-1")).mine.url, "https://www.panewslab.com/zh/contribute");
+  assert.equal((await reachOf(w, "o-hn-1106")).mine.body.length, 20000);
+  // 运营台读得到
+  const st = (await w.call("/api/admin/state", { cookie: c })).json;
+  assert.deepEqual(st.outreach.map((x) => x.id).sort(), ["o-hn-1106", "o-norm-1", "o-panews-1106", "o-sophon-1106", "o-sophon-2"]);
+  assert.deepEqual(Object.keys(st.outreach[0]).sort(), ["created_at", "decided_at", "id", "mine", "result_at", "result_note", "result_url", "status"]);
+  // 下一包不带运营规则:按库里的查(官方网址照样放行,子域名、后缀不算)
+  w.clock += 1000;
+  const r2 = await w.ingest({ outreach: [MAILTO({ id: "o-sophon-3", body: "See https://sophon.example/blog ." }), MAILTO({ id: "o-sophon-4", body: "See https://sophon.example.evil.com/ ." })] });
+  assert.deepEqual([r2.json.outreach, r2.json.rejected.map((x) => x.id)], [1, ["o-sophon-4"]]);
+  // 运营规则里去掉以后,写在正文里照样不收
+  w.clock += 1000;
+  const r3 = await w.ingest({ docs: { rules: { officialHosts: [] } }, outreach: [MAILTO({ id: "o-sophon-5", body: "See https://sophon.example/blog ." })] });
+  assert.deepEqual([r3.json.outreach, reachWhy(r3)["o-sophon-5"]], [0, "正文含站外链接「sophon.example」" + OFF]);
+});
+
+test("宣传投递:一包最多 50 张;邮件标题、标题、正文加起来最多 10 万字,超了的从那一张起不收(回执里说一声,下一包再送)", async () => {
+  const w = world();
+  const r = await w.ingest({ outreach: Array.from({ length: 52 }, (_, i) => REACH({ id: "o-many-" + i })) });
+  assert.equal(r.json.outreach, 50);
+  assert.deepEqual(r.json.rejected, [{ kind: "outreach", id: "?", why: "一包最多 50 条:第 51 条起的 2 条没收,下一包再送" }]);
+  // 五篇 2 万字的正好 10 万字;第六篇和它后面的(再短也一样)不收
+  w.clock += 1000;
+  const big = (n, over = {}) => REACH({ id: "o-big-" + n, title: undefined, body: "长".repeat(20000), ...over });
+  const r2 = await w.ingest({ outreach: [1, 2, 3, 4, 5, 6].map((n) => big(n)).concat([big(7, { body: "短。" })]) });
+  const PACK_WHY = "这一包的宣传稿加起来超过 100000 字:从这一张起没收,下一包再送";
+  assert.deepEqual([r2.json.outreach, r2.json.rejected], [5, [{ kind: "outreach", id: "o-big-6", why: PACK_WHY }, { kind: "outreach", id: "o-big-7", why: PACK_WHY }]]);
+  w.clock += 1000;
+  assert.deepEqual((await w.ingest({ outreach: [big(6), big(7, { body: "短。" })] })).json.outreach, 2, "下一包照收");
+});
+
+test("宣传卡片:管理员没点过的,投递整份换新;点过「已发 / 跳过」的,投递改不了(回执写明);改回待发以后又能改;同一包里重复的只收第一条", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outreach: [REACH(), MAILTO()] });
+  const push = async (items) => { w.clock += 1000; return (await w.ingest({ outreach: items })).json; };
+  const set = (id, body) => w.call("/api/admin/outreach", { method: "POST", body: { id, ...body }, cookie: c });
+  // 没点过:整份换成这次送来的(这次没写的那几样也跟着去掉)
+  let r = await push([REACH({ title: undefined, body: "改过的正文。" })]);
+  assert.deepEqual([r.outreach, r.rejected], [1, []]);
+  const row = await reachOf(w, "o-panews-1106");
+  assert.deepEqual([row.mine.body, row.mine.title, row.created_at < row.updated_at], ["改过的正文。", undefined, true]);
+  // 管理员点了「已发」「跳过」:投递改不了
+  assert.equal((await set("o-panews-1106", { status: "已发" })).json.item.status, "已发");
+  assert.equal((await set("o-sophon-1106", { status: "跳过" })).json.item.status, "跳过");
+  r = await push([REACH({ body: "又想改一版。" }), MAILTO({ subject: "New subject" })]);
+  assert.deepEqual([r.outreach, r.rejected.map((x) => [x.id, x.why])], [0, [["o-panews-1106", "管理员已经处理过,草稿不再改"], ["o-sophon-1106", "管理员已经处理过,草稿不再改"]]]);
+  assert.equal((await reachOf(w, "o-panews-1106")).mine.body, "改过的正文。");
+  assert.equal((await reachOf(w, "o-sophon-1106")).mine.subject, MAILTO().subject);
+  // 改回待发以后又能改;同一包里同一张送了两遍,只收第一遍
+  assert.equal((await set("o-panews-1106", { status: "待发" })).status, 200);
+  r = await push([REACH({ body: "第三版。" }), REACH({ body: "第四版。" })]);
+  assert.deepEqual([r.outreach, r.rejected], [1, [{ kind: "outreach", id: "o-panews-1106", why: "同一包里重复了,只收第一条" }]]);
+  assert.equal((await reachOf(w, "o-panews-1106")).mine.body, "第三版。");
+});
+
+test("宣传卡片:投递读完状态、还没写的时候管理员点了「已发」:不改,回执照实说", async () => {
+  const w = world();
+  await w.ingest({ outreach: [REACH()] });
+  const real = w.db;
+  w.db = { prepare(sql) {
+    const st = real.prepare(sql);
+    if (!/^SELECT id, status FROM outreach WHERE id IN/.test(sql)) return st;
+    return { bind: (...a) => ({ all: async () => { const r = await st.bind(...a).all(); await real.prepare("UPDATE outreach SET status = '已发' WHERE id = ?").bind("o-panews-1106").run(); return r; } }) };
+  }, batch: (s) => real.batch(s) };
+  w.clock += 1000;
+  const r = await w.ingest({ outreach: [REACH({ body: "在途的新正文。" })] });
+  w.db = real;
+  assert.deepEqual([r.json.outreach, r.json.rejected], [0, [{ kind: "outreach", id: "o-panews-1106", why: "管理员刚处理过这条(点了「已发 / 跳过」),这次没改" }]]);
+  assert.equal((await reachOf(w, "o-panews-1106")).mine.body, REACH().body);
+});
+
+test("宣传卡片的状态和回音:已发、跳过、改回待发;回音只给已发的记(一句话 + 可选的 https 链接,不收账号密码、IP、端口、别的协议);改成别的状态回音清掉;要登录", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outreach: [REACH(), MAILTO()] });
+  const id = "o-panews-1106";
+  const set = (body, cookie = c) => w.call("/api/admin/outreach", { method: "POST", body: { id, ...body }, cookie });
+  const err = async (body) => { const r = await set(body); return [r.status, r.json.error]; };
+  assert.deepEqual(await err({ result_note: "编辑回了" }), [409, "notsent"]); // 没点「已发」不能记回音
+  assert.equal((await set({ status: "已发" }, null)).json.need, "login");
+  w.clock += 60000;
+  const t1 = new Date(w.clock).toISOString();
+  let it = (await set({ status: "已发" })).json.item;
+  assert.deepEqual([it.status, it.decided_at, it.result_note], ["已发", t1, null]);
+  assert.deepEqual(await err({ status: "已发", result_note: "x" }), [400, "bad"]); // 状态和回音不能同一次改
+  assert.deepEqual(await err({ status: "发了" }), [400, "bad"]);
+  assert.deepEqual(await err({}), [400, "bad"]);
+  assert.equal((await set({ id: "o-none", status: "已发" })).status, 404);
+  for (const u of ["http://www.panewslab.com/a", "https://u:p@www.panewslab.com/a", "https://1.2.3.4/a", "javascript:alert(1)", "https://www.panewslab.com:8443/a", "https://xn--pnews-9ra.com/a", "www.panewslab.com/a"]) {
+    assert.deepEqual(await err({ result_note: "发出来了", result_url: u }), [400, "badurl"], u);
+  }
+  assert.deepEqual(await err({ result_note: "x".repeat(301) }), [400, "bad"]);
+  assert.deepEqual(await err({ result_note: { toString: null } }), [400, "bad"]);
+  assert.deepEqual(await err({ result_url: 5 }), [400, "bad"]);
+  w.clock += 1000;
+  const t2 = new Date(w.clock).toISOString();
+  it = (await set({ result_note: "  编辑回邮件说下周三发 ", result_url: " https://WWW.PanewsLab.com/zh/articles/123?utm=x " })).json.item;
+  assert.deepEqual([it.result_note, it.result_url, it.result_at], ["编辑回邮件说下周三发", "https://www.panewslab.com/zh/articles/123?utm=x", t2]);
+  // 一次记一整份:只送了链接(空的),没送的那句话也清掉
+  it = (await set({ result_url: "" })).json.item;
+  assert.deepEqual([it.result_note, it.result_url, it.result_at], [null, null, null]);
+  it = (await set({ result_note: "PR 合并了" })).json.item;
+  assert.deepEqual([it.result_note, it.result_url, it.result_at], ["PR 合并了", null, t2]);
+  // 再点一次「已发」:回音还在;两样都空着:清掉
+  assert.equal((await set({ status: "已发" })).json.item.result_note, "PR 合并了");
+  it = (await set({ result_note: "", result_url: "" })).json.item;
+  assert.deepEqual([it.result_note, it.result_url, it.result_at], [null, null, null]);
+  // 改成「跳过」、改回待发:回音清掉,改回待发的时间也清掉
+  await set({ result_note: "有回音", result_url: "https://www.panewslab.com/a" });
+  it = (await set({ status: "跳过" })).json.item;
+  assert.deepEqual([it.status, it.result_note, it.result_url, it.result_at], ["跳过", null, null, null]);
+  it = (await set({ status: "待发" })).json.item;
+  assert.deepEqual([it.status, it.decided_at], ["待发", null]);
+  // 我写的部分一个字都没动
+  assert.deepEqual((await reachOf(w, id)).mine, { channel: "media", target: "PANews 投稿", lang: "zh", url: REACH().url, title: REACH().title, body: REACH().body, why: REACH().why });
+});
+
+test("导出带宣传卡片:编号、渠道、目标、状态、点的时间、回音(一句话、链接、记的时间);不带正文和收件邮箱;since 只给这之后改过的", async () => {
+  const w = world();
+  const c = await w.login();
+  const t0 = w.clock;
+  await w.ingest({ outreach: [REACH(), MAILTO()] });
+  const set = (body) => w.call("/api/admin/outreach", { method: "POST", body, cookie: c });
+  w.clock += 60000;
+  const t1 = new Date(w.clock).toISOString();
+  await set({ id: "o-panews-1106", status: "已发" });
+  await set({ id: "o-panews-1106", result_note: "编辑回邮件说下周发", result_url: "https://www.panewslab.com/zh/articles/123" });
+  w.clock += 1000;
+  const r = await w.exp({});
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  assert.deepEqual(r.json.outreach.find((x) => x.id === "o-panews-1106"), { id: "o-panews-1106", channel: "media", target: "PANews 投稿", status: "已发", decided_at: t1, result_note: "编辑回邮件说下周发", result_url: "https://www.panewslab.com/zh/articles/123", result_at: t1 });
+  assert.deepEqual(r.json.outreach.find((x) => x.id === "o-sophon-1106"), { id: "o-sophon-1106", channel: "project", target: "Sophon 团队", status: "待发", decided_at: null, result_note: null, result_url: null, result_at: null });
+  assert.ok(!/sophon\.example|很多人不知道|corrections welcome|页面底部/i.test(JSON.stringify(r.json)), "不带收件邮箱、正文、邮件标题和我的说明");
+  const r2 = await w.exp({ since: new Date(t0 + 1).toISOString() });
+  assert.deepEqual(r2.json.outreach.map((x) => x.id), ["o-panews-1106"]);
+});
+
+test("按要求删掉一张宣传卡片:那张卡片、写给它那个收件邮箱的(大小写不同也算),以后投递都不收(回执写明为什么);别的照收;库里没有它的邮箱", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outreach: [REACH(), MAILTO()] });
+  const del = (id) => w.call("/api/admin/delete", { method: "POST", body: { kind: "outreach", id }, cookie: c });
+  assert.equal((await del("o-sophon-1106")).status, 200);
+  assert.equal((await del("o-panews-1106")).status, 200);
+  assert.equal((await del({ x: 1 })).status, 400);
+  assert.equal((await del("x".repeat(65))).status, 400);
+  assert.deepEqual([await reachOf(w, "o-sophon-1106"), await reachOf(w, "o-panews-1106")], [null, null]);
+  assert.ok(!(await dumpDb(w)).toLowerCase().includes("team@sophon.example"), "库里没有这个邮箱");
+  w.clock += 1000;
+  const r = await w.ingest({ outreach: [
+    MAILTO(), // 同一张:不收
+    MAILTO({ id: "o-sophon-2", to: "team@SOPHON.example" }), // 换了编号、写给同一个邮箱:不收
+    MAILTO({ id: "o-sophon-3", to: "press@sophon.example" }), // 别的邮箱:照收
+    REACH(), // 删过的投稿卡片:不收
+    REACH({ id: "o-panews-2" }), // 投稿卡片换个编号:照收(没有邮箱可挡)
+  ] });
+  assert.deepEqual(r.json.rejected.map((x) => [x.id, x.why]), [["o-sophon-1106", GONE_WHY], ["o-sophon-2", "这个收件邮箱按要求删过,不再收"], ["o-panews-1106", GONE_WHY]]);
+  assert.equal(r.json.outreach, 2);
+  // 没删过的卡片改成写给删过的邮箱:也不收,库里还是原来的
+  w.clock += 1000;
+  const r2 = await w.ingest({ outreach: [MAILTO({ id: "o-sophon-3", to: "Team@sophon.example" })] });
+  assert.deepEqual(r2.json.rejected.map((x) => [x.id, x.why]), [["o-sophon-3", "这个收件邮箱按要求删过,不再收"]]);
+  assert.equal((await reachOf(w, "o-sophon-3")).mine.to, "press@sophon.example");
+  const st = (await w.call("/api/admin/state", { cookie: c })).json;
+  assert.deepEqual(st.outreach.map((x) => x.id).sort(), ["o-panews-2", "o-sophon-3"]);
+});
+
+test("宣传卡片:投递已经在路上,管理员这时按要求删了它:写不回去(查 gone 和写在同一句),回执写明", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outreach: [MAILTO()] });
+  const real = w.db;
+  w.db = { prepare(sql) {
+    const st = real.prepare(sql);
+    if (!/^SELECT id, status FROM outreach WHERE id IN/.test(sql)) return st;
+    return { bind: (...a) => ({ all: async () => {
+      const r = await st.bind(...a).all();
+      assert.equal((await w.call("/api/admin/delete", { method: "POST", body: { kind: "outreach", id: "o-sophon-1106" }, cookie: c })).status, 200);
+      return r;
+    } }) };
+  }, batch: (s) => real.batch(s) };
+  w.clock += 1000;
+  const r = await w.ingest({ outreach: [MAILTO({ body: "Updated body." })] });
+  w.db = real;
+  assert.deepEqual([r.json.outreach, r.json.rejected], [0, [{ kind: "outreach", id: "o-sophon-1106", why: GONE_WHY }]]);
+  assert.equal(await reachOf(w, "o-sophon-1106"), null);
 });

@@ -3,7 +3,7 @@
 // 单独一个文件:要换掉全局的 document、fetch(node --test 每个文件一个进程,不影响别的测试)。
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { checkText, outHosts } from "../server/ops/ingest.js";
+import { checkText, outHosts, webUrl } from "../server/ops/ingest.js";
 
 class FakeNode {
   constructor() { this.parentNode = null; this.kids = []; }
@@ -59,7 +59,8 @@ class FakeEl extends FakeNode {
 const find = (el, ok) => { for (const k of el.children) { if (ok(k)) return k; const x = find(k, ok); if (x) return x; } return null; };
 const tick = () => new Promise((r) => setTimeout(r, 5));
 
-// 起一个运营台:state 是 /api/admin/state 回的(status 不是 200 就是没登进去);改待发照服务器的规矩回(草稿过 checkText,不合格回 400 draftbad)
+// 起一个运营台:state 是 /api/admin/state 回的(status 不是 200 就是没登进去);改待发照服务器的规矩回(草稿过 checkText,不合格回 400 draftbad);
+// 改宣传卡片也照服务器的规矩回(回音只给已发的记,链接过 webUrl;改成已发以外的清掉回音)
 let copies = 0;
 async function desk(state, status = 200) {
   const els = new Map();
@@ -78,6 +79,17 @@ async function desk(state, status = 200) {
     const path = String(url).replace("/api/admin/", ""), b = opt.body ? JSON.parse(opt.body) : {};
     calls.push([path, b]);
     if (path === "state") return res(status, state);
+    if (path === "outreach") {
+      const it = state.outreach.find((x) => x.id === b.id), at = new Date().toISOString();
+      if ("status" in b) Object.assign(it, { status: b.status, decided_at: b.status === "待发" ? null : at }, b.status === "已发" ? {} : { result_note: null, result_url: null, result_at: null });
+      else {
+        if (it.status !== "已发") return res(409, { error: "notsent" });
+        const url = b.result_url ? webUrl(b.result_url) : null;
+        if (b.result_url && !url) return res(400, { error: "badurl" });
+        Object.assign(it, { result_note: b.result_note || null, result_url: url, result_at: b.result_note || url ? at : null });
+      }
+      return res(200, { ok: true, item: it });
+    }
     if (path !== "outbox") return res(200, { ok: true });
     const it = state.outbox.find((x) => x.id === b.id);
     if (typeof b.draft === "string") { const why = checkText(b.draft, undefined, outHosts(it.mine)); if (why) return res(400, { error: "draftbad", why }); }
@@ -95,7 +107,16 @@ async function desk(state, status = 200) {
   };
   // 「在 X 打开」点不点得了:有链接、没被收起来
   const canOpen = (id) => { const { open } = card(id); return !!open.href && !open.classList.contains("off"); };
-  return { $, card, canOpen, calls };
+  // 宣传卡片:在渠道分组里,或者下面「发过的」里
+  const rcard = (id) => {
+    const c = find($("reach-cards"), (e) => e.getAttribute("data-id") === id) || find($("reach-done-cards"), (e) => e.getAttribute("data-id") === id);
+    if (!c) return null;
+    const byId = (x) => find(c, (e) => e.getAttribute("id") === x);
+    return { el: c, go: find(c, (e) => e.tagName === "A" && e.classList.contains("primary")), btn: (text) => find(c, (e) => e.tagName === "BUTTON" && e.textContent === text),
+      fold: find(c, (e) => e.tagName === "DETAILS"), saved: find(c, (e) => e.classList.contains("saved")), said: find(c, (e) => e.classList.contains("result")), tip: find(c, (e) => e.classList.contains("count")),
+      note: byId("echo-note-" + id), link: byId("echo-url-" + id), form: find(c, (e) => e.classList.contains("echo")) };
+  };
+  return { $, card, canOpen, calls, rcard };
 }
 
 const now = Date.now();
@@ -284,6 +305,144 @@ test("删除还没查完(服务器回 more):提示还有记录没查完、再点
     assert.equal(saved.textContent, "这条帖子还有记录没查完,再点「删除这条」并确认,接着往下查、往下删");
     assert.ok(card(), "卡片还在");
     assert.equal(d.calls.filter(([p]) => p === "state").length, 2, "重新读了一遍");
+  } finally {
+    globalThis.setTimeout = realTimeout;
+  }
+});
+
+// ---------- 宣传(11-06):媒体投稿、给项目团队的邮件、安全清单的提交、技术社区的帖子 ----------
+const RM = { channel: "media", target: "PANews 投稿", lang: "zh", url: "https://www.panewslab.com/zh/contribute", title: "链关停了,钱怎么取", body: "短正文。", why: "页面底部有投稿入口" };
+const rc = (id, mine = {}, over = {}) => ({ id, mine: { ...RM, ...mine }, status: "待发", decided_at: null, result_note: null, result_url: null, result_at: null, created_at: ago(100), ...over });
+const EMAIL = { channel: "project", target: "Sophon 团队", lang: "en", url: undefined, title: undefined, to: "team@sophon.example", subject: "Corrections welcome", body: "Hi team,\nSee https://defiexit.com/deadlines/ ." };
+// 剪贴板换成假的,记下复制了什么;on 是 false 就是这个浏览器用不了剪贴板
+function clipboard(on = true) {
+  const got = [];
+  Object.defineProperty(globalThis.navigator, "clipboard", { value: on ? { writeText: async (t) => { got.push(t); } } : undefined, configurable: true });
+  return got;
+}
+const chipsOf = (c) => find(c.el, (e) => e.className === "chips").children.map((x) => x.textContent);
+
+test("宣传:按渠道分组(媒体投稿、项目团队、安全清单、技术社区),每组带数;卡片上有目标、渠道、语言、标题、正文(长的收起来)、说明;「打开投稿页」新标签打开;「写邮件」把收件人、邮件标题、正文填进 mailto;顶上的数和「今天要你做的」", async () => {
+  clipboard();
+  const d = await desk({ ...base([]), outreach: [
+    rc("o-media-1"),
+    rc("o-mail-1", EMAIL),
+    rc("o-list-1", { channel: "list", target: "SlowMist 区块链黑暗森林自救手册", lang: "en", url: "https://github.com/slowmist/Blockchain-dark-forest-selfguard-handbook", title: "Add DeFiExit", body: "长".repeat(401) }),
+    rc("o-hn-1", { channel: "community", target: "Hacker News", lang: "en", url: "https://news.ycombinator.com/submit", title: "Show HN: DeFiExit", body: "一\n二\n三\n四\n五\n六\n七\n八\n九\n十\n十一" }),
+    rc("o-media-2", { target: "Odaily 投稿", lang: "zh-TW" }, { created_at: ago(50) }),
+    rc("o-sent-1", {}, { status: "已发", decided_at: ago(10) }),
+  ] });
+  // 分组按固定顺序,只显示有卡片的;组里先送来的在上面
+  const groups = d.$("reach-cards").children;
+  assert.deepEqual(groups.map((g) => [g.hidden, g.children[0].textContent]), [[false, "媒体投稿2"], [false, "项目团队1"], [false, "安全清单1"], [false, "技术社区1"], [true, "其他0"]]);
+  assert.deepEqual(groups[0].children[1].children.map((e) => e.getAttribute("data-id")), ["o-media-1", "o-media-2"]);
+  assert.deepEqual([d.$("n-reach").textContent, d.$("n-reach").classList.contains("due"), d.$("reach-empty").hidden, d.$("reach-done").hidden], ["5", true, true, false]);
+  assert.match(d.$("todo").textContent, /5 份宣传等你发/);
+  // 投稿页:新标签打开,不带来源
+  const m = d.rcard("o-media-1");
+  assert.ok(m.el.textContent.includes("PANews 投稿") && m.el.textContent.includes("页面底部有投稿入口") && m.el.textContent.includes("链关停了,钱怎么取"));
+  assert.deepEqual([m.go.textContent, m.go.href, m.go.getAttribute("target"), m.go.getAttribute("rel"), m.go.hidden], ["打开投稿页 ↗", RM.url, "_blank", "noopener noreferrer", false]);
+  assert.deepEqual(chipsOf(m), ["媒体投稿", "中文"]);
+  assert.deepEqual(chipsOf(d.rcard("o-media-2")), ["媒体投稿", "中文(zh-TW)"]);
+  assert.deepEqual([m.fold.open, m.btn("复制标题").hidden, m.btn("复制收件人").hidden, m.btn("复制邮件标题").hidden], [true, false, true, true]);
+  // 长的正文收起来(超过 400 字,或者超过 10 行)
+  const list = d.rcard("o-list-1");
+  assert.deepEqual([list.fold.open, find(list.fold, (e) => e.tagName === "SUMMARY").textContent], [false, "正文(共 401 字,点开看全文)"]);
+  assert.equal(d.rcard("o-hn-1").fold.open, false);
+  // 写邮件:同一个窗口里打开邮件程序;换行写成 \r\n
+  const e = d.rcard("o-mail-1");
+  assert.equal(e.go.href, "mailto:team@sophon.example?subject=Corrections%20welcome&body=" + encodeURIComponent("Hi team,\r\nSee https://defiexit.com/deadlines/ ."));
+  assert.deepEqual([e.go.getAttribute("target"), e.go.textContent, e.tip.hidden], [null, "写邮件,字已填好 ↗", true]);
+  assert.deepEqual([e.btn("复制收件人").hidden, e.btn("复制标题").hidden, chipsOf(e)], [false, false, ["项目团队", "英文"]]);
+  // 发过的在下面:主按钮收起来,能记回音
+  const s = d.rcard("o-sent-1");
+  assert.ok(find(d.$("reach-done-cards"), (x) => x.getAttribute("data-id") === "o-sent-1"));
+  assert.deepEqual([s.go.hidden, s.btn("有回音").hidden, s.btn("改回待发").hidden], [true, false, false]);
+});
+
+test("写邮件:整条链接超过 1800 字就不放正文(点「写邮件」时先把正文复制好),再长连邮件标题也不放;复制正文、标题、收件人;剪贴板用不了就说一声", async () => {
+  const got = clipboard();
+  const fits = "a".repeat(1700), long = "中".repeat(200);
+  const d = await desk({ ...base([]), outreach: [rc("o-fit", { ...EMAIL, body: fits }), rc("o-long", { ...EMAIL, body: long }), rc("o-huge", { ...EMAIL, subject: "标".repeat(200), body: long })] });
+  const fit = d.rcard("o-fit");
+  assert.ok(fit.go.href.length <= 1800 && fit.go.href.endsWith("&body=" + fits), fit.go.href.length);
+  const L = d.rcard("o-long");
+  assert.deepEqual([L.go.href, L.go.textContent, L.tip.hidden], ["mailto:team@sophon.example?subject=Corrections%20welcome", "写邮件,正文先复制好 ↗", false]);
+  assert.match(L.tip.textContent, /^正文太长,放不进邮件链接/);
+  await L.go.fire("click");
+  await tick();
+  assert.deepEqual([got, L.saved.textContent], [[long], "正文已复制:邮件窗口打开后,长按粘贴进正文"]);
+  assert.deepEqual(d.calls.filter(([p]) => p === "outreach"), [], "打开邮件不算发了");
+  const H = d.rcard("o-huge");
+  assert.equal(H.go.href, "mailto:team@sophon.example");
+  assert.match(H.tip.textContent, /^邮件标题和正文太长.*先点「复制标题」/);
+  for (const [text, want] of [["复制收件人", "team@sophon.example"], ["复制标题", "Corrections welcome"], ["复制正文", long]]) {
+    await L.btn(text).fire("click");
+    await tick();
+    assert.equal(got.at(-1), want, text);
+  }
+  // 剪贴板用不了:收起来的正文打开,请他长按复制
+  clipboard(false);
+  await d.rcard("o-long").btn("复制正文").fire("click");
+  await tick();
+  assert.deepEqual([L.saved.textContent, L.saved.classList.contains("bad"), L.fold.open], ["复制不了:长按上面的字自己复制", true, true]);
+});
+
+test("宣传的已发、跳过、改回待发、有回音:发了挪到「发过的」;回音的链接服务器拒了留着表单、说为什么;不看发帖节奏,也不占对人首回的名额", async () => {
+  clipboard();
+  const sent = [1, 2, 3, 4, 5].map((i) => reply("s" + i, 10 + i, { status: "已发", decided_at: ago(25 - 4 * i) }));
+  const d = await desk({ ...base([...sent, reply("r1", 20)], { dailyReplyCap: 6 }), outreach: [rc("o-a"), rc("o-b", EMAIL)] });
+  await d.rcard("o-a").btn("已发").fire("click");
+  await tick();
+  assert.equal(d.$("pace").hidden, true, "宣传不看发帖节奏");
+  assert.equal(d.canOpen("r1"), true, "也不占对人首回的名额");
+  let a = d.rcard("o-a");
+  assert.ok(find(d.$("reach-done-cards"), (x) => x.getAttribute("data-id") === "o-a"), "挪到「发过的」");
+  assert.deepEqual([d.$("n-reach").textContent, d.$("reach-msg").textContent, a.go.hidden], ["1", "点了「已发」,这条挪到下面的「发过的」了", true]);
+  // 有回音:http 的链接服务器不收,表单留着;改好了记下
+  await a.btn("有回音").fire("click");
+  assert.equal(a.form.hidden, false);
+  a.note.value = "编辑回邮件说下周发";
+  a.link.value = "http://www.panewslab.com/a";
+  await a.btn("记下").fire("click");
+  await tick();
+  assert.deepEqual([a.form.hidden, a.saved.textContent], [false, "没存上:链接不对:要 https:// 开头的完整网址(不带账号密码、IP 地址、端口)"]);
+  a.link.value = "https://www.panewslab.com/zh/articles/123";
+  await a.btn("记下").fire("click");
+  await tick();
+  a = d.rcard("o-a");
+  const link = find(a.said, (e) => e.tagName === "A");
+  assert.deepEqual([a.form.hidden, a.said.hidden, a.saved.textContent, link.href, link.getAttribute("rel"), a.btn("改回音").hidden], [true, false, "回音记下了", "https://www.panewslab.com/zh/articles/123", "noopener noreferrer", false]);
+  assert.match(a.said.textContent, /^回音:编辑回邮件说下周发 · 看 ↗ · \d\d-\d\d 记$/);
+  // 改回待发:回到上面的分组,回音清掉
+  await a.btn("改回待发").fire("click");
+  await tick();
+  a = d.rcard("o-a");
+  assert.ok(find(d.$("reach-cards"), (x) => x.getAttribute("data-id") === "o-a"));
+  assert.deepEqual([a.said.hidden, a.btn("有回音").hidden, a.go.hidden, d.$("n-reach").textContent, d.$("reach-msg").textContent], [true, true, false, "2", "这条挪回上面了"]);
+  await d.rcard("o-b").btn("跳过").fire("click");
+  await tick();
+  assert.equal(d.rcard("o-b").btn("有回音").hidden, true, "跳过的没有回音");
+  assert.deepEqual(d.calls.filter(([p]) => p === "outreach").map(([, b]) => b), [
+    { id: "o-a", status: "已发" }, { id: "o-a", result_note: "编辑回邮件说下周发", result_url: "http://www.panewslab.com/a" },
+    { id: "o-a", result_note: "编辑回邮件说下周发", result_url: "https://www.panewslab.com/zh/articles/123" }, { id: "o-a", status: "待发" }, { id: "o-b", status: "跳过" }]);
+});
+
+test("宣传卡片删除:先说清楚会删什么(只删这一张;写邮件的,以后写给这个邮箱的也不收),再点一次才删;删完重新读一遍", async () => {
+  const realTimeout = globalThis.setTimeout;
+  globalThis.setTimeout = (fn, ms, ...a) => (ms >= 1000 ? {} : realTimeout(fn, ms, ...a));
+  try {
+    const state = { ...base([]), outreach: [rc("o-b", EMAIL)] };
+    const d = await desk(state);
+    const c = d.rcard("o-b"), del = c.btn("删除这条");
+    await del.fire("click");
+    assert.deepEqual([del.textContent, c.saved.textContent], ["确定删除?再点一次", "只删这一张宣传卡片,以后不再收;写邮件的,以后写给这个邮箱的也不再收(对方要求删时用;不想发点「跳过」)"]);
+    state.outreach = [];
+    await del.fire("click");
+    await tick();
+    assert.deepEqual(d.calls.filter(([p]) => p === "delete"), [["delete", { kind: "outreach", id: "o-b" }]]);
+    assert.equal(d.rcard("o-b"), null);
+    assert.deepEqual([d.$("n-reach").textContent, d.$("reach-empty").hidden], ["0", false]);
   } finally {
     globalThis.setTimeout = realTimeout;
   }

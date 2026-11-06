@@ -7,6 +7,8 @@
 // 体检计数(公开接口 /api/hit)也记在这个库里:每天一个数,不带地址和任何访客信息。
 // 问题记录(problems):X 上说自己钱卡住的帖子,一条帖子一行(哪个协议、哪条链、哪种问题、从哪找到的、哪天发的、我们回没回),只用来数大家最常问什么;
 // 帖子编号只存哈希,帖子链接和账号 30 天后删,只留这几样能数的。运营台和导出只给数,不给单条。
+// 宣传卡片(outreach):我写好、管理员自己发出去的媒体投稿、给项目团队的邮件、安全资源清单的提交、技术社区的帖子。
+// 和待发一样两类字段分开(mine 是我写的,其余是管理员点的状态和他记下的回音);都是机构的公开信息和我们自己的文字,不自动删,按要求删的见 reachKeys。
 
 import { softName, safeLabel } from "./names.js";
 
@@ -34,6 +36,9 @@ const DDL = [
   // 这张表只增不减(到期也留着数):按日期数、找到期的都走索引,每次打开运营台不用把整张表读一遍
   "CREATE INDEX IF NOT EXISTS problems_day ON problems (day)",
   "CREATE INDEX IF NOT EXISTS problems_due ON problems (purge_after) WHERE purged = 0",
+  // 宣传卡片:mine 是我写的(渠道、目标、语言、网址、收件邮箱、邮件标题、标题、正文、说明,见 ingest.js 的 cleanReach),只能经签名投递改,
+  // 管理员点过「已发 / 跳过」就不再改;其余是管理员点的:状态、点的时间、回音(一句话、一个链接、记的时间)
+  "CREATE TABLE IF NOT EXISTS outreach (id TEXT PRIMARY KEY, mine TEXT NOT NULL, status TEXT NOT NULL DEFAULT '待发', decided_at TEXT, result_note TEXT, result_url TEXT, result_at TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL)",
 ];
 const ready = new WeakSet();
 
@@ -96,6 +101,15 @@ export async function outKeys(cardId, mine, replyUrl, sentTarget) {
 }
 export async function inKeys(id, mine) {
   return uniq([await goneKey(id), ...(await postKeys(inPosts(id, mine).filter((p) => p !== id)))]);
+}
+// 宣传卡片按要求删掉时记进 gone 的两种标记(都只存哈希;前缀和帖子编号、待发卡片的分开,撞不到一起):
+//   这张卡片的编号 reachCardKey:以后同一个编号不再收;
+//   收件邮箱 reachToKey(统一成小写):以后写给这个邮箱的卡片都不再收(对方说别再发了,删一张就够)
+export const reachCardKey = (id) => goneKey("o:" + id);
+export const reachToKey = (to) => goneKey("to:" + String(to).toLowerCase());
+export async function reachKeys(id, mine) {
+  const to = obj(mine).to;
+  return uniq([await reachCardKey(id), typeof to === "string" && to ? await reachToKey(to) : null]);
 }
 // 库里带着这条帖子(只知道它的 goneKey)的收件、没到期的待发,按要求删到期的旧卡片时才用:按编号一页页翻,每页只读编号和链接那几样,
 // 把带着的帖子编号算成 goneKey 比(这一版以前收进来的行没存哈希,也认得出)。一次最多翻 SCAN.pages 页,
@@ -252,6 +266,18 @@ export async function getOut(db, id) {
 export async function getIn(db, id) {
   const r = await db.prepare("SELECT * FROM inbox WHERE id = ?").bind(id).first();
   return r ? inRow(r) : null;
+}
+// 宣传卡片:运营台给最近送来的 300 张(没点过的都在里面;一张正文最长 2 万字,不全给)
+export function reachRow(r) {
+  return { id: r.id, mine: parse(r.mine, {}), status: r.status, decided_at: r.decided_at, result_note: r.result_note, result_url: r.result_url, result_at: r.result_at, created_at: r.created_at };
+}
+export async function listReach(db) {
+  const { results } = await db.prepare("SELECT * FROM outreach ORDER BY created_at DESC, id LIMIT 300").all();
+  return results.map(reachRow);
+}
+export async function getReach(db, id) {
+  const r = await db.prepare("SELECT * FROM outreach WHERE id = ?").bind(id).first();
+  return r ? reachRow(r) : null;
 }
 
 // ---------- 到期删除 ----------

@@ -15,8 +15,11 @@
 //   对人的首回(待发里回别人的)一个链接、域名都不许带,连 defiexit.com 也不带(对方接着问了,续答再给);
 //   项目帖只许 defiexit.com(引用的原帖另放 quote);收件里的续答许 defiexit.com,加上运营规则(rules.officialHosts)列的官方网址。
 // 只查送进来的草稿,库里原有的不回头查(照常显示)。不合格的那一条不入库,回执里写明哪条为什么;回执不含任何库里的数据。
+// 宣传卡片(outreach,见 cleanReach):新建,或者改管理员还没点过的;点过「已发 / 跳过」的不再改。标题、邮件标题、正文照收件续答的规矩查
+// (敏感词、长得像的写法;链接只许 defiexit.com 和 rules.officialHosts)。这张卡片、它的收件邮箱按要求删过的不收(查和写同一句)。
+// 一包最多 50 张,稿子加起来最多 10 万字(REACH_MAX.pack)。
 
-import { iso, plusDays, KEEP_DAYS, DOC_KEYS, docStmt, getKv, getDoc, getDocs, existing, goneKey, expKey, NOT_GONE, goneArg, outKeys, inKeys, sameRefs, sameInRefs, bjDay, problemKey, PROBLEM_TYPES, PROBLEM_SOURCES } from "./db.js";
+import { iso, plusDays, KEEP_DAYS, DOC_KEYS, docStmt, getKv, getDoc, getDocs, existing, goneKey, expKey, NOT_GONE, goneArg, outKeys, inKeys, sameRefs, sameInRefs, bjDay, problemKey, PROBLEM_TYPES, PROBLEM_SOURCES, reachKeys, reachCardKey, reachToKey } from "./db.js";
 import { unb64u, sha256 } from "./auth.js";
 import { ASCII_HOST, IPV4, UNICODE_HOST, DOTS, TLD_GLUED, NAME_RULE, RISK_RULE, plainName, softName } from "./names.js";
 
@@ -24,8 +27,10 @@ export const SKEW_MS = 10 * 60 * 1000;
 export const MAX = { draft: 1000, short: 300, doc: 200 * 1024, items: 50, perDay: 200, body: 512 * 1024 };
 
 export const signedText = (envName, method, path, raw) => `dx-ingest-v1\n${envName}\n${method}\n${path}\n${raw}`;
-// 回执里没收的几种说法:按要求删过的;管理员点过「已发 / 跳过」的待发;没人点过、30 天到了自己删过的待发
+// 回执里没收的几种说法:按要求删过的;管理员点过「已发 / 跳过」的待发(宣传卡片也一样);没人点过、30 天到了自己删过的待发;
+// 写给按要求删过的收件邮箱的宣传卡片
 const GONE_WHY = "管理员按要求删过,不再收", HANDLED_WHY = "管理员已经处理过,草稿不再改", EXPIRED_OUT_WHY = "30 天到期删过,不再改";
+const REACH_TO_WHY = "这个收件邮箱按要求删过,不再收";
 
 export async function verify(text, sigB64u, pubList) {
   if (!sigB64u) return false;
@@ -201,6 +206,70 @@ function cleanDoc(k, v) {
   try { return SHAPES[k](v) ? null : "格式不对"; } catch { return "格式不对"; }
 }
 
+// ---------- 宣传卡片 ----------
+// 我写好、管理员自己发出去的四种稿子(channel):媒体投稿 media、给项目团队的邮件 project、安全资源清单的提交 list
+// (GitHub 上的 awesome 清单、安全手册:提 PR 或 issue)、技术社区的帖子 community(Hacker News、Reddit)
+export const REACH_CHANNELS = ["media", "project", "list", "community"];
+// pack:一包里宣传稿的邮件标题、标题、正文加起来最多几个字。每个字都要过一遍链接、敏感词检查,免费计划一次请求的 CPU 时间很少
+// (实测 2 万字的正文查一遍约 1 毫秒),一包十几篇长稿可能超时、整包写不进去;超了的从那一张起不收,回执里写明,下一包再送
+export const REACH_MAX = { target: 100, title: 200, body: 20000, why: 500, url: 500, pack: 100000 };
+// 网址(投稿页、仓库、发帖页;管理员记下的回音链接也用它):只收 https、普通的英文主机名(不收 IP、xn-- 编码的、带账号密码的、另写端口的),
+// 存 URL 的标准写法(打开的就是查过的那个),最长 500 字。不合格回 null
+export function webUrl(v) {
+  if (typeof v !== "string" || !v.trim() || v.length > REACH_MAX.url) return null;
+  let u;
+  try { u = new URL(v.trim()); } catch { return null; }
+  if (u.protocol !== "https:" || u.username || u.password || u.port || !okHost(u.hostname)) return null;
+  return u.href.length <= REACH_MAX.url ? u.href : null;
+}
+// 收件邮箱:只收一个普通地址(不带名字、尖括号、引号、逗号、问号、百分号:写邮件的链接里多不出别的收件人、别的栏),
+// 域名照网址的规矩(不收 IP、xn-- 编码的),统一成小写。不合格回 null
+const MAIL_LOCAL = /^[A-Za-z0-9](?:[A-Za-z0-9._+-]{0,62}[A-Za-z0-9_+-])?$/;
+export function mailAddr(v) {
+  if (typeof v !== "string") return null;
+  const s = v.trim(), at = s.indexOf("@");
+  if (s.length > 254 || at < 1 || s.lastIndexOf("@") !== at) return null;
+  const local = s.slice(0, at), domain = s.slice(at + 1).toLowerCase();
+  return MAIL_LOCAL.test(local) && !local.includes("..") && okHost(domain) ? local + "@" + domain : null;
+}
+const LANG = /^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8}){0,2}$/;
+const REACH_TEXT = ["channel", "target", "lang", "url", "to", "subject", "title", "body", "why"];
+const blank = (v) => v == null || (typeof v === "string" && !v.trim());
+// 一张宣传卡片:id(o-panews-1106 这种,不能全是数字)、channel、target(写给谁:「PANews 投稿」「Sophon 团队」)、lang(zh、en……)、
+// url(写邮件的可以不写,别的必须有)、to(写邮件才有)、subject(邮件标题)、title(标题)、body(正文,可以是 markdown,最长 2 万字)、why(我给管理员的说明)。
+// 标题、邮件标题、正文和收件续答一样查(hosts:本站 + 运营规则里的官方网址):不许敏感词,别的链接不许,长得像的写法绕不过去。
+// 写了的字段都得是文字(数字、true / false、对象、数组都不收),太长的不截、整条不收;不合格的只拒这一条
+export function cleanReach(x, hosts = ALLOWED_HOSTS) {
+  const id = itemId(x?.id);
+  if (!id) return { error: "id 不合格" };
+  if (/^\d+$/.test(id)) return { id, error: "id 不能全是数字(会和帖子编号混在一起),写成 o-panews-1106 这种" };
+  const odd = oddField(x, REACH_TEXT);
+  if (odd) return { id, error: odd + ODD };
+  const notText = REACH_TEXT.find((f) => x[f] != null && typeof x[f] !== "string");
+  if (notText) return { id, error: notText + " 要是文字" };
+  if (!REACH_CHANNELS.includes(x.channel)) return { id, error: "channel 只能是 " + REACH_CHANNELS.join("、") };
+  const target = (x.target || "").trim();
+  if (!target) return { id, error: "缺 target(写给谁,比如「PANews 投稿」「Sophon 团队」)" };
+  if (target.length > REACH_MAX.target) return { id, error: `target 超过 ${REACH_MAX.target} 字` };
+  if (!LANG.test(x.lang || "")) return { id, error: "lang 要写语言代码(zh、en、ja 这种)" };
+  const to = blank(x.to) ? undefined : mailAddr(x.to);
+  if (to === null) return { id, error: "to 不合格(写一个普通的邮箱地址,比如 team@example.org;不带名字、尖括号、逗号、问号)" };
+  const url = blank(x.url) ? undefined : webUrl(x.url);
+  if (url === null) return { id, error: "url 不合格(要 https:// 开头的网址,不带账号密码、IP 地址、端口,最长 500 字)" };
+  if (!url && !to) return { id, error: "缺 url(投稿页、仓库或发帖页的网址;只有写邮件的(带 to)可以不写)" };
+  if (blank(x.body)) return { id, error: "缺 body(正文)" };
+  const text = {};
+  for (const [f, name, max] of [["subject", "邮件标题", REACH_MAX.title], ["title", "标题", REACH_MAX.title], ["body", "正文", REACH_MAX.body]]) {
+    if (blank(x[f])) continue;
+    const bad = checkText(x[f], max, hosts);
+    if (bad) return { id, error: name + bad + (bad.startsWith("含站外链接") ? "(宣传稿只许带 defiexit.com 和运营规则 officialHosts 里列的官方网址)" : "") };
+    text[f] = x[f].trim();
+  }
+  const why = blank(x.why) ? undefined : x.why.trim();
+  if (why && why.length > REACH_MAX.why) return { id, error: `why 超过 ${REACH_MAX.why} 字` };
+  return { id, mine: drop({ channel: x.channel, target, lang: x.lang, url, to, subject: text.subject, title: text.title, body: text.body, why }) };
+}
+
 // x_posts 有两个写的人:管理员点「刷新」时服务器追加读数,Claude 投递时带来本地记的读数。按帖子、按时间合并,谁的都不丢
 export function mergeReadings(old, incoming) {
   const before = new Map(((old && old.posts) || []).map((p) => [String(p.id), p.points || []]));
@@ -271,13 +340,13 @@ async function locked(db, raw, body, now) {
     docs++;
   }
 
-  // 待发、收件、问题记录一包各最多 MAX.items 条,多的不收,回执里写明(下一包再送)
+  // 待发、收件、问题记录、宣传卡片一包各最多 MAX.items 条,多的不收,回执里写明(下一包再送)
   const cap = (kind, list) => {
     if (!Array.isArray(list)) return [];
     if (list.length > MAX.items) rejected.push({ kind, id: "?", why: `一包最多 ${MAX.items} 条:第 ${MAX.items + 1} 条起的 ${list.length - MAX.items} 条没收,下一包再送` });
     return list.slice(0, MAX.items);
   };
-  const outs = cap("outbox", body.outbox), ins = cap("inbox", body.inbox), probIn = cap("problems", body.problems);
+  const outs = cap("outbox", body.outbox), ins = cap("inbox", body.inbox), probIn = cap("problems", body.problems), reach = cap("outreach", body.outreach);
   const ids = outs.map((x) => itemId(x?.id)).filter(Boolean);
   const have = new Map();
   if (ids.length) {
@@ -329,7 +398,8 @@ async function locked(db, raw, body, now) {
     }
   }
 
-  if (!rules && ins.some((x) => x && x.draft != null)) rules = await getDoc(db, "rules");
+  // 收件续答、宣传卡片许带的网址一样:本站加运营规则里的官方网址
+  if (!rules && (ins.some((x) => x && x.draft != null) || reach.length)) rules = await getDoc(db, "rules");
   const hosts = inHosts(rules);
   // 收件里已经有的:改完以后还带着库里的链接、要回的那条(这次没送的就留着),先读出来
   const inIds = ins.map((x) => tweetId(x?.id)).filter(Boolean);
@@ -368,6 +438,28 @@ async function locked(db, raw, body, now) {
     ).bind(key, c.protocol, c.chain ?? null, c.type, c.source, c.day, c.replied ? 1 : 0, c.url ?? null, c.handle ?? null, t, t, plusDays(now, KEEP_DAYS), goneArg([gk])));
   }
 
+  // 宣传卡片:没有的新建;有的、管理员还没点过的,整份换成这次送来的;点过「已发 / 跳过」的不改。
+  // 条件写在语句里:读和写之间管理员点了,就不改;这张卡片、改完以后的收件邮箱按要求删过的(reachKeys),都不写
+  const reachIds = reach.map((x) => itemId(x?.id)).filter(Boolean);
+  const reachHave = new Map(reachIds.length ? (await db.prepare("SELECT id, status FROM outreach WHERE id IN (SELECT value FROM json_each(?))").bind(JSON.stringify(reachIds)).all()).results.map((r) => [r.id, r]) : []);
+  const reachSeen = new Set(); // 同一包里同一张卡片送了两遍:只收第一遍
+  let packChars = 0; // 这一包到这一张为止,宣传稿的字数(见 REACH_MAX.pack)
+  for (const x of reach) {
+    packChars += ["subject", "title", "body"].reduce((n, f) => n + (typeof x?.[f] === "string" ? x[f].length : 0), 0);
+    if (packChars > REACH_MAX.pack) { rejected.push({ kind: "outreach", id: itemId(x?.id) || "?", why: `这一包的宣传稿加起来超过 ${REACH_MAX.pack} 字:从这一张起没收,下一包再送` }); continue; }
+    const c = cleanReach(x, hosts);
+    if (c.error) { rejected.push({ kind: "outreach", id: c.id || "?", why: c.error }); continue; }
+    if (reachSeen.has(c.id)) { rejected.push({ kind: "outreach", id: c.id, why: "同一包里重复了,只收第一条" }); continue; }
+    reachSeen.add(c.id);
+    const old = reachHave.get(c.id);
+    if (old && old.status !== "待发") { rejected.push({ kind: "outreach", id: c.id, why: HANDLED_WHY }); continue; }
+    const gone = await reachKeys(c.id, c.mine);
+    writes.push({ kind: "outreach", id: c.id, gone, card: await reachCardKey(c.id), toKey: c.mine.to ? await reachToKey(c.mine.to) : null, at: stmts.length, how: old ? "edit" : "new" });
+    stmts.push(old
+      ? db.prepare(`UPDATE outreach SET mine = ?, updated_at = ? WHERE id = ? AND status = '待发' AND ${NOT_GONE}`).bind(JSON.stringify(c.mine), t, c.id, goneArg(gone))
+      : db.prepare(`INSERT INTO outreach (id, mine, created_at, updated_at) SELECT ?, ?, ?, ? WHERE ${NOT_GONE} ON CONFLICT(id) DO NOTHING`).bind(c.id, JSON.stringify(c.mine), t, t, goneArg(gone)));
+  }
+
   let res;
   try {
     res = await db.batch(stmts);
@@ -376,28 +468,30 @@ async function locked(db, raw, body, now) {
     if (/UNIQUE|constraint/i.test(String(e && e.message))) return { status: 409, body: { error: "replay" } };
     throw e;
   }
-  // 改了几行:0 行的是写的时候被挡住了。查一次 gone 看是哪种:按要求删过的、收件到期删过的;
-  // 都不是的(只有待发的「改」「补链接」会这样),再看一眼那几行现在的样子:读和写之间到期删了(就说到期删过,补链接的也一样),
-  // 还是管理员点了「已发 / 跳过」、改了草稿。
+  // 改了几行:0 行的是写的时候被挡住了。查一次 gone 看是哪种:按要求删过的(宣传卡片分卡片本身、收件邮箱)、收件到期删过的;
+  // 都不是的(只有待发的「改」「补链接」、宣传卡片的「改」会这样),再看一眼那几行现在的样子:读和写之间到期删了(就说到期删过,补链接的也一样),
+  // 还是管理员点了「已发 / 跳过」、改了草稿(宣传卡片按要求删的先记卡片编号,所以没了的一定在 gone 里;剩下的就是管理员刚点过)。
   // 写上了、只是某一项没存的(协议、链),也写进回执
   const changed = (w) => Number((res && res[w.at] && res[w.at].meta && res[w.at].meta.changes) || 0) > 0;
   const missed = writes.filter((w) => !changed(w));
   const hit = missed.length ? await existing(db, "gone", missed.flatMap((w) => (w.exp ? [...w.gone, w.exp] : w.gone))) : new Set();
   const late = missed.filter((w) => w.kind === "outbox" && w.how !== "new" && !w.gone.some((k) => hit.has(k))).map((w) => w.id);
   const rowNow = new Map(late.length ? (await db.prepare("SELECT id, status, purged FROM outbox WHERE id IN (SELECT value FROM json_each(?))").bind(JSON.stringify(late)).all()).results.map((r) => [r.id, r]) : []);
-  const count = { outbox: 0, inbox: 0, problems: 0 };
+  const count = { outbox: 0, inbox: 0, problems: 0, outreach: 0 };
   for (const w of writes) {
     if (changed(w)) {
       count[w.kind]++;
       for (const n of w.notes || []) rejected.push({ kind: w.kind, id: w.id, why: n });
       continue;
     }
-    const r = rowNow.get(w.id);
-    const why = w.gone.some((k) => hit.has(k)) ? GONE_WHY
+    const r = w.kind === "outbox" ? rowNow.get(w.id) : null;
+    const why = w.toKey && hit.has(w.toKey) && !hit.has(w.card) ? REACH_TO_WHY
+      : w.gone.some((k) => hit.has(k)) ? GONE_WHY
       : w.exp && hit.has(w.exp) ? "30 天到期删过,不再收"
       : w.kind === "outbox" && w.how !== "new" ? (!r ? GONE_WHY : r.purged ? EXPIRED_OUT_WHY : "管理员刚处理过这条(点了「已发 / 跳过」或改了草稿),这次没改")
+      : w.kind === "outreach" && w.how === "edit" ? "管理员刚处理过这条(点了「已发 / 跳过」),这次没改"
       : "这次没写进去,下一包再送";
     rejected.push({ kind: w.kind, id: w.id, why });
   }
-  return { status: 200, body: { ok: true, receipt: (await sha256(raw)).slice(0, 16), docs, outbox: count.outbox, inbox: count.inbox, problems: count.problems, setup, rejected } };
+  return { status: 200, body: { ok: true, receipt: (await sha256(raw)).slice(0, 16), docs, outbox: count.outbox, inbox: count.inbox, problems: count.problems, outreach: count.outreach, setup, rejected } };
 }

@@ -74,11 +74,12 @@ p { margin: 0; }
 .gate label.check input { width: 22px; height: 22px; accent-color: var(--accent); }
 .offline { color: var(--sub); }
 
-/* 分区导航 */
-.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); display: flex; gap: 4px; padding-block: 8px; }
-.nav a { flex: 1; min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; color: var(--sub); font-weight: 600; border-radius: 10px; }
+/* 分区导航:五格,375px 宽的手机上「已处理」带着四位数也放得下(字小一号、间距收紧;再窄的屏幕导航自己横着滑,页面不横滑) */
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); display: flex; gap: 2px; padding-block: 8px; overflow-x: auto; scrollbar-width: none; }
+.nav a { flex: 1; min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap; font-size: 15px; text-decoration: none; color: var(--sub); font-weight: 600; border-radius: 10px; }
 .nav a:hover { background: var(--surface); color: var(--text); }
-.nav .n { font-size: 12px; min-width: 20px; padding: 0 6px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line-3); color: var(--faint); text-align: center; }
+.nav a:focus-visible { outline-offset: -2px; } /* 导航能横着滑,框画在格子里面,不被裁掉 */
+.nav .n, .group-h .n { font-size: 12px; min-width: 20px; padding: 0 5px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line-3); color: var(--faint); text-align: center; }
 .nav .n.due { background: var(--accent); border-color: transparent; color: var(--on-accent); }
 
 section { display: grid; gap: 14px; scroll-margin-top: 72px; }
@@ -92,7 +93,7 @@ section { display: grid; gap: 14px; scroll-margin-top: 72px; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: grid; gap: 12px; min-width: 0; }
 .card.done { border-style: dashed; }
 .meta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 14px; color: var(--sub); }
-.meta-row .who { color: var(--text); font-weight: 600; }
+.meta-row .who { color: var(--text); font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { font-size: 13px; padding: 2px 10px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line-3); color: var(--sub); }
 .quote { margin: 0; padding: 12px 14px; border-radius: 12px; background: var(--surface-2); color: var(--text); white-space: pre-wrap; overflow-wrap: anywhere; }
@@ -133,6 +134,16 @@ textarea:focus, input:focus { outline: 2px solid var(--hi); outline-offset: 0; b
 .queue { font-size: 14px; font-weight: 600; color: var(--warn); }
 .pace { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 8px 12px; border-radius: 12px; background: var(--warn-bg); color: var(--warn); font-size: 14px; font-weight: 600; }
 .pace .linkbtn { margin-left: auto; }
+
+/* 宣传:按渠道分组;正文长的收起来(点开看全文);发过的放下面,有回音了记一句 */
+#reach-cards { display: grid; gap: 22px; }
+#reach-cards:empty { display: none; }
+.group { display: grid; gap: 10px; min-width: 0; }
+.group-h { font-size: 15px; color: var(--sub); font-weight: 600; letter-spacing: 0.04em; display: flex; align-items: center; gap: 6px; }
+.fold { display: grid; gap: 8px; min-width: 0; }
+.fold summary { min-height: 40px; }
+.result { font-size: 15px; overflow-wrap: anywhere; }
+.echo { display: grid; gap: 8px; }
 
 /* 数据 */
 #data-body { display: grid; gap: 8px; }
