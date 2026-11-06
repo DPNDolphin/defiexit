@@ -30,7 +30,8 @@ const SYM_RE = /\$[A-Za-z][A-Za-z0-9]*/g;
 const TLDS = new Set("com net org io xyz fi finance app exchange network link one country tech gg co ai dev info money foundation trade so me us uk eu de fr es it nl jp kr cn hk sg tw vn id ru br tr in global world site online pro cc to".split(" "));
 // 英文的月份名、数字词:译文可以把它们写成数字(日文的「11月25日」、「2 回」),所以译文里多出来的这些数不算错
 const MONTHS = { Jan: 1, January: 1, Feb: 2, February: 2, Mar: 3, March: 3, Apr: 4, April: 4, May: 5, Jun: 6, June: 6, Jul: 7, July: 7, Aug: 8, August: 8, Sep: 9, Sept: 9, September: 9, Oct: 10, October: 10, Nov: 11, November: 11, Dec: 12, December: 12 };
-const WORDS = { a: 1, an: 1, one: 1, once: 1, single: 1, first: 1, two: 2, twice: 2, second: 2, both: 2, three: 3, third: 3, four: 4, fourth: 4, five: 5, fifth: 5, six: 6, sixth: 6, seven: 7, seventh: 7, eight: 8, eighth: 8, nine: 9, ninth: 9, ten: 10, tenth: 10, eleven: 11, twelve: 12, dozen: 12 };
+// (「a thousand」写成「1,000」是 1 和 000 两段)
+const WORDS = { a: [1], an: [1], one: [1], once: [1], single: [1], first: [1], two: [2], twice: [2], second: [2], both: [2], three: [3], third: [3], four: [4], fourth: [4], five: [5], fifth: [5], six: [6], sixth: [6], seven: [7], seventh: [7], eight: [8], eighth: [8], nine: [9], ninth: [9], ten: [10], tenth: [10], eleven: [11], twelve: [12], dozen: [12], hundred: [100, 1, 0], thousand: [1000, 1, 0], million: [1000000, 1, 0] };
 
 function take(s, re, f = (x) => x) {
   const out = [];
@@ -78,7 +79,7 @@ export function tokenDiff(en, tr) {
   if (lost !== null) return `英文里的数字「${lost}」译文里要原样留着(数字、金额、日期、时间都不改)`;
   const nb = count(b.nums);
   for (const [x, n] of count(a.nums)) nb.set(x, nb.get(x) - n);
-  const ok = new Set([...a.prose.matchAll(/\b[A-Za-z]+\b/g)].flatMap(([w]) => [MONTHS[w], WORDS[w.toLowerCase()]]).filter(Boolean).map(String));
+  const ok = new Set([...a.prose.matchAll(/\b[A-Za-z]+\b/g)].flatMap(([w]) => [MONTHS[w], ...(WORDS[w.toLowerCase()] || [])]).filter((x) => x !== undefined).map(String));
   for (const [x, n] of nb) if (n > 0 && !ok.has(String(Number(x)))) return `译文里多了英文没有的数字「${x}」`;
   return null;
 }
@@ -102,18 +103,24 @@ export function chineseIn(code, s, zhSrc = null) {
   return s.match(CJK)?.[0] || null;
 }
 
-// 指南的说明、条目开头的「! 」(黄色提示)、「✗ 」(红色:别这样做):页面按它们拆段、上色(见 build.mjs 的 splitMarks),
-// 条数要和英文一样。别处的感叹号不算(法文的「Attention ! Ne…」在指南里会被当成提示,要改写)
-const tipMarks = (s) => String(s).match(/(^|\s)(!|✗)\s+/g)?.length || 0;
+// 指南里页面按记号拆段、上色的两处(见 build.mjs):截图说明里前后带空格的「! 」(黄色提示)「✗ 」(红色:别这样做),
+// 在哪儿都算(splitMarks);步骤条目只看开头那一个。这两处的记号要和英文一样,别处的感叹号不管。
+// 所以截图说明里别写前后都带空格的感叹号(法文习惯的「Attention ! Ne…」会被拆成一段提示),改写或者去掉前面的空格
+const captionMarks = (s) => (String(s).match(/(^|\s)(!|✗)\s+/g) || []).map((m) => m.trim()).join(" ");
+const itemMark = (s) => /^(!|✗)\s+/.exec(String(s))?.[1] || "";
+// 是哪一种:截图说明(steps.<id>.images[i]、它的 .caption,岔路、页面图鉴里的也算)、步骤条目(.items[i])
+const guideKind = (path) => (/images\[\d+\](\.caption)?$/.test(path) ? "caption" : /\.items\[\d+\]$/.test(path) ? "item" : null);
 
-// 一条译文:要是不空的一段文字,不能改的都留着,不混中文。fail 收报错(前面已经带着文件名);guide:是指南里的文字
-export function checkText(code, en, tr, path, fail, zhSrc = null, guide = false) {
+// 一条译文:要是不空的一段文字,不能改的都留着,不混中文。fail 收报错(前面已经带着文件名);
+// kind:指南里的截图说明("caption")、步骤条目("item"),记号要和英文一样
+export function checkText(code, en, tr, path, fail, zhSrc = null, kind = null) {
   if (typeof tr !== "string" || !tr.trim()) return fail(`${path} 要是不空的一段文字`);
   const diff = tokenDiff(en, tr);
   if (diff) fail(`${path}:${diff}`);
   const cjk = chineseIn(code, tr, zhSrc);
   if (cjk) fail(`${path} 里有中文「${cjk}」`);
-  if (guide && tipMarks(tr) !== tipMarks(en)) fail(`${path}:开头的「! 」「✗ 」(和前面有空格、后面有空格的 ! ✗)要和英文一样多(英文 ${tipMarks(en)} 个,这里 ${tipMarks(tr)} 个);别处的感叹号前后不要都带空格`);
+  if (kind === "caption" && captionMarks(tr) !== captionMarks(en)) fail(`${path}:截图说明里前后带空格的「! 」「✗ 」要和英文一样(英文「${captionMarks(en)}」,这里「${captionMarks(tr)}」):页面按它们拆成提示、别这样做;别处的感叹号前后不要都带空格`);
+  if (kind === "item" && itemMark(tr) !== itemMark(en)) fail(`${path}:开头要和英文一样${itemMark(en) ? `是「${itemMark(en)} 」` : "不带「! 」「✗ 」"}(「! 」是黄色提示,「✗ 」是红色的别这样做)`);
 }
 
 // ---------- 界面文字:src/js/lib/i18n/<编号>.js ----------
@@ -333,7 +340,7 @@ export function checkRecipeOverlay(code, o, en, file) {
   const fail = (m) => { throw new Error(`${file}: ${m}`); };
   const walk = (a, b, path) => {
     const at = path || "(整个文件)";
-    if (typeof a === "string") return checkText(code, a, b, at, fail, null, true);
+    if (typeof a === "string") return checkText(code, a, b, at, fail, null, guideKind(path));
     if (Array.isArray(a)) {
       if (!Array.isArray(b) || b.length !== a.length) fail(`${at} 要是 ${a.length} 条的列表(和 en.json 一样)`);
       return a.forEach((x, i) => walk(x, b[i], `${path}[${i}]`));

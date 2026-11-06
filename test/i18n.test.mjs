@@ -69,6 +69,7 @@ test("译文里不能改的:数字、网址、域名、0x 地址、`代码`、{{
     ["**The only official site is defiexit.com.** We never DM you.", "**El único sitio oficial es defiexit.com.** Nunca te escribimos."],
     ["Contract 0xDA63…FD2b, 0.5 OKB", "Contrato 0xDA63…FD2b, 0,5 OKB"],
     ["One picture per step", "1ステップに1枚"],
+    ["more than a thousand addresses", "1,000 以上のアドレス"],
     ["Over $500,000 in old positions", "Más de 500.000 $ en posiciones antiguas"],
     ["e.g. Abstract", "p.ej. Abstract"],
   ];
@@ -124,6 +125,23 @@ test("界面文字文件:每个函数都有样例参数;照抄英文的一份能
   bad({ dueLeft: (x) => `${x.dias} días` }, /dueLeft\(.*\) 回的文字里有「undefined」/);
   bad({ assetType: (k) => 3 }, /assetType\("deposit"\) 要回一段不空的文字/);
   bad({ tpGuide: (t) => `指南:${t}` }, /tpGuide\("WOOFi to your wallet"\) 回的文字里有中文「指南」/);
+});
+
+test("照抄英文的译文(整份截止日历、每篇专题、每份指南)对每一种新语言都能过:核对规则不会误伤现有的原文", () => {
+  const codes = LANGS.map((l) => l.code).filter((c) => !BASE.includes(c));
+  const dl = Object.fromEntries(D.events.map((e) => [e.id, {
+    ...Object.fromEntries(["name", "summary", "deadlineNote", "who", "todo", "caution"].filter((k) => e[k]).map((k) => [k, e[k].en])),
+    official: e.official.map((o) => o.label.en), ...(e.milestones ? { milestones: e.milestones.map((m) => m.note.en) } : {}),
+  }]));
+  const recipes = ["hyperliquid", "woofi", "okx-boost", "dyorswap"].map((id) => [id, JSON.parse(read(`recipes/${id}/recipe.json`)), JSON.parse(read(`recipes/${id}/i18n/en.json`))]);
+  for (const code of codes) {
+    assert.doesNotThrow(() => checkDeadlineOverlay(code, dl, D, "deadlines.json", CHECKS), code);
+    for (const T of TOPICS) {
+      const o = { title: T.title.en, summary: T.summary.en, sections: T.sections.map((s) => ({ h: s.h.en, p: (s.p || []).map((x) => x.en), list: (s.list || []).map((x) => x.en) })), sources: T.sources.map((s) => s.label.en), ...(T.faq ? { faq: T.faq.map((x) => ({ q: x.q.en, a: x.a.en })) } : {}) };
+      assert.doesNotThrow(() => checkTopicOverlay(code, o, T, `${T.slug}.json`, CHECKS), `${code} ${T.slug}`);
+    }
+    for (const [id, r, en] of recipes) assert.doesNotThrow(() => localize(r, checkRecipeOverlay(code, structuredClone(en), en, `${id}/${code}.json`), `${id}/${code}.json`, code), `${code} ${id}`);
+  }
 });
 
 test("截止日历译文:写错了构建报错(哪个文件、哪一条、错在哪);合进去以后没翻的地方用英文", () => {
@@ -217,17 +235,24 @@ test("指南译文:和 en.json 结构一模一样、不能改的都留着,再走
   const step = Object.keys(en.steps).find((k) => (en.steps[k].images || []).some((im) => /[①-⑨]/.test(typeof im === "string" ? im : im.caption)));
   const i = en.steps[step].images.findIndex((im) => /[①-⑨]/.test(typeof im === "string" ? im : im.caption));
   bad((o) => { const im = o.steps[step].images[i]; if (typeof im === "string") o.steps[step].images[i] = im.replace(/[①-⑨]/g, ""); else im.caption = im.caption.replace(/[①-⑨]/g, ""); }, /编号/);
-  // 条目开头的「✗ 」(红色:别这样做)丢了、句子中间多出「 ! 」(法文习惯),页面会拆错段、上错色:WOOFi 的指南里有这种条目
+  // 页面按记号拆段、上色的两处:步骤条目开头的「✗ 」(红色:别这样做)丢了;截图说明里多出前后带空格的「 ! 」(法文习惯),
+  // 会被拆成一段提示。条目中间、别的文字里的「 ! 」不管。WOOFi 的指南里两种都有
   const wEn = JSON.parse(read("recipes/woofi/i18n/en.json")), wFile = "recipes/woofi/i18n/fr.json";
   assert.doesNotThrow(() => checkRecipeOverlay("fr", structuredClone(wEn), wEn, wFile), "照抄英文的一份能过");
   const tipAt = Object.keys(wEn.steps).find((k) => (wEn.steps[k].items || []).some((x) => /^✗ /.test(x)));
   const j = wEn.steps[tipAt].items.findIndex((x) => /^✗ /.test(x));
   const noMark = structuredClone(wEn);
   noMark.steps[tipAt].items[j] = noMark.steps[tipAt].items[j].replace(/^✗ /, "");
-  assert.throws(() => checkRecipeOverlay("fr", noMark, wEn, wFile), new RegExp(`steps\\.${tipAt}\\.items\\[${j}\\]:开头的「! 」「✗ 」`));
+  assert.throws(() => checkRecipeOverlay("fr", noMark, wEn, wFile), new RegExp(`steps\\.${tipAt}\\.items\\[${j}\\]:开头要和英文一样是「✗ 」`));
+  const okBang = structuredClone(wEn);
+  okBang.steps[tipAt].items[j] = `${okBang.steps[tipAt].items[j]} Attention ! Ne signez rien.`;
+  okBang.summary = `${okBang.summary} Attention ! Lisez tout.`;
+  assert.doesNotThrow(() => checkRecipeOverlay("fr", okBang, wEn, wFile), "条目中间、概要里的「 ! 」页面不拆,不管");
+  const capAt = Object.keys(wEn.steps).find((k) => (wEn.steps[k].images || []).some((im) => typeof im === "string"));
+  const c = wEn.steps[capAt].images.findIndex((im) => typeof im === "string");
   const frBang = structuredClone(wEn);
-  frBang.steps[tipAt].items[j] = `${frBang.steps[tipAt].items[j]} Attention ! Ne signez rien.`;
-  assert.throws(() => checkRecipeOverlay("fr", frBang, wEn, wFile), /别处的感叹号前后不要都带空格/);
+  frBang.steps[capAt].images[c] = `${frBang.steps[capAt].images[c]} Attention ! Ne signez rien.`;
+  assert.throws(() => checkRecipeOverlay("fr", frBang, wEn, wFile), new RegExp(`steps\\.${capAt}\\.images\\[${c}\\]:截图说明里前后带空格的「! 」「✗ 」要和英文一样`));
   // 翻好以后还剩中文:不在 en.json 里、从中文配方带过来的那几处也算
   assert.throws(() => localize(r, { ...structuredClone(de), title: "OKX Boost 取回" }, file, "de"), /译文里还有中文「取回」/);
   assert.throws(() => localize(r, { ...structuredClone(de), title: "OKX Boost 活动锁仓取回钱包" }, file, "ja"), /译文里还有中文/);
