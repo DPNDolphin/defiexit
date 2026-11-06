@@ -1,0 +1,545 @@
+{
+  "meth-cmeth-rewards": {
+    "name": "mETH Protocol: halaman hadiah kampanye cmETH lama akan ditutup",
+    "summary": "Halaman hadiah dari kampanye cmETH sebelumnya ditutup pada 7 November. Klaim hadiah yang belum Anda ambil sebelum tanggal itu.",
+    "deadlineNote": "Pada 7 November, halaman hadiah dari kampanye cmETH sebelumnya ditutup. cmETH sendiri tetap bisa di-unstake menjadi mETH atau dipindahkan lewat bridge kapan saja; untuk itu tidak ada tenggat.",
+    "who": "Siapa pun yang ikut kampanye cmETH sebelumnya dan masih punya hadiah yang menunggu.",
+    "todo": "Klaim hadiah Anda di situs mETH Protocol sebelum 7 November. cmETH Anda tidak perlu buru-buru: Anda bisa meng-unstake-nya menjadi mETH atau memindahkannya lewat bridge kapan saja.",
+    "caution": "mETH Protocol menyatakan kontrak unstake dan bridge \"diperkirakan\" tetap berfungsi setelah masa klaim hadiah, tetapi akan meninjaunya berdasarkan jumlah yang tersisa.",
+    "official": ["Blog mETH Protocol: jadwal penghentian cmETH"]
+  },
+  "gmo-gyen-zusd-redemption": {
+    "name": "GMO Trust: stablecoin GYEN dan ZUSD dihentikan",
+    "summary": "GYEN dan ZUSD sedang dihentikan. Tebus sesuai nilai nominal paling lambat 11 November, atau terima USDC dengan kurs 12 November sebelum akhir tahun.",
+    "deadlineNote": "Penebusan sesuai nilai nominal ditutup pada 11 November pukul 23:59:59 waktu Timur AS, dan token Anda harus sudah masuk sebelum itu. Untuk yang tidak ditebus, GMO Trust akan mengirim USDC senilai itu di chain yang sama sebelum akhir tahun, dengan kurs yang ditetapkan pada 12 November.",
+    "who": "Siapa pun yang memegang GYEN atau ZUSD (di Ethereum, Arbitrum, Stellar, dan chain lain).",
+    "todo": "Untuk menebus sesuai nilai nominal, buka akun di `stablecoin.z.com`, lolos verifikasi identitas (KYC), dan hubungkan rekening bank dalam yen (GYEN) atau dolar AS (ZUSD). Token Anda harus sudah masuk sebelum tenggat. Jika tidak ditebus, token akan dikonversi menjadi USDC pada akhir tahun. Di Ethereum dan Arbitrum juga ada pool Uniswap tempat Anda bisa menjualnya.",
+    "caution": "Anda tidak akan mendapat USDC otomatis jika token Anda dipindahkan lewat bridge ke chain yang tidak didukung GMO Trust, tidak lolos penyaringan anti pencucian uang, atau di bawah jumlah transfer minimum chain itu. Di Stellar, buka USDC trustline terlebih dahulu. Untuk GYEN di Arbitrum, GMO Trust belum menyatakan apakah akan dikonversi ke USDC secara otomatis setelah 11 November.",
+    "official": [
+      "Pusat bantuan GMO Trust: cara menebus sebelum 11 November",
+      "Pusat bantuan GMO Trust: apa yang terjadi jika tidak ditebus",
+      "GMO Trust di X: pengingat 20 Agustus",
+      "GMO Trust di X: pemberitahuan penebusan wajib 10 September"
+    ]
+  },
+  "blur-frontend-blend": {
+    "name": "Blur: blur.io akan offline, Blend menghentikan pinjaman baru",
+    "summary": "Situs Blur akan offline pada 12 November, dan Blend menghentikan pinjaman baru di hari yang sama. Peminjam perlu melunasi sebelum itu.",
+    "deadlineNote": "Pada 12 November, situs blur.io berhenti berfungsi. Blend berhenti mencocokkan pinjaman baru di hari yang sama: peminjam harus melunasi sebelum itu, atau pinjamannya gagal bayar menurut aturan protokol. Kontrak marketplace tetap berjalan on-chain.",
+    "who": "Peminjam Blend, dan siapa pun yang punya aset di Blur yang bergantung pada situs blur.io.",
+    "todo": "Peminjam Blend: lunasi sebelum 12 November. Yang lain: tunggu alat penarikan Blend yang menurut Blur akan dirilis setelah 12 November, dan hanya gunakan tautan yang diposting oleh @blur_io.",
+    "caution": "Blur menyatakan hanya @blur_io yang bisa dipercaya. Postingannya tidak menjelaskan secara terpisah cara menarik ETH dari Blur Pool (pool penawaran), dan alat penarikannya belum punya tanggal rilis.",
+    "official": ["Blur di X: pengumuman penutupan", "Blur di X: nasib Blend"]
+  },
+  "universal-uassets-winddown": {
+    "name": "Universal: aset terbungkus uAssets dihentikan",
+    "summary": "uAssets milik Universal dihentikan pada 17 November. Jual atau tebus di aplikasi Universal sebelum itu; setelahnya, hanya tersisa kontrak penebusan.",
+    "deadlineNote": "Protokol dihentikan pada 17 November. Setelah itu, uAssets yang tersisa ditebus lewat kontrak: di Base, uSOL, uXRP, uDOGE, uADA, uBTC, dan uLTC menjadi SOL di Base, cbXRP, cbDOGE, cbADA, cbBTC, dan cbLTC, dan sisanya menjadi USDC (menurut Universal, ini masih bisa berubah).",
+    "who": "Siapa pun yang memegang uAssets (uSOL, uBTC, uXRP, dan lainnya).",
+    "todo": "Sebelum 17 November, jual di aplikasi Universal atau tebus menjadi aset aslinya di halaman mint and redeem. Untuk jumlah besar, kirim email ke Universal di alamat yang tercantum di halaman penghentiannya.",
+    "caution": "Universal menyatakan akan memublikasikan kontrak penebusan dan langkah-langkahnya sebelum 17 November, dan penebusan bisa melambat saat permintaan tinggi. Universal belum menjelaskan apa yang terjadi pada uAssets di pool atau pasar pinjaman pihak ketiga.",
+    "official": ["Halaman penghentian Universal"]
+  },
+  "pancakeswap-opbnb-cake": {
+    "name": "PancakeSwap: rute bridge CAKE dari opBNB berakhir",
+    "summary": "CAKE di opBNB perlu dipindahkan kembali ke BNB Chain lewat bridge sebelum 23 November, karena LayerZero menghentikan dukungan untuk opBNB.",
+    "deadlineNote": "Mulai 23 November pukul 00:00 UTC, rute LayerZero untuk memindahkan CAKE keluar dari opBNB berhenti.",
+    "who": "Siapa pun yang memegang CAKE di opBNB.",
+    "todo": "Buka halaman bridge PancakeSwap, pilih opBNB → BNB Chain, lalu pindahkan CAKE Anda keluar. Postingan PancakeSwap berisi langkah-langkahnya.",
+    "caution": "Penyebabnya adalah LayerZero menghentikan dukungan untuk opBNB, jadi token lain di opBNB yang memakai LayerZero bisa ikut terdampak. Cek pengumuman masing-masing proyek.",
+    "official": ["PancakeSwap di X: pengumuman", "PancakeSwap di X: cara memindahkan lewat bridge"]
+  },
+  "sophon-chain-shutdown": {
+    "name": "Chain Sophon ditutup",
+    "summary": "Chain Sophon ditutup pada 30 November. 25 November adalah hari terakhir untuk menarik dana ke Ethereum.",
+    "deadlineNote": "25 November adalah hari terakhir penarikan. Setelah itu infrastruktur dan situs terkait mulai dimatikan, dan mainnet ditutup permanen pada 30 November.",
+    "who": "Siapa pun yang punya SOPH, ETH, USDC, atau aset lain di Sophon, punya aset di farm Sophon, atau punya hadiah staking atau Guardian yang belum diambil.",
+    "todo": "Sebelum 25 November, tarik aset Anda ke Ethereum di halaman resmi (postingan Sophon menyebut `claim.sophon.com`). Keluarkan aset farm di `farm.sophon.xyz`, dan klaim hadiah staking dan Guardian. Hadiah node tetap dikirim ke dompet Ethereum Anda.",
+    "caution": "Postingan Sophon memakai dua domain: `claim.sophon.com` (19 Oktober dan 2 November) dan `claim.sophon.xyz` (22 Oktober). Sophon memperingatkan soal situs migrasi palsu.",
+    "official": ["Sophon di X: jadwal final (19 Oktober)", "Sophon di X: pengingat (2 November)", "Sophon di X: pengumuman pertama (25 Juni)"]
+  },
+  "recall-staking-readonly": {
+    "name": "Recall: aplikasi staking menjadi hanya baca pada 30 November",
+    "summary": "Recall Foundation sedang dihentikan dan aplikasi staking-nya menjadi hanya baca pada 30 November. Unstake dan tarik dana sebelum itu.",
+    "deadlineNote": "Sejak 30 Oktober, permintaan unstake baru tidak punya masa cooldown (permintaan yang sedang cooldown tetap memakai tanggal aslinya, dan masa kunci tidak dipersingkat). Pada 30 November, `app.recall.network` menjadi hanya baca. Setelah itu, posisi yang masa kuncinya sudah berakhir masih bisa ditarik dengan memanggil kontrak langsung di BaseScan.",
+    "who": "Siapa pun yang men-stake RECALL di Base.",
+    "todo": "Sebelum 30 November, unstake dan tarik sendiri di `app.recall.network`. Setelah itu, di BaseScan, gunakan Write as Proxy pada kontrak staking untuk memanggil `unstake(tokenId)` dan `withdraw(tokenId)`. Anda butuh sedikit ETH di Base untuk biaya.",
+    "caution": "Recall menyatakan pemegang tidak mendapat distribusi apa pun dan tidak ada token baru, airdrop, atau migrasi; siapa pun yang menawarkannya palsu. Pengumumannya tidak menyebut alamat kontrak staking, jadi sebelum memanggil kontrak secara langsung, gunakan hanya alamat dari kanal resmi. Postingan yang sama di satu tempat menyebut akses berhenti \"setelah 30 hari\" dan di tempat lain \"hanya baca pada 30 November\".",
+    "official": ["Recall di X: \"The Recall Foundation is winding down\"", "Recall Labs di X: perusahaan dihentikan"]
+  },
+  "megapot-app-shutdown": {
+    "name": "Megapot: aplikasi dihentikan",
+    "summary": "Situs dan mini app Telegram Megapot offline pada 1 Desember. Jika akun Anda memakai login email, X, atau Telegram, tarik saldo Anda sebelum itu.",
+    "deadlineNote": "Sejak 29 Oktober, penjualan tiket berhenti dan penarikan tidak lagi butuh verifikasi identitas. Pada 1 Desember, `megapot.io` dan mini app Telegram offline. Protokolnya sendiri tetap berjalan.",
+    "who": "Siapa pun yang akunnya dibuat dengan login email, X, atau Telegram, dan siapa pun yang punya hadiah hiburan off-chain yang menunggu. Jika Anda bermain dengan dompet sendiri, tiket dan hadiah Anda tetap milik Anda.",
+    "todo": "Tarik saldo akun Anda sebelum 1 Desember, dan klaim juga hadiah hiburan off-chain sebelum itu. Hadiah on-chain dan biaya referral masih bisa diklaim setelah 1 Desember lewat Basescan atau aplikasi pihak ketiga. Penyedia likuiditas bisa menarik kapan saja.",
+    "official": ["Megapot di X: \"Winding down the Megapot app, going all in on Prizerail\""]
+  },
+  "thundercore-migration": {
+    "name": "Chain ThunderCore berhenti: TT pindah ke BNB Chain",
+    "summary": "ThunderCore sudah berhenti dan TT dipindahkan ke BNB Chain. Situs migrasi buka sampai 1 Desember.",
+    "deadlineNote": "ThunderBridge berhenti pada 28 Agustus. Blok terakhir, 236120709, diproduksi pada 1 September. Situs migrasi buka dari 1 September sampai 1 Desember.",
+    "who": "Siapa pun yang memegang TT mainnet, veTT, ERC20-TT di Ethereum, atau aset di ThunderBridge. Jika aset Anda ada di exchange, ikuti instruksi exchange tersebut.",
+    "todo": "Cek status Anda di `migration.thundercore.com` dan ikuti langkah migrasinya.",
+    "caution": "Token dan NFT pihak ketiga tidak dimigrasikan. Apa pun yang masih ada di dalam kontrak sebelum 1 September tidak dimigrasikan otomatis; akan ditinjau kasus per kasus, tanpa jaminan. ThunderCore belum menjelaskan apa yang terjadi setelah 1 Desember.",
+    "official": ["ThunderCore: pengumuman migrasi", "ThunderCore: blok terakhir dan situs migrasi", "ThunderCore di X: 1 September"]
+  },
+  "zetachain-shutdown": {
+    "name": "ZetaChain ditutup: ZETA pindah ke Solana",
+    "summary": "ZetaChain berencana berhenti sekitar 9 Desember dan memindahkan ZETA ke Solana. Sebelum snapshot, unwrap wZETA dan keluar dari pool dan liquid staking.",
+    "deadlineNote": "Pemungutan suara proposal 70 berakhir pada 7 November, dan proposal ini hanya berlaku jika disetujui. Menurut proposal itu, snapshot diambil dan chain berhenti di blok 20,755,000 sekitar 9 Desember, dan portal migrasi ZETA serta halaman untuk aset hasil bridge dibuka di hari yang sama. Transfer lintas chain sudah berhenti (deposit pada Juni, penarikan pada 1 Juli). Node arsip hanya baca tetap aktif sampai 31 Oktober 2027.",
+    "who": "Siapa pun yang memegang ZETA atau wZETA di ZetaChain, punya ZETA di pool atau liquid staking, dan siapa pun yang punya aset hasil bridge (ZRC-20) yang tertahan di ZetaChain. ZETA ERC-20 di Ethereum tidak terdampak.",
+    "todo": "Sebelum snapshot, unwrap wZETA dan keluar dari pool dan liquid staking (ZETA yang ada di dalam kontrak tidak bisa diklaim berdasarkan alamat). Mulai 9 Desember, tanda tangani di `hub.zetachain.com/migrate` untuk menerima ZETA di Solana (minimal 10 ZETA, tidak perlu SOL). Untuk token ZRC-20, tanda tangani di `hub.zetachain.com/bridged-assets` untuk mendapatkannya kembali di chain asalnya.",
+    "caution": "Proposal 70 hanya berlaku jika disetujui pada 7 November. Token ZRC-20 yang masing-masing bernilai di bawah $5, atau yang ada di pool, vault, atau dompet kontrak, tidak bisa diklaim. ZetaChain menyatakan portal hanya meminta tanda tangan, tidak pernah transaksi atau frasa pemulihan Anda.",
+    "official": ["ZetaChain di X: postingan 4 November", "Tata kelola ZetaChain: proposal 68", "Blog ZetaChain: membawa ZETA ke Solana"]
+  },
+  "astralabs-astra-migration": {
+    "name": "AstraLabs: ASTRA pindah ke kontrak baru",
+    "summary": "AstraLabs memindahkan ASTRA ke kontrak baru: snapshot pada 7 November, dan token baru harus diklaim paling lambat 10 Desember. Permintaan yang terlambat tidak akan diterima.",
+    "deadlineNote": "Pada 7 November, likuiditas dipindahkan ke kontrak baru dan snapshot diambil. Kontrak baru aktif antara 7 dan 10 November, dan perdagangan dibuka lagi pada 10 November. Tenggatnya 10 Desember; AstraLabs menyatakan permintaan yang terlambat tidak akan diterima atau dikembalikan dananya.",
+    "who": "Siapa pun yang memegang ASTRA lama saat snapshot.",
+    "todo": "Pegang token lama Anda melewati snapshot, lalu klaim token baru paling lambat 10 Desember dengan cara yang diumumkan AstraLabs di akun X-nya.",
+    "caution": "Rasio penukaran, alamat kontrak baru, dan cara klaimnya belum diumumkan. AstraLabs menyatakan tautan hanya akan diposting di akun X-nya, jadi waspadai halaman palsu.",
+    "official": ["AstraLabs di X: pengumuman 15 Oktober"],
+    "milestones": ["Snapshot: pegang token lama sebelum tanggal ini"]
+  },
+  "abstract-chain-shutdown": {
+    "name": "Chain Abstract ditutup",
+    "summary": "Chain Abstract ditutup pada 15 Desember, dan dana yang belum dipindahkan keluar lewat bridge sampai saat itu tidak akan bisa diakses. Keluar dari aplikasi dulu, lalu pindahkan lewat bridge.",
+    "deadlineNote": "Abstract ditutup pada 15 Desember. Menurut kata-katanya sendiri, dana yang belum dipindahkan lewat bridge sampai saat itu \"tidak akan bisa diakses\".",
+    "who": "Siapa pun yang punya aset di Abstract, termasuk yang ada di dalam aplikasi di chain itu.",
+    "todo": "Tarik dulu dari aplikasi di chain itu, lalu pindahkan keluar lewat Migration Hub (`migrate.abs.xyz`) atau native bridge (`native-bridge.abs.xyz`, sekitar 3 jam). Halaman migrasi juga mencantumkan Stargate, Relay, dan Jumper.",
+    "caution": "Abstract memperingatkan soal situs migrasi palsu dan DM dari peniru.",
+    "official": ["Halaman migrasi Abstract", "Abstract di X: \"Abstract is Winding Down\""]
+  },
+  "stargate-v1-pools": {
+    "name": "Pool Stargate V1 dihentikan",
+    "summary": "Pool Stargate V1 berhenti berfungsi pada 15 Desember. Penyedia likuiditas V1 perlu menarik dana sebelum itu; penarikan saat ini bebas biaya.",
+    "deadlineNote": "Diumumkan 4 September: setelah pengiriman pesan V1 dijeda sekitar dua minggu, penarikan bebas biaya dibuka. Pada 15 Desember, LayerZero V1 Relayer offline dan pool V1 berhenti berfungsi untuk selamanya. Stargate V2 dan Hydra tidak terdampak. Di Metis, pool sudah berakhir lebih awal, pada 23 Oktober; lihat entri Metis di halaman ini.",
+    "who": "Penyedia likuiditas di pool Stargate V1, kecuali di Metis, yang tenggatnya 23 Oktober.",
+    "todo": "Tarik likuiditas Anda dari pool V1 sebelum 15 Desember.",
+    "official": ["Stargate di X: pengumuman 4 September", "Blog Metis: pool V1 di semua chain ditutup 15 Desember, di Metis lebih awal"]
+  },
+  "stargate-stg-zro": {
+    "name": "Stargate: hari terakhir menukar STG ke ZRO",
+    "summary": "Penukaran STG ke ZRO milik LayerZero berakhir pada 15 Desember, tanpa dukungan setelahnya.",
+    "deadlineNote": "Penukaran dibuka pada 26 Agustus 2025 dan ditutup pada 15 Desember; LayerZero menyatakan penukaran tidak akan didukung setelah itu.",
+    "who": "Siapa pun yang masih memegang STG. Exchange menangani saldo yang disimpan di sana, biasanya dengan batas waktu yang lebih awal.",
+    "todo": "Tukarkan STG Anda ke ZRO sebelum 15 Desember. Panduan konversi resmi Stargate menyebut rasio tetapnya: 1 STG = 0.08634 ZRO.",
+    "caution": "Halaman konversi resmi Stargate menyatakan STG Anda harus berada di Ethereum untuk dikonversi; jika ada di jaringan lain, pindahkan dulu lewat bridge ke Ethereum. Gunakan hanya pintu masuk yang ditautkan dari halaman resmi.",
+    "official": ["Blog LayerZero: pembaruan ekosistem September", "Stargate di X: penukaran dibuka (Agustus 2025)", "Halaman konversi resmi Stargate"]
+  },
+  "fluxtra-frontend": {
+    "name": "Situs Fluxtra ditutup, vault pindah ke OMies",
+    "summary": "Situs Fluxtra ditutup pada 31 Desember. Tarik dari vault LP QuickSwap sekarang; dua vault lainnya sudah tampil di OMies.",
+    "deadlineNote": "31 Desember adalah hari terakhir untuk menarik lewat antarmuka Fluxtra; setelah itu situsnya ditutup sepenuhnya. Vault LP QuickSwap sudah dihentikan, dan Fluxtra meminta Anda menarik dari vault itu sekarang.",
+    "who": "Siapa pun yang memakai vault Fluxtra di chain MANTRA.",
+    "todo": "Simpanan di vault wmantraUSD dan stMANTRA sudah tampil di `onchainomies.com`, jadi bisa Anda biarkan. Tarik dari vault LP QuickSwap sekarang.",
+    "official": ["Fluxtra di X: pengumuman 30 Oktober"]
+  },
+  "neon-evm-shutdown": {
+    "name": "Neon EVM ditutup",
+    "summary": "Neon EVM (EVM yang berjalan di Solana) sedang ditutup. Gunakan NeonPass untuk memindahkan aset Anda ke Solana sebelum 31 Desember.",
+    "deadlineNote": "Pengembangan dan dukungan berhenti pada 1 Oktober. 31 Desember adalah tenggat untuk migrasi dan penarikan.",
+    "who": "Siapa pun yang punya aset di Neon EVM.",
+    "todo": "Sebelum 31 Desember, gunakan NeonPass untuk memindahkan aset Anda dari Neon EVM ke Solana. Dokumentasi resminya berisi langkah-langkahnya.",
+    "caution": "Neon menyatakan token NEON di Solana tidak akan dihapus. Neon belum menyatakan apakah penarikan masih berfungsi setelah 31 Desember.",
+    "official": ["Pemberitahuan di situs Neon EVM", "Dokumentasi Neon EVM: menarik dengan NeonPass"]
+  },
+  "quickswap-soneium-frontend": {
+    "name": "QuickSwap: antarmuka Soneium akan offline",
+    "summary": "Antarmuka QuickSwap di Soneium offline pada 31 Desember. Tarik likuiditas Anda sebelum itu; setelahnya Anda harus memanggil kontrak lewat block explorer.",
+    "deadlineNote": "Pemungutan suara tata kelola disetujui pada 21 Oktober (99.22% setuju). Antarmuka untuk deployment Soneium offline pada 31 Desember. Setelah itu, menurut QuickSwap, dana bisa ditarik dengan memanggil kontrak langsung lewat block explorer resmi Soneium.",
+    "who": "Siapa pun yang punya likuiditas atau aset di QuickSwap di Soneium.",
+    "todo": "Sebelum 31 Desember, tarik likuiditas dan aset Anda di Soneium lewat antarmuka QuickSwap. Setelah itu, gunakan `soneium.blockscout.com` untuk memanggil kontrak secara langsung.",
+    "official": ["QuickSwap di X: pengumuman 22 Oktober", "Pemungutan suara tata kelola QuickSwap (Snapshot)"]
+  },
+  "relay-vaults": {
+    "name": "Relay Vaults dihentikan",
+    "summary": "Vault likuiditas Relay sedang dihentikan. Halaman penarikan ditutup pada 31 Desember, jadi tarik di halaman resmi sebelum itu.",
+    "deadlineNote": "Deposit baru sudah dihentikan. Halaman penarikan ditutup pada 31 Desember; setelah itu, hanya tersisa pemanggilan kontrak secara langsung.",
+    "who": "Siapa pun yang punya simpanan di Relay Vaults (vault WETH di Ethereum dan Arbitrum).",
+    "todo": "Tarik di `relay.link/vaults`. Setelah 31 Desember, ikuti dokumentasi resmi untuk memanggil `redeem(shares, receiver, owner)` langsung di kontrak ERC4626, atau gunakan native gateway untuk mendapatkan ETH asli.",
+    "caution": "Berapa banyak yang bisa Anda tarik sekaligus tergantung likuiditas vault yang tersedia. Kontraknya masih menerima deposit; yang telanjur disetor bisa ditarik dengan cara yang sama.",
+    "official": ["Dokumentasi Relay: menarik dari vault", "Relay di X: pengumuman 9 Oktober"]
+  },
+  "silicon-network-shutdown": {
+    "name": "Silicon Network ditutup (bersama dompet Web3 Korbit)",
+    "summary": "Chain Silicon ditutup pada 31 Desember, dan dana yang tertinggal tidak bisa diambil setelahnya. Aset yang di-bridge dari Ethereum perlu dikembalikan lewat bridge resmi.",
+    "deadlineNote": "Silicon ditutup pada 31 Desember pukul 12:00 UTC+9 (03:00 UTC). Setelah itu block explorer ditutup dan jaringan berakhir. Menurut kata-katanya sendiri, dana yang tidak ditarik sampai saat itu \"tidak dapat dipulihkan\".",
+    "who": "Siapa pun yang punya aset di Silicon, termasuk pengguna dompet Web3 Korbit.",
+    "todo": "Aset yang di-bridge dari Ethereum: tarik ke Ethereum lewat bridge resmi sebelum tenggat, dan sisakan sedikit ETH untuk biaya. Pengguna dompet Web3 Korbit: ikuti proses Korbit. Token asli Silicon tidak bisa langsung dipindahkan lewat bridge, jadi tukarkan dulu di chain itu.",
+    "official": ["Dokumentasi Silicon: pemberitahuan penghentian layanan", "Dokumentasi Silicon: panduan penarikan", "Silicon di X: dompet Web3 Korbit berakhir 31 Desember"]
+  },
+  "standx-winddown": {
+    "name": "StandX dihentikan: tenggat airdrop DUSD, posisi, dan penebusan",
+    "summary": "StandX sedang dihentikan. Airdrop DUSD berakhir 31 Desember, posisi ditutup paksa pada 15 Januari 2027, dan penarikan serta penebusan ditutup pada 31 Januari 2027.",
+    "deadlineNote": "Sejak 15 Oktober, imbal hasil berhenti dan vault tidak lagi menerima deposit; sejak 20 Oktober, posisi hanya bisa dikurangi. Airdrop DUSD dibuka dari 2 November, 00:00 sampai 31 Desember, 08:00 UTC, dan kedaluwarsa setelah itu. Semua posisi ditutup paksa dan vault diselesaikan pada 15 Januari 2027. Penarikan dan penebusan DUSD ditutup pada 31 Januari 2027 (penebusan butuh 7 hari dan selesai paling lambat 7 Februari).",
+    "who": "Siapa pun yang punya posisi, saldo, atau DUSD di StandX (BNB Chain atau Solana), dan siapa pun yang menyediakan likuiditas DUSD di PancakeSwap atau Raydium.",
+    "todo": "Klaim airdrop → tutup posisi → pindahkan dana dari dompet Perps ke dompet Cash → tarik ke dompet Anda sendiri. Untuk mendapatkan USDT, ajukan penebusan sebelum 31 Januari 2027, dan tarik juga likuiditas DUSD di PancakeSwap dan Raydium sebelum 31 Januari.",
+    "caution": "DUSD ditebus menjadi USDT. Setelah 31 Januari 2027, saldo tetap milik pemiliknya, tetapi Anda harus mengirim email ke support@standx.com.",
+    "official": ["StandX di X: pengaturan penghentian", "StandX di X: mode hanya-kurangi (reduce-only)", "StandX di X: airdrop dibuka"],
+    "milestones": ["Airdrop DUSD kedaluwarsa", "Semua posisi ditutup paksa dan vault diselesaikan"]
+  },
+  "parasail-pfil": {
+    "name": "Parasail: pool pFIL hanya penarikan, situs aktif sampai akhir Januari 2027",
+    "summary": "Setelah dieksploitasi, pool pFIL Parasail hanya melayani penarikan. Begitu penarikan dibuka lagi, tukarkan pFIL kembali ke FIL dengan rasio 1:1. Situsnya aktif sampai 31 Januari 2027.",
+    "deadlineNote": "Pool sedang dijeda. Pada 4 November, Parasail menyatakan penarikan akan dibuka lagi \"dalam minggu ini\". Situsnya aktif sampai 31 Januari 2027; setelah itu hanya pemanggilan kontrak langsung yang berfungsi, dan Parasail menyatakan akan memublikasikan petunjuk sebelum situsnya offline.",
+    "who": "Siapa pun yang memegang pFIL.",
+    "todo": "Begitu Parasail mengumumkan penarikan sudah dibuka lagi, ikuti tautan resminya untuk menukar pFIL kembali ke FIL dengan rasio 1:1.",
+    "caution": "Pool ini dieksploitasi: Parasail menyatakan 344,056 FIL dicuri dan kekurangannya sudah ditutup oleh Parasail dan beberapa pemegang besar. Percayai hanya tautan dari kanal resmi.",
+    "official": ["Parasail di X: pembaruan pFIL 4 November"]
+  },
+  "derive-chain-rewards": {
+    "name": "Derive Chain dihentikan: pindah ke Derive V3, tenggat hadiah 1 Februari 2027",
+    "summary": "Derive Chain sudah pindah ke Derive V3, dengan dana disimpan di Ethereum. Hadiah trading dan staking yang masih menunggu harus diklaim di Optimism sebelum 1 Februari 2027.",
+    "deadlineNote": "Snapshot pada 6 Oktober pukul 18:00 UTC; V3 aktif pada 8 Oktober. Hadiah trading dan staking yang masih menunggu diklaim dari kontrak di Optimism sampai 1 Februari 2027, setelah itu yayasan menariknya kembali.",
+    "who": "Siapa pun yang pernah trading atau staking di Derive Chain (dulu Lyra).",
+    "todo": "Saldo Anda sudah otomatis pindah ke V3; cek di `app.derive.xyz`. Buat ulang order bersyarat atau TWAP Anda, dan klaim hadiah yang menunggu di Optimism sebelum 1 Februari 2027.",
+    "caution": "Pasokan DRV lama di Derive Chain dinyatakan batal (\"orphaned\" dalam proposalnya) dan diterbitkan ulang kepada pemegangnya di Ethereum berdasarkan snapshot.",
+    "official": ["Forum Derive: proposal Derive V3 (DIP)", "Derive di X: Derive V3 sudah aktif"]
+  },
+  "quickswap-old-quick": {
+    "name": "QuickSwap: QUICK lama ke QUICK baru, rasionya turun tiap bulan",
+    "summary": "Rasio penukaran QUICK lama ke QUICK baru di QuickSwap turun setiap bulan: 1:750 sampai 5 Desember, lalu 1:500 setelah 5 Desember. Makin cepat ditukar, makin banyak yang didapat.",
+    "deadlineNote": "QuickSwap menyatakan rasio 1:750 tetap tersedia sampai 5 Desember 2026, dan turun menjadi 1:500 setelah 5 Desember. Tahap berikutnya, menurut laporan pihak ketiga: 1:250 setelah 5 Januari 2027, dan penukaran berakhir permanen pada 5 Februari 2027.",
+    "who": "Siapa pun yang masih memegang QUICK lama.",
+    "todo": "Tukarkan sebelum tiap tingkatan rasio berakhir. Makin awal Anda menukar, makin banyak QUICK baru yang Anda dapat.",
+    "caution": "Jadwal lengkapnya berasal dari laporan pihak ketiga; postingan QuickSwap sendiri yang jadi pegangan akhir. QuickSwap sedang mengadakan pemungutan suara soal QUICK lama yang tidak ditukar (berakhir 7 November, 12:00 UTC).",
+    "official": ["QuickSwap di X: pengingat 4 November", "QuickSwap di X: pemungutan suara soal QUICK lama yang tidak ditukar"],
+    "milestones": ["Hari terakhir rasio 1:750; setelah ini turun menjadi 1:500", "Hari terakhir rasio 1:500; setelah ini turun menjadi 1:250"]
+  },
+  "kelp-rseth-sunset": {
+    "name": "Kelp: rsETH lama di jaringan yang dihentikan, proses manual sampai Juni 2027",
+    "summary": "rsETH lama di jaringan yang sudah dihentikan Kelp tidak lagi bisa dipakai langsung, tetapi Anda bisa mengajukan permohonan lewat panduan resmi Kelp untuk mendapatkannya kembali di Ethereum, sampai 15 Juni 2027.",
+    "deadlineNote": "rsETH lama dihentikan di 22 jaringan pada 15 Juni. Mulai 5 Oktober, rsETH lama di Base, Mantle, dan Ink juga dihentikan (diganti versi Chainlink CCIP). Proses manual ditutup pada 15 Juni 2027, 23:59 UTC.",
+    "who": "Siapa pun yang masih memegang rsETH lama di jaringan yang sudah dihentikan Kelp. Arbitrum tidak terdampak.",
+    "todo": "Ikuti hanya panduan di blog resmi Kelp. Pertama pastikan Anda memegang kontrak rsETH lama, lalu ajukan sesuai penjelasan panduan (panduannya meminta Anda mengirim token ke alamat burn di chain asal, membayar biaya 100 USDC, dan mengirim transaksinya lewat email). Kelp mengirim kembali rsETH di Ethereum setiap kuartal.",
+    "caution": "Proses ini (mengirim token ke alamat burn, membayar biaya, mengirim email) sangat mirip penipuan yang umum. Ikuti hanya teks asli di blog resmi Kelp, dan abaikan DM serta situs lain. Unwrap wrsETH di Base, Mantle, Ink, Linea, Optimism, atau Zircuit akan memberi Anda versi baru, yang tidak perlu proses ini.",
+    "official": ["Blog Kelp: panduan untuk rsETH di jaringan yang dihentikan", "Kelp di X: migrasi CCIP selesai (8 Oktober)"]
+  },
+  "blast-l2-shutdown": {
+    "name": "Blast L2 sudah ditutup; situs penarikan resmi buka sampai November 2027",
+    "summary": "Blast L2 sudah ditutup. Hubungkan dompet di blast.io untuk mencari alamat Anda dan menarik ETH, WETH, dan USDB di Ethereum, sampai 4 November 2027.",
+    "deadlineNote": "Antarmuka penarikan reguler ditutup pada 26 Oktober (sudah lewat). Pada 4 November, Blast mengumumkan L2-nya sudah ditutup. Situs penarikan di `blast.io` tetap buka selama 12 bulan, dengan 4 November 2027 sebagai hari terakhir yang didukung.",
+    "who": "Siapa pun yang punya ETH, WETH, atau USDB di Blast, atau penarikan yang belum selesai, termasuk pengguna Blast Mobile dan pengguna Safe atau dompet kontrak lain.",
+    "todo": "Hubungkan dompet di `blast.io` untuk mencari alamat Anda dan menarik ETH, WETH, dan USDB di Ethereum; penarikan yang belum selesai otomatis ikut. Pengguna Blast Mobile: impor frasa pemulihan Anda ke MetaMask atau Rabby, lalu hubungkan. Safe dan dompet kontrak lain punya pintu masuk terpisah.",
+    "caution": "Blast hanya memakai @blast (@Blast_L2 kini akun cadangan). Situs penarikan hanya menyebut ETH dan aset USD; Blast belum menyatakan apakah token BLAST, token lain, atau posisi DeFi di L2 bisa ditarik. Masukkan frasa pemulihan hanya di dalam aplikasi dompet oleh Anda sendiri, jangan pernah di situs web.",
+    "official": ["Halaman penarikan Blast", "Dokumentasi Blast: menarik ke Ethereum", "Blast di X: penutupan diumumkan (2 Oktober)", "Blast di X: L2 sudah ditutup (4 November)"]
+  },
+  "stader-maticx-fixed-rate": {
+    "name": "Stader: rasio MaticX dikunci, penebusan on-chain buka sampai Agustus 2029",
+    "summary": "Sejak 29 Oktober, MaticX milik Stader ditebus dengan rasio tetap 1.2002 POL per MaticX. Penebusan tetap lewat kontrak di Ethereum, dan 3 Agustus 2029 adalah hari terakhirnya.",
+    "deadlineNote": "Deposit ditutup pada Juni dan sejak itu MaticX hanya bisa ditebus. Aplikasi MaticX ditutup pada 3 Agustus, dan penebusan berlanjut lewat Etherscan. Mulai 29 Oktober, rasionya dikunci di 1.2002 POL per MaticX. 3 Agustus 2029 adalah hari terakhir penebusan lewat kontrak.",
+    "who": "Siapa pun yang masih memegang MaticX, di Ethereum atau Polygon PoS.",
+    "todo": "Ikuti langkah di blog resmi Stader: buka kontrak MaticX di Ethereum lewat Etherscan, ajukan penarikan (MaticX Anda dibakar), tunggu POL selesai unbonding, lalu tarik POL ke dompet Anda. Pengumumannya menyebut masa unbonding 80 checkpoint, yang saat dipublikasikan diperkirakan sekitar 22 jam. MaticX di Polygon PoS harus dipindahkan dulu ke Ethereum lewat bridge Polygon. Penarikan yang sudah Anda ajukan tidak terdampak; cukup selesaikan.",
+    "caution": "MaticX di pasar pinjaman, pool likuiditas, atau vault tetap berada di sana; Stader meminta Anda menanyakan ke protokol tersebut bagaimana rasio tetap memengaruhi posisi Anda. Gunakan hanya alamat kontrak yang tercantum di postingan blog resmi Stader.",
+    "official": ["Blog Stader: Perubahan penebusan untuk NearX, BNBx, dan MaticX", "Stader di X: postingan 28 Oktober"]
+  },
+  "summerfi-winddown": {
+    "name": "Summer.fi: vault Lazy Summer hanya penarikan, penghentian tertib sedang dibahas",
+    "summary": "Summer.fi sedang dihentikan dan vault Lazy Summer hanya melayani penarikan; Anda masih bisa menarik sendiri di situs resmi. RFC komunitas 5 November membahas penghentian yang tertib, dan menyapu sisa dana ke Merkl hanyalah salah satu opsi.",
+    "deadlineNote": "Setelah eksploitasi 6 Juli, antarmuka aplikasi Summer.fi yang asli dijadwalkan tutup pada 31 Agustus (situsnya kini hanya menyediakan halaman keluar), dan vault berhenti menerima deposit serta menjadi hanya penarikan. RFC komunitas 5 November mencantumkan opsi penghentian yang tertib: ambil snapshot, tarik semuanya lalu kembalikan lewat Merkl dalam token yang sama di chain yang sama; umumkan tenggat agar pengguna menarik sendiri, lalu sapu sisanya; atau tidak menyapu sama sekali. Belum ada tanggal yang ditetapkan.",
+    "who": "Siapa pun yang masih punya simpanan di vault Lazy Summer (Ethereum, Base, Arbitrum, Sonic, HyperEVM). RFC tersebut menyebut sekitar $369,000 tersisa di 16 vault per 5 November.",
+    "todo": "Buka `summer.fi`, hubungkan dompet, lalu lihat dan keluar dari posisi Anda, serta klaim hadiah yang belum diambil. Menyapu aset untuk klaim lewat Merkl adalah salah satu opsi; caranya dan tenggat penarikan apa pun tergantung keputusan tata kelola resmi nanti.",
+    "caution": "RFC komunitas 5 November ini memuat jajak pendapat yang tidak mengikat dan tidak memindahkan dana dengan sendirinya. RFC itu menyatakan kerugian dari eksploitasi 6 Juli (vault USDC Ethereum) dan dari utang macet tidak akan ditutup sepenuhnya. Verifikasi halaman keluar di `summer.fi`; jangan menghubungkan dompet atau menandatangani hanya karena sebuah tautan muncul di postingan forum atau proposal on-chain.",
+    "official": ["Situs Summer.fi: hanya penarikan", "Forum Lazy Summer: RFC penghentian tertib (5 November)", "Forum Lazy Summer: vault menjadi hanya penarikan (29 Juli)"]
+  },
+  "compound-scroll-usdc": {
+    "name": "Compound III: menutup pasar USDC di Scroll",
+    "summary": "Compound berencana menutup pasar USDC yang sudah dihentikan di Scroll. Begitu disetujui, pinjaman yang tersisa bisa dilikuidasi, jadi peminjam sebaiknya segera melunasi dan mengambil kembali jaminannya.",
+    "deadlineNote": "Pasar ini sudah dihentikan awal tahun ini. Sebuah proposal di forum pada 4 November menyebut proposal on-chain-nya belum diajukan dan belum ada tanggal. Begitu disetujui, semua pinjaman yang tersisa bisa dilikuidasi.",
+    "who": "Siapa pun yang meminjam dari atau memasok USDC ke pasar USDC Compound III di Scroll. Proposal itu menghitung 1,959 akun peminjam, semuanya kecil.",
+    "todo": "Peminjam: segera lunasi USDC Anda dan ambil kembali jaminan WETH atau wstETH. Pemasok: tarik USDC Anda.",
+    "caution": "Proposal itu mencatat bahwa Scroll sudah mengumumkan akan meninggalkan model L2 publik dan menyarankan pengguna menutup semua posisi DeFi (lihat entri Scroll di halaman ini).",
+    "official": ["Forum Compound: menutup pasar USDC Scroll"]
+  },
+  "parasail-stpeaq": {
+    "name": "Parasail: pool staking stPEAQ dihentikan, beralih ke hanya penarikan",
+    "summary": "Pool staking stPEAQ milik Parasail dihentikan setelah dieksploitasi. Parasail menyatakan yayasan peaq menutup kerugiannya agar setiap pengguna bisa menarik penuh. Tunggu tanggal penarikan resmi.",
+    "deadlineNote": "Parasail belum menetapkan tanggal dibukanya mode hanya penarikan.",
+    "who": "Siapa pun yang memegang stPEAQ.",
+    "todo": "Tunggu Parasail mengumumkan kapan mode hanya penarikan dibuka dan tautan penarikannya, lalu tarik PEAQ Anda.",
+    "caution": "Pool ini dieksploitasi: Parasail menyatakan 1,096,424.06 PEAQ dicuri. Percayai hanya tautan dari kanal resmi.",
+    "official": ["Parasail di X: pembaruan stPEAQ 4 November"]
+  },
+  "scroll-transition": {
+    "name": "Scroll beralih ke jaringan berizin, SCR ke mainnet Ethereum (proposal)",
+    "summary": "Scroll mengusulkan untuk menjadi jaringan berizin. Posisi DeFi perlu ditutup atau ditangani sebelum peralihan, jadi cek dulu aset Anda di halaman resmi.",
+    "deadlineNote": "Proposal di forum diunggah pada 3 November dan masih perlu pemungutan suara DAO. Scroll menyatakan upgrade jaringan direncanakan pada \"akhir tahun\", belum ada tanggal pasti.",
+    "who": "Siapa pun yang punya aset di Scroll, terutama posisi DeFi seperti pinjaman atau likuiditas, dan pemegang SCR.",
+    "todo": "Cek aset Anda di `positions.scroll.io`, dan tutup atau tangani posisi DeFi sebelum peralihan. Bridge resmi tetap buka, dan Scroll menyatakan bridge itu tetap berfungsi setelah upgrade.",
+    "caution": "Proposal itu belum diputuskan lewat pemungutan suara. Scroll menyatakan total pasokan dan tokenomics SCR tidak akan berubah. Aave dan Compound sudah mulai menghentikan pasar mereka di Scroll.",
+    "official": ["Forum Scroll: proposal peralihan", "Scroll di X: halaman aset (2 November)", "Scroll di X: proposal diunggah (3 November)"]
+  },
+  "robin-markets-v1": {
+    "name": "Robin Markets: V1 dihentikan",
+    "summary": "Robin Markets sedang menghentikan V1. Poin, jaminan imbal hasil, dan bonus pendamping berhenti bertambah pada 3 November pukul 20:00 UTC. Pengumumannya menyebut penarikan tetap tersedia, tanpa menyebut tenggat penarikan.",
+    "deadlineNote": "Diumumkan pada 3 November. Poin, jaminan imbal hasil, dan bonus pendamping berhenti bertambah pada 3 November pukul 20:00 UTC. Tidak ada tenggat penarikan: Robin menyatakan versi berikutnya diluncurkan \"sebelum akhir tahun\", V1 tetap aktif sampai saat itu, dan penarikan tetap berfungsi setelahnya.",
+    "who": "Siapa pun yang menyetor posisi Polymarket ke Robin Markets V1 untuk mendapat imbal hasil.",
+    "todo": "Poin, jaminan imbal hasil, dan bonus pendamping berhenti bertambah pada 3 November pukul 20:00 UTC; dokumentasinya menyebut apa pun yang terkumpul sebelum itu dibayarkan otomatis bersama penarikan Anda berikutnya. Robin menyatakan siapa pun yang punya posisi terbuka bisa menariknya sekarang.",
+    "official": ["Robin Markets di X: pengumuman 3 November", "Dokumentasi Robin Markets: jaminan imbal hasil dan bonus pendamping (berakhir)", "Dokumentasi Robin Markets: kontrak yang di-deploy di Polygon"]
+  },
+  "compound-deprecated-markets": {
+    "name": "Compound III: pasar dihentikan di Ethereum, Linea, Ronin, Mantle, Unichain, dan Polygon",
+    "summary": "Compound III menghentikan sejumlah pasar: tidak ada pinjaman baru dan simpanan tidak lagi menghasilkan imbal hasil. Tarik simpanan Anda, dan peminjam sebaiknya melunasi untuk mengambil kembali jaminannya.",
+    "deadlineNote": "Tidak ada tenggat pasti. Pada 2 September, diusulkan penghentian pasar wstETH di Ethereum; pada 25 September, faktor jaminan untuk meminjam di pasar yang dihentikan di lima chain diatur menjadi nol; pada 30 Oktober, diusulkan penghentian pasar WBTC di Ethereum. Penarikan dari pasar USDC di Linea dijeda sejak 18 September, dan dari pasar USDe di Mantle sejak 16 Oktober.",
+    "who": "Siapa pun yang punya simpanan atau pinjaman di pasar-pasar yang dihentikan ini. Proposalnya menghitung 93 pemasok yang tersisa di pasar wstETH Ethereum dan 37 di pasar WBTC.",
+    "todo": "Tarik simpanan yang masih tersisa di pasar yang dihentikan; peminjam sebaiknya melunasi dan mengambil kembali jaminannya. Penarikan dari pasar USDC Linea dan USDe Mantle saat ini dijeda, jadi tarik setelah dibuka kembali.",
+    "caution": "Jeda di Linea disebabkan \"potensi masalah\" dan dicabut setelah diperbaiki; jeda di Mantle untuk menjalankan proposal penarikan cadangan.",
+    "official": [
+      "Forum Compound: menghentikan pasar wstETH Ethereum",
+      "Forum Compound: faktor jaminan nol di pasar yang dihentikan",
+      "Forum Compound: jeda pasar USDC Linea",
+      "Forum Compound: jeda pasar USDe Mantle",
+      "Forum Compound: menghentikan pasar WBTC Ethereum"
+    ]
+  },
+  "diva-staking-shutdown": {
+    "name": "Diva Staking ditutup (tanpa peluncuran mainnet)",
+    "summary": "Diva Staking ditutup tanpa pernah meluncurkan mainnet. Pre-deposit di vault Enzyme-nya bisa ditarik sekarang; Diva menyatakan \"tidak ada lagi yang perlu ditunggu\".",
+    "deadlineNote": "Diumumkan pada 28 Oktober, tanpa tenggat.",
+    "who": "Siapa pun yang melakukan pre-deposit ke Early Staker Vaults Diva di Enzyme.",
+    "todo": "Tarik pre-deposit Anda dari Early Staker Vaults di Enzyme.",
+    "official": ["Diva di X: pengumuman 28 Oktober"]
+  },
+  "stader-bnbx-redemption": {
+    "name": "Stader: penebusan BNBx pindah dari kontrak ke permintaan lewat email",
+    "summary": "Sejak 29 Oktober, BNBx milik Stader tidak bisa lagi ditebus lewat kontrak. Sebagai gantinya Anda mengajukan lewat email, mengikuti blog resmi Stader: 1 BNBx dibayar 1.1099 BNB, dipotong biaya 0.2 BNBx per permintaan, diselesaikan per kuartal.",
+    "deadlineNote": "BNBx dihentikan pada 29 Januari dan sejak itu hanya bisa ditebus; rasionya dikunci di 1.1099 BNB per BNBx sejak Maret. Penebusan instan dan gratis lewat kontrak bisa dilakukan sebelum 29 Oktober (sudah lewat). Mulai 29 Oktober, penebusan hanya lewat permintaan email, diselesaikan per kuartal. Pengumumannya tidak menyebut berapa lama permintaan tetap dibuka.",
+    "who": "Siapa pun yang masih memegang BNBx di BNB Chain. Jika BNBx Anda ada di pool DEX atau protokol pinjaman, Stader meminta Anda menariknya dulu ke dompet sendiri.",
+    "todo": "Ikuti hanya langkah dalam pengumuman di blog resmi Stader (`staderlabs.com/blog`): kirim dari dompet yang memegang BNBx, hanya di BNB Chain, lalu kirim email berisi transaksinya dalam format yang dijelaskan di postingan itu. Stader hanya membayar ke dompet yang mengirim token, jadi jangan mengirim dari akun exchange. Biayanya tetap 0.2 BNBx, jadi porsinya lebih besar untuk saldo kecil.",
+    "caution": "Proses ini (mengirim token ke sebuah alamat, lalu mengirim email) sangat mirip penipuan yang umum. Percayai hanya alamat dan email di postingan asli blog resmi Stader; halaman ini sengaja tidak menyalinnya. Stader menyatakan tidak akan pernah DM Anda, meminta frasa pemulihan atau kunci privat Anda, atau meminta Anda mengirim pembayaran. Jangan gunakan alamat klaim yang diberikan lewat DM, grup chat, atau situs lain; verifikasi di blog Stader yang ditautkan di bawah.",
+    "official": ["Blog Stader: Perubahan penebusan untuk NearX, BNBx, dan MaticX", "Stader di X: postingan 28 Oktober"]
+  },
+  "aero-merger": {
+    "name": "Aerodrome dan Velodrome bergabung menjadi Aero",
+    "summary": "Aerodrome dan Velodrome sudah bergabung menjadi Aero. Pool lama tidak lagi memberi hadiah, jadi pindahkan likuiditas Anda ke pool baru, dan upgrade sendiri token serta kunci Anda di halaman upgrade resmi.",
+    "deadlineNote": "xVELO di luar OP Mainnet dan Ink harus dipindahkan kembali ke OP lewat bridge paling lambat 15 Oktober, dan veNFT harus dikeluarkan dari Relay dan vault lain paling lambat 20 Oktober. Pada 22 Oktober pukul 00:00 UTC, hadiah di pool lama berhenti dan halaman upgrade dibuka. Aero menyatakan tidak ada tenggat untuk upgrade.",
+    "who": "Pemegang AERO, VELO, veAERO, atau veVELO, dan penyedia likuiditas di pool lama.",
+    "todo": "Lakukan upgrade di halaman upgrade di `aerodrome.finance` atau `velodrome.finance`: AERO dikonversi 1:1 dan VELO dengan rasio 1:0.044 menjadi AERO baru, sedangkan veAERO atau veVELO menjadi sAERO. Sebelum upgrade, klaim hadiah dan rebase Anda serta hapus vote Anda. Pool lama tidak memberi hadiah, jadi pindahkan likuiditas Anda ke pool baru.",
+    "caution": "Upgrade tidak bisa dibatalkan, dan hadiah yang belum Anda klaim sebelum upgrade akan hilang. Aero menyatakan front-end lama \"mungkin ditutup nanti\".",
+    "official": ["Pusat upgrade Aero", "Artikel Aero: hari peluncuran"]
+  },
+  "venus-vai-lisusd": {
+    "name": "Venus: VAI dihapus bertahap, pasar lisUSD dan TRX di-delist",
+    "summary": "Venus menghapus VAI secara bertahap dan men-delist pasar lisUSD dan TRX. VAI di vault bisa ditarik kapan saja; peminjam sebaiknya bersiap melunasi.",
+    "deadlineNote": "Ini bermula karena Chainlink menghentikan feed harga VAI. Tidak ada tenggat pasti: VIP-662 berlaku pada 21 September (vault VAI berhenti membayar hadiah XVS), dan VIP-663 pada 28 September (TRX dan lisUSD masuk tahap berikutnya). Venus menyatakan langkah selanjutnya akan diumumkan terpisah.",
+    "who": "Siapa pun yang punya VAI di vault VAI, siapa pun yang mencetak VAI, dan siapa pun yang punya simpanan atau pinjaman di pasar lisUSD atau TRX.",
+    "todo": "VAI di vault bisa ditarik kapan saja, dan XVS yang sudah diperoleh masih bisa diklaim. Jika Anda mencetak VAI, bersiaplah melunasi. Tarik simpanan lisUSD, dan lunasi pinjaman lisUSD sebelum bunganya naik di tahap tiga.",
+    "official": ["Komunitas Venus: proposal VAI", "Komunitas Venus: delisting pasar lisUSD", "Komunitas Venus: laporan September"]
+  },
+  "aave-v3-deprecation": {
+    "name": "Aave V3: enam deployment dihentikan, aset yang jarang dipakai di-delist",
+    "summary": "Aave V3 menghentikan enam deployment: Sonic, Scroll, zkSync Era, Metis, Soneium, dan Aptos. Segera tarik simpanan, dan peminjam sebaiknya melunasi sebelum ambang likuidasi diturunkan.",
+    "deadlineNote": "Tidak ada tenggat pasti. Pasarnya dibekukan dengan reserve factor 99%, sehingga hampir semua bunga masuk ke kas. Aave menyatakan mungkin akan menaikkan suku bunga lebih lanjut dan menurunkan ambang likuidasi secara bertahap.",
+    "who": "Siapa pun yang punya simpanan atau pinjaman di enam deployment ini, dan siapa pun yang memegang aset yang di-delist di deployment lain.",
+    "todo": "Segera tarik simpanan dari enam deployment ini. Peminjam: lunasi dan ambil kembali jaminan Anda agar tidak dilikuidasi saat ambangnya turun.",
+    "official": ["Forum tata kelola Aave: penghentian aset yang jarang dipakai (ARFC)"]
+  },
+  "balancer-winddown": {
+    "name": "Balancer dihentikan: pool beralih ke hanya penarikan",
+    "summary": "Balancer sedang dihentikan. Pool hanya melayani penarikan, dan pool v3 yang tersisa menyusul pada 30 November. Balancer menyatakan penarikan tetap dibuka, tetapi penyedia likuiditas dan staker harus menarik sendiri.",
+    "deadlineNote": "Sejak 30 Oktober, pool yang bisa dijeda menjadi hanya penarikan dan program bug bounty berakhir. Pool v3 yang diminta mitra untuk dipertahankan tetap buka sampai 30 November, saat v3 Vault dijeda dan pool v3 yang tersisa beralih ke hanya penarikan. Balancer menyatakan penarikan tetap dibuka, tanpa tanggal akhir. Setelah itu, halaman penarikan sederhana tetap aktif sampai kunci veBAL berakhir dan dua putaran distribusi kas selesai (yang pertama pada akhir Mei 2027). Pool yang tidak bisa dijeda tetap berjalan, dengan biaya protokol diatur ke 0.",
+    "who": "Penyedia likuiditas di pool Balancer, siapa pun yang staking di gauge, dan siapa pun yang punya share v3 buffer atau hadiah mining v2 lama. Pengingat Balancer pada 23 Oktober menyebut mereka menemukan lebih dari $500,000 di posisi lama milik pengguna luar.",
+    "todo": "Buka `legacy.balancer.fi` untuk menarik likuiditas dan unstake dari gauge. Cek juga share v3 buffer dan hadiah mining v2 lama, yang tidak ditampilkan pelacak portofolio seperti DeBank.",
+    "caution": "Balancer menyatakan kontraknya non-kustodial, jadi penarikan tidak bergantung pada tim.",
+    "official": ["Forum Balancer: proposal penghentian BIP-928", "Forum Balancer: pengingat untuk pengguna lama", "Balancer di X: postingan 30 Oktober"],
+    "milestones": ["Pool v3 yang tersisa beralih ke hanya penarikan (v3 Vault dijeda); penarikan tetap dibuka"]
+  },
+  "marinus-harmony": {
+    "name": "Marinus: pasar di Harmony dihentikan, hanya penarikan",
+    "summary": "Marinus menghentikan pasarnya di Harmony: simpanan hanya bisa ditarik atau di-unstake, dan chain Harmony sendiri sedang ditutup.",
+    "deadlineNote": "Sejak 14 September, Anda hanya bisa menarik dan unstake. Tidak ada tenggat.",
+    "who": "Siapa pun yang menyetor atau staking di Marinus di Harmony.",
+    "todo": "Tarik dan unstake apa yang Anda masukkan ke Marinus di Harmony.",
+    "caution": "Chain Harmony sendiri sedang ditutup; lihat entri Harmony di halaman ini.",
+    "official": ["Marinus di X: pengumuman 14 September"]
+  },
+  "harmony-shutdown": {
+    "name": "Mainnet Harmony ditutup, ONE pindah ke Ethereum",
+    "summary": "Mainnet Harmony sedang ditutup dan ONE di-airdrop ke alamat yang sama di Ethereum berdasarkan snapshot 10 September. Dompet lama perlu tanda tangan untuk konfirmasi, dan block explorer ditutup pada 18 November.",
+    "deadlineNote": "Snapshot diambil pada 10 September pukul 14:00 UTC (sudah lewat). Sejak 2 Oktober, ONE ERC-20 di-airdrop ke alamat yang sama di Ethereum. `explorer.harmony.one` ditutup pada 18 November (itu data block explorer, bukan tenggat token).",
+    "who": "Siapa pun yang memegang ONE di Harmony saat snapshot, pengguna dompet lama, dan siapa pun yang membutuhkan data block explorer dari sebelum 2025.",
+    "todo": "Saldo di dompet biasa di-airdrop otomatis ke alamat yang sama di Ethereum. Dompet lama: tanda tangani di `migrate.country/confirm` (dari postingan Harmony 2 Oktober). Jika Anda butuh data block explorer dari sebelum 2025, ekspor sendiri sebelum 18 November.",
+    "caution": "Ini menyusul eksploitasi pencetakan token pada Agustus 2026, dan `bridge.harmony.one` mati sejak 12 Agustus. Buka `migrate.country` hanya dari tautan di postingan Harmony sendiri. Harmony menyatakan dana di multisig, pool likuiditas, dan aplikasi on-chain harus ditarik sebelum 10 September (sudah lewat).",
+    "official": ["Harmony di X: \"Harmony to Migrate Its ONE Token\"", "Harmony di X: airdrop (2 Oktober)", "Harmony di X: block explorer ditutup 18 November"],
+    "milestones": ["Block explorer di explorer.harmony.one ditutup"]
+  },
+  "bouncebit-chain-retired": {
+    "name": "Chain BounceBit dihentikan, BB diterbitkan ulang di BNB Chain",
+    "summary": "Setelah dieksploitasi, chain BounceBit dihentikan dan BB diterbitkan ulang 1:1 di BNB Chain. Saldo 10 BB atau lebih sudah masuk otomatis; yang lebih kecil perlu diklaim di portal resmi.",
+    "deadlineNote": "Mulai 1 September pukul 06:00 UTC, BB dikirim 1:1 ke alamat yang sama di BNB Chain, berdasarkan snapshot dari sebelum eksploitasi. Pada 3 September, BounceBit menyatakan distribusi sudah selesai. Tidak ada tenggat yang disebut untuk saldo di bawah 10 BB.",
+    "who": "Siapa pun yang memegang BB di chain BounceBit saat snapshot, terutama saldo di bawah 10 BB.",
+    "todo": "Saldo 10 BB atau lebih sudah masuk otomatis; cek alamat yang sama di BNB Chain. Untuk kurang dari 10 BB, gunakan alamat asli Anda di `portal.bouncebit.io`.",
+    "caution": "Chain ini berhenti karena eksploitasi, jadi gunakan hanya pintu masuk resmi. BounceBit menyatakan tidak akan pernah DM Anda lebih dulu. Postingannya tidak menjelaskan apa yang terjadi pada aset lain di chain itu, seperti BBTC.",
+    "official": ["BounceBit di X: distribusi selesai (3 September)", "BounceBit di X: saldo kecil (3 September)", "BounceBit di X: jadwal (31 Agustus)"]
+  },
+  "aster-apollox-offline": {
+    "name": "Aster: situs dan API ApolloX akan offline",
+    "summary": "Aster menutup situs dan API lama ApolloX, rampung sekitar 5 November. Jika Anda masih punya saldo atau posisi di sana, tutup posisinya dan tarik dana sekarang.",
+    "deadlineNote": "Mulai 3 November pukul 10:00 UTC, Aster mulai menghentikan kontrak APX lama dan menyatakan prosesnya butuh sekitar 48 jam, jadi berakhir sekitar 5 November pukul 10:00 UTC. Situs apollox.finance dan API-nya ikut offline.",
+    "who": "Siapa pun yang masih punya saldo atau posisi terbuka di ApolloX (`apollox.finance`).",
+    "todo": "Tutup posisi Anda dan tarik ke dompet Anda sendiri. Jika ada masalah, Aster meminta Anda menghubungi dukungannya di Discord.",
+    "caution": "Aster belum menyatakan apakah kontraknya masih bisa dipakai langsung setelah penghentian selesai.",
+    "official": ["Aster di X: postingan penghentian 3 November"]
+  },
+  "lisk-chain-closed": {
+    "name": "Chain Lisk sudah ditutup",
+    "summary": "Chain Lisk ditutup pada 2 November. Penarikan yang masih berjalan saat penutupan dikreditkan di Ethereum; untuk dana yang tertinggal di chain, Lisk menyatakan sebuah proses akan dibuka pada Januari 2027.",
+    "deadlineNote": "Chain ini awalnya dijadwalkan tutup pada 31 Oktober; hari terakhir sebenarnya 2 November. 24 Oktober adalah hari terakhir untuk mulai memindahkan dana lewat bridge (bridge butuh sekitar 8 hari). Lisk menyatakan kontrak khusus untuk dana yang tertinggal di chain akan hadir pada Januari 2027.",
+    "who": "Siapa pun yang masih punya aset di Lisk saat penutupan, atau punya penarikan yang masih berjalan.",
+    "todo": "Lisk menyatakan penarikan yang masih berjalan saat penutupan akan dikreditkan langsung ke alamat tujuan di Ethereum. Untuk dana yang tertinggal di chain, tunggu proses resmi pada Januari 2027; untuk saat ini belum ada yang perlu dilakukan.",
+    "caution": "Lisk menyatakan tidak akan pernah menghubungi Anda untuk menawarkan bantuan mengembalikan dana, dan tidak akan pernah meminta frasa pemulihan Anda. Sekitar 5.2 juta LSK di kontrak hadiah staking (termasuk hadiah yang sudah didapat tapi belum diklaim) akan dibakar; LSK yang di-stake sendiri oleh pengguna tidak.",
+    "official": ["Blog Lisk: chain Lisk sudah ditutup", "Lisk di X: proses Januari (3 November)", "Lisk di X: pengingat hari terakhir (1 November)", "Blog Lisk: memperkenalkan Lisk yang baru"]
+  },
+  "stratex-vaults": {
+    "name": "Vault StratEx (di QuickSwap) sudah ditutup",
+    "summary": "Vault StratEx sudah ditutup, dan StratEx menyatakan telah mengembalikan dana ke semua orang yang belum menarik pada 3 November. Cek dompet Anda apakah dananya sudah masuk.",
+    "deadlineNote": "Penarikan manual berhenti pada 1 November. Pada 3 November, StratEx menyatakan telah mengirim kembali dana ke semua orang yang belum menarik.",
+    "who": "Siapa pun yang punya dana di vault StratEx dan belum menarik sebelum 1 November.",
+    "todo": "Cek dompet Anda untuk dana yang dikembalikan.",
+    "official": ["StratEx di X: dana dikembalikan (3 November)", "StratEx di X: batas waktu penarikan (21 Oktober)", "StratEx di X: pemberitahuan terakhir (17 September)"]
+  },
+  "lista-cdp-winddown": {
+    "name": "Lista DAO: Lista CDP ditutup, pindah ke Lista Lending",
+    "summary": "Lista CDP sudah ditutup. Lista menyatakan posisi di pasar yang didukung sudah otomatis pindah ke Lista Lending, tanpa perlu tindakan apa pun. Cek apakah posisi Anda ada di pasar yang didukung.",
+    "deadlineNote": "Posisi bisa dimigrasikan atau dilunasi dari 30 September sampai 31 Oktober. Pada 1 dan 2 November, Lista menyatakan posisi di pasar yang didukung sudah dimigrasikan otomatis.",
+    "who": "Siapa pun yang punya posisi di Lista CDP.",
+    "todo": "Pada 2 November, Lista menyatakan semua pasar yang didukung sudah otomatis pindah ke Lista Lending, tanpa perlu tindakan apa pun. Pastikan posisi Anda ada di pasar yang didukung.",
+    "caution": "Lista belum menjelaskan apa yang terjadi pada posisi di pasar yang tidak didukung.",
+    "official": ["Blog Lista: yang harus dilakukan sebelum CDP ditutup", "Lista di X: tidak perlu tindakan (2 November)", "Lista di X: migrasi selesai (1 November)", "Lista di X: pengumuman 1 Oktober"]
+  },
+  "kyan-exchange": {
+    "name": "Exchange Kyan (dulu Premia) sudah ditutup",
+    "summary": "Kyan (dulu Premia) sudah dihentikan, dan saldo harus ditarik paling lambat 31 Oktober. Jika Anda tidak bisa menarik, Kyan meminta Anda bertanya di Discord-nya.",
+    "deadlineNote": "Diumumkan pada 19 Oktober: tarik saldo \"sebelum akhir bulan\", yaitu paling lambat 31 Oktober.",
+    "who": "Siapa pun yang masih punya saldo di Kyan.",
+    "todo": "Jika Anda tidak bisa menarik, buka #support di Discord resmi Kyan, tempat tim menanganinya secara manual.",
+    "official": ["Kyan di X: postingan penghentian 19 Oktober"]
+  },
+  "stargate-hydra-chains": {
+    "name": "Stargate v2 dan Hydra berhenti mendukung sejumlah chain yang sepi aktivitas",
+    "summary": "Stargate v2 dan Hydra sudah berhenti mendukung sejumlah chain yang sepi aktivitas; kelompok terakhir berhenti pada 23 Oktober.",
+    "deadlineNote": "Sekitar 20 September, aset Hydra berhenti di sejumlah chain (termasuk Sophon, Silicon, Arbitrum Nova, Degen, dan Superposition). Aurora, Taiko, LightLink, dan Gnosis berhenti pada 23 September, dan Gravity, Camp, GOAT, dan Metis pada 23 Oktober.",
+    "who": "Penyedia likuiditas di pool Stargate di chain-chain ini, dan pemegang USDC.e atau USDT Hydra.",
+    "todo": "Sebelum tiap batas waktu, penyedia likuiditas (termasuk pool ETH) perlu menarik dana, dan pemegang USDC.e serta USDT Hydra perlu memindahkannya lewat bridge ke pool Stargate untuk ditebus.",
+    "caution": "Postingan Stargate tidak menyebut apakah aset Hydra masih bisa ditebus setelah batas waktu.",
+    "official": ["Stargate di X: pengingat 25 September", "Stargate di X: pengingat 10 September", "Stargate di X: pengumuman 21 Agustus"]
+  },
+  "stargate-metis-pools": {
+    "name": "Stargate di Metis: likuiditas pool V1 dan V2 harus keluar sebelum 23 Oktober",
+    "summary": "Dukungan Stargate untuk Metis berakhir pada 23 Oktober, dan likuiditas di pool V1 dan V2 di sana harus ditarik lebih dulu. Metis memperingatkan bahwa sisanya mungkin sulit atau tidak mungkin ditarik lewat antarmuka biasa.",
+    "deadlineNote": "Dukungan Stargate untuk Metis Andromeda berakhir pada 23 Oktober, dan DVN serta Executor milik LayerZero Labs berhenti melayani Metis pada 30 Oktober. Pool yang terdampak: pool USDT, ETH, dan METIS di Stargate V2, serta pool USDT, METIS, dan MAI di Stargate V1.",
+    "who": "Penyedia likuiditas di pool Stargate V1 dan V2 di Metis, dan siapa pun yang memindahkan METIS, HERA, QI, atau MTVT ke chain lain lewat LayerZero V1.",
+    "todo": "Sebelum tenggat: unstake token LP jika di-stake, lalu tarik likuiditas di aplikasi Stargate, dan pindahkan METIS, HERA, QI, atau MTVT yang keluar lewat LayerZero V1 kembali ke Metis lewat rute yang sama. Jika Anda terlewat, Metis meminta Anda menghubungi tim Metis.",
+    "caution": "Metis menyatakan likuiditas yang tersisa di pool Stargate di Metis setelah tenggat mungkin sulit atau tidak mungkin ditarik lewat antarmuka Stargate biasa. m.USDC, m.USDT, WETH, dan METIS yang diterbitkan bridge kanonis Metis tidak terdampak.",
+    "official": ["Blog Metis: penghentian Stargate dan perubahan LayerZero di Metis Andromeda"]
+  },
+  "mint-blockchain-shutdown": {
+    "name": "Mint Blockchain sudah ditutup",
+    "summary": "Mint Blockchain sudah ditutup; tenggatnya 20 Oktober. Halaman penarikan resmi hanya mendukung pengembalian ETH, WBTC, USDC, dan USDT ke Ethereum.",
+    "deadlineNote": "Tenggatnya 20 Oktober.",
+    "who": "Siapa pun yang punya aset di chain Mint.",
+    "todo": "Halaman resmi `mintchain.io/withdraw` hanya mendukung penarikan ETH, WBTC, USDC, dan USDT ke Ethereum (pemberitahuan imToken menyebut penarikan diproses tiap minggu dan masuk dalam sekitar 10 hari).",
+    "caution": "Mint belum menyatakan apakah ada hal lain yang masih mungkin setelah tenggat.",
+    "official": ["Halaman penarikan Mint"]
+  },
+  "coinex-csc-shutdown": {
+    "name": "CoinEx Smart Chain (CSC) dan OneSwap sudah ditutup",
+    "summary": "CoinEx sedang dihentikan. Chain CSC dan OneSwap berhenti pada 29 September, dan dana di akun exchange harus ditarik paling lambat 22 Desember.",
+    "deadlineNote": "CSC dan OneSwap berhenti pada 29 September, dan penebusan lewat bridge ditutup pada saat yang sama. Penarikan dari exchange CoinEx tetap dibuka sampai 22 Desember, 10:00 UTC+8.",
+    "who": "Siapa pun yang punya aset di CSC atau OneSwap, dan siapa pun yang masih punya dana di akun exchange CoinEx.",
+    "todo": "Tenggat on-chain sudah lewat. Tarik dana dari akun exchange Anda sebelum 22 Desember. Setelah itu, USDT dipindahkan ke kustodi terpisah dengan biaya kustodi 5% per bulan; untuk mengambilnya, kirim email ke support@coinex.com paling lambat 22 Agustus 2028.",
+    "caution": "CoinEx menyatakan ini pengumuman terakhirnya, dan \"pengumuman baru\" apa pun atas namanya setelah ini adalah palsu.",
+    "official": ["Pengumuman CoinEx"]
+  },
+  "awe-stpt-migration": {
+    "name": "AWE Network: STPT ke AWE (pindah ke Base)",
+    "summary": "Penukaran STPT di Ethereum ke AWE di Base ditutup pada 21 September, dan AWE menyatakan penukaran terlambat tidak dimungkinkan.",
+    "deadlineNote": "Tenggatnya 21 September. AWE menyatakan sekitar 99% sudah dimigrasikan.",
+    "who": "Siapa pun yang masih memegang STPT.",
+    "todo": "AWE menyatakan penukaran terlambat tidak dimungkinkan. Nasib token yang tidak ditukar akan diputuskan lewat proposal tata kelola komunitas.",
+    "official": ["Blog AWE: jendela migrasi ditutup"]
+  },
+  "tether-alloy": {
+    "name": "Tether: Alloy by Tether dan aUSD₮ dihentikan",
+    "summary": "Alloy by Tether dan aUSD₮ dihentikan pada 17 September. Sebelum itu, pengguna harus mengembalikan aUSD₮ dan mengambil kembali jaminan XAU₮ mereka.",
+    "deadlineNote": "Tenggatnya 17 September.",
+    "who": "Siapa pun yang memakai XAU₮ sebagai jaminan di Alloy untuk mencetak aUSD₮.",
+    "todo": "Sebelum tenggat, pengguna harus mengembalikan aUSD₮ dan mengambil kembali jaminan XAU₮ mereka. Tether menyatakan hal ini tidak bisa lagi dilakukan lewat platform.",
+    "caution": "Tether belum menjelaskan apa yang terjadi pada jaminan setelah tenggat.",
+    "official": ["Pengumuman Tether"]
+  },
+  "trust-wallet-networks": {
+    "name": "Trust Wallet berhenti mendukung 24 jaringan",
+    "summary": "Sejak 15 September, Trust Wallet tidak lagi menampilkan 24 jaringan, tetapi asetnya tetap ada on-chain. Untuk chain EVM, Anda bisa menambahkan jaringannya sendiri sebagai jaringan kustom.",
+    "deadlineNote": "Pada 15 September, jaringan-jaringan ini hilang dari daftar dompet; Trust Handle berhenti lebih dulu, pada 7 September.",
+    "who": "Pengguna Trust Wallet yang punya aset di jaringan-jaringan ini: 15 chain EVM yang tercantum di atas dan 9 chain non-EVM.",
+    "todo": "Aset Anda tetap ada on-chain. Untuk chain EVM, tambahkan sendiri jaringannya sebagai jaringan kustom dengan RPC yang terverifikasi. Untuk chain non-EVM, impor dompet Anda ke dompet lain yang mendukung chain tersebut.",
+    "caution": "Gunakan hanya RPC dari dokumentasi resmi chain itu. Masukkan frasa pemulihan hanya di dalam aplikasi dompet tepercaya oleh Anda sendiri, jangan pernah di situs web.",
+    "official": ["Blog Trust Wallet"]
+  },
+  "vanar-vanry-migration": {
+    "name": "Vanar: VANRY pindah ke Base",
+    "summary": "Jendela untuk memindahkan VANRY ke Base ditutup pada 10 September, dan halaman Vanar menyatakan tidak ada lagi migrasi yang akan diproses.",
+    "deadlineNote": "Jendela penukaran berlangsung dari 11 Agustus, 13:00 UTC sampai 10 September, 13:00 UTC. Token yang masih dalam proses unstake di-airdrop di Base pada 11 September.",
+    "who": "Siapa pun yang memegang VANRY di Ethereum, Polygon, atau Vanar Chain.",
+    "todo": "Halaman Vanar menyatakan tidak ada migrasi setelah jendelanya ditutup. Jika Anda mulai unstake sebelum 10 September dan belum menerima token, kirim email ke Vanar.",
+    "official": ["Halaman penukaran Vanar"]
+  },
+  "superposition-shutdown": {
+    "name": "Chain Superposition sudah ditutup, kembali ke Arbitrum One",
+    "summary": "Chain Superposition ditutup pada 8 September. Superposition menyatakan aset yang tersisa di chain setelahnya \"mungkin tidak lagi bisa diakses\".",
+    "deadlineNote": "Chain ini ditutup pada 8 September.",
+    "who": "Siapa pun yang masih punya aset di Superposition saat chain ditutup.",
+    "todo": "Sebelum tenggat, pengguna harus keluar dari Camelot dan posisi lainnya, lalu memindahkan dana kembali ke Arbitrum One lewat native bridge Arbitrum atau Relay.",
+    "caution": "Per 5 November, belum ada rencana cadangan resmi yang diumumkan.",
+    "official": ["Superposition di X: pengumuman 4 Agustus"]
+  },
+  "arbitrum-nova-maintenance": {
+    "name": "Arbitrum Nova dalam mode pemeliharaan (tidak ditutup)",
+    "summary": "Sejak 2 September, Arbitrum Nova dalam mode pemeliharaan, bukan ditutup. Rekomendasinya adalah pindah ke Arbitrum One lewat bridge resmi.",
+    "deadlineNote": "Jendela migrasi berlangsung dari 4 Juni sampai 2 September. Sejak 2 September, chain ini hanya dalam pemeliharaan, dan akses RPC lebih terbatas.",
+    "who": "Siapa pun yang punya aset di Arbitrum Nova, termasuk pemegang MOON.",
+    "todo": "Pindah ke Arbitrum One lewat bridge resmi Arbitrum Portal. Untuk jumlah besar, tarik ke Ethereum dulu (ada masa sanggah 7 hari). MOON tidak punya rute langsung dan harus ke Ethereum dulu.",
+    "caution": "Bridge resmi tetap berfungsi di fase 3. Alchemy sudah menghentikan RPC Nova-nya.",
+    "official": ["Forum Arbitrum: FAQ Nova"]
+  },
+  "ton-old-bridge": {
+    "name": "Bridge TON lama (bridge-v3.ton.org) ditutup permanen",
+    "summary": "Bridge TON lama ditutup permanen pada 1 September. Wrapped TON di Ethereum dan BSC, serta jUSDT dan jUSDC di TON, perlu dipindahkan kembali lewat bridge sebelum itu.",
+    "deadlineNote": "Sejak 1 September, bridge lama tidak lagi memproses transfer apa pun.",
+    "who": "Siapa pun yang memegang Wrapped TON di Ethereum atau BNB Chain, atau jUSDT, jUSDC, dan token serupa di TON.",
+    "todo": "Sebelum tenggat, Wrapped TON di Ethereum dan BSC harus dipindahkan kembali ke TON lewat bridge, dan jUSDT, jUSDC, serta token serupa di TON kembali ke Ethereum.",
+    "caution": "Per 5 November, kanal resminya belum memposting rencana cadangan apa pun.",
+    "official": ["Kanal Telegram resmi TON Status"]
+  },
+  "dfk-chain-sunset": {
+    "name": "DeFi Kingdoms: DFK Chain dihentikan",
+    "summary": "DFK Chain dijadwalkan dihentikan pada 28 Agustus (sudah lewat). DeFi Kingdoms menyatakan tidak bisa memigrasikan JEWEL atau token non-DFK seperti BTC, ETH, USDC, dan AVAX, jadi pemegangnya harus memindahkannya sendiri lewat bridge sebelum itu.",
+    "deadlineNote": "Diumumkan pada 31 Juli, dengan penghentian dijadwalkan pada 28 Agustus.",
+    "who": "Siapa pun yang memegang JEWEL, atau token non-DFK seperti BTC, ETH, USDC, dan AVAX, di DFK Chain; penyedia likuiditas di sana; dan pengguna dompet pintar.",
+    "todo": "Yang diminta DeFi Kingdoms: pengguna dompet pintar memindahkan aset ke dompet standar sebelum memakai bridge, dan membongkar semua LP, termasuk pool dua aset asli DFK. Saat itu, tim menyatakan JEWEL bisa dipindahkan lewat bridge ke Avalanche C-Chain dan migrasi aset asli DFK sedang disiapkan, dengan detail menyusul.",
+    "caution": "DeFi Kingdoms menyatakan tidak bisa memigrasikan, mencetak ulang, atau mengendalikan JEWEL maupun token non-DFK. Pengumuman 31 Juli-nya tidak menjelaskan apa yang terjadi pada token yang masih ada di chain setelah 28 Agustus.",
+    "official": ["DeFi Kingdoms di X: pengumuman 31 Juli", "DeFi Kingdoms di X: yang perlu Anda lakukan"]
+  },
+  "moonbeam-glmr-base": {
+    "name": "Moonbeam: GLMR pindah ke Base",
+    "summary": "Tenggat migrasi GLMR ke Base lewat pada 31 Juli. Moonbeam meminta pemegang menarik dana dari protokol di chain itu dulu, lalu mem-bridge GLMR 1:1 ke Base. Pengumumannya tidak menyebut nasib GLMR yang tak dipindahkan.",
+    "deadlineNote": "Tenggatnya 31 Juli (tanpa jam atau zona waktu). Moonbeam menyatakan chain tetap berjalan selama masa transisi sampai 31 Juli, dan begitu chain dihentikan, dana yang tersisa di protokol on-chain \"mungkin tidak bisa diakses\". Pengumumannya tidak menyebut kapan chain berhenti.",
+    "who": "Pemegang GLMR di Moonbeam dan siapa pun yang punya dana di protokol di chain itu (likuiditas, pinjaman, kontrak staking, dan sebagainya). Untuk GLMR di exchange, Moonbeam menyatakan exchange akan menangani migrasinya secara otomatis.",
+    "todo": "Langkahnya: tarik dana dari protokol di chain itu dulu, lalu pindahkan GLMR lewat bridge 1:1 ke Base di halaman migrasi resmi. Pengumuman 3 Juli tidak menjelaskan apakah migrasi masih tersedia setelah tenggat atau bagaimana token yang tidak dipindahkan akan ditangani.",
+    "caution": "Halaman migrasi resminya `migrate.portal.moonbeam.network`; pengumuman 3 Juli tidak menyebut apakah halaman itu masih bisa dipakai setelah tenggat. Abaikan siapa pun yang mengirimi Anda DM menawarkan \"migrasi susulan\".",
+    "official": ["Berita Moonbeam: \"Moonbeam Network Relaunches on Base\"", "Moonbeam di X: pengumuman 3 Juli"]
+  },
+  "moonriver-movr-base": {
+    "name": "Moonriver: MOVR pindah ke Base",
+    "summary": "Tenggat migrasi MOVR ke Base lewat pada 31 Juli. Moonriver meminta pemegang menarik dana dari protokol di chain itu dulu, lalu mem-bridge MOVR 1:1 ke Base dalam dua langkah. Pengumumannya tidak menyebut nasib MOVR yang tak dipindahkan.",
+    "deadlineNote": "Tenggatnya 31 Juli (tanpa jam atau zona waktu). Moonriver menyatakan begitu chain dihentikan, dana yang tersisa di protokol on-chain \"mungkin tidak bisa diakses selamanya\". Pengumumannya tidak menyebut kapan chain berhenti.",
+    "who": "Pemegang MOVR di Moonriver dan siapa pun yang punya dana di protokol di chain itu (likuiditas, pinjaman, kontrak staking, dan sebagainya). Untuk MOVR di exchange, Moonriver menyatakan tidak perlu melakukan apa pun; exchange menanganinya secara otomatis.",
+    "todo": "Langkahnya: tarik dana dari protokol di chain itu dulu, lalu pindahkan lewat bridge dalam dua tahap di halaman migrasi resmi. MOVR pindah dari Moonriver ke Moonbeam (sebagai xcMOVR), lalu bridge migrasi mengubahnya menjadi MOVR di Base, 1:1 tanpa biaya. Pengumuman 7 Juli tidak menyebut apakah migrasi masih bisa dilakukan setelah tenggat.",
+    "caution": "Halaman migrasi resminya `migrate.portal.moonbeam.network`, tempat kontrak terkait juga bisa diverifikasi. Pengumuman 7 Juli tidak menyebut apakah portal migrasi masih bisa dipakai setelah tenggat. Abaikan siapa pun yang mengirimi Anda DM menawarkan \"migrasi susulan\".",
+    "official": ["Berita Moonbeam: \"MOVR is Migrating to Base\"", "Moonriver di X: pengumuman 7 Juli"]
+  }
+}

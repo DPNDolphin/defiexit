@@ -1,0 +1,134 @@
+{
+  "title": "Lấy khoản khóa OKX Boost về ví của bạn",
+  "short": "OKX Boost về ví của bạn",
+  "verified": "Đã thử vào tháng 10/2026 bằng chính tài khoản của tác giả trong ứng dụng OKX, làm theo hướng dẫn này: địa chỉ tương tác, mạng và số tiền trên trang xác nhận đều khớp với thẻ kiểm tra, và OKB gốc về ví vài giây sau đó. Mã nguồn của hợp đồng khóa đã được xác minh trên trình khám phá OKX. Hợp đồng không có quản trị viên, chỉ địa chỉ đã khóa token mới rút được, và tiền chỉ trả về đúng địa chỉ đó",
+  "covers": "OKB, USDT0 và USDG đã khóa trên X Layer cho chương trình Plasma X Launch của OKX Boost",
+  "summary": "Để tham gia Plasma X Launch của OKX Boost, bạn phải khóa token trên X Layer (0.5 OKB, 200 USDT0 hoặc 200 USDG). Số token này không tự quay về, và một năm sau vẫn còn hơn một nghìn địa chỉ chưa rút ra. Mở trang chương trình trong ứng dụng OKX, nhấn Unstake (hủy stake) một lần, và tiền sẽ về lại ví của bạn.",
+  "facts": [
+    ["Giao dịch", "1 giao dịch thông thường. Không cấp quyền, không cần ký thông điệp"],
+    ["Phí", "Dưới $0.01, trả bằng OKB trong ví của bạn trên X Layer"],
+    ["Thời gian", "Khoảng 2 phút. Tiền về vài giây sau khi bạn xác nhận"],
+    ["Bạn cần", "Ứng dụng OKX, đã chuyển sang đúng tài khoản đã khóa token, và một ít OKB trên X Layer để trả phí"]
+  ],
+  "chips": ["Khoảng 2 phút", "1 giao dịch, không cấp quyền", "Phí dưới một cent"],
+  "support": {
+    "label": "Trung tâm trợ giúp OKX",
+    "url": "https://www.okx.com/help",
+    "note": "OKX không bao giờ nhắn tin riêng cho bạn trước. Bất kỳ ai nhắn tin cho bạn và tự xưng là nhân viên hỗ trợ đều là kẻ lừa đảo."
+  },
+  "official": [{"label": "Trang chương trình OKX Boost", "url": "https://web3.okx.com/boost/x-launch/plasma"}],
+  "vars": {
+    "addrShort": "địa chỉ của chính bạn",
+    "got": "số token bạn đã khóa (thường là 0.5 OKB)",
+    "sym": "loại token bạn đã khóa"
+  },
+  "pro": [
+    "**Lộ trình**: ứng dụng OKX, Web3 ở trên cùng → tab khám phá ở dưới cùng (biểu tượng thứ hai) → dán `https://web3.okx.com/boost/x-launch/plasma` vào ô tìm kiếm → kết quả trang web bên thứ ba → **mở trong ứng dụng** khi được hỏi → cuộn xuống phần chi tiết staking → nút hủy stake → xác nhận.",
+    "**Một giao dịch**: `unlock(bytes32 key, address token)` đến hợp đồng khóa của OKX Boost 0xDA63…FD2b. Giao dịch gửi 0 OKB, không cần cấp quyền và không cần ký thông điệp. Key là `lp:175` được đệm thêm dấu cách cho đủ 32 byte; OKB gốc được ghi dưới dạng token 0xEeee…EEeE.",
+    "**Số liệu của bạn**: {{got}}.",
+    "**Dễ nhầm**: bản web không kết nối được với ví bên trong ứng dụng OKX (sẽ báo ví không được hỗ trợ), nên khi được hỏi, luôn chọn mở trang trong ứng dụng. Bạn cần một ít OKB trên X Layer để trả phí. Hợp đồng không có hạn chót: có thể rút bất cứ lúc nào sau khi mở khóa."
+  ],
+  "done": {
+    "where": "trên mạng X Layer trong ví của bạn",
+    "from": "Gửi từ hợp đồng khóa của OKX Boost",
+    "look": "Xem ở đâu: trong ứng dụng OKX, mở token bạn đã khóa (thường là OKB) trong ví và xem lịch sử giao dịch của token đó."
+  },
+  "screens": {
+    "web": {"name": "Bản web của trang chương trình (nút Connect wallet màu đen ở dưới cùng)", "features": ["Thanh địa chỉ phía trên ghi web3.okx.com", "Plasma X Launch, bên dưới có dòng chữ lớn 15,000,000 XPL", "Một nút Connect wallet màu đen ở cuối cùng"], "do": "Đây là bản web, không kết nối được với ví bên trong ứng dụng OKX. Đừng nhấn Connect wallet: nhấn dấu × ở góc trên bên trái để đóng, dán lại đường dẫn như ở bước 1, và khi được hỏi có dùng phiên bản ứng dụng không, hãy nhấn nút thứ nhất, nút in đậm.", "images": [{"src": "ok-web.webp", "caption": "① Nhấn **×** ở góc trên bên trái ✗ Đừng nhấn Connect wallet"}]},
+    "jump": {"name": "Cửa sổ bật lên đề nghị dùng phiên bản ứng dụng", "features": ["Một cửa sổ trắng ở giữa trang bị làm mờ xám", "Có dòng đề nghị dùng phiên bản ứng dụng để trải nghiệm mượt hơn", "Hai nút: một nút in đậm ở trên, Cancel ở dưới"], "do": "Nhấn nút in đậm ở trên. Nút đó mở trang chương trình của chính ứng dụng OKX. Đừng nhấn Cancel: bạn sẽ bị giữ lại ở bản web, vốn không kết nối được với ví."},
+    "unsupported": {"name": "Thông báo ví không được hỗ trợ", "features": ["Một bảng ở dưới cùng có biểu tượng cảnh báo màu cam", "Thông báo yêu cầu bạn chuyển sang tiện ích mở rộng OKX Wallet để tham gia chương trình", "Hai nút: Cancel và một nút chuyển ví màu xanh lá"], "do": "Bạn đã nhấn Connect wallet ở bản web, vốn không hoạt động bên trong ứng dụng OKX. Nhấn **Cancel**, đóng trang bằng dấu × ở góc trên bên trái, mở lại như ở bước 1, và chọn phiên bản ứng dụng khi được hỏi. Đừng nhấn nút chuyển ví.", "images": [{"src": "ok-unsupported.webp", "caption": "① Nhấn **Cancel** ✗ Đừng nhấn nút chuyển ví màu xanh lá"}]},
+    "sign": {"name": "Ví yêu cầu bạn ký một thông điệp, hoặc cấp quyền (Approve / Permit)", "do": "Nhấn **Reject** (Từ chối). Hướng dẫn này chỉ gồm một giao dịch thông thường: không ký thông điệp, không cấp quyền. Bản web của web3.okx.com có yêu cầu chữ ký để đăng nhập, nhưng hướng dẫn này không dùng bản web: đóng trang, mở lại như ở bước 1, và chọn phiên bản ứng dụng khi được hỏi.", "images": [{"src": "ok-sign.webp", "caption": "① Nhấn **Reject** (Từ chối) ✗ Đừng xác nhận"}]},
+    "wrong-to": {"name": "Địa chỉ tương tác không phải 0xDA63E89d…2C0795FD2b, hoặc số tiền có dấu trừ", "do": "Hãy từ chối. Hướng dẫn này chỉ gửi đến hợp đồng khóa của OKX Boost 0xDA63E89dd0632Db71c89c031de11542C0795FD2b, và bạn là người nhận tiền (số tiền dương): hướng dẫn không bao giờ yêu cầu bạn gửi token đi. Đóng trang và làm lại từ bước 1."},
+    "domain": {"name": "Thanh địa chỉ không ghi web3.okx.com", "do": "Đóng trang ngay và đừng ký bất cứ thứ gì. Tự dán `https://web3.okx.com/boost/x-launch/plasma`; đừng nhấn vào đường dẫn người khác gửi cho bạn."}
+  },
+  "steps": {
+    "open": {
+      "title": "Mở trang chương trình trong ứng dụng OKX",
+      "items": [
+        "Trước tiên nhấn vào đường dẫn này để sao chép: `https://web3.okx.com/boost/x-launch/plasma`",
+        "Dưới đây là các bước trong ứng dụng OKX, mỗi lần nhấn một hình. Chúng tôi thử ứng dụng bằng tiếng Trung, nên ảnh chụp là tiếng Trung. Nếu ứng dụng của bạn dùng ngôn ngữ khác, ví dụ tiếng Anh, hãy tìm nút có chức năng đúng như từng chú thích mô tả, và dừng lại nếu không tìm thấy hoặc những gì bạn thấy không khớp."
+      ],
+      "copy": ["https://web3.okx.com/boost/x-launch/plasma"],
+      "images": [
+        "① Bạn đang đọc trang này trong ứng dụng OKX? Sao chép đường dẫn xong, nhấn **×** ở góc trên bên trái để đóng trang, làm xong thì quay lại. Đang đọc trên trình duyệt khác? Chỉ cần mở ứng dụng OKX",
+        "② Chọn **Web3** ở trên cùng ③ Nhấn tab khám phá, biểu tượng thứ hai ở thanh dưới cùng. Số tiền trong hình đã được che; dòng OKX Boost X Launch trong mục DeFi chính là khoản khóa này",
+        "④ Nhấn ô tìm kiếm ở trên cùng",
+        "⑤ Nhấn giữ ô tìm kiếm, rồi nhấn **Paste** (Dán)",
+        "⑥ Nhấn vào kết quả trang web bên thứ ba bên dưới. Ví gắn nhãn như vậy cho mọi địa chỉ web; địa chỉ phía sau phải bắt đầu đúng chính xác bằng **https://web3.okx.com/**",
+        "⑦ Một cửa sổ bật lên đề nghị dùng phiên bản ứng dụng: nhấn nút thứ nhất, nút in đậm, để mở tính năng này trong ứng dụng. Thanh địa chỉ trong khung vàng phải ghi đúng chính xác **web3.okx.com**, không thừa gì ở trước hay sau ✗ Đừng nhấn Cancel: bản web không kết nối được với ví bên trong ứng dụng",
+        "⑧ Đây là trang chương trình của chính ứng dụng OKX. Góc trên bên phải hiện tài khoản hiện tại, tài khoản này phải là tài khoản đã khóa token"
+      ],
+      "situations": {
+        "web-page": {"see": "Bản web đã mở: phía trên có thanh địa chỉ ghi web3.okx.com và phía dưới có nút Connect wallet màu đen", "do": "Bản web không kết nối được với ví bên trong ứng dụng OKX. Đừng nhấn Connect wallet: đóng trang bằng dấu × ở góc trên bên trái, dán lại đường dẫn, và nhấn nút in đậm **mở trong ứng dụng** khi cửa sổ bật lên xuất hiện."},
+        "no-dialog": {"see": "Không thấy cửa sổ bật lên đề nghị dùng phiên bản ứng dụng", "do": "Trong các lần chúng tôi thử, cửa sổ này lần nào cũng xuất hiện. Nếu không thấy, hãy đóng trang bằng dấu × ở góc trên bên trái và dán lại đường dẫn. Nếu vẫn không được, nhấn \"Bị kẹt?\" ở góc trên bên phải và gửi báo cáo cho chúng tôi."},
+        "unsupported": {"see": "Có thông báo ví không được hỗ trợ và yêu cầu bạn chuyển sang tiện ích mở rộng OKX Wallet", "do": "Bạn đã nhấn Connect wallet ở bản web. Nhấn **Cancel**, đóng trang, mở lại như trên, và chọn phiên bản ứng dụng khi được hỏi. Đừng nhấn nút chuyển ví."},
+        "sign-login": {"see": "Một yêu cầu chữ ký từ web3.okx.com bắt đầu bằng Welcome to OKX Wallet", "do": "Đó là bản web yêu cầu bạn đăng nhập, và hướng dẫn này không cần đến. Nhấn **Reject** (Từ chối), đóng trang, mở lại như trên, và chọn phiên bản ứng dụng khi được hỏi."},
+        "third-party": {"see": "Kết quả tìm kiếm gọi đây là trang web bên thứ ba", "do": "Điều đó là bình thường: ví gắn nhãn như vậy cho mọi địa chỉ web. Kiểm tra địa chỉ phía sau: phải bắt đầu đúng chính xác bằng **https://web3.okx.com/**, có dấu gạch chéo ngay sau okx.com và không chen thêm gì ở giữa."},
+        "no-paste": {"see": "Nhấn giữ ô tìm kiếm mà không thấy Paste", "do": "Quay lại trang này và nhấn vào đường dẫn lần nữa để sao chép. Trên iPhone, nhấn Allow Paste (Cho phép dán) nếu được hỏi. Nếu vẫn không được, hãy tự gõ `https://web3.okx.com/boost/x-launch/plasma`."},
+        "wrong-account": {"see": "Tài khoản ở góc trên bên phải không phải tài khoản đã khóa token", "do": "Quay về trang chủ ví, nhấn hình tam giác nhỏ cạnh tên tài khoản và chuyển sang tài khoản đã khóa token (một ví OKX có thể chứa nhiều tài khoản), rồi mở lại trang. Ở sai tài khoản thì bạn sẽ không thấy phần chi tiết staking."},
+        "extension": {"see": "Tôi dùng tiện ích mở rộng OKX Wallet trên máy tính", "do": "Chúng tôi mới chỉ thử hướng dẫn này trên ứng dụng OKX trên điện thoại. Các bước trên tiện ích mở rộng chưa được kiểm tra, nên hiện tại đừng làm theo hướng dẫn này trên máy tính. Nếu tài khoản này có trong ứng dụng OKX trên điện thoại, hãy dùng ứng dụng; nếu không chắc, nhấn \"Bị kẹt?\" ở góc trên bên phải và gửi báo cáo cho chúng tôi."}
+      }
+    },
+    "unstake": {
+      "title": "Hủy stake",
+      "note": "Giao dịch duy nhất",
+      "milestone": "Hủy stake",
+      "images": [
+        "① Cuộn lên đến phần chi tiết staking (dòng đã stake là số bạn đã khóa, khoảng {{got}}) và nhấn nút hủy stake bên dưới",
+        "② Trang xác nhận hủy stake mở ra. Trước tiên hãy đối chiếu với thẻ bên dưới, và chỉ khi cả ba khung vàng đều khớp mới nhấn nút xác nhận màu xanh lá. Phần bị che trong hình là địa chỉ của chính bạn"
+      ],
+      "check": {
+        "title": "Trước khi xác nhận, kiểm tra 3 điều",
+        "lead": "Đây là trang xác nhận của chính ứng dụng OKX. Hãy đối chiếu với danh sách này và nhấn vào từng mục khi đã khớp.",
+        "confirm": [
+          {"title": "Đây là trang xác nhận hủy stake, trên X Layer", "sub": "Đó là trang của chính ứng dụng OKX, không phải cửa sổ bật lên từ một trang web"},
+          {"title": "Địa chỉ tương tác là 0xDA63E89d…2C0795FD2b (hợp đồng khóa của OKX Boost)", "sub": "Địa chỉ đầy đủ là 0xDA63E89dd0632Db71c89c031de11542C0795FD2b. Ít nhất phần đầu 0xDA63E89d và phần cuối 2C0795FD2b phải khớp chính xác đến từng ký tự"},
+          {"title": "Số tiền có dấu cộng: +{{got}}", "sub": "Dấu cộng nghĩa là tiền bạn nhận. Phí mạng bên dưới thấp hơn $0.01"}
+        ],
+        "reject": ["Số tiền có dấu trừ, hoặc yêu cầu bạn gửi bất kỳ token nào", "Có ghi Approve hoặc Permit", "Đó là yêu cầu chữ ký bắt bạn ký một thông điệp", "Địa chỉ tương tác không khớp với 0xDA63E89d…2C0795FD2b"],
+        "normal": [
+          "Dòng ví hiện tại là địa chỉ của chính bạn, bên dưới có tên tài khoản",
+          "Sau khi bạn nhấn Confirm, điện thoại sẽ hỏi Face ID, vân tay hoặc mật khẩu",
+          "Đầu tiên hiện thông báo giao dịch đã được xác nhận, sau đó là thông báo hủy stake thành công"
+        ]
+      },
+      "situations": {
+        "no-section": {"see": "Cuộn xuống mà không có khối chi tiết staking", "do": "Tài khoản này không có gì đang khóa trong chương trình: hoặc là đã rút rồi, hoặc đây không phải tài khoản đã khóa token. Kiểm tra tài khoản ở góc trên bên phải, và nhấn \"Bị kẹt?\" ở góc trên bên phải để kiểm tra trực tiếp."},
+        "low-gas": {"see": "Báo không trả được phí hoặc số dư quá thấp", "do": "Bạn cần một ít OKB trên X Layer để trả phí (dưới $0.01). Trước tiên hãy gửi một ít OKB vào địa chỉ này trên X Layer (0.001 là dư), rồi quay lại và nhấn lần nữa."},
+        "rejected": {"see": "Lỡ nhấn từ chối", "do": "Không có gì bị chuyển. Quay lại trang chương trình và nhấn nút hủy stake lần nữa."},
+        "spinning": {"see": "Đã nhấn Confirm mà cứ quay vòng mãi", "do": "Chờ một phút và đừng nhấn lại. Sau đó nhấn \"Bị kẹt?\" ở góc trên bên phải để kiểm tra trực tiếp: chúng tôi xem hợp đồng khóa trên chuỗi, nên biết ngay tiền đã ra hay chưa."},
+        "sign": {"see": "Đó là yêu cầu chữ ký, không phải trang xác nhận hủy stake", "do": "Hãy từ chối. Hủy stake là giao dịch thông thường và không cần ký thông điệp. Nhiều khả năng bạn đang ở bản web: quay lại bước 1 và chọn phiên bản ứng dụng khi được hỏi."},
+        "wrong-to": {"see": "Địa chỉ tương tác không phải 0xDA63E89d…2C0795FD2b", "do": "Từ chối ngay."}
+      }
+    },
+    "arrive": {
+      "title": "Kiểm tra tiền đã về",
+      "milestone": "Đã về",
+      "images": [
+        "① Thông báo phía trên cho biết hủy stake thành công, và khối chi tiết staking đã biến mất: tiền đã về ví của bạn ② Để xem trong ví, nhấn **‹** ở góc trên bên trái để đóng trang chương trình, rồi nhấn dấu × ở góc trên bên trái của trang web",
+        "③ Quay về trang chủ ví (OKX ở dưới cùng), mở danh sách token của bạn ④ Nhấn **OKB** (hoặc USDT0 / USDG nếu đó là token bạn đã khóa). Số dư trong hình đã được che",
+        "⑤ Lịch sử giao dịch có thêm một mục hủy stake mới từ OKX Boost, +{{got}}. Số dư, địa chỉ và ngày trong hình đã được che"
+      ],
+      "check": {
+        "title": "Kiểm tra tiền đã về",
+        "rows": [
+          ["Mất bao lâu", "Vài giây sau khi bạn xác nhận"],
+          ["Xem ở đâu", "Trong ứng dụng OKX, mở {{sym}} trong ví và xem lịch sử giao dịch"],
+          ["Bạn sẽ thấy", "Thêm {{got}}, trong một mục hủy stake từ OKX Boost"],
+          ["Bản ghi trên chuỗi", "Tiền đến từ hợp đồng khóa của OKX Boost 0xDA63…FD2b và về đúng địa chỉ của bạn"],
+          ["Nếu chưa về", "Nhấn \"Bị kẹt?\" ở góc trên bên phải để kiểm tra trực tiếp: chúng tôi xem hợp đồng khóa trên chuỗi"]
+        ],
+        "foot": "Tiền về là xong. Nếu bạn đã khóa OKB, thứ trả về là chính OKB (coin gốc của X Layer), không phải WOKB"
+      },
+      "situations": {
+        "not-wokb": {"see": "Tôi đã khóa OKB: thứ trả về là OKB hay WOKB?", "do": "Là chính OKB (coin gốc của X Layer), không phải WOKB."},
+        "usdt0": {"see": "Tôi đã khóa USDT0 hoặc USDG", "do": "Bạn nhận lại đúng loại token đó với đúng số lượng đó. Hãy tìm USDT0 hoặc USDG trong danh sách tài sản của ví."},
+        "no-record": {"see": "Không thấy mục đó trong lịch sử giao dịch", "do": "Nhấn \"Bị kẹt?\" ở góc trên bên phải để kiểm tra trực tiếp: nếu khoản khóa của bạn trong hợp đồng là 0, tức là tiền đã ra. Lịch sử của ví đôi khi cần một lúc mới hiện."}
+      }
+    }
+  },
+  "sources": [
+    "Trình khám phá OKX · Hợp đồng khóa của OKX Boost (mã nguồn đã xác minh)",
+    "OKX Boost · Trang chương trình Plasma X Launch"
+  ]
+}

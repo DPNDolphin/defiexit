@@ -1,0 +1,244 @@
+{
+  "title": "Rút số dư Hyperliquid về ví của bạn",
+  "short": "Hyperliquid về ví của bạn",
+  "verified": "Đã thử trên tài khoản thật ngày 27/10/2026: làm theo hướng dẫn này, số tiền nhận được khớp với ước tính, chênh lệch không quá 0.01 USDC.",
+  "fieldTests": [
+    "Đã rút bằng ví Binance theo hướng dẫn này; số tiền nhận được khớp với ước tính. Giữa chừng có hiện cửa sổ Account Type Update (Unified Account). Sau khi xác nhận thì không cần bước chuyển tiền nữa, và hướng dẫn nay đã có nhánh này."
+  ],
+  "covers": "USDC trong tài khoản, và USDH hiện không còn được phát hành",
+  "summary": "Bạn vẫn còn USDC trên Hyperliquid, hoặc một ít USDH, một stablecoin không còn được phát hành? Hãy bán USDH lấy USDC, rồi rút toàn bộ một lần về ví của bạn trên Arbitrum.",
+  "movesBy": "Hyperliquid",
+  "facts": [
+    ["Chữ ký", "2–3 lần, tất cả đều chỉ là chữ ký, không tốn gas"],
+    ["Phí", "1 USDC, trừ vào số tiền rút"],
+    ["Thời gian", "Khoảng 10 phút thao tác; tiền rút về sau khoảng 5 phút"],
+    ["Bạn cần", "Không cần gì. Bạn không cần ETH trên Arbitrum"]
+  ],
+  "chips": ["Khoảng 10 phút", "2–3 chữ ký", "Không tốn gas; rút tiền mất phí 1 USDC"],
+  "support": {
+    "label": "Hỗ trợ chính thức của Hyperliquid",
+    "note": "Tài liệu của Hyperliquid cho biết hỗ trợ chỉ diễn ra qua ticket trong kênh open-ticket trên Discord chính thức, hoặc qua biểu mẫu email chính thức. Bất kỳ \"nhân viên hỗ trợ\" nào nhắn tin riêng cho bạn đều là kẻ lừa đảo."
+  },
+  "official": [{"label": "Trang chính thức của Hyperliquid"}],
+  "vars": {
+    "addrShort": "địa chỉ của chính bạn",
+    "usdhSell": "số USDH của bạn (2 chữ số thập phân)",
+    "orderMin": "số lượng × 0.995",
+    "spotAfter": "số tiền thu được từ lệnh bán",
+    "withdrawAmt": "toàn bộ số dư của bạn",
+    "arrive": "số tiền rút trừ đi 1"
+  },
+  "pro": [
+    "**Lộ trình**: USDH không còn được phát hành → bán trên thị trường spot lấy USDC bằng lệnh giới hạn ở giá {{floorPx}} hoặc tốt hơn → Withdraw to Arbitrum. Phí 1 USDC, về ví sau khoảng 5 phút.",
+    "**Chế độ tài khoản**: tài khoản hợp nhất (mặc định mới) rút trực tiếp được. Tài khoản tách riêng kiểu cũ phải chuyển USDC từ spot sang Perps bằng Perps ⇄ Spot trước.",
+    "**Số liệu của bạn**: bán {{usdhSell}} USDH, rút {{withdrawAmt}} USDC, nhận về khoảng {{arrive}} USDC.",
+    "**Chữ ký**: 2–3 chữ ký EIP-712, không tốn gas. Kiểm tra hai điều: tên miền là app.hyperliquid.xyz, và destination đúng là {{addrShort}}.",
+    "**Dễ nhầm**: tìm USDH sẽ ra cả USDHL, hãy chọn cho đúng. Nhấn vào sổ lệnh bên phải sẽ ghi đè giá bạn đã nhập."
+  ],
+  "done": {
+    "where": "trên mạng Arbitrum trong ví của bạn",
+    "from": "Gửi từ cầu nối chính thức của Hyperliquid 0x2Df1…3dF7",
+    "look": "Xem ở đâu: ứng dụng ví → Assets (Tài sản) → USDC → dòng Arbitrum."
+  },
+  "steps": {
+    "open": {
+      "title": "Mở trang chính thức trong ứng dụng ví",
+      "items": [
+        "Mở ứng dụng ví (ví dụ thẻ Wallet trong ứng dụng Binance) và đảm bảo ví đang được chọn là ví chứa số tiền này.",
+        "Mở `https://app.hyperliquid.xyz` trong trình duyệt DApp có sẵn của ví. Nhớ gõ cả https://, nếu không ví sẽ coi đó là từ khóa tìm kiếm.",
+        "Khi trang tải xong, kiểm tra thanh địa chỉ: tên miền phải đúng chính xác là **app.hyperliquid.xyz**. Thừa một chữ cái hay thiếu một dấu chấm nghĩa là đó không phải trang thật.",
+        "✗ Nếu trang báo khu vực của bạn không được sử dụng (restricted jurisdiction), hãy dừng ở đây. Hướng dẫn này không bao gồm việc lách giới hạn khu vực."
+      ],
+      "situations": {
+        "search-instead": {"see": "Gõ địa chỉ thì lại ra kết quả tìm kiếm", "do": "Gõ đầy đủ địa chỉ, có https:// ở đầu: `https://app.hyperliquid.xyz`."},
+        "restricted": {"see": "Trang báo khu vực của bạn không được sử dụng (restricted jurisdiction)", "do": "Dừng ở đây. Hướng dẫn này không bao gồm việc lách giới hạn khu vực."},
+        "not-sure": {"see": "Bạn không chắc đó là trang chính thức", "do": "Kiểm tra thanh địa chỉ: tên miền phải đúng chính xác là **app.hyperliquid.xyz**. Nếu không phải, hãy đóng trang và tự gõ địa chỉ. Không bao giờ dùng đường dẫn người khác gửi cho bạn."}
+      }
+    },
+    "connect": {
+      "title": "Kết nối ví",
+      "note": "Chỉ kết nối. Không có chữ ký, không có tiền nào bị chuyển",
+      "images": [
+        "① Nhấn **Connect** ở góc trên bên phải",
+        "① Chọn **Default Wallet**. Ví sẽ hỏi có kết nối không: nếu yêu cầu đến từ app.hyperliquid.xyz, nhấn Connect (Kết nối)",
+        "① Địa chỉ của bạn hiện ở góc trên bên phải (trong ảnh đã làm mờ). Địa chỉ đó phải là {{addrShort}} ② Nhấn vào tên thị trường bên trái để mở danh sách"
+      ],
+      "situations": {
+        "no-popup": {"see": "Đã nhấn Connect nhưng ví không hỏi kết nối", "do": "Mở trang trong trình duyệt DApp có sẵn của ứng dụng ví (bước 1). Trình duyệt thông thường trên điện thoại không kết nối được với ví của bạn."},
+        "wrong-address": {"see": "Địa chỉ ở góc trên bên phải không phải địa chỉ đang chứa tiền", "do": "Chuyển sang đúng ví trong ứng dụng ví, rồi kết nối lại. Nếu địa chỉ không khớp, đừng làm tiếp."},
+        "wrong-origin": {"see": "Yêu cầu kết nối không đến từ app.hyperliquid.xyz", "do": "Nhấn Reject (Từ chối) và đóng trang. Đó có thể không phải trang chính thức."}
+      }
+    },
+    "search": {
+      "title": "Tìm thị trường USDH",
+      "whenText": "Chỉ cần nếu bạn có USDH (từ bước này đến bước 6)",
+      "images": [
+        "① Gõ USDH vào ô tìm kiếm ② Nhấn **USDH/USDC** (bên dưới có ghi SPOT) ✗ Đừng nhấn USDHL/USDC: đó là đồng khác, tên chỉ khác một chữ cái"
+      ],
+      "situations": {
+        "two-results": {"see": "Hiện cả USDH lẫn USDHL", "do": "Chọn **USDH/USDC**, cái có ghi SPOT. USDHL là đồng khác; tên chỉ khác nhau một chữ cái."},
+        "not-found": {"see": "Không thấy USDH", "do": "Kiểm tra chính tả (U-S-D-H). Vẫn không thấy? Nhấn **All** ở bên phải ô tìm kiếm rồi tìm lại."}
+      }
+    },
+    "panel": {
+      "title": "Mở bảng bán và chuyển sang lệnh giới hạn",
+      "images": [
+        "! Khung vàng là thông báo của chính Hyperliquid: USDH không còn được phát hành, nên người mua trên thị trường này sẽ ngày càng thưa đi. Bán càng sớm càng tốt",
+        "① Nhấn **Trade** ở dưới cùng",
+        "① Nhấn mũi tên nhỏ cạnh **Market** ở góc trên bên trái",
+        "① Chọn **Limit** (lệnh giới hạn chỉ khớp ở giá của bạn hoặc tốt hơn)"
+      ],
+      "situations": {
+        "no-limit": {"see": "Trong danh sách thả xuống không có Limit", "do": "Nhấn mũi tên nhỏ cạnh Market ở góc trên bên trái, chỗ khung đỏ trong ảnh chụp phía trên."}
+      }
+    },
+    "fill": {
+      "title": "Điền lệnh bán",
+      "note": "Điền ngay bây giờ; bước sau mới bật giao dịch",
+      "images": [
+        "① Nhấn **Sell** ② Price (giá): {{floorPx}} ③ Amount (số lượng): {{usdhSell}} (ảnh chụp chỉ là số ví dụ) ④ Liếc qua Order Value: khoảng {{orderMin}} USDC, mức thấp nhất bạn sẽ nhận ⑤ Nhấn **Enable Trading**"
+      ],
+      "items": [
+        "! Các con số màu xanh lá bên phải là lệnh mua của người khác. Lệnh bán của bạn sẽ khớp vào đó, thường ở giá tốt hơn 0.995. **Đừng nhấn vào chúng**: nhấn vào sẽ ghi đè giá bạn đã nhập."
+      ],
+      "situations": {
+        "value-off": {"see": "Order Value lệch xa so với con số ở đây", "do": "Có lẽ giá hoặc số lượng bị sai: giá {{floorPx}}, số lượng {{usdhSell}}. Nếu bạn đã nhấn vào các con số xanh lá bên phải, giá đã bị ghi đè; hãy nhập lại."},
+        "not-enough": {"see": "Trang báo số dư không đủ cho số lượng đó", "do": "Có thể một phần USDH của bạn đang bị khóa trong một lệnh bán chưa khớp. Phần kiểm tra trực tiếp ở trên cho biết bạn thực sự bán được bao nhiêu. Nếu chưa nhập địa chỉ, hãy nhập ở trên trước."},
+        "place-order": {"see": "Nút đã ghi Place Order, không phải Enable Trading", "do": "Giao dịch đã được bật từ trước. Bỏ qua bước \"Bật giao dịch\" và đi thẳng đến \"Đặt lệnh bán\"."}
+      }
+    },
+    "enable": {
+      "title": "Bật giao dịch",
+      "note": "Chữ ký 1",
+      "grantsText": "Sau khi bạn ký, khóa đặt lệnh này có thể đặt lệnh thay bạn trên Hyperliquid mà ví không bật lên hỏi. Hãy đối chiếu thẻ từng dòng, và nhấn Reject (Từ chối) nếu có gì không khớp.",
+      "images": [
+        "① Để trống ô **Stay Connected** (không đánh dấu) ② Nhấn **Establish Connection**. Ví sẽ yêu cầu chữ ký: hãy đối chiếu với thẻ bên dưới"
+      ],
+      "check": {
+        "title": "Trước khi ký, kiểm tra 3 điều",
+        "lead": "Sau khi bạn nhấn Establish Connection, ví sẽ hiện yêu cầu chữ ký. Hãy so với thẻ này và đánh dấu từng dòng khi đã kiểm tra.",
+        "skip": "Giao dịch đã bật và nút ghi Place Order? Bỏ qua bước này",
+        "confirm": [
+          {"title": "Yêu cầu đến từ app.hyperliquid.xyz", "sub": "Thừa một chữ cái hay thiếu một dấu chấm là thành trang khác"},
+          {"title": "Có ghi ApproveAgent và Mainnet", "sub": "Việc này tạo ra một khóa chỉ dùng để đặt lệnh. Tài liệu của Hyperliquid cho biết khóa này không thể gửi tiền cho ai, cũng không thể rút tiền"},
+          {"title": "Chỉ là chữ ký: không có số tiền, không có người nhận", "sub": "Không tốn tiền và không mất phí"}
+        ],
+        "reject": ["Yêu cầu bạn gửi tiền, hoặc có hiện số tiền", "Có nhắc đến Permit, hoặc cấp quyền (Approve) cho token", "Không đến từ app.hyperliquid.xyz"],
+        "normal": [
+          "agentAddress là một địa chỉ ngẫu nhiên, mỗi lần một khác: đó là khóa đặt lệnh tạm thời do trang tạo ra",
+          "chainId có thể hiện 42161 hoặc 56. Cả hai đều được; nó theo mạng hiện tại của ví",
+          "verifyingContract toàn là số không. Cũng bình thường"
+        ]
+      },
+      "situations": {
+        "no-approve-agent": {"see": "Yêu cầu chữ ký không nhắc đến ApproveAgent", "do": "Nhấn Reject (Từ chối). Thẻ không khớp thì đừng ký."},
+        "no-change": {"see": "Đã ký nhưng trang không thay đổi gì", "do": "Chờ vài giây. Nếu nút vẫn chưa ghi Place Order, hãy tải lại trang, kết nối lại ví và nhấn Establish Connection lần nữa. Ký lần thứ hai là bình thường."},
+        "chain-id": {"see": "Yêu cầu hiện chainId 42161 hoặc 56", "do": "Đó là bình thường. Nó theo mạng hiện tại của ví và không thay đổi gì."}
+      }
+    },
+    "order": {
+      "title": "Đặt lệnh bán",
+      "note": "Bước này ví sẽ không bật lên",
+      "milestone": "Bán USDH",
+      "movesText": "Lệnh bán này trên Hyperliquid được ký bằng khóa đặt lệnh bạn đã cấp quyền ở bước trước, nên ví không bật lên. DeFiExit không bao giờ chạm vào tiền của bạn.",
+      "items": [
+        "Khi bạn ký xong, trang hiện Established connection, và nút Enable Trading chuyển thành **Place Order**.",
+        "Kiểm tra lại một lần nữa: Sell / giá {{floorPx}} / số lượng {{usdhSell}} (nếu bị xóa thì nhập lại).",
+        "Nhấn Place Order. Nếu hiện hộp Confirm Order, hãy kiểm tra lại đúng ba điều trên rồi xác nhận. Khóa đặt lệnh của trang ký lệnh này, nên ví không bật lên.",
+        "Khi lệnh khớp, bạn sẽ thấy thông báo Order filled. Trong Balances, USDH giảm xuống dưới 0.01 và USDC tăng thêm khoảng {{spotAfter}}. Open Orders trống.",
+        "! Nếu lệnh vẫn nằm trong Open Orders, giá mua (bid) đã xuống dưới {{floorPx}}. Đừng đặt thêm lệnh. Nhấn \"Bị kẹt?\" ở góc trên bên phải để kiểm tra trực tiếp."
+      ],
+      "situations": {
+        "resting": {"see": "Lệnh cứ nằm đó, không khớp", "do": "Lúc này giá mua đang thấp hơn giá của bạn. Đừng đặt thêm lệnh. Phần kiểm tra trực tiếp ở trên sẽ tính các lựa chọn của bạn dựa trên giá mua hôm nay."},
+        "too-small": {"see": "Trang báo lệnh quá nhỏ", "do": "Hyperliquid có quy mô lệnh tối thiểu (khoảng $10). Nếu số USDH của bạn dưới mức đó thì không bán được. Cứ để đó và đi rút USDC."},
+        "dust-left": {"see": "Sau khi bán, trong Balances vẫn còn một chút USDH", "do": "Số lượng chỉ tính đến hai chữ số thập phân, nên còn dư dưới 0.01 là bình thường. Không ảnh hưởng đến việc rút tiền."}
+      }
+    },
+    "transfer": {
+      "title": "Chuyển USDC từ spot sang tài khoản perps",
+      "note": "Chữ ký 2",
+      "whenText": "Chỉ dành cho tài khoản tách riêng kiểu cũ; tài khoản hợp nhất bỏ qua bước này",
+      "milestone": "Chuyển",
+      "items": [
+        "! Xem trang Account trước. Nếu tiêu đề ghi **Unified Account Summary** và chỉ có nút Deposit / Withdraw, bạn đang dùng tài khoản hợp nhất: **bỏ qua bước này** và đi thẳng đến bước rút tiền."
+      ],
+      "images": [
+        "! Nếu thấy Unified Account Summary, đó là tài khoản hợp nhất (ảnh mẫu; đừng để ý các con số)",
+        "Tài khoản hợp nhất chỉ có Deposit / Withdraw: nhấn Withdraw và chuyển sang bước tiếp theo",
+        "Tài khoản tách riêng hiện hai dòng, Spot và Perps: tiền nằm ở hai tài khoản",
+        "① Nhấn **Account** ở dưới cùng ② Nhấn **Perps ⇄ Spot**",
+        "① Nhấn nút ở giữa này để đảo chiều",
+        "① Đảm bảo giờ đã hiện Spot → Perps ② Nhấn **MAX** (ảnh chụp trước khi bán nên hiện 0.00; của bạn phải vào khoảng {{spotAfter}}) ③ Nhấn **Confirm**. Ví sẽ yêu cầu chữ ký: hãy đối chiếu với thẻ"
+      ],
+      "check": {
+        "title": "Trước khi ký, kiểm tra 3 điều",
+        "lead": "Sau khi bạn nhấn Confirm, ví sẽ hiện yêu cầu chữ ký. Hãy so với thẻ này và đánh dấu từng dòng khi đã kiểm tra.",
+        "skip": "Tài khoản hợp nhất (trang Account không có Perps ⇄ Spot)? Bỏ qua bước này",
+        "confirm": [
+          {"title": "Yêu cầu đến từ app.hyperliquid.xyz", "sub": "Thừa một chữ cái hay thiếu một dấu chấm là thành trang khác"},
+          {"title": "Có ghi SendAsset, và destination đúng là {{addrShort}}", "sub": "Chữ hoa hay chữ thường không quan trọng. Nếu không phải địa chỉ của bạn, hãy từ chối"},
+          {"title": "Từ spot sang perps, khoảng {{spotAfter}} USDC", "sub": "sourceDex là spot và destinationDex để trống; token là USDC:0x6d1e…e054"}
+        ],
+        "reject": ["destination không phải địa chỉ của chính bạn", "Có nhắc đến Permit, hoặc cấp quyền (Approve) cho token", "Không đến từ app.hyperliquid.xyz"],
+        "normal": ["Chỉ là chữ ký, không mất phí"]
+      },
+      "situations": {
+        "no-button": {"see": "Trang Account không có Perps ⇄ Spot", "do": "Nếu tiêu đề ghi Unified Account Summary, đó là tài khoản hợp nhất. Không cần chuyển; đi thẳng đến bước rút tiền."},
+        "max-zero": {"see": "MAX hiện 0.00", "do": "Trước hết đảm bảo chiều là Spot → Perps (nút ở giữa dùng để đảo chiều). Nếu vẫn là 0, trong spot không còn USDC; đi thẳng đến bước rút tiền."},
+        "wrong-destination": {"see": "Yêu cầu chữ ký hiện destination không phải địa chỉ của bạn", "do": "Nhấn Reject (Từ chối) ngay."}
+      }
+    },
+    "withdraw": {
+      "title": "Rút về Arbitrum",
+      "note": "Chữ ký cuối cùng",
+      "milestone": "Rút",
+      "images": [
+        "! Hyperliquid cho biết phí 1 USDC được trừ vào số tiền rút ① Giữ nguyên tài sản là USDC và chuỗi là Arbitrum ② Nhấn **MAX**: số này phải vào khoảng {{withdrawAmt}} (ảnh chụp hiện một số khác) ③ Nhấn **Withdraw to Arbitrum**. Ví sẽ yêu cầu chữ ký: hãy đối chiếu với thẻ"
+      ],
+      "check": {
+        "title": "Trước khi ký, kiểm tra 3 điều",
+        "lead": "Sau khi bạn nhấn Withdraw to Arbitrum, ví sẽ hiện yêu cầu chữ ký. Hãy so với thẻ này và đánh dấu từng dòng khi đã kiểm tra.",
+        "confirm": [
+          {"title": "Yêu cầu đến từ app.hyperliquid.xyz", "sub": "Thừa một chữ cái hay thiếu một dấu chấm là thành trang khác"},
+          {"title": "Có ghi Withdraw, và destination đúng là {{addrShort}}", "sub": "Nếu không phải địa chỉ của bạn, hãy từ chối"},
+          {"title": "amount vào khoảng {{withdrawAmt}}", "sub": "Số nhận được = số này trừ phí 1 USDC"}
+        ],
+        "reject": ["destination không phải địa chỉ của chính bạn", "Có nhắc đến Permit, hoặc cấp quyền (Approve) cho token", "Không đến từ app.hyperliquid.xyz"],
+        "normal": ["Chỉ là chữ ký, không tốn gas: Hyperliquid gửi giao dịch trên Arbitrum thay bạn", "time là một số có 13 chữ số. Đó là dấu thời gian"]
+      },
+      "situations": {
+        "less-than-expected": {"see": "MAX hiện ít hơn con số ở đây", "do": "Lệnh đang mở và vị thế giữ lại một phần số dư. Phần kiểm tra trực tiếp ở trên liệt kê từng phần tiền của bạn đang nằm ở đâu."},
+        "cannot-click": {"see": "Nút Withdraw không phản hồi", "do": "Số tiền rút phải lớn hơn phí 1 USDC. Số nhỏ hơn không rút được."},
+        "wrong-destination": {"see": "Yêu cầu chữ ký hiện destination không phải địa chỉ của bạn", "do": "Nhấn Reject (Từ chối) ngay."}
+      }
+    },
+    "arrive": {
+      "title": "Kiểm tra tiền đã về",
+      "milestone": "Đã về",
+      "check": {
+        "title": "Kiểm tra tiền về",
+        "rows": [
+          ["Mất bao lâu", "Hyperliquid cho biết trong vòng 5 phút"],
+          ["Xem ở đâu", "Ứng dụng ví → Assets (Tài sản) → USDC → dòng Arbitrum"],
+          ["Bạn sẽ thấy", "Thêm khoảng {{arrive}} USDC"],
+          ["Bản ghi trên chuỗi", "Gửi từ 0x2Df1…3dF7 (cầu nối chính thức của Hyperliquid) đến địa chỉ của bạn, dưới dạng USDC gốc trên Arbitrum (0xaf88…5831)"],
+          ["Chưa thấy?", "Sau 30 phút, đừng rút lại. Hãy chụp màn hình và hỏi chúng tôi"]
+        ],
+        "foot": "Tiền về là xong"
+      },
+      "situations": {
+        "not-in-wallet": {"see": "Không thấy USDC trong ví", "do": "Đảm bảo bạn đang xem USDC trên mạng **Arbitrum**. Phần kiểm tra trực tiếp ở trên tra thẳng lần rút này trên Arbitrum."},
+        "one-less": {"see": "Nhận về ít hơn số đã rút 1", "do": "Đó là phí rút 1 USDC. Bình thường."},
+        "late": {"see": "Đã hơn 30 phút mà chưa thấy tiền về", "do": "Đừng rút lại. Xem phần kiểm tra trực tiếp ở trên. Nếu không tìm thấy khoản tiền về, hoặc không khớp, hãy chụp màn hình và gửi cho bộ phận hỗ trợ chính thức của Hyperliquid (bên dưới)."}
+      }
+    }
+  },
+  "sources": [
+    "Tài liệu Hyperliquid · How to start trading",
+    "Tài liệu Hyperliquid · Bridge / USDC",
+    "Tài liệu Hyperliquid · Account abstraction modes",
+    "Tài liệu Hyperliquid · Nonces and API wallets",
+    "Thông báo của Bridge · An update on USDH",
+    "Tài liệu Hyperliquid · Support"
+  ]
+}
