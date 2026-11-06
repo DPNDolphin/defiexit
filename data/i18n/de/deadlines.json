@@ -614,5 +614,116 @@
     "official": [
       "Ankündigung von CoinEx"
     ]
+  },
+  "awe-stpt-migration": {
+    "name": "AWE Network: STPT zu AWE (Umzug auf Base)",
+    "summary": "Der Tausch von STPT auf Ethereum gegen AWE auf Base endete am 21. September, und laut AWE sind verspätete Tausche nicht möglich.",
+    "deadlineNote": "Die Frist war der 21. September. Laut AWE wurden etwa 99% migriert.",
+    "who": "Alle, die noch STPT halten.",
+    "todo": "Laut AWE sind verspätete Tausche nicht möglich. Was mit nicht getauschten Token passiert, wird per Governance-Vorschlag der Community entschieden.",
+    "official": [
+      "AWE-Blog: Migrationszeitraum endet"
+    ]
+  },
+  "tether-alloy": {
+    "name": "Tether: Alloy by Tether und aUSD₮ eingestellt",
+    "summary": "Alloy by Tether und aUSD₮ wurden am 17. September eingestellt. Vorher mussten Nutzer aUSD₮ zurückgeben und ihre XAU₮-Sicherheit zurückholen.",
+    "deadlineNote": "Die Frist war der 17. September.",
+    "who": "Alle, die auf Alloy XAU₮ als Sicherheit genutzt haben, um aUSD₮ zu minten.",
+    "todo": "Vor der Frist mussten Nutzer aUSD₮ zurückgeben und ihre XAU₮-Sicherheit zurückholen. Laut Tether geht das über die Plattform nicht mehr.",
+    "caution": "Was nach der Frist mit Sicherheiten passiert, hat Tether nicht gesagt.",
+    "official": [
+      "Ankündigung von Tether"
+    ]
+  },
+  "trust-wallet-networks": {
+    "name": "Trust Wallet entfernt 24 Netzwerke",
+    "summary": "Seit dem 15. September zeigt Trust Wallet 24 Netzwerke nicht mehr an, aber die Assets liegen weiterhin auf der Chain. Bei EVM-Chains kannst du das Netzwerk selbst als benutzerdefiniertes Netzwerk hinzufügen.",
+    "deadlineNote": "Am 15. September verschwanden diese Netzwerke aus der Liste der Wallet; Trust Handle wurde schon vorher eingestellt, am 7. September.",
+    "who": "Nutzer von Trust Wallet mit Assets auf diesen Netzwerken: die 15 oben aufgeführten EVM-Chains und 9 Nicht-EVM-Chains.",
+    "todo": "Deine Assets liegen weiterhin auf der Chain. Bei EVM-Chains füg das Netzwerk selbst als benutzerdefiniertes Netzwerk mit einem verifizierten RPC hinzu. Bei Nicht-EVM-Chains importier deine Wallet in eine andere Wallet, die diese Chain unterstützt.",
+    "caution": "Nutze nur einen RPC aus der offiziellen Doku der Chain. Gib eine Seed-Phrase nur selbst in einer seriösen Wallet-App ein, niemals auf einer Website.",
+    "official": [
+      "Blog von Trust Wallet"
+    ]
+  },
+  "vanar-vanry-migration": {
+    "name": "Vanar: VANRY zieht auf Base um",
+    "summary": "Der Zeitraum, um VANRY auf Base umzuziehen, endete am 10. September, und laut der Seite von Vanar werden keine weiteren Migrationen bearbeitet.",
+    "deadlineNote": "Der Tauschzeitraum lief vom 11. August, 13:00 UTC, bis zum 10. September, 13:00 UTC. Token, die noch im Unstaking waren, wurden am 11. September per Airdrop auf Base verteilt.",
+    "who": "Alle, die VANRY auf Ethereum, Polygon oder Vanar Chain halten.",
+    "todo": "Laut der Seite von Vanar gibt es nach dem Ende des Zeitraums keine Migrationen mehr. Wenn du vor dem 10. September mit dem Unstaking begonnen und keine Token bekommen hast, schreib Vanar eine E-Mail.",
+    "official": [
+      "Tauschseite von Vanar"
+    ]
+  },
+  "superposition-shutdown": {
+    "name": "Superposition-Chain abgeschaltet, zurück zu Arbitrum One",
+    "summary": "Die Superposition-Chain wurde am 8. September abgeschaltet. Laut Superposition sind Assets, die danach noch auf der Chain liegen, „möglicherweise nicht mehr zugänglich“.",
+    "deadlineNote": "Die Chain wurde am 8. September abgeschaltet.",
+    "who": "Alle, die bei der Abschaltung noch Assets auf Superposition hatten.",
+    "todo": "Vor der Frist mussten Nutzer aus Camelot und anderen Positionen aussteigen und dann mit der nativen Arbitrum-Bridge oder Relay zurück auf Arbitrum One übertragen.",
+    "caution": "Stand 5. November wurde keine offizielle Ausweichlösung angekündigt.",
+    "official": [
+      "Superposition auf X: Ankündigung vom 4. August"
+    ]
+  },
+  "arbitrum-nova-maintenance": {
+    "name": "Arbitrum Nova im Wartungsmodus (nicht abgeschaltet)",
+    "summary": "Seit dem 2. September ist Arbitrum Nova im Wartungsmodus, nicht abgeschaltet. Empfohlen wird der Umzug auf Arbitrum One über die offizielle Bridge.",
+    "deadlineNote": "Der Migrationszeitraum lief vom 4. Juni bis zum 2. September. Seit dem 2. September läuft die Chain nur noch im Wartungsbetrieb, und der RPC-Zugang ist eingeschränkter.",
+    "who": "Alle mit Assets auf Arbitrum Nova, auch MOON-Inhaber.",
+    "todo": "Zieh über die offizielle Bridge im Arbitrum Portal auf Arbitrum One um. Bei großen Beträgen heb zuerst auf Ethereum ab (es gibt eine Anfechtungsfrist von 7 Tagen). Für MOON gibt es keine direkte Route; es muss zuerst auf Ethereum.",
+    "caution": "Die offizielle Bridge funktioniert in Phase 3 weiter. Alchemy hat seinen Nova-RPC eingestellt.",
+    "official": [
+      "Arbitrum-Forum: FAQ zu Nova"
+    ]
+  },
+  "ton-old-bridge": {
+    "name": "Alte TON-Bridge (bridge-v3.ton.org) endgültig geschlossen",
+    "summary": "Die alte TON-Bridge wurde am 1. September endgültig geschlossen. Wrapped TON auf Ethereum und BSC sowie jUSDT und jUSDC auf TON mussten vorher per Bridge zurückgebracht werden.",
+    "deadlineNote": "Seit dem 1. September bearbeitet die alte Bridge keine Transfers mehr.",
+    "who": "Alle, die Wrapped TON auf Ethereum oder BNB Chain halten oder jUSDT, jUSDC und ähnliche Token auf TON.",
+    "todo": "Vor der Frist mussten Wrapped TON auf Ethereum und BSC per Bridge zurück auf TON und jUSDT, jUSDC und ähnliche Token auf TON zurück auf Ethereum gebracht werden.",
+    "caution": "Stand 5. November hat der offizielle Kanal keine Ausweichlösung veröffentlicht.",
+    "official": [
+      "Offizieller Telegram-Kanal TON Status"
+    ]
+  },
+  "dfk-chain-sunset": {
+    "name": "DeFi Kingdoms: DFK Chain wird eingestellt",
+    "summary": "DFK Chain sollte am 28. August eingestellt werden (vorbei). Laut DeFi Kingdoms lassen sich JEWEL und Nicht-DFK-Token wie BTC, ETH, USDC und AVAX nicht migrieren; Inhaber mussten sie vorher selbst per Bridge abziehen.",
+    "deadlineNote": "Am 31. Juli angekündigt, Einstellung für den 28. August angesetzt.",
+    "who": "Alle, die JEWEL oder Nicht-DFK-Token wie BTC, ETH, USDC und AVAX auf DFK Chain halten; Liquiditätsanbieter dort; und Nutzer von Smart Wallets.",
+    "todo": "Was DeFi Kingdoms verlangte: Nutzer von Smart Wallets sollten ihre Assets vor der Übertragung per Bridge in eine Standard-Wallet verschieben, und alle LPs sollten aufgelöst werden, auch Pools aus zwei DFK-eigenen Assets. Damals sagte das Team, JEWEL lasse sich per Bridge auf die Avalanche C-Chain übertragen und die Migration DFK-eigener Assets werde vorbereitet, Details sollten folgen.",
+    "caution": "Laut DeFi Kingdoms kann es JEWEL und Nicht-DFK-Token weder migrieren noch neu prägen noch kontrollieren. Seine Ankündigung vom 31. Juli sagt nicht, was mit denen passiert, die nach dem 28. August noch auf der Chain liegen.",
+    "official": [
+      "DeFi Kingdoms auf X: Ankündigung vom 31. Juli",
+      "DeFi Kingdoms auf X: Was du tun musst"
+    ]
+  },
+  "moonbeam-glmr-base": {
+    "name": "Moonbeam: GLMR zieht auf Base um",
+    "summary": "Die Frist für den Umzug von GLMR auf Base ist am 31. Juli abgelaufen. Moonbeam bat, zuerst Geld aus Protokollen auf der Chain abzuheben und GLMR dann 1:1 per Bridge auf Base zu bringen. Was mit nicht übertragenem GLMR passiert, sagt die Ankündigung nicht.",
+    "deadlineNote": "Die Frist war der 31. Juli (ohne Uhrzeit oder Zeitzone). Moonbeam erklärte, die Chain laufe während der Übergangszeit bis zum 31. Juli weiter, und Geld in Protokollen auf der Chain „könnte unzugänglich werden“, sobald die Chain abgewickelt ist. Wann die Chain stoppt, sagt die Ankündigung nicht.",
+    "who": "GLMR-Inhaber auf Moonbeam und alle mit Geld in Protokollen auf dieser Chain (Liquidität, Lending, Staking-Contracts usw.). Für GLMR auf einer Börse übernimmt laut Moonbeam die Börse die Migration automatisch.",
+    "todo": "Die Schritte waren: zuerst Geld aus Protokollen auf der Chain abheben, dann GLMR auf der offiziellen Migrationsseite 1:1 per Bridge auf Base bringen. Die Ankündigung vom 3. Juli sagt nicht, ob die Migration nach der Frist noch möglich ist oder wie mit nicht übertragenen Token umgegangen wird.",
+    "caution": "Die offizielle Migrationsseite ist `migrate.portal.moonbeam.network`; die Ankündigung vom 3. Juli sagt nicht, ob sie nach der Frist noch nutzbar ist. Ignoriere jeden, der dir per Direktnachricht eine „verspätete Migration“ anbietet.",
+    "official": [
+      "Moonbeam-News: „Moonbeam Network Relaunches on Base“",
+      "Moonbeam auf X: Ankündigung vom 3. Juli"
+    ]
+  },
+  "moonriver-movr-base": {
+    "name": "Moonriver: MOVR zieht auf Base um",
+    "summary": "Die Frist für den Umzug von MOVR auf Base lief am 31. Juli ab. Moonriver bat, zuerst Geld aus Protokollen der Chain abzuheben und MOVR dann in zwei Schritten 1:1 per Bridge auf Base zu bringen. Zu nicht übertragenem MOVR sagt die Ankündigung nichts.",
+    "deadlineNote": "Die Frist war der 31. Juli (ohne Uhrzeit oder Zeitzone). Moonriver erklärte, Geld in Protokollen auf der Chain „könnte dauerhaft unzugänglich werden“, sobald die Chain abgewickelt ist. Wann die Chain stoppt, sagt die Ankündigung nicht.",
+    "who": "MOVR-Inhaber auf Moonriver und alle mit Geld in Protokollen auf dieser Chain (Liquidität, Lending, Staking-Contracts usw.). Für MOVR auf einer Börse ist laut Moonriver nichts zu tun; die Börse erledigt das automatisch.",
+    "todo": "Die Schritte waren: zuerst Geld aus Protokollen auf der Chain abheben, dann auf der offiziellen Migrationsseite in zwei Etappen per Bridge übertragen. MOVR geht von Moonriver auf Moonbeam (als xcMOVR), dann macht die Migrations-Bridge daraus MOVR auf Base, 1:1 und ohne Gebühr. Die Ankündigung vom 7. Juli sagt nicht, ob die Migration nach der Frist noch möglich ist.",
+    "caution": "Die offizielle Migrationsseite ist `migrate.portal.moonbeam.network`, wo sich auch die zugehörigen Contracts prüfen lassen. Die Ankündigung vom 7. Juli sagt nicht, ob das Migrationsportal nach der Frist noch nutzbar ist. Ignoriere jeden, der dir per Direktnachricht eine „verspätete Migration“ anbietet.",
+    "official": [
+      "Moonbeam-News: „MOVR is Migrating to Base“",
+      "Moonriver auf X: Ankündigung vom 7. Juli"
+    ]
   }
 }
