@@ -1261,12 +1261,13 @@ function buildAll(OUT, i18nRoot, langs, dtexts) {
   // 网页本身加 no-transform:Cloudflare 就不会往页面里插它的访问统计脚本,也不会改动页面内容
   // (官方文档:带 no-transform 的响应不做自动注入,也不压缩;网页只有几十 KB,不压缩也快)。每一种语言的每一页都算。
   // _headers 最多认 100 条规则,一页一条的话 12 种语言就有 146 条,所以按地址有几段合并:占位符 :p0 只配一段(不含 /)。
-  // 网页的地址都以 / 结尾;图片、脚本、数据不以 / 结尾,配不上,照样压缩
+  // 网页的地址都以 / 结尾;图片、脚本、数据不以 / 结尾,配不上,照样压缩。
+  // 404 页:Cloudflare 把 /404.html 跳到 /404,规则要写 /404;找不到的地址回的 404 是 Cloudflare 自己的响应,_headers 管不到(预览站实测)
   const each = (p) => langs.map((l) => `${pre(l)}${p}`);
   const pages = [...each("/"), ...each("/check/"), ...recipes.flatMap((r) => each(`/r/${r.zh.id}/`)),
     ...each("/deadlines/"), ...each("/topics/"), ...topics.flatMap((T) => each(`/topics/${T.slug}/`))];
   const depths = [...new Set(pages.map((p) => p.split("/").length - 2))].sort((a, b) => a - b);
-  const rules = [...depths.map((n) => "/" + Array.from({ length: n }, (_, i) => `:p${i}/`).join("")), "/404.html"];
+  const rules = [...depths.map((n) => "/" + Array.from({ length: n }, (_, i) => `:p${i}/`).join("")), "/404"];
   if (rules.length + 1 > 100) throw new Error(`_headers 有 ${rules.length + 1} 条规则,Cloudflare Pages 最多认 100 条`);
   const noTransform = rules.map((p) => `${p}\n  Cache-Control: public, max-age=0, must-revalidate, no-transform`).join("\n");
   write("_headers", "/*\n" + Object.entries(h).map(([k, v]) => `  ${k}: ${v}`).join("\n") + "\n" + noTransform + "\n");

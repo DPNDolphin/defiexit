@@ -212,7 +212,7 @@ test("每个网页都带 no-transform:Cloudflare 不往页面里插统计脚本;
   const walk = (d) => { for (const f of readdirSync(d, { withFileTypes: true })) if (f.isDirectory()) walk(`${d}/${f.name}`); else if (f.name === "index.html") pages.push(`${d.slice(4)}/`); };
   walk("dist");
   for (const f of PAGES.filter((f) => f.endsWith("/index.html"))) assert.ok(pages.includes(f.slice(4, -10)), `没找到 ${f}`);
-  for (const p of [...pages, "/404.html"]) assert.equal(headersFor(h, p).filter((x) => x === NT).length, 1, `${p} 要带一次 no-transform`);
+  for (const p of [...pages, "/404"]) assert.equal(headersFor(h, p).filter((x) => x === NT).length, 1, `${p} 要带一次 no-transform`);
   for (const p of ["/assets/site.css", "/assets/fonts/atkinson-next.woff2", "/r/hyperliquid/img/fill.webp"]) {
     assert.ok(existsSync(`dist${p}`), p);
     assert.ok(!headersFor(h, p).some((x) => x.includes("no-transform")), `${p} 不该带 no-transform`);
