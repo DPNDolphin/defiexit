@@ -1,7 +1,7 @@
 // 运营台(只在 admin 主机上打开):登录 → 读 /api/admin/state → 待发、收件、宣传、数据、已处理。管理员点的「已发 / 采纳」、改的草稿,
 // 都经 /api/admin/* 存进数据库。页面里的评论、帖子是别人写的:一律用 textContent 放进页面,不当 HTML(宣传稿的正文也一样,markdown 照原样显示)。
-// 每天放出几条回复、发得快了提醒,算法在 pace.js(测试也用它)。
-import { capOf, gate, waitText, paceNote } from "./pace.js";
+// 每天放出几条回复、发得快了提醒、「已发」分成已打开 / 待核实 / 核实已发,算法在 pace.js(服务器的导出和测试也用它)。
+import { capOf, gate, waitText, paceNote, sentState, SENT_LABEL } from "./pace.js";
 (function () {
   "use strict";
   const H8 = 8 * 3600e3;
@@ -77,7 +77,7 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     network: "连不上服务器,看看网络再试", wrong: "用户名或密码不对", wait: "试错太多次了,等一会儿再试",
     weak: "密码至少 8 位", mismatch: "两次输的密码不一样", exists: "管理员已经设过了,请登录", db: "数据库还没接上(Cloudflare 里的 D1 还没绑)",
     origin: "请求来源不对,刷新页面再试", login: "登录过期了,请重新登录", busy: "刚刷新过,两分钟后再点", superseded: "同时有另一次刷新在跑,这次的结果没写进去,过一会儿再看", bad: "内容不合格,没存",
-    nocode: "设置链接还没生成或已经过期,叫我重新发一个", code: "设置码不对", name: "用户名只能用字母、数字、汉字和 _ . -,最多 40 个", locked: "这条已经点过「已发 / 跳过」,先改回待发再改草稿",
+    nocode: "设置链接还没生成或已经过期,叫我重新发一个", code: "设置码不对", name: "用户名只能用字母、数字、汉字和 _ . -,最多 40 个", locked: "这条已经点过「已发 / 跳过」,先改回待发再改草稿", verified: "这条已经核实发出了,链接以核到的为准",
     none: "这一条已经不在了,刷新一下", target: "这条没有目标帖子编号,不能发", draftbad: "草稿里有不许带的链接或不许用的词",
     purged: "这条 30 天到了,原帖信息已经删了,不能再记", gone: "这条帖子按对方要求删过,不能再记",
     changed: "这条刚被别处改过,页面刷新一下再改", more: "这条帖子还有记录没查完,再点「删除这条」并确认,接着往下查、往下删",
@@ -95,7 +95,8 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
 
   // quota:今天对人的首回放出几条(上限、已发、排队的编号),每次摆待发卡片前重算;hits:网站自己数的体检次数
   // loadSeq:第几次刷新(只认最后一次的),loadBusy:还在路上的那次(见 wrote);reachReq:正在翻的那一页(同一时刻只有一个,见 moreReach)
-  const S = { docs: {}, out: new Map(), inn: new Map(), reach: new Map(), reachMore: 0, reachCursor: null, reachGen: 0, reachReq: null, loadSeq: 0, loadBusy: 0, cards: new Map(), ro: null, watchOff: new Set(), needs: [], leads: [], auto: {}, outStats: {}, hits: {}, quota: gate([], [], capOf(null)) };
+  // sentRule:服务器给的「待核实」时限和这一版上线的时间(sentState 照它算)
+  const S = { sentRule: null, docs: {}, out: new Map(), inn: new Map(), reach: new Map(), reachMore: 0, reachCursor: null, reachGen: 0, reachReq: null, loadSeq: 0, loadBusy: 0, cards: new Map(), ro: null, watchOff: new Set(), needs: [], leads: [], auto: {}, outStats: {}, hits: {}, quota: gate([], [], capOf(null)) };
   // 三种卡片:待发(out)、收件(in)、宣传(reach);接口的名字 → 卡片的种类
   const KINDS = { outbox: "out", inbox: "in", outreach: "reach" };
   const storeOf = (k) => (k === "out" ? S.out : k === "in" ? S.inn : S.reach);
@@ -210,6 +211,11 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
   // ---------- 待发卡片 ----------
   // 两种:回别人的帖子(mine.target),或者自己发一条新帖(mine.kind === "post")。点过「已发 / 跳过」的挪到「已处理」
   const OUT_STATUS = { "待发": "hi", "已发": "ok", "跳过": "mute" };
+  // 「已发」的再分三种(pace.js 的 sentState):核实已发 ok,已打开 hi(等主窗口核),待核实 warn(请他看一眼),旧的没核 mute
+  const SENT_PILL = { verified: "ok", opened: "hi", pending: "warn", legacy: "mute" };
+  const sentOf = (d) => sentState(d, S.sentRule);
+  // 链接:核实已发的用核到的那条,别的用服务器先找到的那条(还没核)
+  const sentUrl = (d) => { const s = d && d.mine && d.mine.sent; return sentOf(d) === "verified" && s && safeUrl(s.url) ? s.url : safeUrl(d && d.reply_url); };
   const isPost = (d) => !!(d && d.mine && d.mine.kind === "post");
   const isPend = (d) => ((d && d.status) || "待发") === "待发";
   // 我们发出去那一条的最新读数:刷新时记的(out_stats)和「帖子读数」里最后一个点(被监控的帖子),哪个新用哪个
@@ -285,16 +291,19 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     ta.addEventListener("blur", flush);
     restore.addEventListener("click", () => { dirty = false; save("outbox", id, { draft: null }, saved); });
     copy.addEventListener("click", () => {
+      // 告诉服务器这一批发送从现在算起(先复制发出去、过一会儿才点「已发」的,核实照样认);不等回音、不改卡片
+      if (isPend(el._d)) api("outbox", { id, copied: true }).catch(() => {});
       const q = quoteOf(el._d);
       // 剪贴板用不了:只能选中框里的正文,原帖链接得另外贴,要说清楚
       const fallback = () => { ta.focus(); ta.select(); note(saved, q ? "已选中正文,长按复制;发的时候末尾再贴上原帖链接(顶上「看原帖」)" : "已选中,长按复制"); };
       try { navigator.clipboard.writeText(withQuote(ta.value, q)).then(() => note(saved, q ? "已复制(末尾带着原帖链接,发出去就是引用)" : "已复制"), fallback); } catch (_) { fallback(); }
     });
     sent.addEventListener("click", async () => { if (await decide("已发")) paceCheck(); });
-    // 点「在 X 打开」就当发了(省得发完再回来点「已发」):回复的链接运营台自己去目标帖子底下找,项目帖的链接晚上机器人补;
-    // 一天还没在 X 上找到你那条回复,顶上会提醒(可能没发出去,点「改回待发」就回来)。记下以后看看是不是发得太快(只提醒,不拦;点「已发」也一样)
+    // 点「在 X 打开」就记成「已打开」(省得发完再回来点「已发」;库里的状态还叫「已发」):主窗口每半小时经 fxtwitter 去 X 上找他发的那条
+    // (项目号发的、回的是那条帖、正文对得上),核到了变「核实已发」;点开 6 小时还核不到,变「待核实」,顶上提醒(可能没发出去,点「改回待发」就回来)。
+    // 记下以后看看是不是发得太快(只提醒,不拦;按点开算,点「已发」也一样)
     open.addEventListener("click", async () => {
-      if (isPend(el._d) && !open.classList.contains("off") && (await decide("已发", "打开了 X,发出去就行,不用再点「已发」;这条挪到下面的「已处理」了"))) paceCheck();
+      if (isPend(el._d) && !open.classList.contains("off") && (await decide("已发", "打开了 X,发出去就行,不用再点「已发」;这条挪到下面的「已处理」了,我核到你发的就标「核实已发」"))) paceCheck();
     });
     skip.addEventListener("click", () => decide("跳过"));
     back.addEventListener("click", async () => { if (await save("outbox", id, { status: "待发" }, saved)) note($("done-msg"), "这条挪回「待发」了"); });
@@ -332,18 +341,22 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
       open.hidden = st !== "待发";
       open.textContent = q ? "在 X 打开,引用原帖发,字已填好 ↗" : post ? "在 X 打开,发新帖,字已填好 ↗" : "在 X 打开,字已填好 ↗";
       if (document.activeElement !== memo && memo.value !== (d.note || "")) memo.value = d.note || "";
-      status.className = "pill " + (OUT_STATUS[st] || "mute");
-      status.textContent = st + (st !== "待发" && d.decided_at ? " · " + mdhm(d.decided_at) : "");
+      // 「已发」的写成已打开 / 待核实 / 核实已发(旧的没核写「已发(旧,没核)」),时间是点开的时间
+      const ss = st === "已发" ? sentOf(d) : null;
+      status.className = "pill " + (ss ? SENT_PILL[ss] : OUT_STATUS[st] || "mute");
+      status.textContent = (ss ? SENT_LABEL[ss] : st) + (st !== "待发" && d.decided_at ? " · " + mdhm(d.decided_at) : "");
       sent.setAttribute("aria-pressed", String(st === "已发"));
       skip.setAttribute("aria-pressed", String(st === "跳过"));
       back.hidden = st === "待发";
       el.classList.toggle("done", st !== "待发");
-      const x = st === "已发" ? statOf(d) : null;
-      link.replaceChildren(st === "已发"
-        ? (safeUrl(d.reply_url)
-          ? h("span", null, post ? "你的帖子:" : "你的回复:", out(d.reply_url, "看 ↗"), x ? " · " + statText(x) + "(" + mdhm(x.at) + " 读)" : " · 读数等下一次刷新")
-          : post ? "你的帖子链接:晚上机器人找到了会补上,之后浏览、点赞、回复自动跟着读。" : "你的回复链接:运营台每 20 分钟自己去目标帖子底下找。")
-        : "");
+      const x = st === "已发" ? statOf(d) : null, url = st === "已发" ? sentUrl(d) : null;
+      const reads = url ? [out(url, "看 ↗"), x ? " · " + statText(x) + "(" + mdhm(x.at) + " 读)" : " · 读数等下一次刷新"] : [];
+      const what = post ? "你的帖子" : "你的回复", that = post ? "你这条帖子" : "你这条回复";
+      link.replaceChildren(...(ss === "verified" ? [h("span", null, what + "(核实发出了):", ...reads)]
+        : ss === "opened" ? [h("span", null, "等核实:我每半小时经 fxtwitter 去 X 上找" + that + "(项目号发的、正文对得上),找到就标「核实已发」。", ...(url ? ["先找到一条:", ...reads] : []))]
+        : ss === "pending" ? [h("span", null, "点开 6 小时还没在 X 上核到" + that + ":可能没发出去、发完删了,或者 fxtwitter 没读到;之后核到照样标「核实已发」。没发的点「改回待发」。", ...(url ? [" 先找到的一条:", ...reads] : []))]
+        : ss === "legacy" ? [h("span", null, "改版以前点的,还没核过;我会补核一遍。", ...(url ? [" " + what + ":", ...reads] : []))]
+        : []));
       pasteRow.hidden = true; // 老板 11-04:不用贴,链接自动找(服务器那边贴链接的入口留着,维护者用)
       paste.placeholder = post ? "贴上这条帖子的链接" : "贴上你这条回复的链接(可不贴)";
       refresh();
@@ -703,6 +716,7 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     S.outStats = json.outStats && typeof json.outStats === "object" ? json.outStats : {};
     S.hits = json.hits && typeof json.hits === "object" ? json.hits : {};
     S.problems = json.problems && typeof json.problems === "object" ? json.problems : null; // 问题记录的数(最近 7 天、30 天)
+    S.sentRule = json.sentRule && typeof json.sentRule === "object" ? json.sentRule : null;
     S.out = new Map((json.outbox || []).map((d) => [d.id, d]));
     S.inn = new Map((json.inbox || []).map((d) => [d.id, d]));
     // 宣传:服务器给全部还没点的、点过的最近一页(outreachMore.after 是这一页最早那张,handled 是比它更早的还有几张)。
@@ -742,8 +756,9 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     if (queued) items.push({ text: queued + " 条回复在排队:今天" + (S.quota.used >= S.quota.cap ? "已到上限 " : "上限 ") + S.quota.cap + " 条,明天放出", href: "#outbox", when: "明天" });
     if (pendIn) items.push({ text: pendIn + " 条评论等你看(回一句,或点一个决定)", href: "#inbox", when: "今天" });
     if (pendReach) items.push({ text: pendReach + " 份宣传等你发(投稿、邮件、清单、社区;发出去以后点「已发」)", href: "#reach", when: "今天" });
-    const lost = [...S.out.values()].filter((d) => !isPost(d) && d.status === "已发" && !safeUrl(d.reply_url) && Date.now() - Date.parse(d.decided_at || 0) > 864e5 && Date.now() - Date.parse(d.decided_at || 0) < 7 * 864e5).length;
-    if (lost) items.push({ text: lost + " 条回复点了「在 X 打开」,一天了还没在 X 上找到你发的,可能没发出去(在「已处理」里点「改回待发」)", href: "#done", when: "今天" });
+    // 点开满 6 小时还没核到的(7 天内的;改版以前的旧记录不算):可能没发出去,请他看一眼
+    const lost = [...S.out.values()].filter((d) => sentOf(d) === "pending" && Date.now() - Date.parse(d.decided_at || 0) < 7 * 864e5).length;
+    if (lost) items.push({ text: lost + " 条点了「在 X 打开」6 小时还没在 X 上核到你发的,可能没发出去或发完删了(在「已处理」里,标着「待核实」;没发的点「改回待发」)", href: "#done", when: "今天" });
     if (json && json.synced) $("sync-at").textContent = json.synced.at ? "上次刷新 " + mdhm(json.synced.at) + (json.synced.note ? " · " + json.synced.note : "") : "";
     // 定时任务停了要说出来(「没有新东西」和「根本没跑」不是一回事)
     const late = (x, hrs) => x && x.at && (Date.now() - Date.parse(x.at)) / 3600e3 > hrs;
@@ -803,7 +818,9 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
   function routePanel(f) {
     // 回帖试验只数回帖,不数自己发的帖子
     const replies = [...S.out.values()].filter((d) => !isPost(d));
-    const live = { drafted: replies.length, posted: replies.filter((d) => d.status === "已发").length };
+    // 「你点了发」只数核实发出了的(主窗口经 fxtwitter 在 X 上核到的);点开了还没核到的另写一句
+    const live = { drafted: replies.length, posted: replies.filter((d) => sentOf(d) === "verified").length };
+    const unchecked = replies.filter((d) => d.status === "已发" && sentOf(d) !== "verified").length;
     const stages = (Array.isArray(f && f.stages) ? f.stages : []).map((s) => ({ ...s, value: s.key in live ? live[s.key] : s.value }));
     if (!stages.length) return null;
     const ol = h("ol", { class: "route", "aria-label": "回帖试验的每一站" });
@@ -817,7 +834,8 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
     return h("div", { class: "panel" },
       h("h3", null, "回帖试验:先发 " + ((f && f.target) || 5) + " 条"),
       f && f.note ? h("p", { class: "src" }, f.note) : null,
-      ol);
+      ol,
+      stages.some((s) => s.key === "posted") ? h("p", { class: "src" }, "「" + (stages.find((s) => s.key === "posted").label || "你点了发") + "」只数核实发出了的(我经 fxtwitter 在 X 上核到的)" + (unchecked ? ";点开了还没核到的 " + unchecked + " 条不算" : "") + "。") : null);
   }
 
   function viewsPanel(x) {
@@ -1028,20 +1046,25 @@ import { capOf, gate, waitText, paceNote } from "./pace.js";
       h("p", { class: "src" }, "都只是线索,不等于事实;我核过官方原文再写成帖子。"));
   }
 
-  // 我们发出去的帖子和回复:最近点了「已发」的 40 条,带最新读数
+  // 我们发出去的帖子和回复:最近点开的 40 条,带最新读数和核没核实;顶上一行是最近 7 天点开的按三种数
   function minePanel(outbox) {
-    const items = [...outbox.values()].filter((d) => d.status === "已发").sort((a, b) => String(b.decided_at || "").localeCompare(String(a.decided_at || ""))).slice(0, 40);
+    const all = [...outbox.values()].filter((d) => d.status === "已发");
+    const items = all.sort((a, b) => String(b.decided_at || "").localeCompare(String(a.decided_at || ""))).slice(0, 40);
     if (!items.length) return null;
+    const week = all.filter((d) => Date.now() - Date.parse(d.decided_at || 0) < 7 * 864e5).map(sentOf);
+    const n = (k) => week.filter((s) => s === k).length;
+    const head = ["verified", "opened", "pending", "legacy"].filter((k) => k === "verified" || n(k)).map((k) => SENT_LABEL[k] + " " + n(k)).join(" · ");
     return h("div", { class: "panel" }, h("h3", null, "我们发的帖子和回复"),
+      h("p", { class: "note" }, "最近 7 天点开的:" + head),
       h("div", { class: "list" }, ...items.map((d) => {
-        const m = d.mine || {}, t = m.target || {}, x = statOf(d), url = safeUrl(d.reply_url) ? d.reply_url : null;
-        return h("div", { class: "li" + (url ? "" : " muted") },
+        const m = d.mine || {}, t = m.target || {}, x = statOf(d), url = sentUrl(d), ss = sentOf(d);
+        return h("div", { class: "li" + (ss === "verified" ? "" : " muted") },
           h("span", { class: "k" }, isPost(d) ? "帖子" : "回复"),
           h("span", { class: "nm" }, isPost(d) ? (m.topic || d.id) : "回 @" + (t.handle || "?") + (t.protocol ? " · " + t.protocol : "")),
-          h("span", { class: "pill " + (x ? (x.replies ? "warn" : "ok") : "mute") }, x ? statText(x) : url ? "等读数" : "还没链接"),
-          h("span", { class: "sub" }, url ? out(url, mdhm(d.decided_at) + " 发 ↗") : mdhm(d.decided_at) + " 发"));
+          h("span", { class: "pill " + (ss === "verified" ? (x ? (x.replies ? "warn" : "ok") : "mute") : SENT_PILL[ss] || "mute") }, ss !== "verified" ? SENT_LABEL[ss] || "—" : x ? statText(x) : "等读数"),
+          h("span", { class: "sub" }, url ? out(url, mdhm(d.decided_at) + " 点开 ↗") : mdhm(d.decided_at) + " 点开"));
       })),
-      h("p", { class: "src" }, "点了「已发」、链接核到了的,7 天内每 20 分钟轮着读浏览、点赞、回复;别人接着回的进「收件」,我起草接着回的话。自己发的帖子要在卡片上贴一次链接。"));
+      h("p", { class: "src" }, "点「在 X 打开」只算「已打开」;我每半小时经 fxtwitter 去 X 上找你发的那条(项目号发的、回的是那条帖、正文对得上),找到才算「核实已发」,点开 6 小时还找不到的标「待核实」。有链接的 7 天内照帖子新旧轮着读浏览、点赞、回复(3 小时内的每 20 分钟读,越旧读得越少);别人接着回的进「收件」。"));
   }
 
   // 刷新跑了、但被监控的帖子一条都没读到(和「没有新评论」不是一回事)

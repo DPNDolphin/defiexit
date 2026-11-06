@@ -13,7 +13,7 @@
 // 改东西的请求(ingest 除外)必须同源、JSON、已登录;登录凭证是只给本主机的 __Host- cookie(SameSite=Strict)。
 
 import { reply, gone, hostOk, sameOrigin, readJson, clientIp } from "../../../server/ops/http.js";
-import { ensure, iso, getKv, getDocs, listOut, listIn, getOut, getIn, outRow, existing, purge, goneKey, goneStmt, markStmt, NOT_GONE, goneArg, outKeys, inKeys, sameRefs, sameInRefs, rowsAbout, hitCounts, problemCounts, problemKey, listReach, reachDone, getReach, reachCardKey, reachToKey } from "../../../server/ops/db.js";
+import { ensure, iso, getKv, getDocs, sentRule, listOut, listIn, getOut, getIn, outRow, existing, purge, goneKey, goneStmt, markStmt, NOT_GONE, goneArg, outKeys, inKeys, sameRefs, sameInRefs, rowsAbout, hitCounts, problemCounts, problemKey, listReach, reachDone, getReach, reachCardKey, reachToKey } from "../../../server/ops/db.js";
 import { MIN_PASSWORD, hashPassword, checkPassword, newSession, hasSession, endSession, endAll, cookie, mustWait, failed, succeeded, same } from "../../../server/ops/auth.js";
 import { ingest, checkText, outHosts, webUrl } from "../../../server/ops/ingest.js";
 import { sync } from "../../../server/ops/sync.js";
@@ -26,7 +26,7 @@ const hex = async (s) => [...new Uint8Array(await crypto.subtle.digest("SHA-256"
 
 async function state(db, admin, now) {
   await purge(db, now);
-  const [docs, outbox, inbox, syncAt, syncNote, off, needs, leads, auto, outStats, hits, p7, p30, reach] = await Promise.all([
+  const [docs, outbox, inbox, syncAt, syncNote, off, needs, leads, auto, outStats, hits, p7, p30, reach, sent] = await Promise.all([
     getDocs(db), listOut(db), listIn(db), getKv(db, "sync_at_ms"), getKv(db, "sync_note"),
     db.prepare("SELECT id FROM watch WHERE on_ = 0").all(),
     db.prepare("SELECT month, v FROM needs ORDER BY month DESC LIMIT 100").all(),
@@ -34,13 +34,18 @@ async function state(db, admin, now) {
     // 「大家最常问」:最近 7 天、30 天的数,各带问得多的 10 个协议(只有数)
     problemCounts(db, now, 7, 10), problemCounts(db, now, 30, 10),
     listReach(db),
+    sentRule(db),
   ]);
   const past = needs.results.map((r) => { try { return { month: r.month, ...JSON.parse(r.v) }; } catch { return null; } }).filter(Boolean);
   let stats = {};
   try { stats = JSON.parse(outStats || "{}") || {}; } catch { stats = {}; }
-  // 宣传卡片:没点过的全给,点过的给最近一页;outreachMore.handled 是点过、这一页没给的张数(库里数的),after 是这一页最早那张
-  return reply({ ok: true, me: { name: admin.name }, docs, outbox, inbox, outreach: reach.items, outreachMore: { handled: reach.more, after: reach.after }, needs: past, leads, auto, outStats: stats, hits, problems: { d7: p7, d30: p30 }, watchOff: off.results.map((r) => r.id), synced: { at: syncAt ? iso(Number(syncAt)) : null, note: syncNote || "" } });
+  // 宣传卡片:没点过的全给,点过的给最近一页;outreachMore.handled 是点过、这一页没给的张数(库里数的),after 是这一页最早那张。
+  // sentRule:页面照它把「已发」分成已打开 / 待核实 / 核实已发(admin/pace.js 的 sentState)
+  return reply({ ok: true, me: { name: admin.name }, sentRule: sent, docs, outbox, inbox, outreach: reach.items, outreachMore: { handled: reach.more, after: reach.after }, needs: past, leads, auto, outStats: stats, hits, problems: { d7: p7, d30: p30 }, watchOff: off.results.map((r) => r.id), synced: { at: syncAt ? iso(Number(syncAt)) : null, note: syncNote || "" } });
 }
+
+// 这张卡片现在是不是「核实已发」:核到的是这一次点开的(mine.sent.opened 和 decided_at 一模一样,见 admin/pace.js 的 sentState)
+const verifiedNow = (cur) => { const s = cur && cur.mine && cur.mine.sent; return !!(s && typeof s === "object" && cur.status === "已发" && typeof s.opened === "string" && s.opened === cur.decided_at && typeof s.at === "string"); };
 
 // 管理员贴的帖子链接:只收 x.com(或 twitter.com)上的帖子链接,统一成 https://x.com/<账号>/status/<编号>,去掉 ?s=20 这类尾巴
 function xStatusUrl(s) {
@@ -60,6 +65,12 @@ async function editOut(db, b, now) {
   const cur = outRow(row);
   const sets = [], args = [];
   let replyUrl = row.reply_url, sentTarget = row.sent_target; // 改完以后这一行的回复链接、记下的目标帖子
+  // 管理员点了「复制」(页面顺手告诉服务器,不用他多点):这一批发送从这时候算起。还没点开的才记,这一批记过了不改
+  if ("copied" in b) {
+    if (b.copied !== true || Object.keys(b).some((k) => k !== "id" && k !== "copied")) return reply({ error: "bad" }, 400);
+    if (cur.status === "待发" && !cur.purged) await db.prepare("INSERT INTO send_batches (id, started) VALUES (?, ?) ON CONFLICT(id) DO NOTHING").bind(cur.id, iso(now)).run();
+    return reply({ ok: true, item: cur });
+  }
   if ("reply_url" in b) {
     // 自己发的帖子运营台找不到链接,管理员贴一次;回复一般自己能找到,找不到也可以贴。只给「已发」的贴
     if ("status" in b) return reply({ error: "bad" }, 400);
@@ -67,6 +78,8 @@ async function editOut(db, b, now) {
     if (!u) return reply({ error: "badlink" }, 400);
     if (cur.purged) return reply({ error: "purged" }, 409);
     if (cur.status !== "已发") return reply({ error: "locked" }, 409);
+    // 核实发出了的(主窗口核到的那条):链接以核到的为准,不再换(换了以后「核实已发」说的就不是这条了)
+    if (verifiedNow(cur)) return reply({ error: "verified" }, 409);
     sets.push("reply_url = ?");
     args.push(u);
     replyUrl = u;
@@ -76,7 +89,9 @@ async function editOut(db, b, now) {
     sets.push("status = ?", "decided_at = ?");
     args.push(b.status, b.status === "待发" ? null : iso(now));
     if (b.status === "已发") {
-      // 记下点「已发」那一刻的草稿和目标帖子:之后核对的就是这一条(自己发的帖子没有目标帖子)
+      // 记下点「已发」(页面上点「在 X 打开」也是这一下)那一刻的草稿和目标帖子:之后核对的就是这一条(自己发的帖子没有目标帖子)。
+      // 这只算「已打开」(decided_at 是点开的时间);主窗口经 fxtwitter 在 X 上核到了,经签名投递记下才算「核实已发」(见 admin/pace.js 的 sentState)。
+      // 每点一次 decided_at 都换成这一次的,以前核到的结果对不上这一次,就不算了(改回待发再点开的,要重新核)
       const post = !!cur.mine && cur.mine.kind === "post";
       const tid = cur.mine && cur.mine.target && cur.mine.target.id;
       if (!tid && !post) return reply({ error: "target" }, 400);
@@ -111,9 +126,14 @@ async function editOut(db, b, now) {
   const keys = await outKeys(cur.id, cur.mine, replyUrl, sentTarget);
   const [same, sameArgs] = sameRefs(cur.mine);
   const keepReply = !("reply_url" in b) && !("status" in b && b.status !== "已发"), keepSent = !("status" in b);
-  const r = await db.prepare(`UPDATE outbox SET ${sets.join(", ")}, updated_at = ? WHERE id = ? AND purged = ? AND ${same}` + (keepReply ? " AND reply_url IS ?" : "") + (keepSent ? " AND sent_target IS ?" : "") + ` AND ${NOT_GONE}`)
+  // 贴链接:写的时候再核对一遍还没核实(读和写之间主窗口刚核实了,就不换它的链接,回 changed)
+  const unverified = "reply_url" in b ? " AND json_extract(mine, '$.sent.opened') IS NOT decided_at" : "";
+  const r = await db.prepare(`UPDATE outbox SET ${sets.join(", ")}, updated_at = ? WHERE id = ? AND purged = ? AND ${same}` + (keepReply ? " AND reply_url IS ?" : "") + (keepSent ? " AND sent_target IS ?" : "") + unverified + ` AND ${NOT_GONE}`)
     .bind(...args, iso(now), cur.id, cur.purged ? 1 : 0, ...sameArgs, ...(keepReply ? [row.reply_url ?? null] : []), ...(keepSent ? [row.sent_target ?? null] : []), goneArg(keys)).run();
   if (!(r.meta && r.meta.changes)) return missed(db, cur, keys, (id) => getOut(db, id));
+  // 发送批次:点开(「已发」)时这一批还没有起点的,从现在算;改回待发、跳过,这一批结束(下次复制、点开是新的一批)
+  if (b.status === "已发") await db.prepare("INSERT INTO send_batches (id, started) VALUES (?, ?) ON CONFLICT(id) DO NOTHING").bind(cur.id, iso(now)).run();
+  else if ("status" in b) await db.prepare("DELETE FROM send_batches WHERE id = ?").bind(cur.id).run();
   return reply({ ok: true, item: await getOut(db, cur.id) });
 }
 
@@ -198,7 +218,7 @@ export async function handle(request, env, fetchImpl = fetch, now = new Date()) 
   if (!hostOk(request, env)) return gone();
   const db = env.OPS;
   if (!db) return reply({ need: "db" }, 503);
-  await ensure(db);
+  await ensure(db, now);
   const url = new URL(request.url);
   const path = url.pathname.replace(/^\/api\/admin\/?/, "");
   const admin = await db.prepare("SELECT name FROM admin WHERE id = 1").first();

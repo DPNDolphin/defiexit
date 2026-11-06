@@ -20,8 +20,12 @@
 // 私钥、助记词、授权照常能写,只拦招揽和骗局的说法;标题、邮件标题另外避开找回、领取、recover、claim,见 TITLE_WORDS)。
 // 这张卡片、它的收件邮箱按要求删过的不收(查和写同一句)。
 // 一包最多 50 张,稿子加起来最多 10 万字(REACH_MAX.pack)。
+// 核实结果(sent,见 cleanSent;11-06「已发」拆成已打开 / 待核实 / 核实已发):主窗口经 fxtwitter 在 X 上找到了管理员点开的那条,
+// 只记进「已发」、没到期删过、点开的时间对得上、目标帖子(摘要)对得上的那张卡片(mine.sent 和 reply_url),别的都不碰;
+// 一条帖子永远只归第一次核到的那一次点开(sent_posts);已经核实了的,同一条再送一遍照收(不改),别的一条不收。一包最多 50 条。
 
-import { iso, plusDays, KEEP_DAYS, DOC_KEYS, docStmt, getKv, getDoc, getDocs, existing, goneKey, expKey, NOT_GONE, goneArg, outKeys, inKeys, sameRefs, sameInRefs, bjDay, problemKey, PROBLEM_TYPES, PROBLEM_SOURCES, reachKeys, reachCardKey, reachToKey } from "./db.js";
+import { iso, plusDays, KEEP_DAYS, DOC_KEYS, docStmt, getKv, getDoc, getDocs, existing, goneKey, expKey, NOT_GONE, goneArg, outKeys, inKeys, sameRefs, sameInRefs, bjDay, problemKey, PROBLEM_TYPES, PROBLEM_SOURCES, reachKeys, reachCardKey, reachToKey, targetKey, postedMs, sentPostKey, backfillSentPosts, SENT_CUT_KEY } from "./db.js";
+import { SENT } from "../../admin/pace.js";
 import { unb64u, sha256 } from "./auth.js";
 import { ASCII_HOST, IPV4, UNICODE_HOST, DOTS, TLD_GLUED, NAME_RULE, RISK_RULE, plainName, softName } from "./names.js";
 
@@ -33,6 +37,15 @@ export const signedText = (envName, method, path, raw) => `dx-ingest-v1\n${envNa
 // 写给按要求删过的收件邮箱的宣传卡片
 const GONE_WHY = "管理员按要求删过,不再收", HANDLED_WHY = "管理员已经处理过,草稿不再改", EXPIRED_OUT_WHY = "30 天到期删过,不再改";
 const REACH_TO_WHY = "这个收件邮箱按要求删过,不再收";
+// 核实结果没记的几种说法
+const SENT_NONE_WHY = "没有这张卡片(按要求删过,或编号不对)", SENT_STATUS_WHY = "这条现在不是「已发」(改回待发或跳过了),不记核实";
+const SENT_OPENED_WHY = "点开的时间对不上(管理员后来又点了一次),按导出里新的时间重核", SENT_LATE_WHY = "管理员刚改过这条(改回待发、跳过,或又点了一次),这次没记";
+const SENT_LINK_WHY = "已经核实发出了,链接以核到的为准,不再换";
+const SENT_TARGET_WHY = "目标帖子对不上(本地卡片的目标和运营台点「已发」时记下的不是同一条),不记";
+const SENT_TIME_WHY = "那条帖子发在这一批发送开始以前(这一轮第一次复制或点开;没有批次的旧记录看卡片送进运营台的时间),或者从编号读不出发帖时间,不算";
+const SENT_REUSED_WHY = "这条帖子已经核给这张卡片以前那一次点开了(改回待发再点开的,要这一次发的才算)";
+const SENT_OTHER_WHY = "这一次点开已经核实过另一条了,不换";
+const SENT_DUP_WHY = "这条帖子已经核给别的卡片了,一条帖子只核给一张卡片";
 
 export async function verify(text, sigB64u, pubList) {
   if (!sigB64u) return false;
@@ -458,6 +471,34 @@ export function cleanReach(x, hosts = ALLOWED_HOSTS) {
   return { id, mine: drop({ channel: x.channel, target, lang: x.lang, url, to, subject: text.subject, title: text.title, body: text.body, why }) };
 }
 
+// 核实结果:{ id: 待发卡片的编号, opened: 那次点开的时间(导出里的 decided_at,原样照抄,对得上才记), target: 目标帖子的摘要
+// (导出核实队列里的 target_key,原样照抄;项目帖没有目标帖子,写 null), urls: 在 X 上找到的、对得上的几条(按核实器的先后,1–5 条;
+// 只有一条也可以写成 url), postedAt: 那条发出的时间(fxtwitter 读到的,可不写,只记不用) }。
+// 链接只认 https://x.com/账号/status/编号 这一种写法(twitter.com、www.x.com、带 ?s=20 的都不收:核实器自己拼的链接只有这一种);
+// 同一条帖子(编号一样)写了几遍只算一遍。字段类型不对的只拒这一条
+const SENT_URL = /^https:\/\/x\.com\/[A-Za-z0-9_]{1,15}\/status\/(\d{1,25})$/;
+export const SENT_MAX_URLS = 5;
+export function cleanSent(x) {
+  const id = itemId(x?.id);
+  if (!id) return { error: "id 不合格" };
+  const odd = oddField(x, ["opened", "url", "postedAt", "target"]);
+  if (odd) return { id, error: odd + ODD };
+  const opened = typeof x.opened === "string" && x.opened.length <= 40 && !Number.isNaN(Date.parse(x.opened)) ? x.opened : undefined;
+  if (!opened) return { id, error: "opened 要是那次点开的时间(导出里的 decided_at,原样照抄)" };
+  const list = x.urls !== undefined ? x.urls : [x.url];
+  if (!Array.isArray(list) || !list.length || list.length > SENT_MAX_URLS) return { id, error: `urls 要是 1–${SENT_MAX_URLS} 条链接` };
+  const cands = [];
+  for (const u of list) {
+    const m = typeof u === "string" ? SENT_URL.exec(u) : null;
+    if (!m) return { id, error: "url 不合格(只认 https://x.com/账号/status/编号)" };
+    if (!cands.some((c) => c.post === m[1])) cands.push({ url: u, post: m[1] });
+  }
+  if (!(x.target === null || (typeof x.target === "string" && /^[0-9a-f]{64}$/.test(x.target)))) return { id, error: "target 要是导出核实队列里的 target_key(项目帖写 null)" };
+  const postedAt = x.postedAt == null ? undefined : typeof x.postedAt === "string" && x.postedAt.length <= 40 && when(x.postedAt) ? x.postedAt : null;
+  if (postedAt === null) return { id, error: "postedAt 要是时间" };
+  return { id, opened, target: x.target, cands, postedAt };
+}
+
 // x_posts 有两个写的人:管理员点「刷新」时服务器追加读数,Claude 投递时带来本地记的读数。按帖子、按时间合并,谁的都不丢
 export function mergeReadings(old, incoming) {
   const before = new Map(((old && old.posts) || []).map((p) => [String(p.id), p.points || []]));
@@ -534,11 +575,11 @@ async function locked(db, raw, body, now) {
     if (list.length > MAX.items) rejected.push({ kind, id: "?", why: `一包最多 ${MAX.items} 条:第 ${MAX.items + 1} 条起的 ${list.length - MAX.items} 条没收,下一包再送` });
     return list.slice(0, MAX.items);
   };
-  const outs = cap("outbox", body.outbox), ins = cap("inbox", body.inbox), probIn = cap("problems", body.problems), reach = cap("outreach", body.outreach);
+  const outs = cap("outbox", body.outbox), ins = cap("inbox", body.inbox), probIn = cap("problems", body.problems), reach = cap("outreach", body.outreach), sentIn = cap("sent", body.sent);
   const ids = outs.map((x) => itemId(x?.id)).filter(Boolean);
   const have = new Map();
   if (ids.length) {
-    const { results } = await db.prepare(`SELECT id, mine, status, purged, draft_admin, reply_url, sent_target FROM outbox WHERE id IN (${ids.map(() => "?").join(",")})`).bind(...ids).all();
+    const { results } = await db.prepare(`SELECT id, mine, status, purged, draft_admin, reply_url, sent_target, decided_at FROM outbox WHERE id IN (${ids.map(() => "?").join(",")})`).bind(...ids).all();
     for (const r of results) have.set(r.id, r);
   }
   // 待发、收件、问题记录每写一句记一笔 { at: 在 stmts 里的位置, kind, id, how: 新建 / 改 / 补链接, gone: 挡它的 goneKey, exp: 收件到期的标记, notes }:
@@ -565,11 +606,14 @@ async function locked(db, raw, body, now) {
       if (old.purged || old.status !== "待发") {
         // 管理员点过了(或已到期删过):只许给「已发」且没到期删过的补他那条回复的链接。
         // 改完以后还带着库里的 mine(目标帖子、引用的原帖)和点「已发」记下的目标:语句里核对它们没变,和新链接一起查 gone
-        if (c.replyUrl && !old.purged && old.status === "已发") {
+        // 核实发出了的(核到的是这一次点开的):链接以核到的为准,补链接不再换它(语句里也核对:读和写之间核到了就不换)
+        const verified = !!(oldMine.sent && typeof oldMine.sent === "object" && oldMine.sent.opened === old.decided_at && typeof oldMine.sent.at === "string");
+        if (c.replyUrl && !old.purged && old.status === "已发" && verified) rejected.push({ kind: "outbox", id: c.id, why: SENT_LINK_WHY });
+        else if (c.replyUrl && !old.purged && old.status === "已发") {
           const gone = await outKeys(c.id, oldMine, c.replyUrl, old.sent_target);
           const [same, sameArgs] = sameRefs(oldMine);
           writes.push({ kind: "outbox", id: c.id, gone, notes: [], at: stmts.length, how: "link" });
-          stmts.push(db.prepare(`UPDATE outbox SET reply_url = ?, updated_at = ? WHERE id = ? AND status = '已发' AND purged = 0 AND ${same} AND sent_target IS ? AND ${NOT_GONE}`).bind(c.replyUrl, t, c.id, ...sameArgs, old.sent_target ?? null, goneArg(gone)));
+          stmts.push(db.prepare(`UPDATE outbox SET reply_url = ?, updated_at = ? WHERE id = ? AND status = '已发' AND purged = 0 AND ${same} AND sent_target IS ? AND json_extract(mine, '$.sent.opened') IS NOT decided_at AND ${NOT_GONE}`).bind(c.replyUrl, t, c.id, ...sameArgs, old.sent_target ?? null, goneArg(gone)));
         } else rejected.push({ kind: "outbox", id: c.id, why: old.purged ? EXPIRED_OUT_WHY : HANDLED_WHY }); // 到期删过的先说到期(点过「已发」的也一样)
       } else {
         // 引用的原帖建好以后不能换、不能去掉(老板可能已经照着它改了草稿);原来没有的,老板没改过草稿才能补上
@@ -584,6 +628,71 @@ async function locked(db, raw, body, now) {
           .bind(JSON.stringify(c.mine), ...(c.replyUrl ? [c.replyUrl] : []), t, c.id, old.sent_target ?? null, ...(c.replyUrl ? [] : [old.reply_url ?? null]), goneArg(gone)));
       }
     }
+  }
+
+  // 核实结果:只写「已发」、没到期删过、点开的时间对得上的那张卡片。先读出来(一条查询),对不上的不写、回执写明:
+  //   目标帖子:送来的摘要要和库里 sent_target(点「已发」时记下的)的摘要一样(项目帖两边都是 null);
+  //   送来的几条按先后挑第一条能用的:
+  //     发帖时间(从帖子编号里读,不信送来的 postedAt)不早于这一批发送的起点(send_batches:这一轮第一次复制或点开)前 SENT.skewMs(15 分钟钟差),
+  //     不晚于现在 10 分钟;没有批次的旧记录(cutover 以前点开的)补核:起点按卡片送进运营台的时间(created_at);
+  //     这条帖子没归过谁,或者归的就是这张卡片的这一次点开(sent_posts;一条帖子永远只归第一次核到的那一次点开,
+  //     改回待发也不放出来:别的卡片、这张卡片以后再点开,都不能拿它当证据);同一包里前面几条挑走的也算归过了;
+  //   已经核实了的(核到的是这一次点开的):送来的里面有那一条就照收、不改,没有就不收。
+  // 挑中了:记 sent_posts 和写卡片用同样的条件(同一个事务里,卡片写不上就不记归属);写的那一句里再核对一遍(读和写之间管理员改回待发、跳过、又点了一次,
+  // 目标帖子、引用、记下的目标被改了,就不写;读和写之间被核实成了别的帖子,也不写;这条帖子归的不是这一次点开,也不写),
+  // 卡片本身、它带着的帖子和这次的链接按要求删过的也不写(和补链接一样查 gone)。mine 别的部分不动,只加 sent;reply_url 以核到的为准
+  const sentIds = sentIn.map((x) => itemId(x?.id)).filter(Boolean);
+  if (sentIn.length) await backfillSentPosts(db); // 以前核实过的先补记进 sent_posts(翻完就不再翻)
+  const sentHave = new Map(sentIds.length ? (await db.prepare("SELECT id, mine, status, purged, decided_at, created_at, sent_target, (SELECT started FROM send_batches b WHERE b.id = outbox.id) AS batch_start FROM outbox WHERE id IN (SELECT value FROM json_each(?))").bind(JSON.stringify(sentIds)).all()).results.map((r) => [r.id, r]) : []);
+  const cutover = sentIn.length ? await getKv(db, SENT_CUT_KEY) : null;
+  const sentClean = sentIn.map((x) => cleanSent(x));
+  const postKeys = new Map();
+  for (const c of sentClean) for (const k of c.cands || []) if (!postKeys.has(k.post)) postKeys.set(k.post, await sentPostKey(k.post));
+  const owners = new Map(postKeys.size ? ((await db.prepare("SELECT post, card, opened FROM sent_posts WHERE post IN (SELECT value FROM json_each(?))").bind(JSON.stringify([...postKeys.values()])).all()).results || []).map((r) => [r.post, { card: r.card, opened: r.opened }]) : []);
+  const sentSeen = new Set(), sentPosts = new Map();
+  for (const c of sentClean) {
+    if (c.error) { rejected.push({ kind: "sent", id: c.id || "?", why: c.error }); continue; }
+    if (sentSeen.has(c.id)) { rejected.push({ kind: "sent", id: c.id, why: "同一包里重复了,只收第一条" }); continue; }
+    sentSeen.add(c.id);
+    const old = sentHave.get(c.id);
+    const why = !old ? SENT_NONE_WHY : old.purged ? EXPIRED_OUT_WHY : old.status !== "已发" ? SENT_STATUS_WHY : old.decided_at !== c.opened ? SENT_OPENED_WHY : null;
+    if (why) { rejected.push({ kind: "sent", id: c.id, why }); continue; }
+    if ((await targetKey(old.sent_target)) !== c.target) { rejected.push({ kind: "sent", id: c.id, why: SENT_TARGET_WHY }); continue; }
+    const oldMine = (() => { try { return JSON.parse(old.mine) || {}; } catch { return {}; } })();
+    const os = oldMine.sent && typeof oldMine.sent === "object" && oldMine.sent.opened === old.decided_at && typeof oldMine.sent.at === "string" ? oldMine.sent : null;
+    const legacy = typeof cutover === "string" && old.decided_at < cutover;
+    const lo = Date.parse(old.batch_start || (legacy ? old.created_at : old.decided_at)) - SENT.skewMs;
+    let pick = null, first = null;
+    const taken = []; // 已经归了别人的那几条(回执里写给核实器,下次不再送)
+    for (const k of c.cands) {
+      const posted = postedMs(k.post, now), owner = owners.get(postKeys.get(k.post));
+      const no = os && os.post !== k.post ? SENT_OTHER_WHY
+        : !Number.isFinite(posted) || !(posted >= lo) ? SENT_TIME_WHY
+        : owner && !(owner.card === c.id && owner.opened === old.decided_at) ? (owner.card === c.id ? SENT_REUSED_WHY : SENT_DUP_WHY)
+        : null;
+      if (!no) { pick = k; break; }
+      if (no === SENT_REUSED_WHY || no === SENT_DUP_WHY) taken.push(k.post);
+      first = first || no;
+    }
+    if (!pick) { rejected.push({ kind: "sent", id: c.id, why: first, ...(taken.length ? { taken } : {}) }); continue; }
+    const pk = postKeys.get(pick.post);
+    owners.set(pk, { card: c.id, opened: old.decided_at }); // 同一包里后面的不能再挑它
+    sentPosts.set(c.id, pick.post);
+    const gone = await outKeys(c.id, oldMine, pick.url, old.sent_target);
+    const [same, sameArgs] = sameRefs(oldMine);
+    const sent = { opened: c.opened, at: t, url: pick.url, post: pick.post, ...(c.postedAt ? { postedAt: c.postedAt } : {}) };
+    // 已经核实成这一条的:什么都不改(这一句照样算写上了);没核实的:记上。
+    // 记归属、写卡片用同一个条件(cond),在同一个事务里:读和写之间卡片变了,两样都不写(不留下没用上的归属);
+    // 以前核实过、还没补记进 sent_posts 的,照旧查别的卡片的 mine.sent(补记翻完以前两样都挡)
+    const done = "json_extract(mine, '$.sent.opened') IS decided_at";
+    const cond = `id = ? AND status = '已发' AND purged = 0 AND decided_at IS ? AND sent_target IS ? AND ${same} AND (NOT (${done}) OR json_extract(mine, '$.sent.post') IS ?) ` +
+      `AND NOT EXISTS (SELECT 1 FROM outbox o2 WHERE o2.id != outbox.id AND o2.status = '已发' AND json_extract(o2.mine, '$.sent.post') = ? AND json_extract(o2.mine, '$.sent.opened') = o2.decided_at) AND ${NOT_GONE}`;
+    const condArgs = [c.id, c.opened, old.sent_target ?? null, ...sameArgs, pick.post, pick.post, goneArg(gone)];
+    stmts.push(db.prepare(`INSERT INTO sent_posts (post, card, opened, at) SELECT ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM outbox WHERE ${cond}) ON CONFLICT(post) DO NOTHING`).bind(pk, c.id, old.decided_at, t, ...condArgs));
+    writes.push({ kind: "sent", id: c.id, gone, notes: [], at: stmts.length, how: "sent" });
+    stmts.push(db.prepare(`UPDATE outbox SET reply_url = CASE WHEN ${done} THEN reply_url ELSE ? END, mine = CASE WHEN ${done} THEN mine ELSE json_set(mine, '$.sent', json(?)) END, updated_at = ? ` +
+      `WHERE ${cond} AND EXISTS (SELECT 1 FROM sent_posts sp WHERE sp.post = ? AND sp.card = outbox.id AND sp.opened = outbox.decided_at)`)
+      .bind(pick.url, JSON.stringify(sent), t, ...condArgs, pk));
   }
 
   // 收件续答、宣传卡片许带的网址一样:本站加运营规则里的官方网址
@@ -663,23 +772,24 @@ async function locked(db, raw, body, now) {
   const changed = (w) => Number((res && res[w.at] && res[w.at].meta && res[w.at].meta.changes) || 0) > 0;
   const missed = writes.filter((w) => !changed(w));
   const hit = missed.length ? await existing(db, "gone", missed.flatMap((w) => (w.exp ? [...w.gone, w.exp] : w.gone))) : new Set();
-  const late = missed.filter((w) => w.kind === "outbox" && w.how !== "new" && !w.gone.some((k) => hit.has(k))).map((w) => w.id);
-  const rowNow = new Map(late.length ? (await db.prepare("SELECT id, status, purged FROM outbox WHERE id IN (SELECT value FROM json_each(?))").bind(JSON.stringify(late)).all()).results.map((r) => [r.id, r]) : []);
-  const count = { outbox: 0, inbox: 0, problems: 0, outreach: 0 };
+  const late = missed.filter((w) => (w.kind === "outbox" || w.kind === "sent") && w.how !== "new" && !w.gone.some((k) => hit.has(k))).map((w) => w.id);
+  const rowNow = new Map(late.length ? (await db.prepare("SELECT id, status, purged, decided_at, json_extract(mine, '$.sent.opened') AS sopened, json_extract(mine, '$.sent.post') AS spost FROM outbox WHERE id IN (SELECT value FROM json_each(?))").bind(JSON.stringify(late)).all()).results.map((r) => [r.id, r]) : []);
+  const count = { outbox: 0, inbox: 0, problems: 0, outreach: 0, sent: 0 };
   for (const w of writes) {
     if (changed(w)) {
       count[w.kind]++;
       for (const n of w.notes || []) rejected.push({ kind: w.kind, id: w.id, why: n });
       continue;
     }
-    const r = w.kind === "outbox" ? rowNow.get(w.id) : null;
+    const r = w.kind === "outbox" || w.kind === "sent" ? rowNow.get(w.id) : null;
     const why = w.toKey && hit.has(w.toKey) && !hit.has(w.card) ? REACH_TO_WHY
       : w.gone.some((k) => hit.has(k)) ? GONE_WHY
       : w.exp && hit.has(w.exp) ? "30 天到期删过,不再收"
+      : w.kind === "sent" ? (!r ? GONE_WHY : r.purged ? EXPIRED_OUT_WHY : r.sopened === r.decided_at && r.spost !== sentPosts.get(w.id) && r.spost != null ? SENT_OTHER_WHY : SENT_LATE_WHY)
       : w.kind === "outbox" && w.how !== "new" ? (!r ? GONE_WHY : r.purged ? EXPIRED_OUT_WHY : "管理员刚处理过这条(点了「已发 / 跳过」或改了草稿),这次没改")
       : w.kind === "outreach" && w.how === "edit" ? "管理员刚处理过这条(点了「已发 / 跳过」),这次没改"
       : "这次没写进去,下一包再送";
     rejected.push({ kind: w.kind, id: w.id, why });
   }
-  return { status: 200, body: { ok: true, receipt: (await sha256(raw)).slice(0, 16), docs, outbox: count.outbox, inbox: count.inbox, problems: count.problems, outreach: count.outreach, setup, rejected } };
+  return { status: 200, body: { ok: true, receipt: (await sha256(raw)).slice(0, 16), docs, outbox: count.outbox, inbox: count.inbox, problems: count.problems, outreach: count.outreach, sent: count.sent, setup, rejected } };
 }

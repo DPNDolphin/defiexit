@@ -196,7 +196,7 @@ test("每天的上限:到了上限,多的排队(「在 X 打开」「复制」�
   const post = { id: "p1", mine: { kind: "post", topic: "提醒", draft: "项目帖" }, status: "待发", decided_at: null, created_at: ago(100), draft_admin: null, purged: false };
   const d = await desk(base([reply("s1", 9, { status: "已发", decided_at: new Date(now).toISOString() }), purged, reply("r1", 10), reply("r2", 11), reply("r3", 12), post], { dailyReplyCap: 2 }));
   const q = (id) => { const c = d.card(id); return [d.canOpen(id), c.wait.hidden ? null : c.wait.textContent, c.copy.disabled, c.sent.disabled, c.skip.disabled]; };
-  const WAIT = "排队:今天上限 2 条(已发 1 条,上面 1 条先发),明天放出";
+  const WAIT = "排队:今天上限 2 条(已打开 1 条,上面 1 条先发),明天放出";
   assert.deepEqual(q("r1"), [true, null, false, false, false]);
   assert.deepEqual(q("r2"), [false, WAIT, true, true, false]);
   assert.deepEqual(q("r3"), [false, WAIT, true, true, false]);
@@ -884,4 +884,54 @@ test("待发:草稿自动存的那次还没回来就点了「已发」,那次被
   const el = find(d.$("out-cards"), (e) => e.getAttribute("data-id") === "r-q4");
   assert.deepEqual([statusCalls(d, "outbox"), state.outbox[0].status, c.ta.value, find(el, (e) => e.classList.contains("saved")).textContent],
     [[], "待发", "有问题可以私信我", "草稿没存上,先别点「已发」;字还在框里"]);
+});
+
+test("「已发」分成三种:已处理里的卡片写已打开 / 待核实 / 核实已发(旧的没核写「已发(旧,没核)」);待核实的顶上提醒(旧的不算);数据页「你点了发」只数核实已发", async () => {
+  const cut = ago(3 * 24 * 60);
+  const sentRule = { graceMs: 6 * 3600e3, cutover: cut };
+  const opened = (min) => ago(min);
+  const v = (min, url) => ({ opened: opened(min), at: ago(min - 5), url });
+  const rows = [
+    reply("o1", 10, { status: "已发", decided_at: opened(30) }), // 刚点开
+    reply("o2", 11, { status: "已发", decided_at: opened(7 * 60), reply_url: "https://x.com/DeFiExit/status/2118000000000000011" }), // 7 小时了,服务器先找到一条但还没核
+    reply("o3", 12, { status: "已发", decided_at: opened(8 * 60) }),
+    reply("o4", 13, { status: "已发", decided_at: opened(90), reply_url: "https://x.com/DeFiExit/status/2118000000000000013" }),
+    reply("o5", 14, { status: "已发", decided_at: opened(4 * 24 * 60) }), // 改版以前点的
+    reply("o6", 15, { status: "已发", decided_at: opened(2 * 60) }),
+  ];
+  rows[3].mine = { ...rows[3].mine, sent: v(90, "https://x.com/DeFiExit/status/2118000000000000013") };
+  rows[5].mine = { ...rows[5].mine, sent: { opened: opened(200), at: ago(190) } }; // 核到的是上一次点开的:不算
+  const d = await desk({ ...base(rows), sentRule, docs: { funnel: { target: 5, stages: [{ key: "drafted", label: "写好回复", value: 0 }, { key: "posted", label: "你点了发", value: 0 }] } } });
+  const pill = (id) => find(find(d.$("done-cards"), (e) => e.getAttribute("data-id") === id), (e) => e.classList.contains("pill")).textContent;
+  const line = (id) => find(find(d.$("done-cards"), (e) => e.getAttribute("data-id") === id), (e) => e.tagName === "P" && e.classList.contains("count") && !e.classList.contains("queue")).textContent;
+  assert.match(pill("o1"), /^已打开 · /);
+  assert.match(pill("o2"), /^待核实 · /);
+  assert.match(pill("o3"), /^待核实 · /);
+  assert.match(pill("o4"), /^核实已发 · /);
+  assert.match(pill("o5"), /^已发\(旧,没核\) · /);
+  assert.match(pill("o6"), /^已打开 · /);
+  assert.match(line("o1"), /^等核实:/);
+  assert.match(line("o2"), /^点开 6 小时还没在 X 上核到你这条回复.*先找到的一条:看 ↗/);
+  assert.match(line("o4"), /^你的回复\(核实发出了\):看 ↗/);
+  assert.match(line("o5"), /^改版以前点的,还没核过/);
+  // 顶上:待核实的 2 条(旧的不算)
+  assert.match(d.$("todo").textContent, /2 条点了「在 X 打开」6 小时还没在 X 上核到你发的/);
+  // 数据页:回帖试验的「你点了发」只数核实的 1 条,另写没核到的 5 条;「我们发的」写最近 7 天的三种(旧的那条 4 天前点的,也在 7 天里)
+  const text = d.$("data-body").textContent;
+  assert.ok(text.includes("「你点了发」只数核实发出了的(我经 fxtwitter 在 X 上核到的);点开了还没核到的 5 条不算。"), text);
+  assert.ok(text.includes("最近 7 天点开的:核实已发 1 · 已打开 2 · 待核实 2 · 已发(旧,没核) 1"), text);
+});
+
+test("服务器还没给 sentRule(旧服务器):「已发」照样显示,不报错;没核到的满 6 小时算待核实", async () => {
+  const d = await desk(base([reply("o1", 10, { status: "已发", decided_at: ago(30) }), reply("o2", 11, { status: "已发", decided_at: ago(7 * 60) })]));
+  const pill = (id) => find(find(d.$("done-cards"), (e) => e.getAttribute("data-id") === id), (e) => e.classList.contains("pill")).textContent;
+  assert.match(pill("o1"), /^已打开 · /);
+  assert.match(pill("o2"), /^待核实 · /);
+});
+
+test("点「复制」:页面顺手告诉服务器这一批发送从现在算起(不用多点,不改卡片);点过「已发」的不再告诉", async () => {
+  const d = await desk(base([reply("r1", 10), reply("s1", 11, { status: "已发", decided_at: ago(5) })]));
+  await d.card("r1").copy.fire("click");
+  await tick();
+  assert.deepEqual(d.calls.filter(([p, b]) => p === "outbox" && b.copied), [["outbox", { id: "r1", copied: true }]]);
 });

@@ -1,21 +1,46 @@
 // 刷新:管理员点「刷新」或定时任务来时,服务器经 api.fxtwitter.com(第三方、非官方,随时可能失灵)读被监控帖子的公开计数和回复。
 // - 读数追加进看板 x_posts(每条帖子最多留 300 个点);
-// - 我们自己发出去的回复和项目帖(待发里点了「已发」、链接核到了的,7 天内)也读:浏览、点赞记进 out_stats,别人接着回的进收件;
-//   没读过的先读,其余按上次读的时间轮着来;只收那条帖子往下那一串的评论,发帖人不是我们的账号就不收;
+// - 我们自己发出去的回复和项目帖(待发里点了「已发」、有链接的,7 天内)也读:浏览、点赞记进 out_stats,别人接着回的进收件;
+//   只收那条帖子往下那一串的评论,发帖人不是我们的账号就不收;
+// - 先读新的(11-06,决策记录 11-05「运营台要修的」②):按帖子发出多久分档(TIERS,发帖时间从帖子编号里读,见 postedMs),
+//   3 小时内的每轮都读,越旧隔得越久;到了该读的时候才读。每轮总数仍是 MAX_FETCH(先扣掉找链接用掉的):
+//   3 小时内的先读(一样新的按上次读的时间轮着来、没读过的先),但新的再多也给旧的留 COLD_MIN 个名额;
+//   旧的按「过了该读的时间多久」(等了几个间隔)排,等得最久的先读,所以哪一条都不会一直轮不到;
+//   到了该读的不够 FLOOR 条,拿上次读得最早的补上;
 // - 免费计划一次请求最多 50 个子请求(fetch 和 D1 查询一起算):一次最多读 MAX_FETCH 条帖子,读了 TIME_BUDGET_MS 就停,
 //   读到的评论一条语句查重(json_each),新评论、已回复标记一次各最多 MAX_NEW 条(新的先),没收完的下次照样再查;写全放进最后一个 batch(只算一次);
 // - 新回复进收件,只存帖子编号、账号名、时间、原文,状态「等我分析」(分析和起草由 Claude 主窗口做,经签名投递送进来);
 // - 发帖人自己(按账号的固定编号认,不按昵称)回了某条评论,就把那条标成「已回复」,记下他回的话;
-// - 待发里管理员点过「已发」的,去目标帖子底下找他那条回复,找到就填上链接(这才算核到,不靠自报)。
+// - 待发里管理员点过「已发」(点开)不到 SENT.graceMs(6 小时)的,去目标帖子底下找他那条回复(按账号编号认),找到就先填上链接,
+//   好接着读它底下的评论。这只是「找到一条」,不算核实:「核实已发」由主窗口经 fxtwitter 核过账号、目标帖、正文以后经签名投递记下
+//   (admin/pace.js 的 sentState);6 小时还找不到的(可能没发、发完删了)不再占这里的名额,交给主窗口接着核。
 // 读不到的帖子写进 errors(带原因),页面明说「不算没有新评论」;接口给的回复比帖子显示的少,也标「可能没读全」。两分钟内只许刷一次(按钮和定时任务共用)。
 
-import { iso, plusDays, KEEP_DAYS, getDocs, docStmt, existing, goneKeys, inboxGone, expKey, NOT_GONE, goneArg, outKeys, inKeys, sameRefs, sameInRefs } from "./db.js";
+import { iso, plusDays, KEEP_DAYS, getDocs, docStmt, existing, goneKeys, inboxGone, expKey, NOT_GONE, goneArg, outKeys, inKeys, sameRefs, sameInRefs, postedMs } from "./db.js";
 import { softName } from "./names.js";
+import { SENT } from "../../admin/pace.js";
 
 export const UPSTREAM = "https://api.fxtwitter.com/2/conversation/";
 export const MIN_GAP_MS = 120 * 1000;
 const MAX_POINTS = 300, MAX_REPLIES = 200, MAX_SENT_CHECKS = 4, MAX_NEW = 100, MAX_STATS = 300;
 export const AUTO_DAYS = 7, MAX_FETCH = 20, TIME_BUDGET_MS = 45 * 1000;
+// 一次刷新最多读多久(测试里改小,模拟上游慢)
+export const BUDGET = { ms: TIME_BUDGET_MS };
+// 跟进轮询的档位:帖子发出 upto 以内,隔 every 读一次(0 = 每轮都读;定时任务每 20 分钟一轮)。
+// 我们的回复读到点开以后 7 天(AUTO_DAYS),被监控的帖子一直读(2 天以上的每 8 小时一次)
+export const TIERS = [
+  { upto: 3 * 3600e3, every: 0 },
+  { upto: 12 * 3600e3, every: 3600e3 },
+  { upto: 48 * 3600e3, every: 3 * 3600e3 },
+  { upto: Infinity, every: 8 * 3600e3 },
+];
+// 3 小时内的再多,每轮也给到了该读的旧帖子留几个名额(旧的没到该读的时候就不留)
+export const COLD_MIN = 4;
+// 每轮至少读几条:到了该读的不够这么多,拿上次读得最早的补上(读数接着有点;fxtwitter 一时读不到,也不会因为这一轮只读了一两条就报「一条都没读到」)
+export const FLOOR = 4;
+// 帖子编号里的发帖时间(db.js 的 postedMs,核实结果也用它)
+export { postedMs };
+export const tierOf = (age) => TIERS.find((x) => age < x.upto) || TIERS[TIERS.length - 1];
 
 async function conversation(id, fetchImpl) {
   const ctl = new AbortController();
@@ -46,7 +71,7 @@ export async function sync(db, fetchImpl, now) {
   if (!lock.meta || lock.meta.changes !== 1) return { status: 429, body: { error: "busy" } };
   const started = Date.now();
   let fetched = 0;
-  const canFetch = () => fetched < MAX_FETCH && Date.now() - started < TIME_BUDGET_MS;
+  const canFetch = () => fetched < MAX_FETCH && Date.now() - started < BUDGET.ms;
   const read1 = (id) => { fetched++; return conversation(id, fetchImpl); };
 
   const docs = await getDocs(db);
@@ -127,11 +152,12 @@ export async function sync(db, fetchImpl, now) {
     if (ours.size) break;
   }
 
-  // 7 天内点了「已发」的一次查出来:还没核到链接的,先去目标帖子底下找管理员那条回复(按我们账号的编号认;一个都不认得就这次先不核);
+  // 7 天内点了「已发」的一次查出来:点开不到 6 小时、还没链接的,先去目标帖子底下找管理员那条回复(按我们账号的编号认;一个都不认得就这次先不找);
   // 自己发的帖子没有目标帖子(sent_target 是空的),不在这里找。核到的链接先攒着,和别的写一起写
   const { results: sentAll } = await db.prepare("SELECT id, mine, sent_target, reply_url, decided_at FROM outbox WHERE status = '已发' AND purged = 0 AND decided_at >= ? ORDER BY decided_at DESC LIMIT 500").bind(iso(+now - AUTO_DAYS * 864e5)).all(); // 每天回 50 条 × 7 天
   const links = [], found = [];
-  for (const r of ours.size ? (sentAll || []).filter((q) => !q.reply_url && q.sent_target).slice(0, MAX_SENT_CHECKS) : []) {
+  const justOpened = (q) => +now - Date.parse(q.decided_at || "") < SENT.graceMs; // 点开不到 6 小时的才在这里找(之后交给主窗口核)
+  for (const r of ours.size ? (sentAll || []).filter((q) => !q.reply_url && q.sent_target && justOpened(q)).slice(0, MAX_SENT_CHECKS) : []) {
     if (!canFetch()) break;
     const target = String(r.sent_target);
     const { j, error } = await read1(target);
@@ -150,8 +176,8 @@ export async function sync(db, fetchImpl, now) {
     }
   }
 
-  // 要读的:被监控的帖子 + 我们自己发出去的(链接是服务器核到的,或管理员、维护者贴的;管理员停了读评论的不读),
-  // 放在一起按上次读的时间轮着来(没读过的先读,同样没读过的被监控的在前):读得慢、一次读不完也不会总轮不到同一批
+  // 要读的:被监控的帖子 + 我们自己发出去的(链接是服务器找到的、主窗口核到的,或管理员、维护者贴的;管理员停了读评论的不读),
+  // 放在一起按档位挑(见文件开头和 TIERS):读得慢、一次读不完,没读到的下次照样排在前面
   const has = new Set(watchList.map((e) => e.id));
   const list = [...watchList];
   for (const r of [...found, ...(sentAll || []).filter((q) => q.reply_url)]) {
@@ -164,10 +190,9 @@ export async function sync(db, fetchImpl, now) {
     // 名字会存进这条回复底下评论的「来源」(到期以后还留在需求摘要里):不带对方账号;协议先过一遍名字检查
     // (这一版以前收进来的卡片,协议里可能带着地址),没写或不合格的写卡片编号
     const name = mine.kind === "post" ? "项目帖 · " + (mine.topic || r.id) : "我们的回复 · " + (softName(tg.protocol, 60) || r.id);
-    list.push({ kind: "mine", id: m[1], name: clip(name, 40), out: r.id });
+    list.push({ kind: "mine", id: m[1], name: clip(name, 40), out: r.id, at: r.decided_at });
   }
-  list.sort((a, b) => lastOf(a).localeCompare(lastOf(b)) || (a.kind === b.kind ? 0 : a.kind === "watch" ? -1 : 1));
-  for (const e of list) if (!done.has(e.id)) await readEntry(e);
+  for (const e of pick(list.filter((e) => !done.has(e.id)), MAX_FETCH - fetched, reads, now)) await readEntry(e);
 
   // 这次所有帖子读完了,我们的账号也认全了:我们回的 → 把它回的那条标成已回复;别人的 → 评论(我们自己的不进收件)
   for (const r of seenReplies) if (ours.has(r.aid) && /^\d{1,25}$/.test(r.to) && r.to !== r.focal && !ownerReplies.has(r.to)) ownerReplies.set(r.to, { at: r.at, text: r.text });
@@ -238,4 +263,40 @@ export async function sync(db, fetchImpl, now) {
   for (const i of insAt) newReplies += changed(i);
   for (const i of markAt) marked += changed(i);
   return { status: 200, body: { ok: true, at: t, read, newReplies, marked, errors, partial } };
+}
+
+// 这一轮读哪几条、按什么顺序(budget:这一轮还能读几条)。e.at:我们的回复是点开的时间(帖子编号读不出发帖时间时用它);
+// 被监控的帖子读不出发帖时间的当新帖(每轮读,宁多勿少)。
+// 新的(3 小时内):上次读得最早的先(没读过的最先),一样的被监控的在前、再按编号;
+// 旧的:到了该读的时候(离上次读过了 every)才读,等了几个间隔多的先(没读过的最先),一样的被监控的在前、再按编号。
+// 新的先占名额,但到了该读的旧帖子至少留 COLD_MIN 个(没那么多就留几个;这一轮剩得不多时最多留四分之一);新的没用完的名额给旧的。
+// 留给旧的那几个和新的交错着排在最前面(新、旧、新、旧……):上游慢、读到一半时间就到了,留的名额也读得到,不会全让给新的;
+// 剩下的新的、旧的接着排。加起来不到 FLOOR 条的,拿还没到时候的、上次读得最早的补上(没读过的不会在这里:没读过的都算到了该读的时候),排在最后
+export function pick(list, budget, reads, now) {
+  const hot = [], cold = [], rest = [];
+  const kindRank = (e) => (e.kind === "watch" ? 0 : 1);
+  for (const e of list) {
+    const p = postedMs(e.id, now);
+    const t = Number.isFinite(p) ? p : e.kind === "mine" ? Date.parse(e.at || "") : +now;
+    const tier = tierOf(Math.max(0, +now - (Number.isFinite(t) ? t : +now)));
+    const last = typeof reads[e.id] === "string" ? Date.parse(reads[e.id]) : NaN;
+    if (!tier.every) { hot.push({ e, last: Number.isFinite(last) ? last : -Infinity }); continue; }
+    const waited = Number.isFinite(last) ? (+now - last) / tier.every : Infinity;
+    if (waited >= 1) cold.push({ e, waited });
+    else rest.push({ e, last });
+  }
+  const tie = (a, b) => kindRank(a.e) - kindRank(b.e) || (a.e.id < b.e.id ? -1 : a.e.id > b.e.id ? 1 : 0);
+  hot.sort((a, b) => (a.last === b.last ? 0 : a.last < b.last ? -1 : 1) || tie(a, b));
+  cold.sort((a, b) => (a.waited === b.waited ? 0 : a.waited > b.waited ? -1 : 1) || tie(a, b));
+  const n = Math.max(0, budget);
+  // 给旧的留的名额:最多 COLD_MIN 个,也不超过这一轮的四分之一(这一轮剩得很少时,新的先)
+  const keep = Math.min(cold.length, COLD_MIN, Math.floor(n / 4));
+  const coldTake = Math.min(cold.length, Math.max(n - hot.length, keep));
+  const hotTake = Math.min(hot.length, n - coldTake);
+  const fill = Math.max(0, Math.min(FLOOR, n) - hotTake - coldTake);
+  rest.sort((a, b) => a.last - b.last || tie(a, b));
+  const hs = hot.slice(0, hotTake), cs = cold.slice(0, coldTake), lead = Math.min(keep, cs.length), order = [];
+  for (let i = 0; i < lead; i++) { if (i < hs.length) order.push(hs[i]); order.push(cs[i]); }
+  order.push(...hs.slice(lead), ...cs.slice(lead), ...rest.slice(0, fill));
+  return order.map((x) => x.e);
 }

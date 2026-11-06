@@ -10,11 +10,18 @@
 //   体检次数 hits(每种的总数、开始数的那天、最近 60 天每天的数,北京时间;见 db.js 的 hitCounts),
 //   问题记录 problems(最近 90 天的数:每种、问得多的 20 个协议、每周几条、回了几成;见 db.js 的 problemCounts,只有数,不带编号、账号、链接),
 //   宣传卡片 outreach(编号、渠道、目标、状态、点的时间,管理员记下的回音:一句话、链接、记的时间;不带正文和收件邮箱,那些是我自己写的)。
+//   待发每条另带(11-06「已发」拆成三种,见 admin/pace.js 的 sentState):check(已打开 opened / 待核实 pending / 核实已发 verified /
+//   旧的没核 legacy;没点开的是 null)、核到的链接和时间(verified_url、verified_at)、点开时记下的那段话 sent_text(我们自己发出去的话,
+//   主窗口拿它和 X 上那条对)、purged(30 天到期删过,核不了了);sentRule(待核实的时限、这一版上线的时间)和 sent(读钟数的「已发」:
+//   全部点开过的按三种数,回帖、项目帖分开,另有最近 30 天每天的数;读钟只数 verified);到期删过的不带 sent_text。
+//   核实队列 sentQueue(还没核实的「已发」,一页 500 条:每条带目标帖子的摘要 target_key,不带目标帖子编号;请求带 queueAfter 翻下一页,
+//   见 db.js 的 sentQueue)。
 //   不回评论原文、评论人账号、目标帖子信息。导出前先跑一遍到期清理,过期的不会导出。
 // 两个入口都查:签名、时间(±10 分钟)、nonce 只能用一次;task 还要求 ts 比上一次大,同一时刻只处理一包(锁 5 分钟,比最慢的一次刷新长)。
 // 「每天」按 UTC 算。
 
-import { iso, getKv, setKv, purge, fixNeeds, hitCounts, problemCounts, PROBLEM_DAYS } from "./db.js";
+import { iso, getKv, setKv, purge, fixNeeds, hitCounts, problemCounts, PROBLEM_DAYS, sentRule, sentCounts, sentQueue } from "./db.js";
+import { sentState } from "../../admin/pace.js";
 import { verify, SKEW_MS } from "./ingest.js";
 import { sync } from "./sync.js";
 
@@ -151,12 +158,21 @@ export async function exportFor(db, { raw, sig, envName, method, path, pubkeys }
   const since = typeof c.body.since === "string" && !Number.isNaN(Date.parse(c.body.since)) ? c.body.since : "1970-01-01T00:00:00.000Z";
   const inbox = (await db.prepare("SELECT id, decision, decided_at, replied, replied_at, note FROM inbox WHERE updated_at >= ? ORDER BY updated_at DESC LIMIT 500").bind(since).all()).results
     .map((r) => ({ id: r.id, decision: r.decision, decided_at: r.decided_at, replied: !!r.replied, replied_at: r.replied_at, note: r.note }));
-  const outbox = (await db.prepare("SELECT id, status, decided_at, reply_url, note FROM outbox WHERE updated_at >= ? ORDER BY updated_at DESC LIMIT 500").bind(since).all()).results;
+  const rule = await sentRule(db);
+  const outbox = (await db.prepare("SELECT id, status, decided_at, reply_url, note, sent_text, purged, json_extract(mine, '$.sent') AS sent FROM outbox WHERE updated_at >= ? ORDER BY updated_at DESC LIMIT 500").bind(since).all()).results
+    .map(({ sent: raw, purged, ...r }) => {
+      const sent = parse(raw, null) || null;
+      const check = sentState({ status: r.status, decided_at: r.decided_at, mine: { sent } }, rule, now);
+      // 到期删过的不再带点开时记下的那段话(里面可能有对方的账号、钱包;核实器也不核到期删过的)
+      return { ...r, sent_text: purged ? null : r.sent_text, purged: !!purged, check, verified_at: check === "verified" ? sent.at : null, verified_url: check === "verified" && typeof sent.url === "string" ? sent.url : null };
+    });
   const outreach = (await db.prepare("SELECT id, json_extract(mine, '$.channel') AS channel, json_extract(mine, '$.target') AS target, status, decided_at, result_note, result_url, result_at FROM outreach WHERE updated_at >= ? ORDER BY updated_at DESC LIMIT 500").bind(since).all()).results;
   const leads = (await db.prepare("SELECT id, v, found_at FROM leads WHERE found_at >= ? ORDER BY found_at DESC LIMIT 300").bind(since).all()).results
     .map((r) => ({ id: r.id, found_at: r.found_at, ...(parse(r.v, {}) || {}) }));
   let outStats = {};
   try { outStats = JSON.parse((await getKv(db, "out_stats")) || "{}") || {}; } catch { outStats = {}; }
   // 体检次数不看 since:总是给总数和最近 60 天;问题记录也不看 since:总是最近 90 天的数
-  return { status: 200, body: { ok: true, at: iso(now), inbox, outbox, outreach, leads, auto: await autoState(db), outStats, hits: await hitCounts(db, now), problems: await problemCounts(db, now, PROBLEM_DAYS, 20) } };
+  // 核实队列(sentQueue):还没核实的「已发」全给,一页 500 条,按点开的时间往前翻(请求里带 queueAfter: 上一页的 next)
+  const q = c.body.queueAfter && typeof c.body.queueAfter === "object" && !Array.isArray(c.body.queueAfter) ? c.body.queueAfter : null;
+  return { status: 200, body: { ok: true, at: iso(now), inbox, outbox, outreach, leads, auto: await autoState(db), outStats, hits: await hitCounts(db, now), problems: await problemCounts(db, now, PROBLEM_DAYS, 20), sentRule: rule, sent: await sentCounts(db, rule, now), sentQueue: await sentQueue(db, rule, now, q) } };
 }

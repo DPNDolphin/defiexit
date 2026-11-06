@@ -81,7 +81,7 @@ export async function handle(request, env, now = new Date()) {
   const day = bjDay(now);
   if (overCap(day)) return reply({ error: "day" }, 429);
   try {
-    await ensure(db);
+    await ensure(db); // 不传 now:库里不记访客来的时间
     const r = await db.prepare("INSERT INTO hits (day, kind, n) VALUES (?, ?, 1) ON CONFLICT(day, kind) DO UPDATE SET n = hits.n + 1 WHERE hits.n < ?").bind(day, q.k, LIMIT.perDay).run();
     if (!(r.meta && r.meta.changes === 1)) return reply({ error: "day" }, 429);
   } catch {

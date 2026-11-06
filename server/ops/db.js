@@ -12,6 +12,7 @@
 // 收件邮箱在点过「已发 / 跳过」180 天后删掉(只留哈希,见 purge),别的不自动删;按要求删的见 reachKeys。
 
 import { softName, safeLabel } from "./names.js";
+import { SENT, sentState } from "../../admin/pace.js";
 
 export const KEEP_DAYS = 30;
 const DDL = [
@@ -40,13 +41,67 @@ const DDL = [
   // 宣传卡片:mine 是我写的(渠道、目标、语言、网址、收件邮箱、邮件标题、标题、正文、说明,见 ingest.js 的 cleanReach),只能经签名投递改,
   // 管理员点过「已发 / 跳过」就不再改;其余是管理员点的:状态、点的时间、回音(一句话、一个链接、记的时间)
   "CREATE TABLE IF NOT EXISTS outreach (id TEXT PRIMARY KEY, mine TEXT NOT NULL, status TEXT NOT NULL DEFAULT '待发', decided_at TEXT, result_note TEXT, result_url TEXT, result_at TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL)",
+  // 核实用掉的帖子(11-07):一条帖子第一次核给哪张卡片的哪一次点开(card、opened),以后永远归它,改回待发、到期、换卡片都不放出来:
+  // 同一次点开重投照收,别的卡片、这张卡片别的一次点开都不能再拿它当证据。post 是帖子编号的哈希(sentPostKey),编号本身不存;只增不删
+  "CREATE TABLE IF NOT EXISTS sent_posts (post TEXT PRIMARY KEY, card TEXT NOT NULL, opened TEXT NOT NULL, at TEXT NOT NULL)",
+  // 发送批次(11-07):这一轮发送从什么时候算起(管理员第一次点「复制」或点开,哪个早算哪个);改回待发、跳过就删掉,下次复制、点开是新的一批。
+  // 核实只认这一批起点(前 15 分钟钟差)以后发的帖子。只有卡片编号和时间
+  "CREATE TABLE IF NOT EXISTS send_batches (id TEXT PRIMARY KEY, started TEXT NOT NULL)",
 ];
-const ready = new WeakSet();
+const ready = new WeakSet(), cutReady = new WeakSet();
 
-export async function ensure(db) {
-  if (ready.has(db)) return;
-  await db.batch(DDL.map((s) => db.prepare(s)));
+// 升级的办法和以前一样:不改已有的表(不 ALTER),新东西放进新表、已有的 JSON 字段或 kv,第一次用到时自动建好。
+// 「已发」拆成三种(11-06,见 admin/pace.js 的 sentState):核实结果放在待发那一行的 mine.sent 里(和 mine 别的部分一样只经签名投递写),
+// 表结构不用动;另外在 kv 里记一次 sent_v2_at:这个库第一次有运营台接口的请求跑这一版的时间(只写一次,以后不再改)。
+// 点开只能经运营台接口,所以早于它点开的「已发」都是旧版本记的,还没核到的算「已发(旧,没核)」,不算「待核实」。
+// now 只由运营台接口(functions/api/admin)传进来;体检计数(/api/hit)不传,库里不留访客来的时间
+export const SENT_CUT_KEY = "sent_v2_at";
+// 点「已发」时记下的目标帖子(sent_target)的摘要:导出不给目标帖子编号,只给这个;主窗口拿本地卡片的目标帖子编号算一遍比对,
+// 核实结果带着它送回来,写的时候再和库里的比一次(本地卡片和运营台记下的不是同一条,就不收)。项目帖没有目标帖子,是 null
+export async function targetKey(id) {
+  if (id == null || id === "") return null;
+  const b = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode("dx-target-v1:" + id)));
+  return [...b].map((x) => x.toString(16).padStart(2, "0")).join("");
+}
+// 核实用掉的帖子(sent_posts)的编号:帖子编号的哈希(前缀和别的哈希都不一样)
+export async function sentPostKey(id) {
+  const b = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode("dx-sentpost-v1:" + id)));
+  return [...b].map((x) => x.toString(16).padStart(2, "0")).join("");
+}
+// 以前核实过的(mine.sent 带着帖子编号)补记进 sent_posts:按卡片编号一页页翻,翻到哪记在 kv sent_posts_v1_at,翻完记 sent_posts_v1,以后不再翻;
+// 已经有的不动(幂等)。核实投递每次先跑它(一次最多 pages 页);没翻完之前,写卡片的语句另外照旧查别的卡片的 mine.sent(两样都挡)。回 true:翻完了
+export const SENT_POSTS_V = "sent_posts_v1";
+export async function backfillSentPosts(db, pages = 4) {
+  if (await getKv(db, SENT_POSTS_V)) return true;
+  let at = (await getKv(db, SENT_POSTS_V + "_at")) || "";
+  for (let n = 0; n < pages; n++) {
+    const rows = (await db.prepare("SELECT id, decided_at, json_extract(mine, '$.sent.post') AS post, json_extract(mine, '$.sent.at') AS sat FROM outbox WHERE id > ? AND status = '已发' AND json_extract(mine, '$.sent.opened') = decided_at AND json_extract(mine, '$.sent.post') IS NOT NULL ORDER BY id LIMIT 500").bind(at).all()).results || [];
+    const stmts = [];
+    for (const r of rows) stmts.push(db.prepare("INSERT INTO sent_posts (post, card, opened, at) VALUES (?, ?, ?, ?) ON CONFLICT(post) DO NOTHING").bind(await sentPostKey(String(r.post)), r.id, r.decided_at, typeof r.sat === "string" ? r.sat : r.decided_at));
+    if (rows.length) at = String(rows[rows.length - 1].id);
+    const done = rows.length < 500;
+    stmts.push(db.prepare("INSERT INTO kv (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(done ? SENT_POSTS_V : SENT_POSTS_V + "_at", done ? "1" : at));
+    await db.batch(stmts);
+    if (done) return true;
+  }
+  return false;
+}
+// X 的帖子编号里带着发帖时间(毫秒,从 2010-11-04 起算,左移 22 位):读不出来、不像真的(早于 2010-11-04、晚于现在 10 分钟以上)回 NaN。
+// 跟进轮询按它分档(sync.js),核实结果按它查发帖时间(ingest.js)
+const SNOWFLAKE_EPOCH = 1288834974657n;
+export function postedMs(id, now) {
+  if (!/^\d{1,25}$/.test(String(id))) return NaN;
+  const ms = Number((BigInt(String(id)) >> 22n) + SNOWFLAKE_EPOCH);
+  return ms > Number(SNOWFLAKE_EPOCH) && ms <= +now + 10 * 60e3 ? ms : NaN;
+}
+export async function ensure(db, now) {
+  const stmts = ready.has(db) ? [] : DDL.map((s) => db.prepare(s));
+  const cut = now != null && !cutReady.has(db);
+  if (cut) stmts.push(db.prepare("INSERT INTO kv (k, v) VALUES (?, ?) ON CONFLICT(k) DO NOTHING").bind(SENT_CUT_KEY, new Date(now).toISOString()));
+  if (!stmts.length) return;
+  await db.batch(stmts);
   ready.add(db);
+  if (cut) cutReady.add(db);
 }
 
 export const iso = (d) => new Date(d).toISOString();
@@ -155,8 +210,15 @@ export async function inboxGone(db, keys) {
   const hit = await existing(db, "gone", [...all, ...all.map(expKey)]);
   return new Set([...keys].filter(([, k]) => hit.has(k) || hit.has(expKey(k))).map(([id]) => id));
 }
-// 把文字里的 @账号 换掉(到期时用:我们的草稿、发出去的话里可能带着对方账号)
-export const scrub = (s) => (typeof s === "string" ? s.replace(/@[A-Za-z0-9_]{1,15}/g, "@某人") : s);
+// 到期时把文字里能认出人、帖子、钱包的换掉(我们的草稿、发出去的话、需求摘要里可能带着):@账号换成 @某人;
+// 网址(本站 defiexit.com 的留着,别的都换,对方的帖子链接、钱包浏览器链接都在里面);0x 加 6 位以上十六进制(钱包、交易);
+// 连着 25 个以上的英文字母数字(base58、bech32 的地址、交易哈希);连着 15 位以上的数字(帖子编号);xxx.eth 这类钱包名;IP。换成「…」
+const SCRUB_URL = /[a-z][a-z0-9+.-]*:\/\/[A-Za-z0-9\-._~:/?#[\]!$&'()*+,;=@%]*/gi;
+const SCRUB_RISK = /0x[0-9a-f]{6,}|[A-Za-z0-9]{25,}|\d{15,}|[\p{L}\p{N}_-]+\.(?:eth|sol|bnb|ton|lens|crypto|arb|base)(?![\p{L}\p{N}_.-])|\b\d{1,3}(?:\.\d{1,3}){3}\b/giu;
+const ownUrl = (u) => /^https?:\/\/(?:www\.)?defiexit\.com(?:[/?#]|$)/i.test(u);
+export const scrub = (s) => (typeof s === "string"
+  ? s.replace(SCRUB_URL, (u) => (ownUrl(u) ? u : "…")).replace(/@[A-Za-z0-9_]{1,15}/g, "@某人").replace(SCRUB_RISK, "…")
+  : s);
 
 // 查哪些编号已经在表里:一条语句(编号整串当一个 JSON 参数传给 json_each,不受「每条语句最多绑 100 个参数」的限制,
 // 查多少个都只算一次查询)。table 只由代码里写死的表名传进来
@@ -245,6 +307,51 @@ export async function problemCounts(db, now, days, top) {
   return { since, total, replied, repliedShare: total ? Math.round((replied / total) * 1000) / 1000 : null, byType, byProtocol, byWeek };
 }
 
+// ---------- 发出去没有(「已发」拆成三种,算法在 admin/pace.js 的 sentState) ----------
+// 页面和导出照这份规矩算:graceMs 点开多久还核不到算「待核实」,cutover 这个库第一次跑这一版的时间(早于它点开的是旧记录)
+export async function sentRule(db) {
+  return { graceMs: SENT.graceMs, cutover: await getKv(db, SENT_CUT_KEY) };
+}
+// 导出(读钟)用的数:「已发」的(点开过的)全部按三种数,回帖(replies)和项目帖(posts)分开;
+// byDay 是最近 SENT_DAYS 天(北京时间,按点开那天)每天的数,没有的那天不列。到期删过的照样数(核实结果的时间留着)
+export const SENT_DAYS = 30;
+export async function sentCounts(db, rule, now) {
+  const { results } = await db.prepare("SELECT decided_at, json_extract(mine, '$.kind') AS kind, json_extract(mine, '$.sent') AS sent FROM outbox WHERE status = '已发'").all();
+  const zero = () => ({ opened: 0, pending: 0, verified: 0, legacy: 0 });
+  const total = { replies: zero(), posts: zero() }, byDay = {};
+  const since = bjDay(+now - (SENT_DAYS - 1) * 864e5);
+  for (const r of results || []) {
+    const st = sentState({ status: "已发", decided_at: r.decided_at, mine: { sent: parse(r.sent, null) } }, rule, now);
+    const k = r.kind === "post" ? "posts" : "replies";
+    total[k][st]++;
+    const t = Date.parse(r.decided_at || "");
+    if (!Number.isFinite(t)) continue;
+    const day = bjDay(t);
+    if (day < since) continue;
+    if (!byDay[day]) byDay[day] = { replies: zero(), posts: zero() };
+    byDay[day][k][st]++;
+  }
+  return { ...rule, total, byDay };
+}
+
+// 导出给主窗口的核实队列:「已发」、没到期删过、还没核实(核到的不是这一次点开的也算没核实)的,点开得晚的在前,一页 SENT_QUEUE.page 条;
+// after 是上一页最后那条的 { at: 点开的时间, id }(没有就从头),next 是这一页最后那条(这一页不满就是 null,没有下一页了)。
+// 每条:编号、点开的时间、这一批发送的起点(batch_start,见 send_batches;没有的旧记录看卡片送进运营台的时间 created_at)、服务器找到的链接(还没核)、点开时记下的那段话、
+// 目标帖子的摘要(targetKey)、回帖还是项目帖、三种里的哪一种
+export const SENT_QUEUE = { page: 500 };
+export async function sentQueue(db, rule, now, after) {
+  const a = obj(after), at = typeof a.at === "string" ? a.at : null, aid = typeof a.id === "string" ? a.id : null;
+  const page = (await db.prepare("SELECT id, decided_at, created_at, reply_url, sent_text, sent_target, json_extract(mine, '$.kind') AS kind, json_extract(mine, '$.sent') AS sent, (SELECT started FROM send_batches b WHERE b.id = outbox.id) AS batch_start FROM outbox WHERE status = '已发' AND purged = 0 AND json_extract(mine, '$.sent.opened') IS NOT decided_at"
+    + (at != null && aid != null ? " AND (decided_at < ? OR (decided_at = ? AND id < ?))" : "") + " ORDER BY decided_at DESC, id DESC LIMIT ?").bind(...(at != null && aid != null ? [at, at, aid] : []), SENT_QUEUE.page).all()).results || [];
+  const items = [];
+  for (const r of page) {
+    items.push({ id: r.id, decided_at: r.decided_at, created_at: r.created_at, batch_start: r.batch_start, reply_url: r.reply_url, sent_text: r.sent_text, target_key: await targetKey(r.sent_target), kind: r.kind === "post" ? "post" : "reply",
+      check: sentState({ status: "已发", decided_at: r.decided_at, mine: { sent: parse(r.sent, null) } }, rule, now) });
+  }
+  const last = page[page.length - 1];
+  return { items, next: page.length === SENT_QUEUE.page ? { at: last.decided_at, id: last.id } : null };
+}
+
 // ---------- 待发、收件:给页面的样子 ----------
 export function outRow(r) {
   return { id: r.id, mine: parse(r.mine, {}), draft_admin: r.draft_admin, status: r.status, decided_at: r.decided_at, sent_text: r.sent_text, note: r.note, reply_url: r.reply_url, created_at: r.created_at, purged: !!r.purged };
@@ -307,6 +414,7 @@ export async function getReach(db, id) {
 // 来源里能认出人、帖子、钱包的那一段换成「…」,见 names.js 的 safeLabel)和管理员的决定;
 // 编号记进 gone(到期的标记 expKey:刷新、投递不再收回来,不挡问题记录和待发)
 // 待发:删目标帖子的账号、链接、编号、「卡在哪」的描述和备注,只留协议、链、类型、我们的草稿和管理员点的状态
+// (核实已发的,核实结果去掉链接、留下那次点开和核到的时间:到期以后照样数得出核实已发几条)
 // (协议、链、类型一直留着:按 names.js 的 softName 再过一遍,能认出人、帖子、钱包的不留;这一版以前收进来的也在这时候过)
 // (目标帖子的编号换成两个哈希:key 是问题记录里那一行的编号,gone 是它的 goneKey,删编号之前从编号算好,以前收进来的也一样。
 //  以后按要求删这条,还删得掉问题记录里同一条帖子的那一行,那条帖子也照样记进 gone,收件、待发、问题记录都不再收)
@@ -319,7 +427,7 @@ export const REACH_TO_DAYS = 180;
 export async function purge(db, now) {
   const t = iso(now), cut = plusDays(now, -REACH_TO_DAYS);
   const ins = (await db.prepare("SELECT id, mine, decision FROM inbox WHERE purge_after <= ?").bind(t).all()).results;
-  const outs = (await db.prepare("SELECT id, mine, draft_admin, sent_text FROM outbox WHERE purged = 0 AND purge_after <= ?").bind(t).all()).results;
+  const outs = (await db.prepare("SELECT id, mine, draft_admin, sent_text, status, decided_at FROM outbox WHERE purged = 0 AND purge_after <= ?").bind(t).all()).results;
   const due = (await db.prepare("SELECT id, json_extract(mine, '$.to') AS addr FROM outreach WHERE status != '待发' AND decided_at <= ? AND json_extract(mine, '$.to') IS NOT NULL").bind(cut).all()).results;
   const stmts = [];
   for (const r of ins) {
@@ -339,7 +447,12 @@ export async function purge(db, now) {
     const keep = m.kind === "post"
       ? { kind: "post", topic: m.topic, why: scrub(m.why), draft: scrub(m.draft) }
       : { target: { protocol: name(tg.protocol, 60), chain: name(tg.chain, 40), type: name(tg.type, 40), key, gone }, why: scrub(m.why), draft: scrub(m.draft) };
-    stmts.push(db.prepare("UPDATE outbox SET mine = ?, draft_admin = ?, sent_text = ?, reply_url = NULL, sent_target = NULL, note = NULL, purged = 1, updated_at = ? WHERE id = ?").bind(JSON.stringify(keep), scrub(r.draft_admin) ?? null, scrub(r.sent_text) ?? null, t, r.id));
+    // 核实结果留着数(核实已发的条数到期以后照样算):只留那次点开的时间和核到的时间,链接、帖子编号删掉(和 reply_url 一样)。
+    // 按写的那一刻库里的算(不是上面读到的):读和写之间刚核实的,也留得住
+    const live = "status = '已发' AND json_extract(mine, '$.sent.opened') = decided_at AND json_type(mine, '$.sent.at') = 'text'";
+    stmts.push(db.prepare(`UPDATE outbox SET mine = CASE WHEN ${live} THEN json_set(?, '$.sent', json_object('opened', json_extract(mine, '$.sent.opened'), 'at', json_extract(mine, '$.sent.at'))) ELSE ? END, ` +
+      "draft_admin = ?, sent_text = ?, reply_url = NULL, sent_target = NULL, note = NULL, purged = 1, updated_at = ? WHERE id = ? AND purged = 0")
+      .bind(JSON.stringify(keep), JSON.stringify(keep), scrub(r.draft_admin) ?? null, scrub(r.sent_text) ?? null, t, r.id));
   }
   const probAt = stmts.length;
   stmts.push(db.prepare("UPDATE problems SET url = NULL, handle = NULL, purged = 1, updated_at = ? WHERE purged = 0 AND purge_after <= ?").bind(t, t));

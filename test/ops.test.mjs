@@ -210,7 +210,7 @@ test("投递:签名、环境、时间、nonce、旧包", async () => {
   const r = await handle(new Request(HOST + "/api/admin/ingest", { method: "POST", headers: { "X-DX-Sig": ok.sig }, body: ok.raw.replace("2026", "2027") }), baseEnv(w.db), w.edge, w.now());
   assert.equal((await r.json()).error, "sig");
   // 没登录的人拿不到数据:回执里没有库里的内容
-  assert.deepEqual(Object.keys(again.json).sort(), ["docs", "inbox", "ok", "outbox", "outreach", "problems", "receipt", "rejected", "setup"]);
+  assert.deepEqual(Object.keys(again.json).sort(), ["docs", "inbox", "ok", "outbox", "outreach", "problems", "receipt", "rejected", "sent", "setup"]);
 });
 
 test("草稿检查:站外链接、敏感词一律不收", () => {
@@ -1095,7 +1095,7 @@ test("每天放出的对人首回:按北京时间的一天数今天已发的,剩
   const lastSecond = Date.parse("2026-11-06T15:59:59Z"); // 北京 11-06 23:59:59
   let g = gate(all, pend, 4, lastSecond);
   assert.deepEqual([g.cap, g.used, [...g.queued]], [4, 2, ["p4"]]); // 名额 4 - 2:p1、p3 放出,项目帖不占名额
-  assert.equal(waitText(g), "排队:今天上限 4 条(已发 2 条,上面 2 条先发),明天放出");
+  assert.equal(waitText(g), "排队:今天上限 4 条(已打开 2 条,上面 2 条先发),明天放出");
   g = gate(all, pend, 2, lastSecond);
   assert.deepEqual([...g.queued], ["p1", "p3", "p4"]);
   assert.equal(waitText(g), "排队:今天已到上限 2 条,明天放出");
@@ -3048,3 +3048,676 @@ test("宣传「发过的」:还没点的、点过的这一页、一共几张在�
     Object.assign(REACH_LIST, keep);
   }
 });
+
+// ---------- 「已发」拆成已打开 / 待核实 / 核实已发(11-06,决策记录 11-05「运营台要修的」①),跟进轮询先读新的(②) ----------
+import { sentState, SENT, SENT_LABEL } from "../admin/pace.js";
+import { pick, postedMs, tierOf, TIERS, COLD_MIN, FLOOR } from "../server/ops/sync.js";
+import { SENT_CUT_KEY, targetKey, SENT_QUEUE, backfillSentPosts } from "../server/ops/db.js";
+import { BUDGET } from "../server/ops/sync.js";
+
+// X 的帖子编号里带着发帖时间:按毫秒造一个(n 区分同一毫秒的几条)
+const snow = (ms, n = 0) => String(((BigInt(Math.round(ms)) - 1288834974657n) << 22n) + BigInt(n));
+const login2 = async (w) => (await w.call("/api/admin/login", { method: "POST", body: { name: "admin1", password: PW } })).headers.get("Set-Cookie").split(";")[0];
+const OURS_URL = (id) => "https://x.com/DeFiExit/status/" + id;
+// 一条核实结果:目标帖子的摘要照服务器的算法算(导出核实队列里的 target_key);帖子编号按发帖时间造(不早于点开)
+const sentItem = async (id, opened, postMs, { tid = TARGET.id, n = 0, url } = {}) => ({ id, opened, target: tid == null ? null : await targetKey(tid), url: url || OURS_URL(snow(postMs, n)) });
+
+test("三种怎么算(sentState):没点开的是 null;点开不到 6 小时是已打开,满 6 小时还没核到是待核实;核到(点开的时间对得上)是核实已发;这一版以前点开、还没核的是旧的没核", () => {
+  const T = Date.parse("2026-11-08T10:00:00Z");
+  const at = (ms) => new Date(ms).toISOString();
+  const rule = { graceMs: SENT.graceMs, cutover: at(T - 864e5) };
+  const row = (opened, sent) => ({ status: "已发", decided_at: at(opened), mine: { target: { id: "1" }, sent } });
+  assert.equal(sentState({ status: "待发", decided_at: null, mine: {} }, rule, T), null);
+  assert.equal(sentState({ status: "跳过", decided_at: at(T), mine: {} }, rule, T), null);
+  assert.equal(sentState(row(T - 1000), rule, T), "opened");
+  assert.equal(sentState(row(T - SENT.graceMs + 1), rule, T), "opened");
+  assert.equal(sentState(row(T - SENT.graceMs), rule, T), "pending", "满 6 小时就算待核实");
+  assert.equal(sentState(row(T - 3 * 864e5 + 1, undefined), { ...rule, cutover: at(T - 3 * 864e5) }, T), "pending");
+  // 核到了:点开的时间要和 decided_at 一模一样(改回待发以后再点开的,上一次核到的不算)
+  assert.equal(sentState(row(T - 7 * 3600e3, { opened: at(T - 7 * 3600e3), at: at(T), url: OURS_URL("9") }), rule, T), "verified");
+  assert.equal(sentState(row(T - 1000, { opened: at(T - 9 * 3600e3), at: at(T - 8 * 3600e3) }), rule, T), "opened", "核到的是上一次点开的");
+  assert.equal(sentState(row(T - 1000, { opened: at(T - 1000) }), rule, T), "opened", "没有核到的时间不算");
+  assert.equal(sentState(row(T - 1000, "坏的"), rule, T), "opened");
+  // 到期删过链接的也算核实已发(留着 opened、at 数)
+  assert.equal(sentState(row(T - 40 * 864e5, { opened: at(T - 40 * 864e5), at: at(T - 40 * 864e5) }), rule, T), "verified");
+  // 旧记录:早于 cutover 点开的,没核到是 legacy(不算待核实),核到了照样是核实已发;没有 cutover(旧服务器)就不分旧的
+  assert.equal(sentState(row(T - 2 * 864e5), rule, T), "legacy");
+  assert.equal(sentState(row(T - 2 * 864e5, { opened: at(T - 2 * 864e5), at: at(T) }), rule, T), "verified");
+  assert.equal(sentState(row(T - 2 * 864e5), { graceMs: SENT.graceMs, cutover: null }, T), "pending");
+  assert.equal(sentState(row(T - 2 * 864e5), null, T), "pending");
+  // 时限照服务器给的
+  assert.equal(sentState(row(T - 3600e3), { graceMs: 1800e3, cutover: null }, T), "pending");
+  assert.deepEqual(SENT_LABEL, { opened: "已打开", pending: "待核实", verified: "核实已发", legacy: "已发(旧,没核)" });
+});
+
+test("点「在 X 打开」只记「已打开」;6 小时还没核到变「待核实」;主窗口核到了经签名投递记「核实已发」(链接以核到的为准);改回待发再点开要重核", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outbox: [OUT()] });
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", status: "已发" }, cookie: c });
+  const view = async () => { const st = (await w.call("/api/admin/state", { cookie: c })).json; const d = st.outbox.find((x) => x.id === "r-openeden-1"); return { st, d, s: sentState(d, st.sentRule, w.clock) }; };
+  let v = await view();
+  assert.equal(v.s, "opened");
+  assert.deepEqual(v.st.sentRule, { graceMs: SENT.graceMs, cutover: new Date(Date.parse("2026-11-03T10:00:00Z")).toISOString() });
+  const opened = v.d.decided_at, T0 = Date.parse(opened);
+  w.clock += SENT.graceMs;
+  v = await view();
+  assert.equal(v.s, "pending");
+  let e = (await w.exp({})).json;
+  let row = e.outbox.find((x) => x.id === "r-openeden-1");
+  assert.deepEqual([row.check, row.sent_text, row.verified_url, row.verified_at, row.purged], ["pending", OUT().draft, null, null, false]);
+  // 核实队列:还没核实的,带目标帖子的摘要(不带编号)、回帖还是项目帖
+  assert.deepEqual(e.sentQueue, { items: [{ id: "r-openeden-1", decided_at: opened, created_at: new Date(Date.parse("2026-11-03T10:00:00Z")).toISOString(), batch_start: opened, reply_url: null, sent_text: OUT().draft, target_key: await targetKey(TARGET.id), kind: "reply", check: "pending" }], next: null });
+  assert.ok(!JSON.stringify(e.sentQueue).includes(TARGET.id), "核实队列不带目标帖子编号");
+  // 核到了:点开的时间、目标帖子的摘要照导出的原样送回来
+  const item = await sentItem("r-openeden-1", opened, T0 + 30e3);
+  w.clock += 1000;
+  const r = await w.ingest({ sent: [{ ...item, postedAt: new Date(T0 + 30e3).toISOString() }] });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  assert.deepEqual([r.json.sent, r.json.rejected], [1, []]);
+  v = await view();
+  assert.equal(v.s, "verified");
+  assert.deepEqual([v.d.reply_url, v.d.mine.sent.url, v.d.mine.sent.post, v.d.mine.sent.opened, v.d.mine.sent.at], [item.url, item.url, item.url.split("/").pop(), opened, new Date(w.clock).toISOString()]);
+  assert.equal(v.d.mine.draft, OUT().draft, "mine 别的部分不动");
+  e = (await w.exp({})).json;
+  row = e.outbox.find((x) => x.id === "r-openeden-1");
+  assert.deepEqual([row.check, row.verified_url, row.verified_at], ["verified", item.url, new Date(w.clock).toISOString()]);
+  assert.deepEqual(e.sentQueue.items, [], "核实了的不在队列里");
+  // 改回待发再点开:上一次核到的不算了,要重新核;拿上一次点开的时间送来的不收(回执写明)
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", status: "待发" }, cookie: c });
+  w.clock += 60e3;
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", status: "已发" }, cookie: c });
+  v = await view();
+  assert.equal(v.s, "opened");
+  w.clock += 1000;
+  const again = await w.ingest({ sent: [item] });
+  assert.deepEqual([again.json.sent, again.json.rejected], [0, [{ kind: "sent", id: "r-openeden-1", why: "点开的时间对不上(管理员后来又点了一次),按导出里新的时间重核" }]]);
+  // 新的这次点开是新的一批:上次核到的那条是上一批发的(也归上一次点开),不能再拿来充这一次
+  w.clock += 1000;
+  const stale = await w.ingest({ sent: [{ ...item, opened: v.d.decided_at }] });
+  assert.deepEqual([stale.json.sent, stale.json.rejected.map((x) => x.why)], [0, ["那条帖子发在这一批发送开始以前(这一轮第一次复制或点开;没有批次的旧记录看卡片送进运营台的时间),或者从编号读不出发帖时间,不算"]]);
+  w.clock += 1000;
+  assert.equal((await w.ingest({ sent: [await sentItem("r-openeden-1", v.d.decided_at, Date.parse(v.d.decided_at) + 5e3, { n: 1 })] })).json.sent, 1);
+  assert.equal((await view()).s, "verified");
+});
+
+test("核实结果:只记「已发」、没到期删过、点开时间对得上、目标帖子对得上、帖子不早于卡片送进来的;链接只认 x.com 的;不合格的只拒那一条(回执写明为什么);按要求删过的帖子也不收;不碰别的", async () => {
+  const w = world();
+  const c = await w.login();
+  const tgt = (n) => ({ ...TARGET, id: "21160000000000009" + n, url: "https://x.com/someone/status/21160000000000009" + n });
+  const POST = { id: "p-x-1107", kind: "post", topic: "提醒", why: "测试", draft: "测试项目帖。" };
+  await w.ingest({ outbox: ["a", "b", "c", "d", "e", "f", "g"].map((k, i) => OUT({ id: "r-" + k, target: tgt(11 + i) })).concat([POST]) });
+  for (const id of ["r-a", "r-c", "r-d", "r-e", "r-f", "r-g", POST.id]) await w.call("/api/admin/outbox", { method: "POST", body: { id, status: "已发" }, cookie: c });
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-e", status: "跳过" }, cookie: c });
+  const st = (await w.call("/api/admin/state", { cookie: c })).json;
+  const op = (id) => st.outbox.find((x) => x.id === id).decided_at, T0 = Date.parse(op("r-a"));
+  await w.db.prepare("UPDATE outbox SET purged = 1 WHERE id = 'r-d'").run();
+  const GONE_POST = snow(T0 + 60e3, 9);
+  await w.call("/api/admin/delete", { method: "POST", body: { kind: "inbox", id: GONE_POST }, cookie: c }); // 按要求删过的帖子(这里是核到的那条)
+  const it = (id, n, over = {}) => sentItem(id, op(id) || op("r-a"), T0 + 60e3, { tid: tgt(11 + "abcdefg".indexOf(id.slice(2))).id, n, ...over });
+  w.clock += 1000;
+  const r = await w.ingest({ sent: [
+    await it("r-a", 1),
+    await it("r-a", 2),
+    { ...(await it("r-b", 3)), opened: op("r-a") },
+    { ...(await it("r-c", 4)), url: "https://twitter.com/DeFiExit/status/" + snow(T0 + 60e3, 4) },
+    { ...(await it("r-c", 4)), url: "https://www.x.com/DeFiExit/status/" + snow(T0 + 60e3, 4) },
+    { ...(await it("r-c", 4)), url: OURS_URL(snow(T0 + 60e3, 4)) + "?s=20" },
+    { ...(await it("r-c", 4)), opened: { toString: null } },
+    { ...(await it("r-c", 4)), target: undefined },
+    await it("r-c", 4, { tid: "2116000000000000999" }), // 本地卡片的目标和运营台记下的不是同一条
+    await it("r-d", 5),
+    { ...(await it("r-e", 6)), opened: op("r-a") },
+    { id: "r-zz", opened: op("r-a"), target: null, url: OURS_URL(snow(T0 + 60e3, 7)) },
+    await it("r-f", 8, { url: OURS_URL(GONE_POST) }),
+    { ...(await it("r-c", 4)), opened: "不是时间" },
+    await sentItem("r-g", op("r-g"), T0 - 20 * 60e3, { tid: tgt(17).id }), // 卡片送进来以前 20 分钟发的:不算
+    await sentItem("r-g", op("r-g"), T0 + 3600e3, { tid: tgt(17).id, n: 9 }), // 比现在还晚:编号读不出发帖时间
+    await sentItem(POST.id, op(POST.id), T0 + 60e3, { tid: tgt(11).id, n: 10 }), // 项目帖没有目标帖子,target 要写 null
+  ] });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  assert.equal(r.json.sent, 1);
+  assert.deepEqual(r.json.rejected.map((x) => x.kind + " " + x.id + ":" + x.why).sort(), [
+    "sent r-a:同一包里重复了,只收第一条",
+    "sent r-b:这条现在不是「已发」(改回待发或跳过了),不记核实",
+    "sent r-c:url 不合格(只认 https://x.com/账号/status/编号)",
+    "sent r-c:url 不合格(只认 https://x.com/账号/status/编号)",
+    "sent r-c:url 不合格(只认 https://x.com/账号/status/编号)",
+    "sent r-c:opened 格式不对(不能是对象或数组)",
+    "sent r-c:target 要是导出核实队列里的 target_key(项目帖写 null)",
+    "sent r-c:目标帖子对不上(本地卡片的目标和运营台点「已发」时记下的不是同一条),不记",
+    "sent r-d:30 天到期删过,不再改",
+    "sent r-e:这条现在不是「已发」(改回待发或跳过了),不记核实",
+    "sent r-zz:没有这张卡片(按要求删过,或编号不对)",
+    "sent r-f:管理员按要求删过,不再收",
+    "sent r-c:opened 要是那次点开的时间(导出里的 decided_at,原样照抄)",
+    "sent r-g:那条帖子发在这一批发送开始以前(这一轮第一次复制或点开;没有批次的旧记录看卡片送进运营台的时间),或者从编号读不出发帖时间,不算",
+    "sent r-g:同一包里重复了,只收第一条",
+    "sent p-x-1107:目标帖子对不上(本地卡片的目标和运营台点「已发」时记下的不是同一条),不记",
+  ].sort());
+  const after = (await w.call("/api/admin/state", { cookie: c })).json;
+  const by = (id) => after.outbox.find((x) => x.id === id);
+  assert.equal(sentState(by("r-a"), after.sentRule, w.clock), "verified");
+  assert.equal(by("r-a").reply_url, OURS_URL(snow(T0 + 60e3, 1)));
+  assert.equal(sentState(by("r-c"), after.sentRule, w.clock), "opened");
+  assert.equal(by("r-c").reply_url, null);
+  assert.deepEqual([by("r-b").status, by("r-e").status, by("r-d").mine.sent, by("r-f").mine.sent], ["待发", "跳过", undefined, undefined]);
+  // 发帖时间按卡片送进来的时间算,留 15 分钟钟差:送进来以前 10 分钟的照收;项目帖 target 写 null 照收
+  w.clock += 1000;
+  const ok = await w.ingest({ sent: [await sentItem("r-g", op("r-g"), T0 - 10 * 60e3, { tid: tgt(17).id, n: 11 }), await sentItem(POST.id, op(POST.id), T0 + 60e3, { tid: null, n: 12 })] });
+  assert.deepEqual([ok.json.sent, ok.json.rejected], [2, []]);
+  // 一包最多 50 条
+  w.clock += 1000;
+  const many = await w.ingest({ sent: Array.from({ length: 51 }, () => ({ id: "r-a", opened: op("r-a"), target: null, url: OURS_URL("1") })) });
+  assert.ok(many.json.rejected.some((x) => x.kind === "sent" && /一包最多 50 条/.test(x.why)));
+});
+
+test("同一条帖子只核给一张卡片:别的卡片已经核实成这条的不收(同一包里两张争同一条,只收第一张);同一次点开已经核实了的,同一条再送一遍照收不改,别的一条不收", async () => {
+  const w = world();
+  const c = await w.login();
+  const tgt = (n) => ({ ...TARGET, id: "21160000000000006" + n, url: "https://x.com/someone/status/21160000000000006" + n });
+  await w.ingest({ outbox: [OUT({ id: "r-a", target: tgt(11) }), OUT({ id: "r-b", target: tgt(12) }), OUT({ id: "r-c", target: tgt(13) })] });
+  for (const id of ["r-a", "r-b", "r-c"]) await w.call("/api/admin/outbox", { method: "POST", body: { id, status: "已发" }, cookie: c });
+  const st = (await w.call("/api/admin/state", { cookie: c })).json;
+  const op = (id) => st.outbox.find((x) => x.id === id).decided_at, T0 = Date.parse(op("r-a"));
+  const P = snow(T0 + 30e3, 1);
+  w.clock += 1000;
+  const r = await w.ingest({ sent: [await sentItem("r-a", op("r-a"), 0, { tid: tgt(11).id, url: OURS_URL(P) }), await sentItem("r-b", op("r-b"), 0, { tid: tgt(12).id, url: OURS_URL(P) })] });
+  assert.deepEqual([r.json.sent, r.json.rejected], [1, [{ kind: "sent", id: "r-b", why: "这条帖子已经核给别的卡片了,一条帖子只核给一张卡片", taken: [P] }]]);
+  w.clock += 1000;
+  const r2 = await w.ingest({ sent: [await sentItem("r-c", op("r-c"), 0, { tid: tgt(13).id, url: "https://x.com/Ilikecoin2023/status/" + P })] });
+  assert.deepEqual(r2.json.rejected, [{ kind: "sent", id: "r-c", why: "这条帖子已经核给别的卡片了,一条帖子只核给一张卡片", taken: [P] }], "换了用户名的链接、编号一样也算同一条");
+  // 同一次点开再送一遍同一条:照收(重投安全),什么都不改;送别的一条:不收
+  const before = (await w.db.prepare("SELECT mine, reply_url FROM outbox WHERE id = 'r-a'").first());
+  w.clock += 1000;
+  const same = await w.ingest({ sent: [await sentItem("r-a", op("r-a"), 0, { tid: tgt(11).id, url: "https://x.com/Ilikecoin2023/status/" + P })] });
+  assert.deepEqual([same.json.sent, same.json.rejected], [1, []]);
+  assert.deepEqual(await w.db.prepare("SELECT mine, reply_url FROM outbox WHERE id = 'r-a'").first(), before);
+  w.clock += 1000;
+  const other = await w.ingest({ sent: [await sentItem("r-a", op("r-a"), T0 + 60e3, { tid: tgt(11).id, n: 2 })] });
+  assert.deepEqual(other.json.rejected, [{ kind: "sent", id: "r-a", why: "这一次点开已经核实过另一条了,不换" }]);
+  // 读和写之间别的包先把它核实成了另一条:这一包写不进去(语句里核对),回执写明
+  const raw = w.db;
+  let landed = false;
+  const Q = snow(T0 + 90e3, 3), R = snow(T0 + 95e3, 4);
+  const land = () => { if (landed) return; landed = true; raw.prepare("UPDATE outbox SET reply_url = ?, mine = json_set(mine, '$.sent', json(?)) WHERE id = 'r-b'").bind(OURS_URL(Q), JSON.stringify({ opened: op("r-b"), at: new Date(w.clock).toISOString(), url: OURS_URL(Q), post: Q })).runSync(); };
+  const wrap = (st2, sql) => ({ inner: st2, bind: (...a) => wrap(st2.bind(...a), sql), first: (...a) => st2.first(...a), run: () => st2.run(),
+    all: async () => { const out = await st2.all(); if (/SELECT id, mine, status, purged, decided_at, created_at, sent_target/.test(sql)) land(); return out; } });
+  w.db = { prepare: (sql) => wrap(raw.prepare(sql), sql), batch: (ss) => raw.batch(ss.map((x) => x.inner)) };
+  w.clock += 1000;
+  const race = await w.ingest({ sent: [await sentItem("r-b", op("r-b"), 0, { tid: tgt(12).id, url: OURS_URL(R) })] });
+  w.db = raw;
+  assert.deepEqual([landed, race.json.sent, race.json.rejected], [true, 0, [{ kind: "sent", id: "r-b", why: "这一次点开已经核实过另一条了,不换" }]]);
+  const b = await raw.prepare("SELECT reply_url, json_extract(mine, '$.sent.url') AS u FROM outbox WHERE id = 'r-b'").first();
+  assert.deepEqual([b.reply_url, b.u], [OURS_URL(Q), OURS_URL(Q)]);
+});
+
+test("一条帖子永远只归第一次核到的那一次点开:改回待发也不放出来,别的卡片、这张卡片以后再点开都不能拿它充数;这一次新发的照收", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outbox: [OUT({ id: "r-a" }), OUT({ id: "r-b", draft: "到期金库可以在官方合约上自己取出,不用等官网。我们不会主动找你。" })] });
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-a", status: "已发" }, cookie: c });
+  const op = async (id) => (await w.db.prepare("SELECT decided_at FROM outbox WHERE id = ?").bind(id).first("decided_at"));
+  const o1 = await op("r-a"), T0 = Date.parse(o1), P = snow(T0 + 30e3, 1);
+  w.clock += 60e3;
+  assert.equal((await w.ingest({ sent: [await sentItem("r-a", o1, 0, { url: OURS_URL(P) })] })).json.sent, 1);
+  // 改回待发:P 照样归 r-a 的第一次点开。r-b(同一条目标帖)拿 P 不收
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-a", status: "待发" }, cookie: c });
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-b", status: "已发" }, cookie: c });
+  w.clock += 60e3;
+  const b = await w.ingest({ sent: [await sentItem("r-b", await op("r-b"), 0, { url: OURS_URL(P) })] });
+  assert.deepEqual(b.json.rejected, [{ kind: "sent", id: "r-b", why: "这条帖子已经核给别的卡片了,一条帖子只核给一张卡片", taken: [P] }]);
+  // r-a 一分钟后再点开(没再发):拿 P 不收,还是已打开
+  w.clock += 60e3;
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-a", status: "已发" }, cookie: c });
+  const o2 = await op("r-a");
+  w.clock += 1000;
+  const a2 = await w.ingest({ sent: [await sentItem("r-a", o2, 0, { url: OURS_URL(P) })] });
+  assert.deepEqual(a2.json.rejected, [{ kind: "sent", id: "r-a", why: "这条帖子已经核给这张卡片以前那一次点开了(改回待发再点开的,要这一次发的才算)", taken: [P] }]);
+  const st = (await w.call("/api/admin/state", { cookie: c })).json;
+  assert.equal(sentState(st.outbox.find((x) => x.id === "r-a"), st.sentRule, w.clock), "opened");
+  // 这一次真发了 Q:照收
+  const Q = snow(Date.parse(o2) + 20e3, 2);
+  w.clock += 1000;
+  assert.equal((await w.ingest({ sent: [await sentItem("r-a", o2, 0, { url: OURS_URL(Q) })] })).json.sent, 1);
+  // 到期删过以后也不放出来(sent_posts 只存哈希,不删)
+  const keys = (await w.db.prepare("SELECT post, card, opened FROM sent_posts ORDER BY at").all()).results;
+  assert.deepEqual(keys.map((k) => [k.card, k.opened]), [["r-a", o1], ["r-a", o2]]);
+  assert.ok(keys.every((k) => /^[0-9a-f]{64}$/.test(k.post)) && !JSON.stringify(keys).includes(P), "只存帖子编号的哈希");
+});
+
+test("发送批次:这一轮第一次点「复制」或点开算起点;先复制发出去、过几个小时才点「已发」的照收;没复制、点开以前就有的不收;改回待发再点开是新的一批,上一批发的(没核实过也一样)不算", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outbox: [OUT({ id: "r-a" }), OUT({ id: "r-b" }), OUT({ id: "r-c" })] });
+  const T0 = w.clock;
+  const op = async (id) => (await w.db.prepare("SELECT decided_at FROM outbox WHERE id = ?").bind(id).first("decided_at"));
+  // r-a:50 分钟后点「复制」(页面顺手告诉服务器),一小时后发,三小时后才点「已发」
+  w.clock = T0 + 50 * 60e3;
+  assert.equal((await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-a", copied: true }, cookie: c })).status, 200);
+  assert.equal((await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-a", copied: "x" }, cookie: c })).status, 400);
+  w.clock = T0 + 3 * 3600e3;
+  for (const id of ["r-a", "r-b"]) await w.call("/api/admin/outbox", { method: "POST", body: { id, status: "已发" }, cookie: c });
+  w.clock += 1000;
+  const r = await w.ingest({ sent: [await sentItem("r-a", await op("r-a"), T0 + 3600e3, { n: 1 }), await sentItem("r-b", await op("r-b"), T0 + 3600e3, { n: 2 })] });
+  assert.deepEqual([r.json.sent, r.json.rejected], [1, [{ kind: "sent", id: "r-b", why: "那条帖子发在这一批发送开始以前(这一轮第一次复制或点开;没有批次的旧记录看卡片送进运营台的时间),或者从编号读不出发帖时间,不算" }]], "r-b 没复制,点开以前两小时就有的帖子不算");
+  // r-c:10:00 点开、发了 P(还没核实);12:00 改回待发再点开(没重发):P 是上一批发的,不算
+  w.clock = T0;
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-c", status: "已发" }, cookie: c });
+  w.clock = T0 + 2 * 3600e3;
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-c", status: "待发" }, cookie: c });
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-c", status: "已发" }, cookie: c });
+  w.clock = T0 + 4 * 3600e3;
+  const r2 = await w.ingest({ sent: [await sentItem("r-c", await op("r-c"), T0 + 60e3, { n: 3 })] });
+  assert.deepEqual(r2.json.rejected.map((x) => x.why), ["那条帖子发在这一批发送开始以前(这一轮第一次复制或点开;没有批次的旧记录看卡片送进运营台的时间),或者从编号读不出发帖时间,不算"]);
+  // 这一批开始以后发的照收
+  w.clock += 1000;
+  assert.equal((await w.ingest({ sent: [await sentItem("r-c", await op("r-c"), T0 + 2 * 3600e3 + 60e3, { n: 4 })] })).json.sent, 1);
+});
+
+test("记归属和写卡片同一个条件:读完卡片、写之前管理员改回待发了,卡片写不上,帖子也不留归属(别的卡片之后照样能用)", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outbox: [OUT({ id: "r-a" }), OUT({ id: "r-b" })] });
+  for (const id of ["r-a", "r-b"]) await w.call("/api/admin/outbox", { method: "POST", body: { id, status: "已发" }, cookie: c });
+  const op = async (id) => (await w.db.prepare("SELECT decided_at FROM outbox WHERE id = ?").bind(id).first("decided_at"));
+  const oa = await op("r-a"), P = snow(Date.parse(oa) + 30e3, 1);
+  const raw = w.db;
+  let landed = false;
+  const land = () => { if (landed) return; landed = true; raw.prepare("UPDATE outbox SET status = '待发', decided_at = NULL, sent_text = NULL, sent_target = NULL WHERE id = 'r-a'").runSync(); };
+  const wrap = (st2, sql) => ({ inner: st2, bind: (...a) => wrap(st2.bind(...a), sql), first: (...a) => st2.first(...a), run: () => st2.run(),
+    all: async () => { const out = await st2.all(); if (/SELECT id, mine, status, purged, decided_at, created_at, sent_target/.test(sql)) land(); return out; } });
+  w.db = { prepare: (sql) => wrap(raw.prepare(sql), sql), batch: (ss) => raw.batch(ss.map((x) => x.inner)) };
+  w.clock += 1000;
+  const r = await w.ingest({ sent: [await sentItem("r-a", oa, 0, { url: OURS_URL(P) })] });
+  w.db = raw;
+  assert.deepEqual([landed, r.json.sent], [true, 0]);
+  assert.equal((await raw.prepare("SELECT COUNT(*) AS n FROM sent_posts").first("n")), 0, "没写上就不留归属");
+  w.clock += 1000;
+  assert.equal((await w.ingest({ sent: [await sentItem("r-b", await op("r-b"), 0, { url: OURS_URL(P) })] })).json.sent, 1);
+});
+
+test("升级:以前核实过的(mine.sent 带着帖子编号)补记进 sent_posts,翻完记版本、只翻一次;补记以前别的卡片也拿不走它", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outbox: [OUT({ id: "r-a" }), OUT({ id: "r-b" })] });
+  for (const id of ["r-a", "r-b"]) await w.call("/api/admin/outbox", { method: "POST", body: { id, status: "已发" }, cookie: c });
+  const op = async (id) => (await w.db.prepare("SELECT decided_at FROM outbox WHERE id = ?").bind(id).first("decided_at"));
+  const oa = await op("r-a"), P = snow(Date.parse(oa) + 30e3, 1);
+  // 旧版本核实的:只有 mine.sent,sent_posts 里没有
+  await w.db.prepare("UPDATE outbox SET reply_url = ?, mine = json_set(mine, '$.sent', json(?)) WHERE id = 'r-a'").bind(OURS_URL(P), JSON.stringify({ opened: oa, at: oa, url: OURS_URL(P), post: P })).run();
+  assert.equal(await w.db.prepare("SELECT COUNT(*) AS n FROM sent_posts").first("n"), 0);
+  w.clock += 1000;
+  const r = await w.ingest({ sent: [await sentItem("r-b", await op("r-b"), 0, { url: OURS_URL(P) })] });
+  assert.deepEqual(r.json.rejected, [{ kind: "sent", id: "r-b", why: "这条帖子已经核给别的卡片了,一条帖子只核给一张卡片", taken: [P] }]);
+  assert.deepEqual([await w.db.prepare("SELECT card FROM sent_posts").first("card"), await w.db.prepare("SELECT v FROM kv WHERE k = 'sent_posts_v1'").first("v")], ["r-a", "1"]);
+  // 补记以前(版本标记还没有、sent_posts 是空的):写卡片的语句照旧查别的卡片的 mine.sent,也挡得住
+  await w.db.prepare("DELETE FROM sent_posts").run();
+  const keep = await backfillSentPosts(w.db);
+  assert.equal(keep, true, "翻完了就不再翻");
+  assert.equal(await w.db.prepare("SELECT COUNT(*) AS n FROM sent_posts").first("n"), 0);
+  w.clock += 1000;
+  const r2 = await w.ingest({ sent: [await sentItem("r-b", await op("r-b"), 0, { url: OURS_URL(P) })] });
+  assert.equal(r2.json.sent, 0);
+  assert.equal(await w.db.prepare("SELECT reply_url FROM outbox WHERE id = 'r-b'").first("reply_url"), null);
+});
+
+test("送来几条对得上的:挑第一条能用的(前面那条已经归了别的卡片,就用后面那条);都不能用的不收,回执写第一条的原因", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outbox: [OUT({ id: "r-a" }), OUT({ id: "r-b" }), OUT({ id: "r-c" })] });
+  for (const id of ["r-a", "r-b", "r-c"]) await w.call("/api/admin/outbox", { method: "POST", body: { id, status: "已发" }, cookie: c });
+  const op = async (id) => (await w.db.prepare("SELECT decided_at FROM outbox WHERE id = ?").bind(id).first("decided_at"));
+  const T0 = Date.parse(await op("r-a")), P = snow(T0 + 10e3, 1), Q = snow(T0 + 20e3, 2);
+  w.clock += 1000;
+  assert.equal((await w.ingest({ sent: [await sentItem("r-a", await op("r-a"), 0, { url: OURS_URL(P) })] })).json.sent, 1);
+  w.clock += 1000;
+  const r = await w.ingest({ sent: [{ ...(await sentItem("r-b", await op("r-b"), 0)), url: undefined, urls: [OURS_URL(P), OURS_URL(Q)] }, { ...(await sentItem("r-c", await op("r-c"), 0)), url: undefined, urls: [OURS_URL(P), OURS_URL(Q)] }] });
+  assert.deepEqual([r.json.sent, r.json.rejected], [1, [{ kind: "sent", id: "r-c", why: "这条帖子已经核给别的卡片了,一条帖子只核给一张卡片", taken: [P, Q] }]], "都归了别人:回执写明是哪几条,核实器下次不再送");
+  assert.equal((await w.db.prepare("SELECT reply_url FROM outbox WHERE id = 'r-b'").first("reply_url")), OURS_URL(Q));
+  w.clock += 1000;
+  const bad = await w.ingest({ sent: [{ id: "r-c", opened: await op("r-c"), target: await targetKey(TARGET.id), urls: [] }, { id: "r-c", opened: await op("r-c"), target: null, urls: Array.from({ length: 6 }, (_, i) => OURS_URL(snow(T0, i))) }] });
+  assert.deepEqual(bad.json.rejected.map((x) => x.why), ["urls 要是 1–5 条链接", "urls 要是 1–5 条链接"]);
+});
+
+test("到期清理和核实同时来:清理读到的是还没核实的样子,写之前核实先写进去了,核实结果照样留着(不被旧的样子盖掉)", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outbox: [OUT()] });
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", status: "已发" }, cookie: c });
+  const opened = (await w.db.prepare("SELECT decided_at FROM outbox WHERE id = 'r-openeden-1'").first("decided_at"));
+  w.clock += 31 * 864e5;
+  const raw = w.db;
+  let landed = false;
+  const at = new Date(w.clock).toISOString();
+  const land = () => { if (landed) return; landed = true; raw.prepare("UPDATE outbox SET mine = json_set(mine, '$.sent', json(?)) WHERE id = 'r-openeden-1'").bind(JSON.stringify({ opened, at, url: OURS_URL("1"), post: "1" })).runSync(); };
+  const wrap = (st2, sql) => ({ inner: st2, bind: (...a) => wrap(st2.bind(...a), sql), first: (...a) => st2.first(...a), run: () => st2.run(),
+    all: async () => { const out = await st2.all(); if (/SELECT id, mine, draft_admin, sent_text, status, decided_at FROM outbox WHERE purged = 0/.test(sql)) land(); return out; } });
+  w.db = { prepare: (sql) => wrap(raw.prepare(sql), sql), batch: (ss) => raw.batch(ss.map((x) => x.inner)) };
+  const e = (await w.exp({})).json;
+  w.db = raw;
+  assert.equal(landed, true);
+  const m = JSON.parse(await raw.prepare("SELECT mine FROM outbox WHERE id = 'r-openeden-1'").first("mine"));
+  assert.deepEqual([m.sent, e.sent.total.replies.verified], [{ opened, at }, 1]);
+});
+
+test("核实队列可以翻页:还没核实的「已发」按点开的时间往前一页页给(核实了的、到期删过的不给),翻完 next 是 null;导出的 outbox 只给最近 500 条也不漏核", async () => {
+  const w = world();
+  const c = await w.login();
+  const keep = { ...SENT_QUEUE };
+  try {
+    SENT_QUEUE.page = 2;
+    const tgt = (n) => ({ ...TARGET, id: "21160000000000005" + n, url: "https://x.com/someone/status/21160000000000005" + n });
+    const ids = ["r-1", "r-2", "r-3", "r-4", "r-5", "r-6"];
+    await w.ingest({ outbox: ids.map((id, i) => OUT({ id, target: tgt(11 + i) })) });
+    for (const id of ids) { w.clock += 1000; await w.call("/api/admin/outbox", { method: "POST", body: { id, status: "已发" }, cookie: c }); }
+    const op = async (id) => (await w.db.prepare("SELECT decided_at FROM outbox WHERE id = ?").bind(id).first("decided_at"));
+    w.clock += 1000;
+    await w.ingest({ sent: [await sentItem("r-6", await op("r-6"), Date.parse(await op("r-6")) + 1000, { tid: tgt(16).id })] });
+    await w.db.prepare("UPDATE outbox SET purged = 1 WHERE id = 'r-1'").run();
+    const pages = [];
+    let after;
+    for (let k = 0; k < 5; k++) {
+      const e = (await w.exp(after ? { queueAfter: after } : {})).json;
+      pages.push(e.sentQueue.items.map((x) => x.id));
+      after = e.sentQueue.next;
+      if (!after) break;
+    }
+    assert.deepEqual(pages, [["r-5", "r-4"], ["r-3", "r-2"], []]);
+    assert.equal((await w.exp({})).json.sentQueue.items[0].target_key, await targetKey(tgt(15).id));
+  } finally {
+    Object.assign(SENT_QUEUE, keep);
+  }
+});
+
+test("旧记录兼容:这一版以前点开的「已发」照常显示、不报错,是「已发(旧,没核)」(不算待核实);照样占当天的名额;补核了转「核实已发」(没有发送批次:帖子不早于卡片送进来就行);30 天到期以后核实结果(不带链接)留着照样数", async () => {
+  const w = world();
+  // 旧版本的库:表是旧版本建的(没有 sent_v2_at),里面有点过「已发」、服务器找到了链接的卡片,和找不到链接的
+  await ensure(w.db);
+  const old = Date.parse("2026-11-03T02:00:00Z");
+  const put = (id, tid, reply) => w.db.prepare("INSERT INTO outbox (id, mine, status, decided_at, sent_text, sent_target, reply_url, created_at, updated_at, purge_after) VALUES (?, ?, '已发', ?, ?, ?, ?, ?, ?, ?)")
+    .bind(id, JSON.stringify(OUT({ id, target: { ...TARGET, id: tid, url: "https://x.com/someone/status/" + tid } })), new Date(old).toISOString(), "旧的草稿", tid, reply, new Date(old - 864e5).toISOString(), new Date(old).toISOString(), new Date(old + 30 * 864e5).toISOString()).run();
+  const P1 = snow(old - 2 * 3600e3, 1); // 旧版本里点开两小时以前就发了(后来又点了一次「已发」,点开的时间往后挪了)
+  await put("r-old-1", "2116000000000000501", "https://x.com/Ilikecoin2023/status/" + P1);
+  await put("r-old-2", "2116000000000000502", null);
+  await put("r-old-3", "2116000000000000503", null);
+  // 这一版第一次跑:记下 sent_v2_at;以后别的实例再跑(ensure 再来一遍)也不改它
+  const c = await w.login();
+  const cut = (await w.db.prepare("SELECT v FROM kv WHERE k = ?").bind(SENT_CUT_KEY).first("v"));
+  assert.equal(cut, new Date(w.clock).toISOString());
+  w.clock += 3600e3;
+  const db2 = { prepare: (s) => w.db.prepare(s), batch: (s) => w.db.batch(s) }; // 换一个实例:ensure 重新跑一遍
+  const env2 = { ...{ OPS: db2 }, ADMIN_HOSTS: "defiexit.com", OPS_ENV: "production", INGEST_PUBKEYS: "", TASK_PUBKEYS: "", SETUP_CODE: CODE };
+  await handle(new Request(HOST + "/api/admin/state", { headers: { Cookie: c } }), env2, w.edge, w.now());
+  assert.equal(await w.db.prepare("SELECT v FROM kv WHERE k = ?").bind(SENT_CUT_KEY).first("v"), cut);
+  const st = (await w.call("/api/admin/state", { cookie: c })).json;
+  assert.equal(st.outbox.length, 3);
+  for (const d of st.outbox) assert.equal(sentState(d, st.sentRule, w.clock), "legacy");
+  // 照样占名额(按点开算):那天(北京时间 11-03)还能放几条
+  assert.equal(gate(st.outbox, [], 15, old + 3600e3).used, 3);
+  let e = (await w.exp({})).json;
+  assert.deepEqual(e.outbox.map((x) => [x.id, x.check]).sort(), [["r-old-1", "legacy"], ["r-old-2", "legacy"], ["r-old-3", "legacy"]]);
+  assert.deepEqual(e.sent.total.replies, { opened: 0, pending: 0, verified: 0, legacy: 3 });
+  assert.deepEqual(e.sentQueue.items.map((x) => [x.id, x.check, x.target_key]).sort(), [["r-old-1", "legacy", await targetKey("2116000000000000501")], ["r-old-2", "legacy", await targetKey("2116000000000000502")], ["r-old-3", "legacy", await targetKey("2116000000000000503")]]);
+  // 补核:r-old-1 是点开前 2 小时发的(卡片一天前就送进来了),照收;比卡片送进来还早的不收
+  w.clock += 1000;
+  const ok = await w.ingest({ sent: [await sentItem("r-old-1", new Date(old).toISOString(), 0, { tid: "2116000000000000501", url: "https://x.com/DeFiExit/status/" + P1 }),
+    await sentItem("r-old-2", new Date(old).toISOString(), old - 25 * 3600e3, { tid: "2116000000000000502" })] });
+  assert.deepEqual([ok.json.sent, ok.json.rejected], [1, [{ kind: "sent", id: "r-old-2", why: "那条帖子发在这一批发送开始以前(这一轮第一次复制或点开;没有批次的旧记录看卡片送进运营台的时间),或者从编号读不出发帖时间,不算" }]]);
+  e = (await w.exp({})).json;
+  assert.deepEqual(e.sent.total.replies, { opened: 0, pending: 0, verified: 1, legacy: 2 });
+  assert.deepEqual(e.sent.byDay["2026-11-03"].replies, { opened: 0, pending: 0, verified: 1, legacy: 2 });
+  // 30 天到期:链接、帖子编号删掉,核实结果留着(只有点开、核到的时间),照样数;到期删过的不再导出点开时记下的那段话
+  w.clock += 31 * 864e5;
+  e = (await w.exp({})).json;
+  const r1 = e.outbox.find((x) => x.id === "r-old-1");
+  assert.deepEqual([r1.purged, r1.check, r1.verified_url, r1.reply_url, r1.sent_text], [true, "verified", null, null, null]);
+  assert.deepEqual(e.sent.total.replies, { opened: 0, pending: 0, verified: 1, legacy: 2 });
+  assert.deepEqual(e.sentQueue.items, [], "到期删过的不在核实队列里");
+  const raw = await w.db.prepare("SELECT mine FROM outbox WHERE id = 'r-old-1'").first("mine");
+  assert.deepEqual(JSON.parse(raw).sent, { opened: new Date(old).toISOString(), at: new Date(Date.parse("2026-11-03T11:00:01Z")).toISOString() });
+  assert.ok(!raw.includes(P1), "到期以后链接、帖子编号不留");
+  // 到期删过的不再收核实结果
+  w.clock += 1000;
+  assert.equal((await w.ingest({ sent: [await sentItem("r-old-3", new Date(old).toISOString(), old + 1000, { tid: "2116000000000000503" })] })).json.rejected[0].why, "30 天到期删过,不再改");
+});
+
+test("到期清理:我们的草稿、改过的草稿、点开时记下的那段话、需求摘要里认得出人、帖子、钱包的都换掉(@账号、别人的链接、0x 地址、长串地址、帖子编号、xxx.eth、IP);本站链接留着;导出不再带到期的那段话", async () => {
+  const w = world();
+  const c = await w.login();
+  const ADDR = "0x1234567890abcdef1234567890abcdef12345678", SOL = "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU";
+  const draft = "@someone 你那个 " + ADDR + " 还在,vitalik.eth 也一样;看 https://x.com/someone/status/2116000000000000001 和 https://defiexit.com/zh/ 。";
+  await w.ingest({ outbox: [OUT({ draft: "到期金库可以在官方合约上自己取出。我们不会主动找你,也不会要你的钱包信息。" })] });
+  await w.db.prepare("UPDATE outbox SET draft_admin = ? WHERE id = 'r-openeden-1'").bind(draft + " " + SOL + " 1.2.3.4").run();
+  await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", status: "已发" }, cookie: c });
+  await w.db.prepare("UPDATE outbox SET mine = json_set(mine, '$.draft', ?) WHERE id = 'r-openeden-1'").bind(draft).run();
+  w.clock += 31 * 864e5;
+  const e = (await w.exp({})).json;
+  assert.equal(e.outbox[0].sent_text, null);
+  const row = await w.db.prepare("SELECT mine, draft_admin, sent_text FROM outbox WHERE id = 'r-openeden-1'").first();
+  const all = row.mine + row.draft_admin + row.sent_text;
+  for (const bad of [ADDR, SOL, "vitalik.eth", "someone", "2116000000000000001", "1.2.3.4"]) assert.ok(!all.includes(bad), "还留着 " + bad + ":" + all);
+  assert.ok(row.sent_text.includes("https://defiexit.com/zh/") && row.sent_text.includes("@某人"), row.sent_text);
+});
+
+test("每天上限和「歇一会儿」按点开算:点开了、还没核到(甚至待核实)的照样占名额、照样算进节奏;读钟用的数(导出 sent)只数核实已发,另外单列已打开、待核实", async () => {
+  const w = world();
+  const c = await w.login();
+  const tgt = (n) => ({ ...TARGET, id: "21160000000000008" + n, url: "https://x.com/someone/status/21160000000000008" + n });
+  const POST = { id: "p-x-1106", kind: "post", topic: "提醒", why: "测试", draft: "测试项目帖。" };
+  await w.ingest({ docs: { rules: { dailyReplyCap: 3 } }, outbox: [OUT({ id: "r-1", target: tgt(11) }), OUT({ id: "r-2", target: tgt(12) }), OUT({ id: "r-3", target: tgt(13) }), OUT({ id: "r-4", target: tgt(14) }), POST] });
+  for (const id of ["r-1", "r-2", POST.id]) await w.call("/api/admin/outbox", { method: "POST", body: { id, status: "已发" }, cookie: c });
+  // r-1 是 7 小时前点开的(北京时间同一天 11:00;这一版那时已经上线了),到现在还没核到:待核实
+  const CUT = new Date(w.clock - 2 * 864e5).toISOString();
+  await w.db.prepare("UPDATE kv SET v = ? WHERE k = ?").bind(CUT, SENT_CUT_KEY).run();
+  await w.db.prepare("UPDATE outbox SET decided_at = ? WHERE id = 'r-1'").bind(new Date(w.clock - 7 * 3600e3).toISOString()).run();
+  let st = (await w.call("/api/admin/state", { cookie: c })).json;
+  const by = (id) => st.outbox.find((x) => x.id === id);
+  assert.deepEqual([sentState(by("r-1"), st.sentRule, w.clock), sentState(by("r-2"), st.sentRule, w.clock)], ["pending", "opened"]);
+  const pend = st.outbox.filter((x) => x.status === "待发").sort((a, b) => a.created_at.localeCompare(b.created_at));
+  const g = gate(st.outbox, pend, capOf(st.docs.rules), w.clock);
+  assert.deepEqual([g.cap, g.used, [...g.queued]], [3, 2, ["r-4"]], "待核实的、已打开的都占名额");
+  // 节奏也按点开算:刚才 30 分钟里点开了 5 条(含没核到的),再点一条就提醒
+  const times = [...st.outbox.filter((x) => x.status === "已发").map((x) => x.decided_at), ...[1, 2, 3].map((i) => new Date(w.clock - i * 60e3).toISOString())];
+  assert.equal(paceNote(times), null);
+  assert.equal(paceNote([...times, new Date(w.clock + 60e3).toISOString()]), "30 分钟里已经发了 6 条,歇一会儿");
+  // 核到 r-2 和项目帖;r-1 一直没核到
+  w.clock += 1000;
+  await w.ingest({ sent: [await sentItem("r-2", by("r-2").decided_at, Date.parse(by("r-2").decided_at) + 1000, { tid: tgt(12).id }), await sentItem(POST.id, by(POST.id).decided_at, Date.parse(by(POST.id).decided_at) + 1000, { tid: null, n: 1 })] });
+  const e = (await w.exp({})).json;
+  assert.deepEqual(e.sentRule, { graceMs: SENT.graceMs, cutover: CUT });
+  assert.deepEqual(e.sent.total, { replies: { opened: 0, pending: 1, verified: 1, legacy: 0 }, posts: { opened: 0, pending: 0, verified: 1, legacy: 0 } });
+  assert.deepEqual(e.sent.byDay, { "2026-11-03": { replies: { opened: 0, pending: 1, verified: 1, legacy: 0 }, posts: { opened: 0, pending: 0, verified: 1, legacy: 0 } } });
+  assert.deepEqual(e.outbox.filter((x) => x.status !== "待发").map((x) => [x.id, x.check]).sort(), [["p-x-1106", "verified"], ["r-1", "pending"], ["r-2", "verified"]]);
+  assert.deepEqual(e.outbox.filter((x) => x.status === "待发").map((x) => x.check), [null, null]);
+  // 核实了也不改点开的时间:名额照旧是 2
+  st = (await w.call("/api/admin/state", { cookie: c })).json;
+  assert.equal(gate(st.outbox, [], 3, w.clock).used, 2);
+});
+
+test("跟进轮询分档(pick):3 小时内的每轮都读;越旧隔得越久,到了该读的时候才读;每轮总数不超过上限;新的再多也给旧的留名额;顺序稳定", () => {
+  const T = Date.parse("2026-11-08T10:00:00Z");
+  assert.equal(postedMs(snow(T - 3600e3), T), T - 3600e3);
+  assert.ok(Number.isNaN(postedMs(snow(T + 3600e3), T)), "比现在晚的不像真的");
+  assert.ok(Number.isNaN(postedMs("123", T)) && Number.isNaN(postedMs("x", T)));
+  assert.deepEqual(TIERS.map((x) => [x.upto / 3600e3, x.every / 3600e3]), [[3, 0], [12, 1], [48, 3], [Infinity, 8]]);
+  assert.equal(tierOf(0).every, 0);
+  assert.equal(tierOf(3 * 3600e3).every, 3600e3);
+  const mine = (id, at) => ({ kind: "mine", id, at: new Date(at).toISOString() });
+  const hot = mine(snow(T - 3600e3), T - 3600e3), warm = mine(snow(T - 5 * 3600e3), T - 5 * 3600e3), cold = mine(snow(T - 30 * 3600e3), T - 30 * 3600e3);
+  const old = mine(snow(T - 3 * 864e5), T - 3 * 864e5), watch = { kind: "watch", id: snow(T - 10 * 864e5) };
+  const list = [old, cold, warm, hot, watch];
+  const reads = {};
+  // 第一轮都没读过:新的先,旧的里被监控的在前,再按编号
+  assert.deepEqual(pick(list, 20, reads, T).map((e) => e.id), [hot.id, watch.id, old.id, cold.id, warm.id]);
+  for (const e of list) reads[e.id] = new Date(T).toISOString();
+  reads[old.id] = new Date(T - 60e3).toISOString(); // old 早读了一分钟:补数的时候它先
+  // 到了该读的(排在前面),不够 FLOOR 条的拿上次读得最早的补上(排在后面)
+  const at = (h) => { const got = pick(list, 20, reads, T + h * 3600e3).map((e) => e.id); return [got.slice(0, got.length - Math.max(0, FLOOR - due(h))).sort(), got.length]; };
+  const due = (h) => ({ [1 / 3]: 1, 1: 2, 3: 3, 8: 5 })[h];
+  assert.equal(FLOOR, 4);
+  assert.deepEqual(at(1 / 3), [[hot.id], 4], "20 分钟后只有 3 小时内的到了,另补 3 条");
+  assert.deepEqual(pick(list, 20, reads, T + 20 * 60e3).map((e) => e.id), [hot.id, old.id, watch.id, cold.id], "补的是上次读得最早的,一样早的被监控的在前、再按编号");
+  assert.deepEqual(at(1), [[hot.id, warm.id].sort(), 4], "1 小时后:3–12 小时的也到了");
+  assert.deepEqual(at(3), [[hot.id, warm.id, cold.id].sort(), 4], "3 小时后:12–48 小时的也到了(hot 那条这时 4 小时了,按 3–12 小时的档也到了)");
+  assert.deepEqual(at(8), [[hot.id, warm.id, cold.id, old.id, watch.id].sort(), 5]);
+  // 帖子编号读不出发帖时间:我们的回复按点开的时间算,被监控的当新帖
+  assert.deepEqual(pick([{ kind: "mine", id: "3000000000000000001", at: new Date(T - 3 * 864e5).toISOString() }, { kind: "watch", id: "3000000000000000002" }], 1, { "3000000000000000001": new Date(T - 3600e3).toISOString(), "3000000000000000002": new Date(T - 60e3).toISOString() }, T).map((e) => e.id), ["3000000000000000002"]);
+  // 上限:3 小时内的 25 条 + 到了该读的旧的 6 条,一轮 20 条:新的 16 条、旧的留 COLD_MIN = 4 条;旧的等得最久的先
+  const hots = Array.from({ length: 25 }, (_, i) => mine(snow(T - 600e3, i), T - 600e3));
+  const olds = Array.from({ length: 6 }, (_, i) => mine(snow(T - 3 * 864e5, i), T - 3 * 864e5));
+  const r2 = {};
+  olds.forEach((e, i) => { r2[e.id] = new Date(T - (9 + i) * 3600e3).toISOString(); }); // 等了 9–14 小时(每 8 小时一次)
+  const got = pick([...olds, ...hots], 20, r2, T);
+  assert.equal(got.length, 20);
+  assert.equal(COLD_MIN, 4);
+  // 留给旧的 4 个和新的交错排在最前面(新、旧、新、旧……):上游慢、读到一半时间到了,旧的也读得到;旧的里等得最久的先
+  assert.deepEqual([1, 3, 5, 7].map((i) => got[i].id), olds.slice(2).reverse().map((e) => e.id), "等得最久的先,交错排在前面");
+  assert.deepEqual([0, 2, 4, 6, ...Array.from({ length: 12 }, (_, i) => 8 + i)].map((i) => got[i].e === undefined && hots.includes(got[i])), Array(16).fill(true), "其余都是新的");
+  assert.equal(pick(hots, 20, {}, T).length, 20, "没有到了该读的旧帖:新的用满");
+  assert.equal(pick([...hots.slice(0, 10), ...olds], 20, r2, T).length, 16, "新的没用完的名额给旧的");
+  assert.deepEqual(pick(list, 3, {}, T).map((e) => e.id), [hot.id, watch.id, old.id], "这一轮剩得不多:新的先");
+  assert.equal(pick([hot], 20, { [hot.id]: new Date(T).toISOString() }, T).length, 1, "一共就这么多,补不出来");
+  assert.equal(pick(list, 0, {}, T).length, 0);
+  // 同样的输入,同样的顺序(和传进来的顺序无关)
+  assert.deepEqual(pick([...olds, ...hots].reverse(), 20, r2, T).map((e) => e.id), got.map((e) => e.id));
+});
+
+// 跟进轮询的模拟:过去 7 天每天 perDay 条(均匀),往后 3 天每天 10、14、18 点各坐下一次(每次 perDay / 3 条,隔 3 分钟),
+// 第二天 12 点另有一次猛的(burst 条,每分钟一条),另有 6 条被监控的旧帖子。每 20 分钟一轮,每轮 16 条(MAX_FETCH 扣掉找链接最多用的 4 条)。
+// 回各档(按读的那一刻帖子多旧)两次读之间最长隔几小时;第一天是起步(以前没读过的一下子都到了),不算
+function simulate(perDay, burst) {
+  const T0 = Date.parse("2026-11-08T00:00:00Z"), ROUND = 20 * 60e3, ROUNDS = 3 * 72, END = T0 + ROUNDS * ROUND;
+  const posts = [];
+  for (let d = 7; d >= 0; d--) for (let i = 0; i < perDay; i++) { const c = T0 - d * 864e5 + (i * 864e5) / perDay; if (c < T0) posts.push({ kind: "mine", id: snow(c, 1), c }); }
+  for (let d = 0; d < 3; d++) for (const h of [10, 14, 18]) for (let i = 0; i < Math.round(perDay / 3); i++) { const c = T0 + d * 864e5 + h * 3600e3 + i * 180e3; posts.push({ kind: "mine", id: snow(c, 2), c }); }
+  for (let i = 0; i < burst; i++) { const c = T0 + 864e5 + 12 * 3600e3 + i * 60e3; posts.push({ kind: "mine", id: snow(c, 3), c }); }
+  const watch = Array.from({ length: 6 }, (_, i) => ({ kind: "watch", id: snow(T0 - (10 + i * 4) * 864e5, 4), c: T0 - (10 + i * 4) * 864e5 }));
+  const reads = {}, hist = new Map();
+  for (let k = 0; k < ROUNDS; k++) {
+    const now = T0 + k * ROUND;
+    const list = [...posts.filter((p) => p.c <= now && now - p.c < 7 * 864e5), ...watch].map((p) => ({ kind: p.kind, id: p.id, at: new Date(p.c).toISOString() }));
+    const got = pick(list, MAX_FETCH - 4, reads, now);
+    assert.ok(got.length <= MAX_FETCH - 4);
+    for (const e of got) { reads[e.id] = new Date(now).toISOString(); if (!hist.has(e.id)) hist.set(e.id, []); hist.get(e.id).push(now); }
+  }
+  const worst = {};
+  for (const p of [...posts, ...watch]) {
+    let prev = Math.max(p.c, T0);
+    for (const t of [...(hist.get(p.id) || []), END]) {
+      if (t - p.c >= 7 * 864e5 && p.kind === "mine") break;
+      const tier = tierOf(t - p.c).every / 3600e3;
+      if (prev >= T0 + 864e5) worst[tier] = Math.max(worst[tier] || 0, (t - prev) / 3600e3);
+      prev = t;
+    }
+  }
+  return worst;
+}
+test("跟进轮询不饿死:每天 20 条时,3 小时内的每轮都读到,别的按档读(每小时、每 3 小时、每 8 小时,最多多等一轮);一次猛地来 30 条(超过一轮的名额),新的也至少 4 轮读一次,旧的照样读到", () => {
+  const calm = simulate(20, 0);
+  assert.ok(calm[0] <= 1 / 3 + 1e-9, "3 小时内的每轮都读:" + JSON.stringify(calm));
+  assert.ok(calm[1] <= 1 + 1 / 3 + 1e-9 && calm[3] <= 4 && calm[8] <= 9.5, JSON.stringify(calm));
+  const busy = simulate(20, 30);
+  assert.ok(busy[0] <= 4 / 3 + 1e-9, "新的最多隔 4 轮:" + JSON.stringify(busy));
+  assert.ok(busy[1] <= 2.5 && busy[3] <= 6 && busy[8] <= 14, "旧的照样读到:" + JSON.stringify(busy));
+});
+
+test("刷新:我们的回复按发出多久分档读(3 小时内每轮读,旧的到了时候才读,不够 4 条拿上次读得最早的补上);点开超过 6 小时、还没链接的不再去目标帖子底下找(交给主窗口核)", async () => {
+  const w = world();
+  const c = await w.login();
+  const T = w.clock;
+  const OWNER = { id: "1000000000000000001", screen_name: "owner_acct" };
+  const WATCH = snow(T - 10 * 864e5), NEW = snow(T - 3600e3), OLD = [1, 2, 3, 4, 5].map((i) => snow(T - 3 * 864e5, i));
+  const tgt = (n) => ({ ...TARGET, id: "21160000000000007" + n, url: "https://x.com/someone/status/21160000000000007" + n });
+  const olds = OLD.map((_, i) => OUT({ id: "r-old-" + (i + 1), target: tgt(20 + i) }));
+  await w.ingest({ docs: { x_posts: { posts: [{ name: "X 长文", id: WATCH, points: [] }] } }, outbox: [OUT({ id: "r-new", target: tgt(11) }), ...olds, OUT({ id: "r-lost", target: tgt(13) }), OUT({ id: "r-fresh", target: tgt(14) })] });
+  for (const id of ["r-new", ...olds.map((x) => x.id), "r-lost", "r-fresh"]) await w.call("/api/admin/outbox", { method: "POST", body: { id, status: "已发" }, cookie: c });
+  w.clock += 1000;
+  await w.ingest({ outbox: [{ ...OUT({ id: "r-new", target: tgt(11) }), replyUrl: "https://x.com/owner_acct/status/" + NEW }, ...olds.map((x, i) => ({ ...x, replyUrl: "https://x.com/owner_acct/status/" + OLD[i] }))] });
+  await w.db.prepare("UPDATE outbox SET decided_at = ? WHERE id LIKE 'r-old-%' OR id = 'r-lost'").bind(new Date(T - 3 * 864e5).toISOString()).run();
+  let asked = [];
+  w.fetchImpl = async (u) => { const id = String(u).split("/").pop(); asked.push(id); return new Response(JSON.stringify({ status: { id, author: OWNER, views: 1, replies: 0 }, replies: [] })); };
+  const round = async (min) => { w.clock += min * 60e3; asked = []; const r = await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c }); assert.equal(r.status, 200, JSON.stringify(r.json)); return asked.sort(); };
+  assert.deepEqual(await round(0), [WATCH, tgt(14).id, NEW, ...OLD].sort(), "第一轮都读;r-lost 点开 3 天了不再找链接,r-fresh 刚点开的去找");
+  // 20 分钟后:到了该读的只有 3 小时内的 NEW(和还在找链接的 r-fresh),不够 4 条:拿上次读得最早的补上(一样早的被监控的在前、再按编号)
+  assert.deepEqual(await round(20), [tgt(14).id, NEW, WATCH, OLD[0], OLD[1]].sort());
+  assert.deepEqual(await round(20), [tgt(14).id, NEW, OLD[2], OLD[3], OLD[4]].sort(), "补的轮着来");
+  // 再过 7 小时 50 分:旧的里离上次读满 8 小时的到了(WATCH、OLD 1–2),OLD 3–5 还差 10 分钟;NEW 已经 9 个多小时(每小时一次)也到了;
+  // r-fresh 点开超过 6 小时,不再去找链接
+  assert.deepEqual(await round(7 * 60 + 50), [NEW, WATCH, OLD[0], OLD[1]].sort());
+});
+
+test("核实发出了的:链接以核到的为准,补链接(投递的 replyUrl、管理员贴的)不再换它(读和写之间刚核实的,语句里也挡住,不会写出两个链接);没核实的照旧能补", async () => {
+  const w = world();
+  const c = await w.login();
+  await w.ingest({ outbox: [OUT(), OUT({ id: "r-two", target: { ...TARGET, id: "2116000000000000777", url: "https://x.com/someone/status/2116000000000000777" } })] });
+  for (const id of ["r-openeden-1", "r-two"]) await w.call("/api/admin/outbox", { method: "POST", body: { id, status: "已发" }, cookie: c });
+  const st = (await w.call("/api/admin/state", { cookie: c })).json;
+  const opened = st.outbox.find((x) => x.id === "r-openeden-1").decided_at, T0 = Date.parse(opened);
+  w.clock += 1000;
+  // 没核实的:照旧能补链接
+  assert.equal((await w.ingest({ outbox: [{ ...OUT(), replyUrl: "https://x.com/DeFiExit/status/2118000000000000301" }] })).json.outbox, 1);
+  w.clock += 1000;
+  const item = await sentItem("r-openeden-1", opened, T0 + 1000);
+  assert.equal((await w.ingest({ sent: [item] })).json.sent, 1);
+  w.clock += 1000;
+  const r = await w.ingest({ outbox: [{ ...OUT(), replyUrl: "https://x.com/DeFiExit/status/2118000000000000303" }] });
+  assert.deepEqual([r.json.outbox, r.json.rejected], [0, [{ kind: "outbox", id: "r-openeden-1", why: "已经核实发出了,链接以核到的为准,不再换" }]]);
+  const p = await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-openeden-1", reply_url: "https://x.com/DeFiExit/status/2118000000000000304" }, cookie: c });
+  assert.deepEqual([p.status, p.json.error], [409, "verified"]);
+  const d = (await w.call("/api/admin/state", { cookie: c })).json.outbox.find((x) => x.id === "r-openeden-1");
+  assert.deepEqual([d.reply_url, d.mine.sent.url, sentState(d, st.sentRule, w.clock)], [item.url, item.url, "verified"]);
+  // 管理员贴链接:读到的时候还没核实,写之前主窗口核实了(另一个请求先写进去):这次贴的不写(回 changed),reply_url 和核到的链接一致
+  const raw = w.db, opened2 = st.outbox.find((x) => x.id === "r-two").decided_at, V = OURS_URL(snow(Date.parse(opened2) + 2000, 5));
+  let landed = false;
+  const land = () => { if (landed) return; landed = true; raw.prepare("UPDATE outbox SET reply_url = ?, mine = json_set(mine, '$.sent', json(?)) WHERE id = 'r-two'").bind(V, JSON.stringify({ opened: opened2, at: new Date(w.clock).toISOString(), url: V, post: V.split("/").pop() })).runSync(); };
+  const wrap = (st2, sql) => ({ inner: st2, bind: (...a) => wrap(st2.bind(...a), sql), all: () => st2.all(), run: () => st2.run(),
+    first: async (...a) => { const out = await st2.first(...a); if (sql === "SELECT * FROM outbox WHERE id = ?") land(); return out; } });
+  w.db = { prepare: (sql) => wrap(raw.prepare(sql), sql), batch: (ss) => raw.batch(ss.map((x) => x.inner)) };
+  const paste = await w.call("/api/admin/outbox", { method: "POST", body: { id: "r-two", reply_url: "https://x.com/DeFiExit/status/2118000000000000305" }, cookie: c });
+  w.db = raw;
+  assert.deepEqual([landed, paste.status, paste.json.error], [true, 409, "changed"]);
+  const t2 = await raw.prepare("SELECT reply_url, json_extract(mine, '$.sent.url') AS u FROM outbox WHERE id = 'r-two'").first();
+  assert.deepEqual([t2.reply_url, t2.u], [V, V]);
+});
+
+test("刷新:上游慢、读到一半 45 秒就到了,留给旧帖子的名额也读得到(和新的交错着读);持续有新帖,旧的也一轮轮轮得到", async () => {
+  const w = world();
+  const c = await w.login();
+  const T = w.clock;
+  const OWNER = { id: "1000000000000000001", screen_name: "owner_acct" };
+  const tgt = (n) => ({ ...TARGET, id: "21160000000000004" + String(n).padStart(2, "0"), url: "https://x.com/someone/status/21160000000000004" + String(n).padStart(2, "0") });
+  const NEW = Array.from({ length: 10 }, (_, i) => snow(T - 3600e3, i)), OLD = Array.from({ length: 6 }, (_, i) => snow(T - 3 * 864e5, i));
+  const cards = [...NEW.map((p, i) => ({ c: OUT({ id: "r-n" + i, target: tgt(i) }), p })), ...OLD.map((p, i) => ({ c: OUT({ id: "r-o" + i, target: tgt(20 + i) }), p }))];
+  await w.ingest({ outbox: cards.map((x) => x.c) });
+  for (const x of cards) await w.call("/api/admin/outbox", { method: "POST", body: { id: x.c.id, status: "已发" }, cookie: c });
+  w.clock += 1000;
+  await w.ingest({ outbox: cards.map((x) => ({ ...x.c, replyUrl: "https://x.com/owner_acct/status/" + x.p })) });
+  await w.db.prepare("UPDATE outbox SET decided_at = ? WHERE id LIKE 'r-o%'").bind(new Date(T - 3 * 864e5).toISOString()).run();
+  // 认得我们的账号;旧的 9 小时前读过(每 8 小时一次,到了),新的没读过
+  await w.db.prepare("INSERT INTO kv (k, v) VALUES ('our_ids', ?)").bind(JSON.stringify([OWNER.id])).run();
+  await w.db.prepare("INSERT INTO kv (k, v) VALUES ('auto_reads', ?)").bind(JSON.stringify(Object.fromEntries(OLD.map((p) => [p, new Date(T - 9 * 3600e3).toISOString()])))).run();
+  const keep = BUDGET.ms;
+  try {
+    BUDGET.ms = 200; // 每读一条 40 毫秒:一轮只来得及读 5、6 条
+    let asked = [];
+    w.fetchImpl = async (u) => { const id = String(u).split("/").pop(); asked.push(id); await new Promise((r) => setTimeout(r, 40)); return new Response(JSON.stringify({ status: { id, author: OWNER, views: 1, replies: 0 }, replies: [] })); };
+    const r = await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c });
+    assert.equal(r.status, 200, JSON.stringify(r.json));
+    assert.ok(asked.length >= 2 && asked.length < 16, "时间到了就停:读了 " + asked.length + " 条");
+    const olds = asked.filter((id) => OLD.includes(id)).length, news = asked.filter((id) => NEW.includes(id)).length;
+    assert.ok(olds >= 1 && news >= 1 && Math.abs(olds - news) <= 1, `新的、旧的交错着读:新 ${news} 旧 ${olds}`);
+    // 接着几轮(每轮都只来得及读几条):6 条旧的都轮得到
+    const seen = new Set(asked.filter((id) => OLD.includes(id)));
+    for (let k = 0; k < 6 && seen.size < OLD.length; k++) {
+      w.clock += 20 * 60e3;
+      asked = [];
+      await w.call("/api/admin/sync", { method: "POST", body: {}, cookie: c });
+      for (const id of asked) if (OLD.includes(id)) seen.add(id);
+    }
+    assert.equal(seen.size, OLD.length, "旧的都轮到了");
+  } finally {
+    BUDGET.ms = keep;
+  }
+});
+
