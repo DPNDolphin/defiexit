@@ -507,5 +507,122 @@
       "Lazy Summer 포럼: 질서 있는 종료 RFC(11월 5일)",
       "Lazy Summer 포럼: 볼트 출금 전용 전환(7월 29일)"
     ]
+  },
+  "aster-apollox-offline": {
+    "name": "Aster: ApolloX 웹사이트와 API 종료",
+    "summary": "Aster가 옛 ApolloX 웹사이트와 API를 닫고 있으며, 11월 5일 무렵 마무리돼요. 아직 잔액이나 포지션이 있다면 지금 정리하고 출금하세요.",
+    "deadlineNote": "11월 3일 10:00 UTC부터 Aster는 옛 APX 컨트랙트 정리를 시작했고, 약 48시간이 걸린다고 했어요. 그러면 11월 5일 10:00 UTC 무렵 끝나요. apollox.finance 웹사이트와 API도 함께 닫혀요.",
+    "who": "ApolloX(`apollox.finance`)에 아직 잔액이나 열린 포지션이 있는 사람.",
+    "todo": "포지션을 정리하고 내 지갑으로 출금하세요. 문제가 생기면 Discord의 고객 지원에 문의하라고 Aster는 말해요.",
+    "caution": "정리가 끝난 뒤에도 컨트랙트를 직접 쓸 수 있는지는 Aster가 밝히지 않았어요.",
+    "official": [
+      "Aster X 게시물: 11월 3일 정리 공지"
+    ]
+  },
+  "lisk-chain-closed": {
+    "name": "Lisk 체인 종료",
+    "summary": "Lisk 체인이 11월 2일에 종료됐어요. 종료 시점에 진행 중이던 출금은 Ethereum에서 입금되고, 체인에 남은 자금은 2027년 1월에 절차가 열린다고 Lisk는 말해요.",
+    "deadlineNote": "체인은 처음에 10월 31일에 종료될 예정이었고, 실제 마지막 날은 11월 2일이었어요. 브릿지를 시작할 수 있는 마지막 날은 10월 24일이었어요(브릿지에 약 8일이 걸려요). Lisk는 체인에 남은 자금을 위한 전용 컨트랙트를 2027년 1월에 내놓겠다고 해요.",
+    "who": "종료 시점에 Lisk에 아직 자산이 있었거나, 진행 중인 출금이 있었던 사람.",
+    "todo": "Lisk에 따르면 종료 시점에 진행 중이던 출금은 Ethereum의 목적지 주소로 바로 입금돼요. 체인에 남은 자금은 2027년 1월의 공식 절차를 기다리세요. 지금은 할 일이 없어요.",
+    "caution": "Lisk는 자금을 되찾아 주겠다며 연락하는 일도, 시드 문구를 묻는 일도 절대 없다고 해요. 스테이킹 보상 컨트랙트에 있는 약 520만 LSK(쌓였지만 아직 받지 않은 보상 포함)는 소각되고, 사용자가 직접 스테이킹한 LSK는 소각되지 않아요.",
+    "official": [
+      "Lisk 블로그: Lisk 체인 종료",
+      "Lisk X 게시물: 1월의 절차(11월 3일)",
+      "Lisk X 게시물: 마지막 날 알림(11월 1일)",
+      "Lisk 블로그: 새로운 Lisk 소개"
+    ]
+  },
+  "stratex-vaults": {
+    "name": "StratEx 볼트(QuickSwap) 종료",
+    "summary": "StratEx의 볼트가 종료됐고, StratEx는 11월 3일에 출금하지 않은 모든 사람에게 자금을 돌려보냈다고 해요. 지갑에 들어왔는지 확인하세요.",
+    "deadlineNote": "직접 출금은 11월 1일에 멈췄어요. 11월 3일 StratEx는 출금하지 않은 모든 사람에게 자금을 돌려보냈다고 했어요.",
+    "who": "StratEx 볼트에 돈이 있었고 11월 1일 전에 출금하지 않은 사람.",
+    "todo": "돌려받은 자금이 지갑에 있는지 확인하세요.",
+    "official": [
+      "StratEx X 게시물: 자금 반환(11월 3일)",
+      "StratEx X 게시물: 출금 마감(10월 21일)",
+      "StratEx X 게시물: 최종 공지(9월 17일)"
+    ]
+  },
+  "lista-cdp-winddown": {
+    "name": "Lista DAO: Lista CDP 종료, Lista Lending으로 이전",
+    "summary": "Lista CDP가 종료됐어요. Lista에 따르면 지원되는 마켓의 포지션은 자동으로 Lista Lending으로 옮겨졌고, 할 일은 없어요. 내 포지션이 지원되는 마켓에 있었는지 확인하세요.",
+    "deadlineNote": "포지션은 9월 30일부터 10월 31일까지 이전하거나 갚을 수 있었어요. 11월 1일과 2일에 Lista는 지원되는 마켓의 포지션을 자동으로 이전했다고 했어요.",
+    "who": "Lista CDP에 포지션이 있었던 사람.",
+    "todo": "11월 2일 Lista는 지원되는 모든 마켓이 자동으로 Lista Lending으로 옮겨졌고 할 일은 없다고 했어요. 내 포지션이 지원되는 마켓에 있었는지 확인하세요.",
+    "caution": "지원되지 않는 마켓의 포지션이 어떻게 되는지는 Lista가 밝히지 않았어요.",
+    "official": [
+      "Lista 블로그: CDP 종료 전에 할 일",
+      "Lista X 게시물: 할 일 없음(11월 2일)",
+      "Lista X 게시물: 이전 완료(11월 1일)",
+      "Lista X 게시물: 10월 1일 공지"
+    ]
+  },
+  "kyan-exchange": {
+    "name": "Kyan 거래소(옛 Premia) 종료",
+    "summary": "Kyan(옛 Premia)이 운영을 종료했고, 잔액은 10월 31일까지 빼야 했어요. 출금할 수 없다면 Discord에 문의하라고 Kyan은 말해요.",
+    "deadlineNote": "10월 19일 발표: 잔액은 ‘이달 말까지’, 즉 10월 31일까지 출금하라고 했어요.",
+    "who": "Kyan에 잔액이 남아 있는 사람.",
+    "todo": "출금할 수 없다면 Kyan 공식 Discord의 #support로 가세요. 팀이 직접 처리해요.",
+    "official": [
+      "Kyan X 게시물: 10월 19일 종료 공지"
+    ]
+  },
+  "stargate-hydra-chains": {
+    "name": "Stargate v2와 Hydra, 이용이 적은 체인 여러 곳 지원 중단",
+    "summary": "Stargate v2와 Hydra가 이용이 적은 체인 여러 곳의 지원을 중단했고, 마지막 묶음은 10월 23일에 멈췄어요.",
+    "deadlineNote": "9월 20일 무렵 여러 체인(Sophon, Silicon, Arbitrum Nova, Degen, Superposition 포함)에서 Hydra 자산이 멈췄어요. Aurora, Taiko, LightLink, Gnosis는 9월 23일에, Gravity, Camp, GOAT, Metis는 10월 23일에 멈췄어요.",
+    "who": "이 체인들의 Stargate 풀 유동성 공급자, 그리고 Hydra USDC.e나 USDT 보유자.",
+    "todo": "각 마감 전에 유동성 공급자(ETH 풀 포함)는 출금해야 했고, Hydra USDC.e와 USDT 보유자는 Stargate 풀로 브릿지해 상환해야 했어요.",
+    "caution": "마감 뒤에도 Hydra 자산을 상환할 수 있는지는 Stargate 게시물에 나와 있지 않아요.",
+    "official": [
+      "Stargate X 게시물: 9월 25일 알림",
+      "Stargate X 게시물: 9월 10일 알림",
+      "Stargate X 게시물: 8월 21일 공지"
+    ]
+  },
+  "stargate-metis-pools": {
+    "name": "Metis의 Stargate: V1·V2 풀 유동성은 10월 23일까지 빼야 했어요",
+    "summary": "Metis에 대한 Stargate 지원이 10월 23일에 끝났고, 그 전에 V1·V2 풀의 유동성을 출금해야 했어요. Metis는 남은 유동성은 일반 화면으로 출금하기 어렵거나 불가능할 수 있다고 경고해요.",
+    "deadlineNote": "Metis Andromeda에 대한 Stargate 지원은 10월 23일에 끝났고, LayerZero Labs의 DVN과 Executor는 10월 30일에 Metis 지원을 멈췄어요. 영향을 받는 풀: Stargate V2의 USDT, ETH, METIS 풀과 Stargate V1의 USDT, METIS, MAI 풀.",
+    "who": "Metis의 Stargate V1·V2 풀 유동성 공급자, 그리고 LayerZero V1으로 METIS, HERA, QI, MTVT를 다른 체인에 브릿지한 사람.",
+    "todo": "마감 전에 할 일: LP 토큰을 스테이킹했다면 해제하고, Stargate 앱에서 유동성을 출금하며, LayerZero V1으로 나간 METIS, HERA, QI, MTVT는 같은 경로로 Metis에 되돌려 놓기. 놓쳤다면 Metis 팀에 연락하라고 Metis는 말해요.",
+    "caution": "Metis에 따르면 마감 뒤 Metis의 Stargate 풀에 남은 유동성은 일반 Stargate 화면으로 출금하기 어렵거나 불가능할 수 있어요. Metis 공식(canonical) 브릿지가 발행한 m.USDC, m.USDT, WETH, METIS는 영향을 받지 않아요.",
+    "official": [
+      "Metis 블로그: Metis Andromeda의 Stargate 종료와 LayerZero 변경 사항"
+    ]
+  },
+  "mint-blockchain-shutdown": {
+    "name": "Mint Blockchain 종료",
+    "summary": "Mint Blockchain이 종료됐고, 마감은 10월 20일이었어요. 공식 출금 페이지는 ETH, WBTC, USDC, USDT만 Ethereum으로 돌려보내요.",
+    "deadlineNote": "마감은 10월 20일이었어요.",
+    "who": "Mint 체인에 자산이 있는 사람.",
+    "todo": "공식 페이지 `mintchain.io/withdraw`는 ETH, WBTC, USDC, USDT를 Ethereum으로 출금하는 것만 지원해요(imToken 공지에 따르면 출금은 매주 처리되고 약 10일 뒤에 들어와요).",
+    "caution": "마감 뒤에 다른 방법이 있는지는 Mint가 밝히지 않았어요.",
+    "official": [
+      "Mint 출금 페이지"
+    ]
+  },
+  "coinex-csc-shutdown": {
+    "name": "CoinEx Smart Chain(CSC)과 OneSwap 종료",
+    "summary": "CoinEx가 운영을 종료해요. CSC 체인과 OneSwap은 9월 29일에 멈췄고, 거래소 계정의 돈은 12월 22일까지 출금해야 해요.",
+    "deadlineNote": "CSC와 OneSwap은 9월 29일에 멈췄고, 브릿지 상환도 같은 때 닫혔어요. CoinEx 거래소의 출금은 12월 22일 10:00 UTC+8까지 열려 있어요.",
+    "who": "CSC나 OneSwap에 자산이 있는 사람, 그리고 CoinEx 거래소 계정에 돈이 남아 있는 사람.",
+    "todo": "온체인 마감은 지났어요. 12월 22일 전에 거래소 계정의 돈을 출금하세요. 그 뒤 USDT는 별도 보관으로 옮겨지고 매달 5%의 보관 수수료가 붙어요. 받으려면 2028년 8월 22일까지 support@coinex.com으로 이메일을 보내세요.",
+    "caution": "CoinEx는 이것이 마지막 공지이며, 이후 CoinEx 이름으로 나오는 ‘새 공지’는 가짜라고 해요.",
+    "official": [
+      "CoinEx 공지"
+    ]
+  },
+  "awe-stpt-migration": {
+    "name": "AWE Network: STPT에서 AWE로(Base로 이전)",
+    "summary": "Ethereum의 STPT를 Base의 AWE로 교환하는 기간은 9월 21일에 끝났고, AWE는 늦은 교환은 할 수 없다고 해요.",
+    "deadlineNote": "마감은 9월 21일이었어요. AWE에 따르면 약 99%가 이전됐어요.",
+    "who": "아직 STPT를 가진 사람.",
+    "todo": "AWE는 늦은 교환은 할 수 없다고 해요. 교환되지 않은 토큰을 어떻게 할지는 커뮤니티 거버넌스 제안으로 정해요.",
+    "official": [
+      "AWE 블로그: 이전 기간 마감"
+    ]
   }
 }
