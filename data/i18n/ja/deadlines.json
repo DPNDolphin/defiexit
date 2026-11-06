@@ -1,0 +1,123 @@
+{
+  "meth-cmeth-rewards": {
+    "name": "mETH Protocol：過去のcmETHキャンペーン報酬のページが終了",
+    "summary": "過去のcmETHキャンペーンの報酬ページが11月7日に閉じます。まだ受け取っていない報酬は、それまでに受け取ってください。",
+    "deadlineNote": "11月7日に、過去のcmETHキャンペーンの報酬ページが閉じます。cmETH自体はいつでもmETHへのステーキング解除やブリッジができ、こちらに期限はありません。",
+    "who": "過去のcmETHキャンペーンに参加し、まだ受け取っていない報酬がある人。",
+    "todo": "11月7日より前に、mETH Protocolのサイトで報酬を受け取ってください。cmETHは急ぐ必要はなく、いつでもmETHへのステーキング解除やブリッジができます。",
+    "caution": "mETH Protocolは、報酬の受け取り期間の後もステーキング解除とブリッジのコントラクトは動き続ける「見込み」だとしていますが、残っている量を見て見直すとしています。",
+    "official": [
+      "mETH Protocolブログ：cmETH終了のスケジュール"
+    ]
+  },
+  "gmo-gyen-zusd-redemption": {
+    "name": "GMO Trust：ステーブルコインGYEN・ZUSDの終了",
+    "summary": "GYENとZUSDが終了します。11月11日までに額面で償還するか、償還しなければ年末までに11月12日のレートでUSDCを受け取ります。",
+    "deadlineNote": "額面での償還は米国東部時間11月11日23:59:59に締め切られ、トークンはそれまでに届いている必要があります。償還されなかった分は、GMO Trustが11月12日に決めるレートで、同じチェーン上のUSDCとして年末までに送ります。",
+    "who": "GYENまたはZUSDを持っている人（Ethereum、Arbitrum、Stellarなどのチェーン）。",
+    "todo": "額面で償還するには、`stablecoin.z.com`でアカウントを開設し、本人確認（KYC）を通過して、円（GYEN）または米ドル（ZUSD）の銀行口座を登録してください。トークンは期限前に届いている必要があります。償還しなければ、年末にUSDCに転換されます。EthereumとArbitrumには、売却できるUniswapのプールもあります。",
+    "caution": "GMO Trustが対応していないチェーンにブリッジしたトークン、マネーロンダリング対策の審査を通らなかったトークン、そのチェーンの最低送金額に満たないトークンは、自動のUSDCを受け取れません。Stellarでは先にUSDCのトラストラインを開いてください。Arbitrum上のGYENが11月11日以降に自動でUSDCに転換されるかどうかは、GMO Trustは明らかにしていません。",
+    "official": [
+      "GMO Trustヘルプセンター：11月11日より前に償還する方法",
+      "GMO Trustヘルプセンター：償還しなかった場合",
+      "GMO TrustのX投稿：8月20日のリマインダー",
+      "GMO TrustのX投稿：9月10日の強制償還のお知らせ"
+    ]
+  },
+  "blur-frontend-blend": {
+    "name": "Blur：blur.ioが閉鎖、Blendは新規ローンを停止",
+    "summary": "Blurのウェブサイトは11月12日に閉鎖され、同じ日にBlendも新規ローンを止めます。借り手はそれまでに返済する必要があります。",
+    "deadlineNote": "11月12日にblur.ioのウェブサイトが動かなくなります。同じ日にBlendも新しいローンのマッチングを止めます：借り手はそれまでに返済しなければならず、返済しないとプロトコルのルールによりローンはデフォルトになります。マーケットプレイスのコントラクトはオンチェーンで動き続けます。",
+    "who": "Blendの借り手と、blur.ioのウェブサイトを頼りにBlurに資産を置いている人。",
+    "todo": "Blendの借り手：11月12日より前に返済してください。それ以外の人：Blurが11月12日以降に公開するというBlendの引き出しツールを待ち、@blur_ioが投稿したリンクだけを使ってください。",
+    "caution": "Blurは@blur_ioだけを信じるよう呼びかけています。投稿には、Blur Pool（入札用プール）からETHを引き出す方法は別に書かれておらず、引き出しツールの公開日もまだ決まっていません。",
+    "official": [
+      "BlurのX投稿：終了のお知らせ",
+      "BlurのX投稿：Blendはどうなるか"
+    ]
+  },
+  "universal-uassets-winddown": {
+    "name": "Universal：ラップ資産uAssetsの終了",
+    "summary": "UniversalのuAssetsは11月17日に終了します。それまでにUniversalアプリで売るか償還してください。その後は償還用のコントラクトだけが残ります。",
+    "deadlineNote": "プロトコルは11月17日に終了します。その後、残ったuAssetsはコントラクトで償還されます：Base上では、uSOL、uXRP、uDOGE、uADA、uBTC、uLTCがそれぞれBase上のSOL、cbXRP、cbDOGE、cbADA、cbBTC、cbLTCになり、それ以外はすべてUSDCになります（Universalは、これはまだ変わる可能性があるとしています）。",
+    "who": "uAssets（uSOL、uBTC、uXRPなど）を持っている人。",
+    "todo": "11月17日より前に、Universalアプリで売るか、ミント・償還（mint and redeem）のページで元の資産に償還してください。金額が大きい場合は、Universalの終了ページにあるアドレスにメールしてください。",
+    "caution": "Universalは11月17日より前に償還用のコントラクトと手順を公開するとしており、需要が多いと償還が遅くなることがあるとしています。サードパーティのプールやレンディング市場にあるuAssetsがどうなるかは明らかにしていません。",
+    "official": [
+      "Universalの終了ページ"
+    ]
+  },
+  "pancakeswap-opbnb-cake": {
+    "name": "PancakeSwap：opBNBからのCAKEのブリッジ経路が終了",
+    "summary": "LayerZeroがopBNBのサポートを終えるため、opBNB上のCAKEは11月23日より前にBNB Chainへブリッジで戻す必要があります。",
+    "deadlineNote": "11月23日00:00 UTCから、opBNBからCAKEをブリッジで移すLayerZeroの経路が止まります。",
+    "who": "opBNB上にCAKEを持っている人。",
+    "todo": "PancakeSwapのブリッジページでopBNB → BNB Chainを選び、CAKEをブリッジで移してください。手順はPancakeSwapの投稿にあります。",
+    "caution": "原因はLayerZeroによるopBNBのサポート終了なので、LayerZeroを使うopBNB上のほかのトークンも影響を受ける可能性があります。各プロジェクトのお知らせを確認してください。",
+    "official": [
+      "PancakeSwapのX投稿：お知らせ",
+      "PancakeSwapのX投稿：ブリッジの方法"
+    ]
+  },
+  "sophon-chain-shutdown": {
+    "name": "Sophonチェーンの終了",
+    "summary": "Sophonチェーンは11月30日に終了します。資金をEthereumに引き出せる最終日は11月25日です。",
+    "deadlineNote": "11月25日が引き出しの最終日です。その後、インフラと関連サイトが停止し始め、11月30日にメインネットが完全に終了します。",
+    "who": "SophonにSOPH、ETH、USDCなどの資産がある人、Sophonのファームに資産がある人、未受け取りのステーキング報酬やGuardian報酬がある人。",
+    "todo": "11月25日より前に、公式ページで資産をEthereumに引き出してください（Sophonの投稿では`claim.sophon.com`）。ファームの資産は`farm.sophon.xyz`で取り出し、ステーキング報酬とGuardian報酬も受け取ってください。ノード報酬は引き続きEthereumのウォレットに届きます。",
+    "caution": "Sophonの投稿には二つのドメインが使われています：`claim.sophon.com`（10月19日と11月2日）と`claim.sophon.xyz`（10月22日）。Sophonは偽の移行サイトに注意するよう呼びかけています。",
+    "official": [
+      "SophonのX投稿：最終スケジュール（10月19日）",
+      "SophonのX投稿：リマインダー（11月2日）",
+      "SophonのX投稿：最初のお知らせ（6月25日）"
+    ]
+  },
+  "recall-staking-readonly": {
+    "name": "Recall：ステーキングアプリが11月30日に読み取り専用に",
+    "summary": "Recall Foundationは活動を終了し、ステーキングアプリは11月30日に読み取り専用になります。それまでにステーキング解除と引き出しを済ませてください。",
+    "deadlineNote": "10月30日から、新しいステーキング解除の申請にはクールダウンがありません（すでにクールダウン中の申請は元の日付のままで、ロック期間も短くなりません）。11月30日に`app.recall.network`は読み取り専用になります。その後も、ロックが終わったポジションはBaseScanでコントラクトを直接呼び出して引き出せます。",
+    "who": "BaseでRECALLをステーキングした人。",
+    "todo": "11月30日より前に、`app.recall.network`でご自身でステーキング解除と引き出しをしてください。その後は、BaseScanでステーキングコントラクトのWrite as Proxyから`unstake(tokenId)`と`withdraw(tokenId)`を呼び出します。手数料用にBase上のETHが少し必要です。",
+    "caution": "Recallによると、保有者への分配はなく、新しいトークン、エアドロップ、移行もありません。それを持ちかけてくるものは偽物です。お知らせにはステーキングコントラクトのアドレスが書かれていないので、コントラクトを直接呼び出す前に、公式チャンネルから出たアドレスだけを使ってください。同じ投稿の中で、ある箇所では「30日後」にアクセスが止まるとし、別の箇所では「11月30日に読み取り専用」としています。",
+    "official": [
+      "RecallのX投稿：「The Recall Foundation is winding down」",
+      "Recall LabsのX投稿：会社の活動終了"
+    ]
+  },
+  "megapot-app-shutdown": {
+    "name": "Megapot：アプリの終了",
+    "summary": "MegapotのウェブサイトとTelegramのミニアプリは12月1日に閉鎖されます。メール、X、Telegramのログインで作ったアカウントなら、それまでに残高を引き出してください。",
+    "deadlineNote": "10月29日からチケットの販売は止まり、引き出しに本人確認は不要になりました。12月1日に`megapot.io`とTelegramのミニアプリが閉鎖されます。プロトコル自体は動き続けます。",
+    "who": "メール、X、Telegramのログインでアカウントを作った人と、未受け取りのオフチェーンの残念賞がある人。ご自身のウォレットで参加した場合、チケットと賞金はそのまま手元に残ります。",
+    "todo": "12月1日より前にアカウントの残高を引き出し、オフチェーンの残念賞もそれまでに受け取ってください。オンチェーンの賞金と紹介報酬は、12月1日以降もBasescanやサードパーティのアプリから受け取れます。流動性提供者はいつでも引き出せます。",
+    "official": [
+      "MegapotのX投稿：「Winding down the Megapot app, going all in on Prizerail」"
+    ]
+  },
+  "thundercore-migration": {
+    "name": "ThunderCoreチェーン停止：TTはBNB Chainへ移行",
+    "summary": "ThunderCoreは停止し、TTはBNB Chainに移行します。移行サイトは12月1日まで開いています。",
+    "deadlineNote": "ThunderBridgeは8月28日に停止しました。最後のブロック236120709は9月1日に生成されました。移行サイトは9月1日から12月1日まで開いています。",
+    "who": "メインネットのTT、veTT、Ethereum上のERC20-TT、またはThunderBridge内の資産を持っている人。取引所にある場合は、取引所の案内に従ってください。",
+    "todo": "`migration.thundercore.com`でご自身の状況を確認し、移行の手順に従ってください。",
+    "caution": "サードパーティのトークンとNFTは移行されません。9月1日より前にコントラクトの中にあったものは自動では移行されず、個別に審査されますが、保証はありません。12月1日以降どうなるかは、ThunderCoreは明らかにしていません。",
+    "official": [
+      "ThunderCore：移行のお知らせ",
+      "ThunderCore：最後のブロックと移行サイト",
+      "ThunderCoreのX投稿：9月1日"
+    ]
+  },
+  "zetachain-shutdown": {
+    "name": "ZetaChainの終了：ZETAはSolanaへ移行",
+    "summary": "ZetaChainは12月9日ごろに停止し、ZETAをSolanaに移す予定です。スナップショットの前に、wZETAをアンラップし、プールとリキッドステーキングから抜けてください。",
+    "deadlineNote": "提案70の投票は11月7日に終わり、可決された場合にだけ効力を持ちます。提案によると、12月9日ごろにブロック20,755,000でスナップショットを取ってチェーンを止め、同じ日にZETAの移行ポータルとブリッジ資産のページが開きます。クロスチェーンの送金はすでに止まっています（入金は6月、引き出しは7月1日）。読み取り専用のアーカイブノードは2027年10月31日まで稼働します。",
+    "who": "ZetaChain上でZETAやwZETAを持っている人、プールやリキッドステーキングにZETAがある人、ZetaChainに残ったブリッジ資産（ZRC-20）がある人。Ethereum上のERC-20 ZETAは影響を受けません。",
+    "todo": "スナップショットの前に、wZETAをアンラップし、プールとリキッドステーキングから抜けてください（コントラクト内のZETAはアドレス単位では受け取れません）。12月9日から、`hub.zetachain.com/migrate`で署名するとSolana上でZETAを受け取れます（最低10 ZETA、SOLは不要）。ZRC-20トークンは、`hub.zetachain.com/bridged-assets`で署名すると元のチェーンで取り戻せます。",
+    "caution": "提案70は、11月7日に可決された場合にだけ効力を持ちます。ZRC-20トークンのうち、一つあたりの価値が$5未満のもの、またはプール、ボールト、コントラクトウォレットにあるものは受け取れません。ZetaChainによると、ポータルが求めるのは署名だけで、取引やシードフレーズを求めることは決してありません。",
+    "official": [
+      "ZetaChainのX投稿：11月4日の投稿",
+      "ZetaChainガバナンス：提案68",
+      "ZetaChainブログ：ZETAをSolanaへ"
+    ]
+  }
+}
