@@ -41,7 +41,7 @@
     "summary": "Universal'ın uAssets ürünleri 17 Kasım'da kapanıyor. Bu tarihten önce onları Universal uygulamasında satın ya da bozdurun; sonrasında yalnızca bir bozdurma sözleşmesi kalacak.",
     "deadlineNote": "Protokol 17 Kasım'da kapanıyor. Sonrasında kalan uAssets bir sözleşme üzerinden bozdurulacak: Base ağında uSOL, uXRP, uDOGE, uADA, uBTC ve uLTC sırasıyla Base üzerindeki SOL, cbXRP, cbDOGE, cbADA, cbBTC ve cbLTC'ye dönüşecek; diğer her şey USDC'ye dönüşecek (Universal bunun hâlâ değişebileceğini söylüyor).",
     "who": "uAssets (uSOL, uBTC, uXRP ve diğerleri) tutan herkes.",
-    "todo": "17 Kasım'dan önce bunları Universal uygulamasında satın ya da mint and redeem sayfasında asıl varlığa bozdurun. Büyük tutarlar için Universal'a kapanış sayfasındaki adresten e-posta gönderin.",
+    "todo": "17 Kasım'dan önce bunları Universal uygulamasında satın ya da “mint and redeem” sayfasında asıl varlığa bozdurun. Büyük tutarlar için Universal'a kapanış sayfasındaki adresten e-posta gönderin.",
     "caution": "Universal, bozdurma sözleşmesini ve adımları 17 Kasım'dan önce yayımlayacağını, talep yüksek olduğunda bozdurmaların yavaşlayabileceğini söylüyor. Üçüncü taraf havuzlarda ya da borç verme piyasalarında tutulan uAssets'e ne olacağını söylemedi.",
     "official": [
       "Universal kapanış sayfası"

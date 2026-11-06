@@ -8,17 +8,37 @@
   "covers": "Arbitrum ağında stake edilmiş WOO, alınmamış ödüller ve işlemi tamamlanıp kasada bekleyen ETH",
   "summary": "WOOFi'de (Arbitrum) stake edilmiş WOO, hiç almadığınız USDC ödülleri, ETH kasasında işlemi tamamlanmış ama hiç alınmamış para: resmi sitede üç dokunuş, her biri sıradan bir işlem; para doğrudan cüzdanınıza döner.",
   "facts": [
-    ["İşlemler", "1–3 (neyiniz olduğuna göre). Sıradan işlemler, onay yok"],
-    ["Ücret", "Üçü için toplam yaklaşık 0.00002 ETH, birkaç sent; cüzdanınızda Arbitrum ağındaki ETH'den ödenir"],
-    ["Süre", "Yaklaşık 5 dakika; beklenecek bir uzlaştırma yok"],
-    ["Gerekenler", "Cüzdanınızda Arbitrum ağında en az 0.0002 ETH. Bunun altında resmi site devam etmenize izin vermez"]
+    [
+      "İşlemler",
+      "1–3 (neyiniz olduğuna göre). Sıradan işlemler, onay yok"
+    ],
+    [
+      "Ücret",
+      "Üçü için toplam yaklaşık 0.00002 ETH, birkaç sent; cüzdanınızda Arbitrum ağındaki ETH'den ödenir"
+    ],
+    [
+      "Süre",
+      "Yaklaşık 5 dakika; beklenecek bir uzlaştırma yok"
+    ],
+    [
+      "Gerekenler",
+      "Cüzdanınızda Arbitrum ağında en az 0.0002 ETH. Bunun altında resmi site devam etmenize izin vermez"
+    ]
   ],
-  "chips": ["Yaklaşık 5 dakika", "1–3 işlem, onay yok", "Birkaç sent ücret"],
+  "chips": [
+    "Yaklaşık 5 dakika",
+    "1–3 işlem, onay yok",
+    "Birkaç sent ücret"
+  ],
   "support": {
     "label": "WOOFi resmi Discord",
     "note": "WOOFi sitesinin altında listelenen resmi kanallar Discord ve X (@_WOOFi). WOOFi size asla ilk mesajı atmaz. Size özel mesaj atan her “destek” dolandırıcıdır."
   },
-  "official": [{"label": "WOOFi resmi sitesi"}],
+  "official": [
+    {
+      "label": "WOOFi resmi sitesi"
+    }
+  ],
   "vars": {
     "addrShort": "kendi adresiniz",
     "woo": "stake ettiğiniz WOO",
@@ -37,19 +57,128 @@
     "look": "Nereye bakmalı: cüzdan uygulamanız → “Assets” (Varlıklar); ağ Arbitrum seçili olsun."
   },
   "screens": {
-    "perps": {"img": "perps-1-en.webp", "name": "Fiyat grafikli işlem sayfası", "features": ["Sayfanın ortasını büyük bir mum grafiği kaplıyor", "Sol üstte ETH, altında 100x", "Grafiğin üstünde üç sekme: Chart / Trades / Data"], "do": "Bu, staking sayfası değil, WOOFi'nin sürekli vadeli işlem (perpetuals) sayfası. Geri dönmek için aşağıdaki iki resmi izleyin: sol üstte bir Spot / Perps anahtarı ve alt çubukta “Stake” görünüyorsa doğru yerdesiniz. Sağ üstte adresiniz görünüyorsa devam edin; “Connect Wallet” yazıyorsa yeniden bağlanın.", "images": [{"src": "perps-1-en.webp", "caption": "① Sol üstteki üç çizgiye dokunun"}, {"src": "perps-2-en.webp", "caption": "② **Stake** seçeneğine dokunun"}]},
-    "home": {"name": "WOOFi tanıtım sayfası (LAUNCH APP düğmeli)", "features": ["Büyük başlık: SWAP AND EARN ON REAL-WORLD ASSETS", "Ortada turuncu bir “LAUNCH APP” düğmesi", "Daha aşağıda Spot volume ve Perps volume gibi büyük rakamlar"], "do": "Bu, staking sayfası değil, WOOFi'nin tanıtım sayfası. Geri dönmek için aşağıdaki üç resmi izleyin: **LAUNCH APP** düğmesine dokunun (önce fiyat grafikli işlem sayfası açılır), sonra sol üstteki üç çizgi → **Stake**. Sağ üstte adresiniz görünüyorsa devam edin; “Connect Wallet” yazıyorsa yeniden bağlanın.", "images": [{"src": "home-launch.webp", "caption": "① Ortadaki turuncu **LAUNCH APP** düğmesine dokunun"}, {"src": "perps-1-en.webp", "caption": "① Fiyat grafiği sayfasında sol üstteki üç çizgiye dokunun"}, {"src": "perps-2-en.webp", "caption": "② **Stake** seçeneğine dokunun"}]},
-    "stake-new": {"name": "Staking sayfası, cüzdan bağlı değil", "features": ["Sol üstte bir Spot / Perps anahtarı", "Üst tarafta Weekly rewards", "Turuncu bir “Connect Wallet” düğmesi"], "do": "Bu staking sayfası; yalnızca henüz bağlanmadınız. Cüzdanınızı 2. adımdaki gibi bağlayın."},
-    "wallets": {"name": "Cüzdan seçmenizi istiyor", "features": ["Başlıkta Connect your wallet yazıyor", "Bir sıra cüzdan simgesi: Detected Wallet, Binance, Coinbase Wallet…", "Altta powered by thirdweb"], "do": "Bu, cüzdan seçme ekranı. **Detected Wallet** seçin; Binance uygulamasında **Binance** da olur. Cüzdanınız bağlanmak istediğinde ve istek woofi.com adresinden geldiğinde “Connect” (Bağlan) düğmesine dokunun."},
-    "networks": {"name": "Ağ seçmenizi istiyor", "features": ["Başlıkta Switch Network yazıyor", "Mainnet altında iki sütun ağ: Ethereum, Arbitrum, Base…", "Sağ üstte bir ×"], "do": "Bu, ağ menüsü. **Arbitrum** seçin ve cüzdanınızda ağ değişikliğini onaylayın."},
-    "stake": {"name": "Staking sayfası, cüzdan bağlı", "features": ["Stake / Unstake sekmeleri, Stake turuncu", "USDC reward ve XP", "Compound yanında turuncu bir “Claim” düğmesi"], "do": "Bu staking sayfası ve cüzdanınız bağlı. Gereken adıma gitmek için aşağıdaki düğmeye dokunun ve o adımın resimlerini ve kontrol kartını izleyin. Bu sayfadaki düğmelere henüz dokunmayın."},
-    "unstake": {"name": "Unstake sekmesi", "features": ["Stake / Unstake sekmeleri, Unstake turuncu", "0 WOO gösteren bir giriş kutusu, sağında bir “UNSTAKE” düğmesi", "Altta, Stake sekmesindeki gibi Claim ve Compound"], "do": "Bu, Unstake sekmesi. “WOO'nuzu stake'ten çıkarın” adımına gitmek için aşağıdaki düğmeye dokunun ve o adımın resimlerini ve kontrol kartını izleyin."},
-    "earn": {"name": "Kasa listeli Earn sayfası", "features": ["Holdings, Monthly Profits ve Average APR ile My earnings", "İki sekme: All vaults / My vaults", "Try \"USDT\" yazan bir arama kutusu"], "do": "Bu, kasa sayfası. Arbitrum ağındaki ETH kartını bulun ve “Kasadaki ETH'yi alın” adımını izleyin."},
-    "vault": {"name": "Kasanın WITHDRAW sekmesi", "features": ["STEP 1 ve STEP 2 başlıklı iki talimat bloğu", "Gri bir “REQUEST WITHDRAWAL” düğmesi", "Son satırda Available for Withdrawals yazıyor, sağında küçük bir “WITHDRAW”"], "do": "Bu, kasanın çekim sekmesi. “Kasadaki ETH'yi alın” adımına gitmek için aşağıdaki düğmeye dokunun ve o adımın resimlerini ve kontrol kartını izleyin."},
-    "domain": {"name": "Adres çubuğunda woofi.com yazmıyor", "do": "Sayfayı hemen kapatın ve hiçbir şey imzalamayın. `https://woofi.com/stake` adresini kendiniz yazın; başkalarının gönderdiği bağlantılara dokunmayın."},
-    "sign": {"name": "Cüzdanınız bir mesaj imzalamanızı ya da onay vermenizi istiyor (Approve / Permit)", "do": "“Reject” (Reddet) düğmesine dokunun. Bu rehberdeki her adım sıradan bir işlemdir: mesaj imzası yok, onay yok. Sayfayı kapatın ve adresi kontrol etmek için 1. adıma dönün."},
-    "blocked": {"name": "Blocked Address mesajı çıkıyor", "do": "WOOFi bu adresi bir yaptırım listesine dayanarak engelledi. Bu rehber yardımcı olamaz."},
-    "sorry": {"name": "WE'RE SORRY: bölgeniz desteklenmiyor", "do": "Burada durun. WOOFi bölgenize hizmet vermiyor ve bu rehber bölgesel kısıtlamaları aşmanıza yardım etmez. WOOFi'nin resmi Discord sunucusunda sorabilirsiniz."}
+    "perps": {
+      "img": "perps-1-en.webp",
+      "name": "Fiyat grafikli işlem sayfası",
+      "features": [
+        "Sayfanın ortasını büyük bir mum grafiği kaplıyor",
+        "Sol üstte ETH, altında 100x",
+        "Grafiğin üstünde üç sekme: Chart / Trades / Data"
+      ],
+      "do": "Bu, staking sayfası değil, WOOFi'nin sürekli vadeli işlem (perpetuals) sayfası. Geri dönmek için aşağıdaki iki resmi izleyin: sol üstte bir Spot / Perps anahtarı ve alt çubukta “Stake” görünüyorsa doğru yerdesiniz. Sağ üstte adresiniz görünüyorsa devam edin; “Connect Wallet” yazıyorsa yeniden bağlanın.",
+      "images": [
+        {
+          "src": "perps-1-en.webp",
+          "caption": "① Sol üstteki üç çizgiye dokunun"
+        },
+        {
+          "src": "perps-2-en.webp",
+          "caption": "② **Stake** seçeneğine dokunun"
+        }
+      ]
+    },
+    "home": {
+      "name": "WOOFi tanıtım sayfası (LAUNCH APP düğmeli)",
+      "features": [
+        "Büyük başlık: “SWAP AND EARN ON REAL-WORLD ASSETS”",
+        "Ortada turuncu bir “LAUNCH APP” düğmesi",
+        "Daha aşağıda “Spot volume” ve “Perps volume” gibi büyük rakamlar"
+      ],
+      "do": "Bu, staking sayfası değil, WOOFi'nin tanıtım sayfası. Geri dönmek için aşağıdaki üç resmi izleyin: **LAUNCH APP** düğmesine dokunun (önce fiyat grafikli işlem sayfası açılır), sonra sol üstteki üç çizgi → **Stake**. Sağ üstte adresiniz görünüyorsa devam edin; “Connect Wallet” yazıyorsa yeniden bağlanın.",
+      "images": [
+        {
+          "src": "home-launch.webp",
+          "caption": "① Ortadaki turuncu **LAUNCH APP** düğmesine dokunun"
+        },
+        {
+          "src": "perps-1-en.webp",
+          "caption": "① Fiyat grafiği sayfasında sol üstteki üç çizgiye dokunun"
+        },
+        {
+          "src": "perps-2-en.webp",
+          "caption": "② **Stake** seçeneğine dokunun"
+        }
+      ]
+    },
+    "stake-new": {
+      "name": "Staking sayfası, cüzdan bağlı değil",
+      "features": [
+        "Sol üstte bir Spot / Perps anahtarı",
+        "Üst tarafta “Weekly rewards”",
+        "Turuncu bir “Connect Wallet” düğmesi"
+      ],
+      "do": "Bu staking sayfası; yalnızca henüz bağlanmadınız. Cüzdanınızı 2. adımdaki gibi bağlayın."
+    },
+    "wallets": {
+      "name": "Cüzdan seçmenizi istiyor",
+      "features": [
+        "Başlıkta “Connect your wallet” yazıyor",
+        "Bir sıra cüzdan simgesi: Detected Wallet, Binance, Coinbase Wallet…",
+        "Altta “powered by thirdweb”"
+      ],
+      "do": "Bu, cüzdan seçme ekranı. **Detected Wallet** seçin; Binance uygulamasında **Binance** da olur. Cüzdanınız bağlanmak istediğinde ve istek woofi.com adresinden geldiğinde “Connect” (Bağlan) düğmesine dokunun."
+    },
+    "networks": {
+      "name": "Ağ seçmenizi istiyor",
+      "features": [
+        "Başlıkta “Switch Network” yazıyor",
+        "Mainnet altında iki sütun ağ: Ethereum, Arbitrum, Base…",
+        "Sağ üstte bir ×"
+      ],
+      "do": "Bu, ağ menüsü. **Arbitrum** seçin ve cüzdanınızda ağ değişikliğini onaylayın."
+    },
+    "stake": {
+      "name": "Staking sayfası, cüzdan bağlı",
+      "features": [
+        "Stake / Unstake sekmeleri, Stake turuncu",
+        "“USDC reward” ve XP",
+        "Compound yanında turuncu bir “Claim” düğmesi"
+      ],
+      "do": "Bu staking sayfası ve cüzdanınız bağlı. Gereken adıma gitmek için aşağıdaki düğmeye dokunun ve o adımın resimlerini ve kontrol kartını izleyin. Bu sayfadaki düğmelere henüz dokunmayın."
+    },
+    "unstake": {
+      "name": "Unstake sekmesi",
+      "features": [
+        "Stake / Unstake sekmeleri, Unstake turuncu",
+        "0 WOO gösteren bir giriş kutusu, sağında bir “UNSTAKE” düğmesi",
+        "Altta, Stake sekmesindeki gibi Claim ve Compound"
+      ],
+      "do": "Bu, Unstake sekmesi. “WOO'nuzu stake'ten çıkarın” adımına gitmek için aşağıdaki düğmeye dokunun ve o adımın resimlerini ve kontrol kartını izleyin."
+    },
+    "earn": {
+      "name": "Kasa listeli Earn sayfası",
+      "features": [
+        "“Holdings”, “Monthly Profits” ve “Average APR” ile “My earnings”",
+        "İki sekme: All vaults / My vaults",
+        "Try \"USDT\" yazan bir arama kutusu"
+      ],
+      "do": "Bu, kasa sayfası. Arbitrum ağındaki ETH kartını bulun ve “Kasadaki ETH'yi alın” adımını izleyin."
+    },
+    "vault": {
+      "name": "Kasanın WITHDRAW sekmesi",
+      "features": [
+        "STEP 1 ve STEP 2 başlıklı iki talimat bloğu",
+        "Gri bir “REQUEST WITHDRAWAL” düğmesi",
+        "Son satırda “Available for Withdrawals” yazıyor, sağında küçük bir “WITHDRAW”"
+      ],
+      "do": "Bu, kasanın çekim sekmesi. “Kasadaki ETH'yi alın” adımına gitmek için aşağıdaki düğmeye dokunun ve o adımın resimlerini ve kontrol kartını izleyin."
+    },
+    "domain": {
+      "name": "Adres çubuğunda woofi.com yazmıyor",
+      "do": "Sayfayı hemen kapatın ve hiçbir şey imzalamayın. `https://woofi.com/stake` adresini kendiniz yazın; başkalarının gönderdiği bağlantılara dokunmayın."
+    },
+    "sign": {
+      "name": "Cüzdanınız bir mesaj imzalamanızı ya da onay vermenizi istiyor (Approve / Permit)",
+      "do": "“Reject” (Reddet) düğmesine dokunun. Bu rehberdeki her adım sıradan bir işlemdir: mesaj imzası yok, onay yok. Sayfayı kapatın ve adresi kontrol etmek için 1. adıma dönün."
+    },
+    "blocked": {
+      "name": "“Blocked Address” mesajı çıkıyor",
+      "do": "WOOFi bu adresi bir yaptırım listesine dayanarak engelledi. Bu rehber yardımcı olamaz."
+    },
+    "sorry": {
+      "name": "“WE'RE SORRY”: bölgeniz desteklenmiyor",
+      "do": "Burada durun. WOOFi bölgenize hizmet vermiyor ve bu rehber bölgesel kısıtlamaları aşmanıza yardım etmez. WOOFi'nin resmi Discord sunucusunda sorabilirsiniz."
+    }
   },
   "steps": {
     "open": {
@@ -61,7 +190,7 @@
       "images": [
         "① Binance uygulamasını açın ve üstteki **Wallet** (Cüzdan) seçeneğine dokunun (resimdeki bakiye gizlendi)",
         "② Alttaki **Discover** (Keşfet) sekmesine dokunun. Sol üstte seçili cüzdan bu parayı tutan cüzdan olmalı (örneğin Wallet1). Değilse değiştirmek için ona dokunun",
-        "③ Üstteki arama kutusuna dokunun (Search DApp or enter URL)",
+        "③ Üstteki arama kutusuna dokunun (“Search DApp or enter URL”)",
         "④ iPhone yapıştırmaya izin verip vermeyeceğinizi sorar: **Allow Paste** (Yapıştırmaya İzin Ver) seçeneğine dokunun (Android telefonlarda bu adım yok)",
         "⑤ Arama kutusuna basılı tutun, sonra **Paste** (Yapıştır) seçeneğine dokunun",
         "⑥ Altta çıkan satıra dokunun: **woofi.com/stake**",
@@ -69,12 +198,30 @@
         "⑦ Doğrudan staking sayfası açılır. Üstte **woofi.com** yazdığını kontrol edin: tek bir fazla harf ya da eksik bir nokta varsa durun"
       ],
       "situations": {
-        "search-instead": {"see": "Adresi yazınca arama sonuçları çıkıyor", "do": "`https://` ekleyip tam adresi yazın: `https://woofi.com/stake`."},
-        "restricted": {"see": "WE'RE SORRY mesajı bölgenizin desteklenmediğini söylüyor", "do": "Burada durun. WOOFi bölgenize hizmet vermiyor ve bu rehber bölgesel kısıtlamaları aşmanıza yardım etmez. WOOFi'nin resmi Discord sunucusunda sorabilirsiniz (aşağıya bakın)."},
-        "not-sure": {"see": "Bunun resmi site olduğundan emin değilsiniz", "do": "Adres çubuğuna bakın: alan adı tam olarak **woofi.com** olmalı. Değilse sayfayı kapatın ve adresi kendiniz yazın. Başkalarının gönderdiği bağlantılara dokunmayın."},
-        "old-domain": {"see": "Yer iminizde fi.woo.org yazıyor", "do": "Bu, WOOFi'nin eski adresi; artık woofi.com adresine yönlendiriyor. Adres çubuğunun en sonunda ne gösterdiğine bakın: woofi.com."},
-        "history": {"see": "History altındaki WOOFi satırına dokundunuz ve tanıtım sayfası açıldı (büyük SWAP AND EARN başlığı, bir “LAUNCH APP” düğmesi)", "do": "Ortadaki turuncu **LAUNCH APP** düğmesine dokunun. Önce fiyat grafikli işlem sayfası açılır; staking sayfasına ulaşmak için sonra sol üstteki üç çizgi → **Stake** seçeneğine dokunun. Bir dahaki sefere History yerine tam adresi yapıştırın."},
-        "no-paste": {"see": "Arama kutusuna basılı tutunca “Paste” (Yapıştır) çıkmıyor", "do": "Bu sayfaya dönüp adresi kopyalamak için yeniden dokunun. iPhone'da sorulduğunda “Allow Paste” (Yapıştırmaya İzin Ver) seçeneğine dokunun. Yine olmazsa `https://woofi.com/stake` adresini elle yazın."}
+        "search-instead": {
+          "see": "Adresi yazınca arama sonuçları çıkıyor",
+          "do": "`https://` ekleyip tam adresi yazın: `https://woofi.com/stake`."
+        },
+        "restricted": {
+          "see": "“WE'RE SORRY” mesajı bölgenizin desteklenmediğini söylüyor",
+          "do": "Burada durun. WOOFi bölgenize hizmet vermiyor ve bu rehber bölgesel kısıtlamaları aşmanıza yardım etmez. WOOFi'nin resmi Discord sunucusunda sorabilirsiniz (aşağıya bakın)."
+        },
+        "not-sure": {
+          "see": "Bunun resmi site olduğundan emin değilsiniz",
+          "do": "Adres çubuğuna bakın: alan adı tam olarak **woofi.com** olmalı. Değilse sayfayı kapatın ve adresi kendiniz yazın. Başkalarının gönderdiği bağlantılara dokunmayın."
+        },
+        "old-domain": {
+          "see": "Yer iminizde fi.woo.org yazıyor",
+          "do": "Bu, WOOFi'nin eski adresi; artık woofi.com adresine yönlendiriyor. Adres çubuğunun en sonunda ne gösterdiğine bakın: woofi.com."
+        },
+        "history": {
+          "see": "History altındaki WOOFi satırına dokundunuz ve tanıtım sayfası açıldı (büyük SWAP AND EARN başlığı, bir “LAUNCH APP” düğmesi)",
+          "do": "Ortadaki turuncu **LAUNCH APP** düğmesine dokunun. Önce fiyat grafikli işlem sayfası açılır; staking sayfasına ulaşmak için sonra sol üstteki üç çizgi → **Stake** seçeneğine dokunun. Bir dahaki sefere History yerine tam adresi yapıştırın."
+        },
+        "no-paste": {
+          "see": "Arama kutusuna basılı tutunca “Paste” (Yapıştır) çıkmıyor",
+          "do": "Bu sayfaya dönüp adresi kopyalamak için yeniden dokunun. iPhone'da sorulduğunda “Allow Paste” (Yapıştırmaya İzin Ver) seçeneğine dokunun. Yine olmazsa `https://woofi.com/stake` adresini elle yazın."
+        }
       }
     },
     "connect": {
@@ -86,14 +233,34 @@
         "① Adresiniz sağ üstte görünür (ekran görüntüsünde gizlendi). {{addrShort}} olmalı ② Bu simge geçerli ağdır. Ona dokunun",
         "① **Arbitrum** seçin ve cüzdanınızda ağ değişikliğini onaylayın. Zaten Arbitrum ise (adın yanında küçük bir nokta) menüyü sağ üstteki × ile kapatın"
       ],
-      "items": ["✗ Bağlanırken WE'RE SORRY mesajı bölgenizin desteklenmediğini söylüyorsa burada durun. Bu rehber bölgesel kısıtlamaları aşmanıza yardım etmez."],
+      "items": [
+        "✗ Bağlanırken “WE'RE SORRY” mesajı bölgenizin desteklenmediğini söylüyorsa burada durun. Bu rehber bölgesel kısıtlamaları aşmanıza yardım etmez."
+      ],
       "situations": {
-        "perps-page": {"see": "Bağlandıktan sonra staking sayfası yerine fiyat grafikli bir işlem sayfası görüyorum", "do": "Bu, WOOFi'nin sürekli vadeli işlem sayfası. Staking sayfasına dönmek için sol üstteki üç çizgi → **Stake** seçeneğine dokunun. Sağ üstte “Connect Wallet” yazıyorsa yeniden bağlanın."},
-        "no-popup": {"see": "“Connect Wallet” düğmesine dokundum ama cüzdan bağlanmak istemedi", "do": "Sayfayı cüzdan uygulamanızın kendi DApp tarayıcısında açın (1. adım). “Detected Wallet” bir şey yapmıyorsa sayfayı yeniden açıp “Binance” seçeneğini deneyin."},
-        "wrong-address": {"see": "Sağ üstteki adres, paranın olduğu adres değil", "do": "Cüzdan uygulamanızda bu parayı tutan cüzdana geçin, sonra yeniden bağlanın. Adres uymuyorsa devam etmeyin."},
-        "sign-on-connect": {"see": "Bağlanırken cüzdanınız bir mesaj imzalamanızı istiyor", "do": "“Reject” (Reddet) düğmesine dokunun, sayfayı kapatın ve adresi yeniden kontrol edin. WOOFi bağlanmak için imza gerektirmez (sitesinin kodu imza isteğinde bulunmaz)."},
-        "wrong-network": {"see": "Sayfanın üstünde Wrong Network yazıyor", "do": "Sağ üstteki ağ simgesine dokunun, **Arbitrum** seçin ve cüzdanınızda değişikliği onaylayın."},
-        "blocked-address": {"see": "Blocked Address mesajı çıkıyor", "do": "WOOFi bu adresi bir yaptırım listesine dayanarak engelledi. Bu rehber yardımcı olamaz."}
+        "perps-page": {
+          "see": "Bağlandıktan sonra staking sayfası yerine fiyat grafikli bir işlem sayfası görüyorum",
+          "do": "Bu, WOOFi'nin sürekli vadeli işlem sayfası. Staking sayfasına dönmek için sol üstteki üç çizgi → **Stake** seçeneğine dokunun. Sağ üstte “Connect Wallet” yazıyorsa yeniden bağlanın."
+        },
+        "no-popup": {
+          "see": "“Connect Wallet” düğmesine dokundum ama cüzdan bağlanmak istemedi",
+          "do": "Sayfayı cüzdan uygulamanızın kendi DApp tarayıcısında açın (1. adım). “Detected Wallet” bir şey yapmıyorsa sayfayı yeniden açıp “Binance” seçeneğini deneyin."
+        },
+        "wrong-address": {
+          "see": "Sağ üstteki adres, paranın olduğu adres değil",
+          "do": "Cüzdan uygulamanızda bu parayı tutan cüzdana geçin, sonra yeniden bağlanın. Adres uymuyorsa devam etmeyin."
+        },
+        "sign-on-connect": {
+          "see": "Bağlanırken cüzdanınız bir mesaj imzalamanızı istiyor",
+          "do": "“Reject” (Reddet) düğmesine dokunun, sayfayı kapatın ve adresi yeniden kontrol edin. WOOFi bağlanmak için imza gerektirmez (sitesinin kodu imza isteğinde bulunmaz)."
+        },
+        "wrong-network": {
+          "see": "Sayfanın üstünde “Wrong Network” yazıyor",
+          "do": "Sağ üstteki ağ simgesine dokunun, **Arbitrum** seçin ve cüzdanınızda değişikliği onaylayın."
+        },
+        "blocked-address": {
+          "see": "“Blocked Address” mesajı çıkıyor",
+          "do": "WOOFi bu adresi bir yaptırım listesine dayanarak engelledi. Bu rehber yardımcı olamaz."
+        }
       }
     },
     "claim": {
@@ -105,23 +272,43 @@
         "see": "Fiyat grafiği mi görüyorsunuz (sol üstte üç çizgi)? İki dokunuşla staking sayfasına dönün",
         "thumb": "perps-1-en.webp",
         "images": [
-          {"src": "perps-1-en.webp", "caption": "① Sol üstteki üç çizgiye dokunun"},
-          {"src": "perps-2-en.webp", "caption": "② Staking sayfasına dönmek için **Stake** seçeneğine dokunun, sonra aşağıdan devam edin"}
+          {
+            "src": "perps-1-en.webp",
+            "caption": "① Sol üstteki üç çizgiye dokunun"
+          },
+          {
+            "src": "perps-2-en.webp",
+            "caption": "② Staking sayfasına dönmek için **Stake** seçeneğine dokunun, sonra aşağıdan devam edin"
+          }
         ]
       },
       "images": [
-        "Stake / Unstake kutusuna kadar aşağı kaydırın. ① **Claim** düğmesine dokunun (yukarıdaki USDC reward henüz almadığınız tutardır. Ekran görüntüsünde gizlendi; yaklaşık {{rewards}} olmalı) ✗ “Compound” düğmesine dokunmayın: ödülleri WOO'ya çevirip yeniden stake eder; istediğinizin tam tersi"
+        "Stake / Unstake kutusuna kadar aşağı kaydırın. ① **Claim** düğmesine dokunun (yukarıdaki “USDC reward” henüz almadığınız tutardır. Ekran görüntüsünde gizlendi; yaklaşık {{rewards}} olmalı) ✗ “Compound” düğmesine dokunmayın: ödülleri WOO'ya çevirip yeniden stake eder; istediğinizin tam tersi"
       ],
       "check": {
         "title": "Onaylamadan önce 3 şeyi kontrol edin",
-        "lead": "“Claim” düğmesine dokunduktan sonra cüzdanınız bir işlemi onaylamanızı ister (Binance cüzdanında başlığı Contract call). Bu listeyle karşılaştırın ve uyan her maddeye dokunun.",
-        "skip": "Zaten aldınız mı (USDC reward 0)? Bu adımı atlayın",
+        "lead": "“Claim” düğmesine dokunduktan sonra cüzdanınız bir işlemi onaylamanızı ister (Binance cüzdanında başlığı “Contract call”). Bu listeyle karşılaştırın ve uyan her maddeye dokunun.",
+        "skip": "Zaten aldınız mı (“USDC reward” 0)? Bu adımı atlayın",
         "confirm": [
-          {"title": "İstek woofi.com adresinden, Arbitrum ağında geliyor", "sub": "Binance cüzdanında Arbitrum One yazar. Site adında tek bir fazla harf ya da eksik bir nokta varsa durun"},
-          {"title": "Sözleşme 0xa9E2…24Fb (WOOFi staking sözleşmesi)", "sub": "Binance cüzdanında sözleşme satırıdır (başka cüzdanlarda To yazabilir). İlk 6 ve son 4 karakter aynı olmalı"},
-          {"title": "Küçük bir ağ ücreti dışında hiçbir şey ödemezsiniz", "sub": "Binance cüzdanı alacağınız artı işaretli bir tutar gösterir: ödülleriniz (yaklaşık {{rewards}}). Ağ ücreti bir sentin altında"}
+          {
+            "title": "İstek woofi.com adresinden, Arbitrum ağında geliyor",
+            "sub": "Binance cüzdanında Arbitrum One yazar. Site adında tek bir fazla harf ya da eksik bir nokta varsa durun"
+          },
+          {
+            "title": "Sözleşme 0xa9E2…24Fb (WOOFi staking sözleşmesi)",
+            "sub": "Binance cüzdanında sözleşme satırıdır (başka cüzdanlarda To yazabilir). İlk 6 ve son 4 karakter aynı olmalı"
+          },
+          {
+            "title": "Küçük bir ağ ücreti dışında hiçbir şey ödemezsiniz",
+            "sub": "Binance cüzdanı alacağınız artı işaretli bir tutar gösterir: ödülleriniz (yaklaşık {{rewards}}). Ağ ücreti bir sentin altında"
+          }
         ],
-        "reject": ["Sizden herhangi bir token göndermeniz isteniyor (eksi işaretli bir tutar ya da send veya pay kelimeleri)", "Approve veya Permit yazıyor", "Bir mesaj imzalamanız isteniyor (Sign)", "İstek woofi.com adresinden gelmiyor"],
+        "reject": [
+          "Sizden herhangi bir token göndermeniz isteniyor (eksi işaretli bir tutar ya da send veya pay kelimeleri)",
+          "Approve veya Permit yazıyor",
+          "Bir mesaj imzalamanız isteniyor (Sign)",
+          "İstek woofi.com adresinden gelmiyor"
+        ],
         "normal": [
           "İşlem satırında genelde claimRewards yazar",
           "Alacağınız tutarda biraz USDC.e ve ARB de listelenir: bu işlem birkaç ödül tokenını birden öder (Binance geçmişinde 3 bakiye değişikliği görünür)",
@@ -130,12 +317,30 @@
         ]
       },
       "situations": {
-        "perps-page": {"see": "Sayfada fiyat grafiği var ve “Claim” düğmesi yok", "do": "WOOFi'nin sürekli vadeli işlem sayfasındasınız. Sol üstteki üç çizgi → **Stake** seçeneğine dokunun. “Claim” düğmesi staking sayfasında."},
-        "cancelled": {"see": "Sayfada Cancelled · User denied transaction signature yazıyor", "do": "Cüzdanınızda “Reject” düğmesine dokundunuz, yani hiçbir şey hareket etmedi. Yeniden kontrol edin, sonra “Claim” düğmesine bir kez daha dokunun."},
-        "insufficient-gas": {"see": "Düğmede INSUFFICIENT GAS yazıyor", "do": "Resmi site, cüzdanınızda Arbitrum ağında en az 0.0002 ETH olmasını istiyor. Önce bu cüzdana Arbitrum ağında biraz ETH gönderin (0.0005 fazlasıyla yeter), sonra geri gelin."},
-        "compound-clicked": {"see": "Yanlışlıkla “Compound” düğmesine dokundum", "do": "Ödülleriniz WOO'ya çevrilip stake'inize eklendi. Hiçbir şey kaybolmadı: bir sonraki adımda stake'ten çıkardığınızda geri kalanla birlikte çıkar."},
-        "auto-compound": {"see": "İşlem !COMPOUND hatasıyla başarısız oldu", "do": "Auto-compound açık. Açıkken ödül alamazsınız ve açtıktan sonra 7 gün boyunca kapatılamaz. Durumunuzu görmek için sağ üstteki “Takıldınız mı?” düğmesine dokunun. Emin değilseniz WOOFi'nin resmi Discord sunucusunda sorun."},
-        "wrong-to": {"see": "İstek 0xa9E2…24Fb dışında bir adrese gidiyor", "do": "Hemen “Reject” (Reddet) düğmesine dokunun."}
+        "perps-page": {
+          "see": "Sayfada fiyat grafiği var ve “Claim” düğmesi yok",
+          "do": "WOOFi'nin sürekli vadeli işlem sayfasındasınız. Sol üstteki üç çizgi → **Stake** seçeneğine dokunun. “Claim” düğmesi staking sayfasında."
+        },
+        "cancelled": {
+          "see": "Sayfada “Cancelled · User denied transaction signature” yazıyor",
+          "do": "Cüzdanınızda “Reject” düğmesine dokundunuz, yani hiçbir şey hareket etmedi. Yeniden kontrol edin, sonra “Claim” düğmesine bir kez daha dokunun."
+        },
+        "insufficient-gas": {
+          "see": "Düğmede INSUFFICIENT GAS yazıyor",
+          "do": "Resmi site, cüzdanınızda Arbitrum ağında en az 0.0002 ETH olmasını istiyor. Önce bu cüzdana Arbitrum ağında biraz ETH gönderin (0.0005 fazlasıyla yeter), sonra geri gelin."
+        },
+        "compound-clicked": {
+          "see": "Yanlışlıkla “Compound” düğmesine dokundum",
+          "do": "Ödülleriniz WOO'ya çevrilip stake'inize eklendi. Hiçbir şey kaybolmadı: bir sonraki adımda stake'ten çıkardığınızda geri kalanla birlikte çıkar."
+        },
+        "auto-compound": {
+          "see": "İşlem !COMPOUND hatasıyla başarısız oldu",
+          "do": "Auto-compound açık. Açıkken ödül alamazsınız ve açtıktan sonra 7 gün boyunca kapatılamaz. Durumunuzu görmek için sağ üstteki “Takıldınız mı?” düğmesine dokunun. Emin değilseniz WOOFi'nin resmi Discord sunucusunda sorun."
+        },
+        "wrong-to": {
+          "see": "İstek 0xa9E2…24Fb dışında bir adrese gidiyor",
+          "do": "Hemen “Reject” (Reddet) düğmesine dokunun."
+        }
       }
     },
     "unstake": {
@@ -147,37 +352,72 @@
         "see": "Fiyat grafiği mi görüyorsunuz (sol üstte üç çizgi)? İki dokunuşla staking sayfasına dönün",
         "thumb": "perps-1-en.webp",
         "images": [
-          {"src": "perps-1-en.webp", "caption": "① Sol üstteki üç çizgiye dokunun"},
-          {"src": "perps-2-en.webp", "caption": "② Staking sayfasına dönmek için **Stake** seçeneğine dokunun, sonra aşağıdan devam edin"}
+          {
+            "src": "perps-1-en.webp",
+            "caption": "① Sol üstteki üç çizgiye dokunun"
+          },
+          {
+            "src": "perps-2-en.webp",
+            "caption": "② Staking sayfasına dönmek için **Stake** seçeneğine dokunun, sonra aşağıdan devam edin"
+          }
         ]
       },
       "images": [
         "① Staking sayfasında **Unstake** sekmesine dokunun",
         "② Giriş kutusunun sağındaki sayıya dokunun (stake ettiğiniz WOO'nun tamamı, ekran görüntüsünde gizlendi). Tam tutarı doldurur",
         "③ Tutar dolunca (yaklaşık {{woo}}; resmi site birkaç ondalık basamak daha fazla gösterir) **UNSTAKE** düğmesine dokunun",
-        "④ Unstake Confirmation penceresinde tutarı kontrol edip **UNSTAKE** düğmesine dokunun. Cüzdanınız bir işlemi onaylamanızı ister: aşağıdaki kartla karşılaştırın ! XP'nizin (puanlarınızın) silineceğini söyler. XP alınıp satılamaz ve geri alacağınız parayı etkilemez"
+        "④ “Unstake Confirmation” penceresinde tutarı kontrol edip **UNSTAKE** düğmesine dokunun. Cüzdanınız bir işlemi onaylamanızı ister: aşağıdaki kartla karşılaştırın ! XP'nizin (puanlarınızın) silineceğini söyler. XP alınıp satılamaz ve geri alacağınız parayı etkilemez"
       ],
       "check": {
         "title": "Onaylamadan önce 3 şeyi kontrol edin",
-        "lead": "“UNSTAKE” düğmesine dokunduktan sonra cüzdanınız bir işlemi onaylamanızı ister (Binance cüzdanında başlığı Contract call). Bu listeyle karşılaştırın ve uyan her maddeye dokunun.",
+        "lead": "“UNSTAKE” düğmesine dokunduktan sonra cüzdanınız bir işlemi onaylamanızı ister (Binance cüzdanında başlığı “Contract call”). Bu listeyle karşılaştırın ve uyan her maddeye dokunun.",
         "skip": "Stake edilmiş WOO'nuz yok mu? Bu adımı atlayın",
         "confirm": [
-          {"title": "İstek woofi.com adresinden, Arbitrum ağında geliyor", "sub": "Binance cüzdanında Arbitrum One yazar. Site adında tek bir fazla harf ya da eksik bir nokta varsa durun"},
-          {"title": "Sözleşme 0x2CFa…d8e2 (WOOFi staking sözleşmesi)", "sub": "Ödül adımındakinden farklı bir adres. Bu normal"},
-          {"title": "Küçük bir ağ ücreti dışında hiçbir şey ödemezsiniz", "sub": "Binance cüzdanı alacağınız artı işaretli bir tutar gösterir: geri dönen WOO'nuz (yaklaşık {{woo}}). Ağ ücreti bir sentin altında"}
+          {
+            "title": "İstek woofi.com adresinden, Arbitrum ağında geliyor",
+            "sub": "Binance cüzdanında Arbitrum One yazar. Site adında tek bir fazla harf ya da eksik bir nokta varsa durun"
+          },
+          {
+            "title": "Sözleşme 0x2CFa…d8e2 (WOOFi staking sözleşmesi)",
+            "sub": "Ödül adımındakinden farklı bir adres. Bu normal"
+          },
+          {
+            "title": "Küçük bir ağ ücreti dışında hiçbir şey ödemezsiniz",
+            "sub": "Binance cüzdanı alacağınız artı işaretli bir tutar gösterir: geri dönen WOO'nuz (yaklaşık {{woo}}). Ağ ücreti bir sentin altında"
+          }
         ],
-        "reject": ["Sizden herhangi bir token göndermeniz isteniyor (eksi işaretli bir tutar ya da send veya pay kelimeleri)", "Approve veya Permit yazıyor", "Bir mesaj imzalamanız isteniyor (Sign)", "İstek woofi.com adresinden gelmiyor"],
+        "reject": [
+          "Sizden herhangi bir token göndermeniz isteniyor (eksi işaretli bir tutar ya da send veya pay kelimeleri)",
+          "Approve veya Permit yazıyor",
+          "Bir mesaj imzalamanız isteniyor (Sign)",
+          "İstek woofi.com adresinden gelmiyor"
+        ],
         "normal": [
           "İşlem satırında genelde unstake yazar",
           "Stake'ten çıkarmanın kilit süresi ve ücreti yoktur"
         ]
       },
       "situations": {
-        "amount-not-full": {"see": "Tutar tamamı değil", "do": "Tam tutarı doldurmak için giriş kutusunun sağındaki sayıya dokunun. Elle yazınca genelde bir kısmı geride kalır."},
-        "insufficient-balance": {"see": "Düğmede INSUFFICIENT BALANCE yazıyor", "do": "Tutar, stake ettiğinizden fazla. Yeniden doldurmak için giriş kutusunun sağındaki sayıya dokunun."},
-        "xp": {"see": "Onay penceresi XP'nizin silineceğini söylüyor", "do": "XP, WOOFi'nin puan sistemidir. Alınıp satılamaz ve kaybetmek geri alacağınız parayı etkilemez."},
-        "cancelled": {"see": "Sayfada Cancelled · User denied transaction signature yazıyor", "do": "Cüzdanınızda “Reject” düğmesine dokundunuz, yani hiçbir şey hareket etmedi. Yeniden kontrol edin, sonra “UNSTAKE” düğmesine bir kez daha dokunun."},
-        "wrong-to": {"see": "İstek 0x2CFa…d8e2 dışında bir adrese gidiyor", "do": "Hemen “Reject” (Reddet) düğmesine dokunun."}
+        "amount-not-full": {
+          "see": "Tutar tamamı değil",
+          "do": "Tam tutarı doldurmak için giriş kutusunun sağındaki sayıya dokunun. Elle yazınca genelde bir kısmı geride kalır."
+        },
+        "insufficient-balance": {
+          "see": "Düğmede INSUFFICIENT BALANCE yazıyor",
+          "do": "Tutar, stake ettiğinizden fazla. Yeniden doldurmak için giriş kutusunun sağındaki sayıya dokunun."
+        },
+        "xp": {
+          "see": "Onay penceresi XP'nizin silineceğini söylüyor",
+          "do": "XP, WOOFi'nin puan sistemidir. Alınıp satılamaz ve kaybetmek geri alacağınız parayı etkilemez."
+        },
+        "cancelled": {
+          "see": "Sayfada “Cancelled · User denied transaction signature” yazıyor",
+          "do": "Cüzdanınızda “Reject” düğmesine dokundunuz, yani hiçbir şey hareket etmedi. Yeniden kontrol edin, sonra “UNSTAKE” düğmesine bir kez daha dokunun."
+        },
+        "wrong-to": {
+          "see": "İstek 0x2CFa…d8e2 dışında bir adrese gidiyor",
+          "do": "Hemen “Reject” (Reddet) düğmesine dokunun."
+        }
       }
     },
     "vault": {
@@ -189,41 +429,76 @@
         "see": "Fiyat grafiği mi görüyorsunuz (sol üstte üç çizgi)? İki dokunuşla Earn sayfasına gidin",
         "thumb": "perps-1-en.webp",
         "images": [
-          {"src": "perps-1-en.webp", "caption": "① Sol üstteki üç çizgiye dokunun"},
-          {"src": "perps-earn-en.webp", "caption": "② **Earn** seçeneğine dokunun. Earn sayfasına gelince aşağıdaki 2. resimden devam edin"}
+          {
+            "src": "perps-1-en.webp",
+            "caption": "① Sol üstteki üç çizgiye dokunun"
+          },
+          {
+            "src": "perps-earn-en.webp",
+            "caption": "② **Earn** seçeneğine dokunun. Earn sayfasına gelince aşağıdaki 2. resimden devam edin"
+          }
         ]
       },
       "images": [
         "① Staking sayfasının en altındaki **Earn** seçeneğine dokunun",
         "② Biraz aşağı kaydırın ve **My vaults** sekmesine dokunun (yalnızca para yatırdığınız kasalar)",
-        "③ Arbitrum ağındaki **ETH** kartına dokunun (My Deposits sizin tutarınız, ekran görüntüsünde gizlendi)",
+        "③ Arbitrum ağındaki **ETH** kartına dokunun (“My Deposits” sizin tutarınız, ekran görüntüsünde gizlendi)",
         "④ Kart DEPOSIT sekmesinde açılır. Yanındaki **WITHDRAW** sekmesine dokunun",
-        "⑤ Son satıra, Available for Withdrawals satırına kaydırın (alabileceğiniz tutar, ekran görüntüsünde gizlendi; sayfa 4 ondalık basamak gösterir, yaklaşık {{eth}} ETH) ve sağındaki **WITHDRAW** düğmesine dokunun ✗ 0 gösteren iki kutuya, turuncu “UNSTAKE” ve gri “REQUEST WITHDRAWAL” düğmelerine dokunmayın"
+        "⑤ Son satıra, “Available for Withdrawals” satırına kaydırın (alabileceğiniz tutar, ekran görüntüsünde gizlendi; sayfa 4 ondalık basamak gösterir, yaklaşık {{eth}} ETH) ve sağındaki **WITHDRAW** düğmesine dokunun ✗ 0 gösteren iki kutuya, turuncu “UNSTAKE” ve gri “REQUEST WITHDRAWAL” düğmelerine dokunmayın"
       ],
       "items": [
         "! İşlemi tamamlanmış para cüzdanınıza kendiliğinden gönderilmez. Buna sizin dokunmanız gerekir ve birçok kişinin atladığı adım budur."
       ],
       "check": {
         "title": "Onaylamadan önce 3 şeyi kontrol edin",
-        "lead": "“WITHDRAW” düğmesine dokunduktan sonra cüzdanınız bir işlemi onaylamanızı ister (Binance cüzdanında başlığı Contract call). Bu listeyle karşılaştırın ve uyan her maddeye dokunun.",
+        "lead": "“WITHDRAW” düğmesine dokunduktan sonra cüzdanınız bir işlemi onaylamanızı ister (Binance cüzdanında başlığı “Contract call”). Bu listeyle karşılaştırın ve uyan her maddeye dokunun.",
         "skip": "Kasada bekleyen bir şey yok mu? Bu adımı atlayın",
         "confirm": [
-          {"title": "İstek woofi.com adresinden, Arbitrum ağında geliyor", "sub": "Binance cüzdanında Arbitrum One yazar. Site adında tek bir fazla harf ya da eksik bir nokta varsa durun"},
-          {"title": "Sözleşme 0xE77A…Ad6a (WOOFi kasa çekim sözleşmesi)", "sub": "Üç adımın her biri farklı bir adres kullanır. Bu normal"},
-          {"title": "Küçük bir ağ ücreti dışında hiçbir şey ödemezsiniz", "sub": "Binance cüzdanı alacağınız artı işaretli bir tutar gösterir: kasadan çıkan ETH (yaklaşık {{eth}}). Ağ ücreti bir sentin altında"}
+          {
+            "title": "İstek woofi.com adresinden, Arbitrum ağında geliyor",
+            "sub": "Binance cüzdanında Arbitrum One yazar. Site adında tek bir fazla harf ya da eksik bir nokta varsa durun"
+          },
+          {
+            "title": "Sözleşme 0xE77A…Ad6a (WOOFi kasa çekim sözleşmesi)",
+            "sub": "Üç adımın her biri farklı bir adres kullanır. Bu normal"
+          },
+          {
+            "title": "Küçük bir ağ ücreti dışında hiçbir şey ödemezsiniz",
+            "sub": "Binance cüzdanı alacağınız artı işaretli bir tutar gösterir: kasadan çıkan ETH (yaklaşık {{eth}}). Ağ ücreti bir sentin altında"
+          }
         ],
-        "reject": ["Sizden herhangi bir token göndermeniz isteniyor (eksi işaretli bir tutar ya da send veya pay kelimeleri)", "Approve veya Permit yazıyor", "Bir mesaj imzalamanız isteniyor (Sign)", "İstek woofi.com adresinden gelmiyor"],
+        "reject": [
+          "Sizden herhangi bir token göndermeniz isteniyor (eksi işaretli bir tutar ya da send veya pay kelimeleri)",
+          "Approve veya Permit yazıyor",
+          "Bir mesaj imzalamanız isteniyor (Sign)",
+          "İstek woofi.com adresinden gelmiyor"
+        ],
         "normal": [
           "İşlem satırında withdraw yazar ve ham veri 0x3ccfd60b ile başlar",
           "WETH değil, yerel ETH alırsınız. Binance geçmişinde bu işlem redemption (bozdurma) olarak geçer"
         ]
       },
       "situations": {
-        "no-available": {"see": "Available for Withdrawals 0", "do": "Ya zaten alınmış ya da işlemi henüz tamamlanmamış. Canlı kontrol için sağ üstteki “Takıldınız mı?” düğmesine dokunun."},
-        "big-button": {"see": "Büyük “REQUEST WITHDRAWAL” düğmesine dokunulamıyor", "do": "Beklenen bu: ona ihtiyacınız yok. Available for Withdrawals satırının sağındaki küçük **WITHDRAW** düğmesine dokunun."},
-        "shares-left": {"see": "My Deposits, Available for Withdrawals tutarından fazla", "do": "Kasadaki paranızın bir kısmı için henüz çekim talebi verilmemiş. Bu rehber şimdilik yalnızca alınmayı bekleyen, işlemi tamamlanmış parayı kapsıyor. Geri kalanı için WITHDRAW sekmesindeki Instant Withdraw (hemen ulaşır, 1% ücret) ya da REQUEST WITHDRAWAL (ücretsiz ama bir sonraki salıya kadar beklersiniz) seçeneğini kullanın."},
-        "cancelled": {"see": "Sayfada Cancelled · User denied transaction signature yazıyor", "do": "Cüzdanınızda “Reject” düğmesine dokundunuz, yani hiçbir şey hareket etmedi. Yeniden kontrol edin, sonra “WITHDRAW” düğmesine bir kez daha dokunun."},
-        "wrong-to": {"see": "İstek 0xE77A…Ad6a dışında bir adrese gidiyor", "do": "Hemen “Reject” (Reddet) düğmesine dokunun."}
+        "no-available": {
+          "see": "“Available for Withdrawals” 0",
+          "do": "Ya zaten alınmış ya da işlemi henüz tamamlanmamış. Canlı kontrol için sağ üstteki “Takıldınız mı?” düğmesine dokunun."
+        },
+        "big-button": {
+          "see": "Büyük “REQUEST WITHDRAWAL” düğmesine dokunulamıyor",
+          "do": "Beklenen bu: ona ihtiyacınız yok. “Available for Withdrawals” satırının sağındaki küçük **WITHDRAW** düğmesine dokunun."
+        },
+        "shares-left": {
+          "see": "“My Deposits”, “Available for Withdrawals” tutarından fazla",
+          "do": "Kasadaki paranızın bir kısmı için henüz çekim talebi verilmemiş. Bu rehber şimdilik yalnızca alınmayı bekleyen, işlemi tamamlanmış parayı kapsıyor. Geri kalanı için WITHDRAW sekmesindeki “Instant Withdraw” (hemen ulaşır, 1% ücret) ya da REQUEST WITHDRAWAL (ücretsiz ama bir sonraki salıya kadar beklersiniz) seçeneğini kullanın."
+        },
+        "cancelled": {
+          "see": "Sayfada “Cancelled · User denied transaction signature” yazıyor",
+          "do": "Cüzdanınızda “Reject” düğmesine dokundunuz, yani hiçbir şey hareket etmedi. Yeniden kontrol edin, sonra “WITHDRAW” düğmesine bir kez daha dokunun."
+        },
+        "wrong-to": {
+          "see": "İstek 0xE77A…Ad6a dışında bir adrese gidiyor",
+          "do": "Hemen “Reject” (Reddet) düğmesine dokunun."
+        }
       }
     },
     "arrive": {
@@ -232,18 +507,42 @@
       "check": {
         "title": "Ulaştığını kontrol edin",
         "rows": [
-          ["Ne kadar sürer", "Her işlem onaylandıktan birkaç saniye sonra"],
-          ["Nereye bakmalı", "Cüzdan uygulamanız → “Assets” (Varlıklar); ağ Arbitrum seçili olsun"],
-          ["Ne görmelisiniz", "Yaklaşık {{woo}} WOO, {{rewards}} ve {{eth}} ETH artış (bunlardan hangisi sizde varsa)"],
-          ["Zincir üstündeki kayıt", "WOO, WOOFi staking sözleşmesi 0x2CFa…d8e2 adresinden; ödül tokenları WOOFi ödül sözleşmelerinden; ETH, WOOFi kasa çekim sözleşmesi 0xE77A…Ad6a adresinden gelir. Hepsini sizin adresiniz alır"],
-          ["Ulaşmadıysa", "Canlı kontrol için sağ üstteki “Takıldınız mı?” düğmesine dokunun. İşlem başarılı olduğu hâlde WOO görünmüyorsa tokenı cüzdanınıza ekleyin"]
+          [
+            "Ne kadar sürer",
+            "Her işlem onaylandıktan birkaç saniye sonra"
+          ],
+          [
+            "Nereye bakmalı",
+            "Cüzdan uygulamanız → “Assets” (Varlıklar); ağ Arbitrum seçili olsun"
+          ],
+          [
+            "Ne görmelisiniz",
+            "Yaklaşık {{woo}} WOO, {{rewards}} ve {{eth}} ETH artış (bunlardan hangisi sizde varsa)"
+          ],
+          [
+            "Zincir üstündeki kayıt",
+            "WOO, WOOFi staking sözleşmesi 0x2CFa…d8e2 adresinden; ödül tokenları WOOFi ödül sözleşmelerinden; ETH, WOOFi kasa çekim sözleşmesi 0xE77A…Ad6a adresinden gelir. Hepsini sizin adresiniz alır"
+          ],
+          [
+            "Ulaşmadıysa",
+            "Canlı kontrol için sağ üstteki “Takıldınız mı?” düğmesine dokunun. İşlem başarılı olduğu hâlde WOO görünmüyorsa tokenı cüzdanınıza ekleyin"
+          ]
         ],
         "foot": "Ulaştığında işiniz biter. WOO sıradan bir token: elinizde tutun ya da cüzdanınızda takas edin"
       },
       "situations": {
-        "no-woo": {"see": "Cüzdanda WOO görünmüyor", "do": "Bazı cüzdanlar yeni tokenları kendiliğinden göstermez. Cüzdanınızda WOO (Arbitrum) diye aratın ya da `0xcafcd85d8ca7ad1e1c6f82f651fa15e33aefd07b` sözleşme adresiyle ekleyin."},
-        "eth-not-weth": {"see": "Ulaşan WETH değil, ETH", "do": "Bu normal: kasa çekim sözleşmesi, WETH olarak tutulan parayı yerel ETH'ye çevirip size gönderir."},
-        "want-usdc": {"see": "WOO'yu USDC karşılığında takas etmek istiyorum", "do": "WOO zaten kendi cüzdanınızda, yani cüzdanınızın yerleşik takas özelliğini kullanabilirsiniz. Bu rehber takası kapsamaz. Takas etmeden önce fiyat teklifini ve kaymayı kontrol edin."}
+        "no-woo": {
+          "see": "Cüzdanda WOO görünmüyor",
+          "do": "Bazı cüzdanlar yeni tokenları kendiliğinden göstermez. Cüzdanınızda WOO (Arbitrum) diye aratın ya da `0xcafcd85d8ca7ad1e1c6f82f651fa15e33aefd07b` sözleşme adresiyle ekleyin."
+        },
+        "eth-not-weth": {
+          "see": "Ulaşan WETH değil, ETH",
+          "do": "Bu normal: kasa çekim sözleşmesi, WETH olarak tutulan parayı yerel ETH'ye çevirip size gönderir."
+        },
+        "want-usdc": {
+          "see": "WOO'yu USDC karşılığında takas etmek istiyorum",
+          "do": "WOO zaten kendi cüzdanınızda, yani cüzdanınızın yerleşik takas özelliğini kullanabilirsiniz. Bu rehber takası kapsamaz. Takas etmeden önce fiyat teklifini ve kaymayı kontrol edin."
+        }
       }
     }
   },
