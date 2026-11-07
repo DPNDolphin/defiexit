@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { LocalD1 } from "../scripts/d1-local.mjs";
-import { handle, onRequest, overCap, LIMIT } from "../functions/api/hit.js";
+import { handle, onRequest, overCap, LIMIT, CAP } from "../functions/api/hit.js";
 import { ensure, bjDay, hitCounts } from "../server/ops/db.js";
 
 const ORIGIN = "https://defiexit.com";
@@ -130,9 +130,9 @@ test("读数:每种的总数、开始数的那天,和最近 60 天(北京时间)
   const db = new LocalD1();
   await ensure(db);
   const now = at("2026-11-05T02:00:00Z"); // 北京 11-05;最近 60 天从 09-07 算起
-  assert.deepEqual(await hitCounts(db, now), { checkup: { total: 0, since: null, byDay: {} } });
+  assert.deepEqual(await hitCounts(db, now), { checkup: { total: 0, since: null, byDay: {} }, view: { total: 0, since: null, byDay: {} }, visit: { total: 0, since: null, byDay: {} } });
   for (const t of ["2026-09-06T15:59:00Z", "2026-09-06T16:00:00Z", "2026-11-04T16:30:00Z", "2026-11-05T02:00:00Z"]) assert.equal((await handle(req(), { OPS: db }, at(t))).status, 204);
-  assert.deepEqual(await hitCounts(db, now), { checkup: { total: 4, since: "2026-09-06", byDay: { "2026-09-07": 1, "2026-11-05": 2 } } });
+  assert.deepEqual(await hitCounts(db, now), { checkup: { total: 4, since: "2026-09-06", byDay: { "2026-09-07": 1, "2026-11-05": 2 } }, view: { total: 0, since: null, byDay: {} }, visit: { total: 0, since: null, byDay: {} } });
 });
 
 test("请求体不整个读进内存:长度写小了、实际灌 1 MiB,读过 64 字节就停;分几段到的照样拼对", async () => {
@@ -176,4 +176,24 @@ test("本地预览:Node 没有 node:sqlite 时 /api/hit 回 503,预览不倒,别
   } finally {
     child.kill();
   }
+});
+
+test("打开页面(view)和访客(visit)各数各的:三种分开记,互不影响;每种的上限分开(打开页面多了挤不掉体检)", async () => {
+  const db = new LocalD1();
+  await ensure(db);
+  const env = { OPS: db }, now = at("2026-11-07T03:00:00Z");
+  for (const b of ['{"k":"view"}', '{"k":"view"}', '{"k":"visit"}', BODY]) assert.equal((await handle(req(b), env, now)).status, 204);
+  assert.equal((await handle(req('{"k":"views"}'), env, now)).status, 400, "不认识的种类不收");
+  const c = await hitCounts(db, now);
+  assert.deepEqual([c.view.total, c.visit.total, c.checkup.total, c.view.byDay["2026-11-07"]], [2, 1, 1, 2]);
+  const rows = await db.prepare("SELECT * FROM hits").all();
+  assert.ok(!JSON.stringify(rows.results).includes(IP) && !JSON.stringify(rows.results).includes(UA), "不记 IP 和浏览器信息");
+  assert.ok(CAP.view.perIsolate > LIMIT.perIsolate && CAP.view.perDay > LIMIT.perDay && CAP.checkup.perDay === LIMIT.perDay);
+  assert.ok(CAP.checkup.perDay + CAP.view.perDay + CAP.visit.perDay <= 50000, "三种加起来远低于 D1 每天 10 万次写的免费额度");
+  const m = { day: "", n: 0 };
+  for (let i = 0; i < 3; i++) assert.equal(overCap("2026-11-07", m, 3), false);
+  assert.equal(overCap("2026-11-07", m, 3), true, "按传进来的上限挡");
+  await db.prepare("UPDATE hits SET n = ? WHERE kind = 'view'").bind(CAP.view.perDay).run();
+  assert.equal((await handle(req('{"k":"view"}'), env, now)).status, 429, "打开页面到了当天上限就不再加");
+  assert.equal((await handle(req(BODY), env, now)).status, 204, "体检照数");
 });

@@ -1112,3 +1112,16 @@ test("数据区的长列表一页 10 行:我们发的帖子和回复(最近 40 �
   await pager().children.filter((e) => e.tagName === "BUTTON")[1].fire("click");
   assert.equal(rows(), 3);
 });
+
+test("数据区「网站访问」:今天、昨天、最近 7 天、一共,打开几页、几个浏览器;服务器没给 view / visit(旧版)就不显示", async () => {
+  const day = (ago) => new Date(Date.now() + 8 * 3600e3 - ago * 864e5).toISOString().slice(0, 10);
+  const hits = { checkup: { total: 1, since: day(3), byDay: {} },
+    view: { total: 50, since: day(9), byDay: { [day(0)]: 7, [day(1)]: 5, [day(6)]: 2, [day(8)]: 9 } },
+    visit: { total: 20, since: day(9), byDay: { [day(0)]: 3, [day(1)]: 2, [day(6)]: 1, [day(8)]: 4 } } };
+  const d = await desk({ ...base([]), hits });
+  const panel = find(d.$("data-body"), (e) => e.classList.contains("panel") && e.textContent.startsWith("网站访问"));
+  const rows = find(panel, (e) => e.classList.contains("list")).children.map((r) => r.textContent);
+  assert.deepEqual(rows, ["今天3 个浏览器来过打开 7 页", "昨天2 个浏览器来过打开 5 页", "最近 7 天日访客合计 6打开 14 页", "一共日访客合计 20打开 50 页"]);
+  const d2 = await desk({ ...base([]), hits: { checkup: hits.checkup } });
+  assert.equal(find(d2.$("data-body"), (e) => e.classList.contains("panel") && e.textContent.startsWith("网站访问")), null);
+});

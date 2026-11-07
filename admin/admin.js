@@ -862,6 +862,24 @@ import { capOf, gate, waitText, paceNote, sentState, SENT_LABEL, patrolLate, bjD
     return h("p", { class: "note" }, "网站自己数的:共 " + fmt(c.total) + " 个地址,今天 " + fmt(n) + " 个" + (c.since ? "(" + String(c.since).slice(5) + " 起)" : "")
       + "。同一个浏览器同一个地址只算一次;你登过运营台的浏览器不算,钱包里的浏览器打开一次 defiexit.com/#owner 也不算。");
   }
+  // 网站自己数的访问(src/js/lib/count.js 的 countView):页面打开了几次、来了几个浏览器(一个浏览器一天算一个)。
+  // 管理员的浏览器不算;不跑脚本的爬虫数不到,禁了本地存储的只数打开、不数访客;服务器还没这两种(旧版)就不显示
+  function visitPanel(hits) {
+    const v = hits && hits.view, u = hits && hits.visit;
+    if (!v || !u || typeof v.total !== "number" || typeof u.total !== "number") return null;
+    const dayAt = (ago) => new Date(todayBJ() - ago * 864e5).toISOString().slice(0, 10);
+    const on = (c, day) => (c.byDay && typeof c.byDay[day] === "number" ? c.byDay[day] : 0);
+    const sum = (c, n) => Array.from({ length: n }, (_, i) => on(c, dayAt(i))).reduce((a, b) => a + b, 0);
+    const row = (k, views, visits, many) => h("div", { class: "li" }, h("span", { class: "k" }, k), h("span", { class: "nm" }, many ? "日访客合计 " + fmt(visits) : fmt(visits) + " 个浏览器来过"), h("span", { class: "pill " + (views ? "ok" : "mute") }, "打开 " + fmt(views) + " 页"), h("span", { class: "sub" }, ""));
+    return h("div", { class: "panel" }, h("h3", null, "网站访问"),
+      h("div", { class: "list" },
+        row("今天", on(v, dayAt(0)), on(u, dayAt(0))),
+        row("昨天", on(v, dayAt(1)), on(u, dayAt(1))),
+        row("最近 7 天", sum(v, 7), sum(u, 7), true),
+        row("一共", v.total, u.total, true)),
+      h("p", { class: "src" }, "网站自己数的约数(北京时间):每打开一页算一次,一个浏览器一天算一个;" + (v.since ? String(v.since).slice(5) + " 开始数," : "") + "不记 IP、地址和来源页。"
+        + "你登过运营台的浏览器不算;不跑脚本的爬虫数不到,所以比 Cloudflare 后台的访客数少。「最近 7 天」和「一共」的访客数都是每天的浏览器数加起来,同一个浏览器来几天算几次。"));
+  }
   function goalPanel(g) {
     if (!g || !g.deadline) return null;
     const left = daysUntil(g.deadline);
@@ -1195,7 +1213,7 @@ import { capOf, gate, waitText, paceNote, sentState, SENT_LABEL, patrolLate, bjD
   }
   function renderData() {
     const D = S.docs;
-    const parts = [safe(goalPanel, D.goal_1215), safe(routePanel, D.funnel), safe(viewsPanel, D.x_posts), safe(minePanel, S.out), safe(leadsPanel, S.leads), safe(problemPanel, S.problems), safe(protocolPanel, D.protocols), safe(needsPanel, S.needs), safe(clocksPanel, D.clocks), safe(botPanel, D.bot), safe(autoPanel, S.auto)].filter(Boolean);
+    const parts = [safe(goalPanel, D.goal_1215), safe(visitPanel, S.hits), safe(routePanel, D.funnel), safe(viewsPanel, D.x_posts), safe(minePanel, S.out), safe(leadsPanel, S.leads), safe(problemPanel, S.problems), safe(protocolPanel, D.protocols), safe(needsPanel, S.needs), safe(clocksPanel, D.clocks), safe(botPanel, D.bot), safe(autoPanel, S.auto)].filter(Boolean);
     $("data-body").replaceChildren(...(parts.length ? parts : [h("p", { class: "empty" }, "还没有数据。我下次干活时送进来。")]));
   }
 

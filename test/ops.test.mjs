@@ -467,14 +467,14 @@ test("导出:只认投递钥匙;回管理员的决定和状态、线索,不回�
 test("导出和运营台都带体检次数(hits):总数、开始数的那天、最近 60 天(北京时间)每天的数;导出的 since 不管它", async () => {
   const w = world();
   const c = await w.login();
-  assert.deepEqual((await w.exp({})).json.hits, { checkup: { total: 0, since: null, byDay: {} } });
+  assert.deepEqual((await w.exp({})).json.hits, { checkup: { total: 0, since: null, byDay: {} }, view: { total: 0, since: null, byDay: {} }, visit: { total: 0, since: null, byDay: {} } });
   const ping = (at) => hit(new Request(HOST + "/api/hit", { method: "POST", headers: { Origin: HOST, "Content-Type": "application/json", "Content-Length": "15" }, body: '{"k":"checkup"}' }), { OPS: w.db }, new Date(at));
   // 现在是北京 11-03 18:00:最近 60 天从 09-05 算起;11-02 16:01(UTC)已经是北京 11-03
   for (const at of ["2026-09-01T02:00:00Z", "2026-11-02T15:59:00Z", "2026-11-02T16:01:00Z", "2026-11-03T09:00:00Z"]) assert.equal((await ping(at)).status, 204);
   w.clock += 1000;
   const r = await w.exp({ since: "2026-11-03T00:00:00Z" });
   assert.equal(r.status, 200, JSON.stringify(r.json));
-  assert.deepEqual(r.json.hits, { checkup: { total: 4, since: "2026-09-01", byDay: { "2026-11-02": 1, "2026-11-03": 2 } } });
+  assert.deepEqual(r.json.hits, { checkup: { total: 4, since: "2026-09-01", byDay: { "2026-11-02": 1, "2026-11-03": 2 } }, view: { total: 0, since: null, byDay: {} }, visit: { total: 0, since: null, byDay: {} } });
   const st = await w.call("/api/admin/state", { cookie: c });
   assert.deepEqual(st.json.hits, r.json.hits);
 });

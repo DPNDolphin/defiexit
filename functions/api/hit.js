@@ -1,5 +1,8 @@
-// 体检计数(Cloudflare Pages Function,路径 /api/hit):数「有多少个不同的地址来体检过」,服务器永远看不到地址。
-// 体检结果页查完一个这个浏览器没数过的地址,发来固定的 {"k":"checkup"}:没有地址、没有地址的摘要、没有任何编号,也不带 cookie
+// 计数(Cloudflare Pages Function,路径 /api/hit):三种,都只给当天的总数加一,服务器永远看不到地址。
+// - {"k":"checkup"}:体检结果页查完一个这个浏览器没数过的地址(数「有多少个不同的地址来体检过」);
+// - {"k":"view"}:每打开一页(数「页面打开了几次」);
+// - {"k":"visit"}:这个浏览器今天(北京时间)第一次打开本站(数「今天来了几个浏览器」)。
+// 发来的都是这样固定的一小段:没有地址、没有地址的摘要、没有任何编号、不带来源页,也不带 cookie
 // (浏览器那边怎么去重、管理员自己的浏览器怎么不算,见 src/js/lib/count.js)。
 // 这里只给当天(北京时间)的总数加一,记在运营台的 D1 里(表 hits:日期、种类、次数)。别的都不存:不记 IP、浏览器信息、每一次的时间,也不写日志。
 // 数字是约数:换浏览器、清了浏览器数据再查同一个地址会再数一次;禁了本地存储的浏览器不数;有人照着格式刷也挡不全,只靠下面的上限压着。
@@ -7,9 +10,18 @@
 
 import { ensure, bjDay, HIT_KINDS } from "../../server/ops/db.js";
 
-// 请求体最多 64 字节;每个实例每天最多数 perIsolate 次(只在内存里,Cloudflare 换实例就清零,挡一下从一处猛刷的);
-// 每种每天最多数到 perDay(库里带条件的写,到了就不再加):刷不爆数字,也不会把运营台的数据库写满额度
+// 请求体最多 64 字节;每个实例每种每天最多数 perIsolate 次(只在内存里,Cloudflare 换实例就清零,挡一下从一处猛刷的;
+// 每种分开数,打开页面多了挤不掉体检的);每种每天最多数到 perDay(库里带条件的写,到了就不再加):刷不爆数字。
+// D1 免费额度每天 10 万次写,按 UTC 零点(北京 8 点)重置,我们按北京日期数:一个 UTC 日最多跨两个北京日,
+// 三种加起来一个北京日最多 3.3 万次、一个 UTC 日最坏 6.6 万次,给运营台的写留着三成多。
+// 到了上限回 429,页面那边当天就不再发(src/js/lib/count.js 的 dx-count-off),少占 Pages Functions 的请求额度
+// (免费每天 10 万次,同账号共用;429 也算一次)。访客多到每天好几万时要升付费计划或关掉打开页面的计数
 export const LIMIT = { body: 64, perIsolate: 1000, perDay: 5000 };
+export const CAP = {
+  checkup: { perIsolate: LIMIT.perIsolate, perDay: LIMIT.perDay },
+  view: { perIsolate: 4000, perDay: 20000 },
+  visit: { perIsolate: 2000, perDay: 8000 },
+};
 
 const HEADERS = {
   "Cache-Control": "no-store",
@@ -46,14 +58,14 @@ export async function readSmall(request, max) {
   return new TextDecoder().decode(b);
 }
 
-// 这个实例今天数了几次(换一天从 0 数)
-const mem = { day: "", n: 0 };
-export function overCap(day, m = mem) {
+// 这个实例今天每种数了几次(换一天从 0 数)
+const mems = {};
+export function overCap(day, m = (mems.checkup ||= { day: "", n: 0 }), cap = LIMIT.perIsolate) {
   if (m.day !== day) {
     m.day = day;
     m.n = 0;
   }
-  if (m.n >= LIMIT.perIsolate) return true;
+  if (m.n >= cap) return true;
   m.n++;
   return false;
 }
@@ -79,10 +91,10 @@ export async function handle(request, env, now = new Date()) {
   const db = env.OPS;
   if (!db) return reply({ need: "db" }, 503);
   const day = bjDay(now);
-  if (overCap(day)) return reply({ error: "day" }, 429);
+  if (overCap(day, (mems[q.k] ||= { day: "", n: 0 }), CAP[q.k].perIsolate)) return reply({ error: "day" }, 429);
   try {
     await ensure(db); // 不传 now:库里不记访客来的时间
-    const r = await db.prepare("INSERT INTO hits (day, kind, n) VALUES (?, ?, 1) ON CONFLICT(day, kind) DO UPDATE SET n = hits.n + 1 WHERE hits.n < ?").bind(day, q.k, LIMIT.perDay).run();
+    const r = await db.prepare("INSERT INTO hits (day, kind, n) VALUES (?, ?, 1) ON CONFLICT(day, kind) DO UPDATE SET n = hits.n + 1 WHERE hits.n < ?").bind(day, q.k, CAP[q.k].perDay).run();
     if (!(r.meta && r.meta.changes === 1)) return reply({ error: "day" }, 429);
   } catch {
     return reply({ error: "db" }, 503);

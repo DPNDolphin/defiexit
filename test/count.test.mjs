@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { seenKey, markNew, countCheckup, ping, markOwner, takeOwnerHash, OWNER_KEY, SEEN_KEY, SEEN_MAX, HIT_BODY } from "../src/js/lib/count.js";
+import { seenKey, markNew, countCheckup, ping, markOwner, takeOwnerHash, countView, OFF_KEY, OWNER_KEY, SEEN_KEY, SEEN_MAX, HIT_BODY, VIEW_BODY, VISIT_BODY, VISIT_KEY } from "../src/js/lib/count.js";
 
 // 编的地址
 const A = "0x" + "ab".repeat(20), B = "0x" + "cd".repeat(20);
@@ -142,7 +142,7 @@ test("site.js:打开时带着 #owner 的、已经开着的页面在地址后面�
   mock.timers.enable({ apis: ["setTimeout"] });
   try {
     await import("../src/js/site.js");
-    assert.deepEqual([store.getItem(OWNER_KEY), replaced, bar.textContent], ["1", [[null, "", "/"]], "这个浏览器已记成管理员的：在这里体检不计数。"], "打开时带着 #owner");
+    assert.deepEqual([store.getItem(OWNER_KEY), replaced, bar.textContent], ["1", [[null, "", "/"]], "这个浏览器已记成管理员的：在这里体检、打开页面都不计数。"], "打开时带着 #owner");
     store.m.delete(OWNER_KEY);
     bar.textContent = "";
     location.hash = "#a=" + A;
@@ -155,5 +155,50 @@ test("site.js:打开时带着 #owner 的、已经开着的页面在地址后面�
   } finally {
     mock.timers.reset();
     for (const k of ["document", "window", "location", "history", "localStorage"]) delete globalThis[k];
+  }
+});
+
+test("打开页面的计数:每次发 view;这个浏览器今天(北京时间)第一次来再发一个 visit(只记日期);管理员的不数;存不了本地存储只发 view", () => {
+  const sent = [], send = (b) => sent.push(b);
+  const store = new Store(), day1 = Date.parse("2026-11-07T15:59:00Z"), day2 = Date.parse("2026-11-07T16:01:00Z"); // 北京 11-07 23:59、11-08 00:01
+  assert.equal(countView({ store, send, now: day1 }), 2);
+  assert.deepEqual([sent, store.getItem(VISIT_KEY)], [[VIEW_BODY, VISIT_BODY], "2026-11-07"]);
+  assert.equal(countView({ store, send, now: day1 }), 1, "同一天再打开只数 view");
+  assert.equal(countView({ store, send, now: day2 }), 2, "过了北京时间零点算新的一天");
+  assert.deepEqual([VIEW_BODY, VISIT_BODY], ['{"k":"view"}', '{"k":"visit"}']);
+  sent.length = 0;
+  const owner = new Store();
+  owner.setItem(OWNER_KEY, "1");
+  assert.deepEqual([countView({ store: owner, send, now: day1 }), sent, owner.getItem(VISIT_KEY)], [0, [], null], "管理员的浏览器两样都不数");
+  assert.deepEqual([countView({ store: broken, send, now: day1 }), sent], [1, [VIEW_BODY]], "禁了本地存储:只数 view");
+  sent.length = 0;
+  assert.deepEqual([countView({ store: null, send, now: day1 }), sent], [1, [VIEW_BODY]]);
+  const calls = [];
+  ping((url, opt) => { calls.push([url, opt.body, opt.credentials, opt.referrerPolicy]); return Promise.resolve(); }, VIEW_BODY);
+  assert.deepEqual(calls, [["/api/hit", VIEW_BODY, "omit", "no-referrer"]], "发的是固定的一小段,不带 cookie 和来源页");
+});
+
+test("打开页面的计数:服务器回 429(今天数满了),这个浏览器今天不再发,第二天照常", async () => {
+  const store = new Store(), day1 = Date.parse("2026-11-07T03:00:00Z"), day2 = Date.parse("2026-11-08T03:00:00Z");
+  const calls = [], real = globalThis.fetch;
+  globalThis.fetch = (url, opt) => { calls.push(opt.body); return Promise.resolve(new Response(null, { status: 429 })); };
+  try {
+    assert.equal(countView({ store, now: day1 }), 2);
+    await new Promise((r) => setTimeout(r, 0));
+    assert.equal(store.getItem(OFF_KEY), "2026-11-07");
+    assert.equal(countView({ store, now: day1 }), 0, "今天不再发");
+    assert.equal(calls.length, 2);
+    globalThis.fetch = (url, opt) => { calls.push(opt.body); return Promise.resolve(new Response(null, { status: 204 })); };
+    assert.equal(countView({ store, now: day2 }), 2, "第二天照常");
+    await new Promise((r) => setTimeout(r, 0));
+    assert.equal(store.getItem(OFF_KEY), "2026-11-07", "204 不记");
+    globalThis.fetch = () => Promise.resolve(new Response(null, { status: 429 }));
+    const s2 = new Store(); // 今天(11-08)已经记过;昨天(11-07)那一页发出去的请求现在才回 429
+    s2.setItem(OFF_KEY, "2026-11-08");
+    countView({ store: s2, now: day1 });
+    await new Promise((r) => setTimeout(r, 0));
+    assert.equal(s2.getItem(OFF_KEY), "2026-11-08", "晚到的旧 429 不把今天的记号改回昨天");
+  } finally {
+    globalThis.fetch = real;
   }
 });

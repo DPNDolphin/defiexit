@@ -1,7 +1,8 @@
 // 每一页都加载:深浅色切换;换语言时记住选择,并带上 # 后面的地址(地址只在 # 后面,不会发给服务器);
 // 语言菜单是 <details>,不靠脚本也能开关;这里只补上按 Esc 收起(焦点回到菜单按钮)、点菜单外面收起;
-// 打开的是 #owner:记成管理员自己的浏览器,在这里体检不计数(见 lib/count.js)。
-import { takeOwnerHash } from "./lib/count.js";
+// 打开的是 #owner:记成管理员自己的浏览器,在这里体检、打开页面都不计数(见 lib/count.js)。
+// 页面显示完以后数一次「打开页面」(不带地址和编号,不挡页面;见 lib/count.js 的 countView)。
+import { takeOwnerHash, countView } from "./lib/count.js";
 import { toast } from "./lib/ui.js";
 import { makeT, pageLang } from "./lib/i18n.js";
 
@@ -59,3 +60,7 @@ const owner = () => {
 };
 owner();
 window.addEventListener("hashchange", owner);
+// 数一次打开页面:等页面显示完(load)再发,放到下一轮,不和页面抢;#owner 上面已经先记过了,管理员自己打开这一次也不数
+const view = () => setTimeout(() => countView(), 0);
+if (document.readyState === "complete") view();
+else window.addEventListener("load", view, { once: true });

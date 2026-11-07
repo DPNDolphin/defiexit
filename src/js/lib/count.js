@@ -6,8 +6,8 @@
 // 管理员自己的浏览器不数(本地存储里记着 dx-owner):
 //   - 登进运营台(defiexit.com/admin/,和主站是同一个网站,本地存储是同一份)时,admin/admin.js 自动记上;
 //   - 钱包里的浏览器这种不登运营台的,打开一次 defiexit.com/#owner:site.js 记上,再把 #owner 从地址栏抹掉。
-export const OWNER_KEY = "dx-owner", SEEN_KEY = "dx-seen", SEEN_MAX = 500;
-export const HIT_BODY = '{"k":"checkup"}';
+export const OWNER_KEY = "dx-owner", SEEN_KEY = "dx-seen", SEEN_MAX = 500, VISIT_KEY = "dx-visit", OFF_KEY = "dx-count-off";
+export const HIT_BODY = '{"k":"checkup"}', VIEW_BODY = '{"k":"view"}', VISIT_BODY = '{"k":"visit"}';
 
 // 浏览器禁了本地存储时,连读 localStorage 这个属性都会报错
 const local = () => {
@@ -46,9 +46,11 @@ export function markNew(store, key) {
 // 发计数:只发固定的那一小段,不带 cookie 和来源页;不等结果,出错也不管(不挡页面)。
 // 用 fetch 的 keepalive(马上离开页面也能发完),不用 sendBeacon:sendBeacon 发的是 no-cors 请求,本站的 Referrer-Policy 是 no-referrer,
 // 浏览器会把 Origin 写成 null,过不了服务端的同源检查(和 /api/assets 一样的检查)
-export function ping(f = globalThis.fetch) {
+// full:服务器回 429(今天数满了)时调一下(打开页面的计数用它记下「今天别再发」)
+export function ping(f = globalThis.fetch, body = HIT_BODY, full = null) {
   try {
-    f("/api/hit", { method: "POST", headers: { "Content-Type": "application/json" }, body: HIT_BODY, keepalive: true, credentials: "omit", cache: "no-store", referrerPolicy: "no-referrer" }).catch(() => {});
+    f("/api/hit", { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true, credentials: "omit", cache: "no-store", referrerPolicy: "no-referrer" })
+      .then((r) => { if (full && r && r.status === 429) full(); }).catch(() => {});
   } catch { /* 发不出去就算了 */ }
 }
 
@@ -62,6 +64,33 @@ export async function countCheckup(addr, { store = local(), subtle = globalThis.
   }
   send();
   return true;
+}
+
+// 打开页面的计数(每一页都调,site.js 在页面显示完以后调一次):
+//   - 每打开一页发一个固定的 {"k":"view"};
+//   - 这个浏览器今天(北京时间)还没来过:先在本地存储记上今天(dx-visit,只有日期),再发一个 {"k":"visit"},数「今天来了几个浏览器」;
+//     存不了本地存储就不数 visit(宁可少数),view 照发;
+//   - 管理员自己的浏览器(dx-owner)两样都不数。不带地址、编号、来源页和 cookie,不等结果,出错也不管;
+//   - 服务器回过 429(今天数满了):本地存储记下今天(dx-count-off),这个浏览器今天不再发(少占请求额度)。
+// 同时开着几个标签页时 visit 可能多数一个(读写本地存储没有跨标签页的锁),本来就是约数。回发了几个(0、1、2)
+export function countView({ store = local(), send = null, now = Date.now() } = {}) {
+  const day = new Date(now + 8 * 3600e3).toISOString().slice(0, 10);
+  try {
+    if (store && (store.getItem(OWNER_KEY) === "1" || store.getItem(OFF_KEY) === day)) return 0;
+  } catch { /* 读不了:当不是管理员 */ }
+  // 只往后记:过了零点,昨天那次晚到的 429 不能把今天的记号改回昨天
+  const off = () => { try { if (store && !((store.getItem(OFF_KEY) || "") >= day)) store.setItem(OFF_KEY, day); } catch { /* 记不上就算了 */ } };
+  if (!send) send = (body) => ping(globalThis.fetch, body, off);
+  send(VIEW_BODY);
+  try {
+    if (!store || store.getItem(VISIT_KEY) === day) return 1;
+    store.setItem(VISIT_KEY, day);
+    if (store.getItem(VISIT_KEY) !== day) return 1;
+  } catch {
+    return 1;
+  }
+  send(VISIT_BODY);
+  return 2;
 }
 
 // 给这个浏览器记上「管理员的」;记上了回 true

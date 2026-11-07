@@ -252,7 +252,7 @@ export const putDoc = (db, k, v, now) => docStmt(db, k, v, now).run();
 
 // ---------- 体检计数 ----------
 // 数哪几种(/api/hit 只收这几个);「每天」按北京时间(UTC+8),日期写成 2026-11-05
-export const HIT_KINDS = ["checkup"];
+export const HIT_KINDS = ["checkup", "view", "visit"]; // 体检、打开页面、访客(一个浏览器一天算一个),见 src/js/lib/count.js
 export const HIT_DAYS = 60;
 export const bjDay = (now) => iso(+now + 8 * 3600e3).slice(0, 10);
 // 给运营台和导出:每种一个从开始数起的总数 total、开始数的那天 since,加上最近 HIT_DAYS 天每天的数 byDay(没人来的那天不列)
