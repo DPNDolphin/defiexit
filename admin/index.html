@@ -74,7 +74,7 @@
       <a href="#inbox">收件 <span class="n" id="n-in">0</span></a>
       <a href="#reach">宣传 <span class="n" id="n-reach">0</span></a>
       <a href="#data">数据</a>
-      <a href="#done">已处理 <span class="n" id="n-done">0</span></a>
+      <a href="#done" id="nav-done">已处理 <span class="n" id="n-done">0</span></a>
     </nav>
 
     <section id="outbox" aria-labelledby="h-out">
@@ -82,6 +82,7 @@
       <p class="saved" id="out-msg" aria-live="polite"></p>
       <p class="pace" id="pace" role="status" hidden><span id="pace-text"></span><button class="linkbtn" type="button" id="pace-ok">知道了</button></p>
       <div class="cards" id="out-cards"></div>
+      <div class="pager" id="out-pager" hidden></div>
       <p class="empty" id="out-empty">还没有待发的。机器人交帖后,我把原帖逐条看过,写好回复放在这里;每天的项目帖也放这里。</p>
     </section>
 
@@ -89,6 +90,7 @@
       <div class="sec-h"><h2 id="h-in">收件</h2><span class="hint">你的帖子和回复底下别人的评论。每条有我的分析和起草的回复:点「去 X 回复」回一句,或点一个决定,这条就挪到「已处理」。</span></div>
       <p class="saved" id="in-msg" aria-live="polite"></p>
       <div class="cards" id="in-cards"></div>
+      <div class="pager" id="in-pager" hidden></div>
       <p class="empty" id="in-empty">还没有评论。每 20 分钟自动刷新一次,也可以点上面的「刷新」。</p>
     </section>
 
@@ -96,11 +98,15 @@
       <div class="sec-h"><h2 id="h-reach">宣传</h2><span class="hint">我写好的媒体投稿、给项目团队的邮件、安全清单的提交、技术社区的帖子,按渠道分好。写邮件的点「用 Gmail 写」(收件人、标题、正文都填好,发件人选 hello@defiexit.com),投稿的点「打开投稿页」,标题、正文点「复制」贴进去;发出去以后点「已发」,有回音了点「有回音」记一句。</span></div>
       <p class="saved" id="reach-msg" aria-live="polite"></p>
       <div id="reach-cards"></div>
+      <div class="pager" id="reach-pager" hidden></div>
       <p class="empty" id="reach-empty">还没有要发的宣传。我写好的媒体投稿、给项目团队的邮件、安全清单的提交、技术社区的帖子放在这里,按渠道分好。</p>
       <div class="group" id="reach-done" hidden>
-        <h3 class="group-h">发过的(已发、跳过;最近点的在上面)</h3>
-        <div class="cards" id="reach-done-cards"></div>
-        <div class="row"><button class="btn" type="button" id="reach-more" hidden>再看早一点的</button></div>
+        <div class="fold-h"><h3 class="group-h">发过的(已发、跳过;最近点的在上面)<span class="n" id="n-reach-done">0</span></h3><button class="btn small" type="button" id="reach-done-toggle" aria-expanded="false" aria-controls="reach-done-body">展开</button></div>
+        <div class="group" id="reach-done-body" hidden>
+          <div class="cards" id="reach-done-cards"></div>
+          <div class="pager" id="reach-done-pager" hidden></div>
+          <div class="row"><button class="btn" type="button" id="reach-more" hidden>再看早一点的</button></div>
+        </div>
       </div>
     </section>
 
@@ -110,9 +116,13 @@
     </section>
 
     <section id="done" aria-labelledby="h-done">
-      <div class="sec-h"><h2 id="h-done">已处理</h2><span class="hint">待发里点过「已发 / 跳过」的,收件里点过决定的,最近点的在上面。点错了就点「改回待发」或「改回待定」。</span></div>
+      <div class="sec-h"><h2 id="h-done">已处理</h2><span class="hint">待发里点过「已发 / 跳过」的,收件里点过决定的,最近点的在上面。平时收着,点「展开」看;点错了就点「改回待发」或「改回待定」。</span></div>
       <p class="saved" id="done-msg" aria-live="polite"></p>
-      <div class="cards" id="done-cards"></div>
+      <div class="row"><button class="btn small" type="button" id="done-toggle" aria-expanded="false" aria-controls="done-body" hidden>展开</button></div>
+      <div class="group" id="done-body" hidden>
+        <div class="cards" id="done-cards"></div>
+        <div class="pager" id="done-pager" hidden></div>
+      </div>
       <p class="empty" id="done-empty">还没有。你在「待发」里点了「已发 / 跳过」,或者在「收件」里点了决定,那条就挪到这里。</p>
     </section>
 

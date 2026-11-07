@@ -142,6 +142,10 @@ textarea:focus, input:focus { outline: 2px solid var(--hi); outline-offset: 0; b
 .group-h { font-size: 15px; color: var(--sub); font-weight: 600; letter-spacing: 0.04em; display: flex; align-items: center; gap: 6px; }
 .fold { display: grid; gap: 8px; min-width: 0; }
 .fold summary { min-height: 40px; }
+/* 一页 10 张卡片:上一页 / 第几页 / 下一页;「已处理」「发过的」的展开按钮 */
+.pager { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.pager .sub { color: var(--sub); font-size: 14px; }
+.fold-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .result { font-size: 15px; overflow-wrap: anywhere; }
 .echo { display: grid; gap: 8px; }
 

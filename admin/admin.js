@@ -606,18 +606,23 @@ import { capOf, gate, waitText, paceNote, sentState, SENT_LABEL, patrolLate, bjD
     for (const [key, el] of S.cards) if (key.startsWith("reach:") && !keys.has(key)) { el.remove(); S.cards.delete(key); }
     const all = [...S.reach.entries()];
     const pend = all.filter(([, d]) => isPend(d)).sort((a, b) => String(a[1].created_at || "").localeCompare(String(b[1].created_at || "")) || a[0].localeCompare(b[0]));
+    const chOf = (d) => (CHANNEL[(d.mine || {}).channel] ? d.mine.channel : "other");
+    const byCh = new Map(GROUPS.map((ch) => [ch, pend.filter(([, d]) => chOf(d) === ch).map(([id, d]) => ["reach", id, d])]));
+    const shown = new Set(pageOf("reachPend", GROUPS.flatMap((ch) => byCh.get(ch)), "reach-pager").map((r) => r[1]));
     for (const ch of GROUPS) {
-      const g = reachGroups.get(ch);
-      const rows = pend.filter(([, d]) => (CHANNEL[(d.mine || {}).channel] ? d.mine.channel : "other") === ch).map(([id, d]) => ["reach", id, d]);
+      const g = reachGroups.get(ch), rows = byCh.get(ch).filter((r) => shown.has(r[1]));
       place(g.box, rows);
       g.el.hidden = !rows.length;
-      g.n.textContent = rows.length;
+      g.n.textContent = byCh.get(ch).length;
     }
     const done = all.filter(([, d]) => !isPend(d)).sort((a, b) => String(b[1].decided_at || "").localeCompare(String(a[1].decided_at || "")) || String(b[0]).localeCompare(String(a[0]))).map(([id, d]) => ["reach", id, d]);
-    place("reach-done-cards", done);
+    place("reach-done-cards", pageOf("reach", done, "reach-done-pager"));
     const left = S.reachCursor ? S.reachMore : 0; // 服务器说的数,不拿页面上的卡片去减
     $("reach-done").hidden = !done.length && !left;
-    $("reach-more").hidden = !left;
+    $("n-reach-done").textContent = done.length + (left ? "+" : "");
+    toggleBtn("reach-done-toggle", "reach", done.length + (left ? "+" : ""));
+    $("reach-done-body").hidden = !opened.reach;
+    $("reach-more").hidden = !left || pages.reach < Math.ceil(done.length / PAGE) - 1;
     $("reach-more").disabled = !!S.reachReq;
     $("reach-more").textContent = S.reachReq ? "正在翻…" : "再看早一点的(还有 " + fmt(left) + " 张)";
     $("reach-empty").hidden = pend.length > 0;
@@ -643,7 +648,9 @@ import { capOf, gate, waitText, paceNote, sentState, SENT_LABEL, patrolLate, bjD
       if (gen !== S.reachGen || S.reachReq !== req) return;
       if (status === 401) return show("login");
       if (status !== 200 || !json.ok) return note($("reach-msg"), "没翻出来:" + why(json), true);
+      const had = [...S.reach.values()].filter((d) => !isPend(d)).length;
       for (const d of Array.isArray(json.items) ? json.items : []) if (d && d.id && !S.reach.has(d.id)) S.reach.set(d.id, d);
+      pages.reach = Math.floor(had / PAGE); // 新翻出来的接在后面:直接翻到它们开头那一页
       S.reachCursor = json.after && typeof json.after === "object" ? json.after : null;
       S.reachMore = Math.max(0, Number(json.more) || 0);
     } finally {
@@ -660,6 +667,71 @@ import { capOf, gate, waitText, paceNote, sentState, SENT_LABEL, patrolLate, bjD
     req.ctl.abort();
   }
 
+  // 一页最多摆 PAGE 张卡片(老板 11-07:「每页就展示10条」),多了出「上一页 / 下一页」;pages 记着每一块翻到第几页(从 0 数)。
+  // 「已处理」和宣传里「发过的」平时收着,点「展开」才看得见(展开没有,记在这台浏览器里;存不了就每次都收着)。
+  // 收着的时候卡片照样摆好(只是藏起来),点了「已发」挪过去的那张一展开就在
+  const PAGE = 10, OPEN_KEY = "dx-ops-open";
+  const pages = { out: 0, in: 0, done: 0, reach: 0, reachPend: 0 };
+  const SEC = { out: "outbox", in: "inbox", done: "done", reach: "reach-done", reachPend: "reach" };
+  const opened = (() => { try { const v = JSON.parse(localStorage.getItem(OPEN_KEY) || "{}") || {}; return { done: v.done === true, reach: v.reach === true }; } catch (_) { return { done: false, reach: false }; } })();
+  // 正在改的卡片:焦点在它里面,或者宣传卡片的回音框开着、框里有字(_busy;点「下一页」时焦点已经到按钮上了,光看焦点不够)。
+  // 翻页、新卡片挤进来、刷新时,这几张接着摆在当前页的最后,不挪走(挪走会把正在写的打断)
+  function busyKeys() {
+    const keys = new Set();
+    let e = document.activeElement;
+    while (e && !e._key) e = e.parentNode;
+    if (e && e._key) keys.add(e._key);
+    for (const [key, el] of S.cards) if (el._busy && el._busy()) keys.add(key);
+    return keys;
+  }
+  // 「‹ 上一页 · 第几页 · 下一页 ›」三样:at 从 0 数,go(±1) 翻
+  function pagerKids(at, n, total, go) {
+    const b = (step, ok, label) => { const el = h("button", { class: "btn small", type: "button" }, label); el.disabled = !ok; el.addEventListener("click", () => go(step)); return el; };
+    return [b(-1, at > 0, "‹ 上一页"), h("span", { class: "sub" }, "第 " + (at + 1) + " / " + n + " 页 · 共 " + total + " 条"), b(1, at < n - 1, "下一页 ›")];
+  }
+  function pageOf(name, rows, pagerId) {
+    const n = Math.max(1, Math.ceil(rows.length / PAGE));
+    pages[name] = Math.min(Math.max(0, pages[name]), n - 1);
+    const at = pages[name], slice = rows.slice(at * PAGE, at * PAGE + PAGE), busy = busyKeys();
+    for (const r of rows) if (busy.has(r[0] + ":" + r[1]) && !slice.includes(r)) slice.push(r);
+    const pager = $(pagerId);
+    pager.hidden = n < 2;
+    fill(pager, n < 2 ? [] : pagerKids(at, n, rows.length, (step) => {
+      pages[name] = at + step;
+      redraw();
+      const sec = $(SEC[name]);
+      if (sec && sec.scrollIntoView) sec.scrollIntoView({ block: "start" });
+    }));
+    return slice;
+  }
+  // 数据区的长列表(我们发的、线索、旧需求):一页 PAGE 行,多了在下面出翻页。翻页只重画这一块
+  // (不重画整个数据区:巡检「暂停」按钮还在提交时的状态、图表下展开的表格都留着)
+  function dataList(name, rows, render) {
+    const box = h("div", { class: "group" });
+    const draw = () => {
+      const n = Math.max(1, Math.ceil(rows.length / PAGE));
+      pages[name] = Math.min(Math.max(0, pages[name] || 0), n - 1);
+      const at = pages[name];
+      fill(box, h("div", { class: "list" }, ...rows.slice(at * PAGE, at * PAGE + PAGE).map(render)),
+        n < 2 ? null : h("div", { class: "pager" }, pagerKids(at, n, rows.length, (step) => { pages[name] = at + step; draw(); })));
+    };
+    draw();
+    return box;
+  }
+  function openUp(name, on) {
+    opened[name] = on;
+    try { localStorage.setItem(OPEN_KEY, JSON.stringify(opened)); } catch (_) { /* 存不了:下次打开照样收着 */ }
+    redraw();
+  }
+  // 展开按钮:收着的写「展开(几条)」
+  function toggleBtn(id, name, count) {
+    const b = $(id);
+    b.textContent = opened[name] ? "收起" : "展开(" + count + " 条)";
+    b.setAttribute("aria-expanded", String(opened[name]));
+  }
+  // 翻页、展开以后照现在的数据重摆一遍(不重新读服务器)
+  function redraw() { sync("out"); sync("in"); syncReach(); renderTop(); }
+
   // 按顺序摆卡片:只在顺序变了才挪(挪动会让正在打字的框失焦)。rows 是 [种类, 编号, 数据];box 是容器的 id,或者容器本身(宣传的分组)
   // 「待发」只放还没点的(先送来的在上面),「收件」只放还没定的(新的在上面);
   // 待发里点过「已发 / 跳过」的、收件里点过决定的,一起放「已处理」(最近点的在上面)
@@ -673,6 +745,8 @@ import { capOf, gate, waitText, paceNote, sentState, SENT_LABEL, patrolLate, bjD
       // 一张卡片的数据不对、画的时候出错:只坏这一张,后面的卡片、顶上的数照常
       try { el._update(d); } catch (_) { el.classList.add("broken"); }
     }
+    const keep = new Set(want);
+    for (const c of [...box.children]) if (c._key && !keep.has(c._key)) c.remove(); // 不在这一页的拿下来(还留在 S.cards 里,翻回来接着用)
     const now = [...box.children].map((c) => c._key);
     if (now.join("|") !== want.join("|")) want.forEach((k) => box.append(S.cards.get(k)));
   }
@@ -686,14 +760,14 @@ import { capOf, gate, waitText, paceNote, sentState, SENT_LABEL, patrolLate, bjD
       const pend = [...S.out.entries()].filter(([, d]) => isPend(d)).sort((a, b) => String(a[1].created_at || "").localeCompare(String(b[1].created_at || ""))).map(([id, d]) => ["out", id, d]);
       // 今天(北京时间)还能放出几条对人的首回:按这个顺序放,多的排队。先算好,卡片照着显示
       S.quota = gate([...S.out.values()], pend.map((r) => r[2]), capOf(S.docs.rules));
-      place("out-cards", pend);
+      place("out-cards", pageOf("out", pend, "out-pager"));
       $("out-empty").hidden = pend.length > 0;
       $("out-empty").textContent = S.out.size > pend.length
         ? "待发的都处理完了。点过「已发 / 跳过」的在下面的「已处理」里。"
         : "还没有待发的。机器人交帖后,我把原帖逐条看过,写好回复放在这里;每天的项目帖也放这里。";
     } else {
       const pend = [...S.inn.entries()].filter(([, d]) => !handledIn(d)).sort((a, b) => String((b[1].mine || {}).at || "").localeCompare(String((a[1].mine || {}).at || ""))).map(([id, d]) => ["in", id, d]);
-      place("in-cards", pend);
+      place("in-cards", pageOf("in", pend, "in-pager"));
       $("in-empty").hidden = pend.length > 0;
       $("in-empty").textContent = S.inn.size > pend.length
         ? "收件里的都处理完了。点过决定的、回过的在下面的「已处理」里。"
@@ -703,8 +777,11 @@ import { capOf, gate, waitText, paceNote, sentState, SENT_LABEL, patrolLate, bjD
       ...[...S.out.entries()].filter(([, d]) => !isPend(d)).map(([id, d]) => ["out", id, d]),
       ...[...S.inn.entries()].filter(([, d]) => handledIn(d)).map(([id, d]) => ["in", id, d]),
     ].sort((a, b) => String(b[2].decided_at || b[2].replied_at || "").localeCompare(String(a[2].decided_at || a[2].replied_at || "")) || String(b[2].created_at || "").localeCompare(String(a[2].created_at || "")));
-    place("done-cards", done);
+    place("done-cards", pageOf("done", done, "done-pager"));
     $("done-empty").hidden = done.length > 0;
+    $("done-toggle").hidden = !done.length;
+    toggleBtn("done-toggle", "done", done.length);
+    $("done-body").hidden = !opened.done || !done.length;
   }
 
   function apply(json) {
@@ -771,7 +848,7 @@ import { capOf, gate, waitText, paceNote, sentState, SENT_LABEL, patrolLate, bjD
     for (const a of Array.isArray(asks) ? asks : []) if (a && typeof a.text === "string") items.push(a);
     $("todo").replaceChildren(...(items.length ? items.map((a) => h("li", null,
       h("span", { class: "when " + (a.when === "不急" || a.when === "明天" ? "later" : "now") }, a.when || "今天"),
-      a.href && /^#[a-z]+$/.test(a.href) ? h("a", { href: a.href }, a.text) : h("span", null, a.text))) : [h("li", { class: "none" }, "今天没有要你做的。")]));
+      a.href && /^#[a-z]+$/.test(a.href) ? h("a", { href: a.href, onclick: a.href === "#done" ? () => { if (!opened.done) openUp("done", true); } : null }, a.text) : h("span", null, a.text))) : [h("li", { class: "none" }, "今天没有要你做的。")]));
     const upd = S.docs.summary && S.docs.summary.updatedAt;
     $("upd").textContent = upd ? "我 " + mdhm(upd) + " 更新" : "";
   }
@@ -993,11 +1070,11 @@ import { capOf, gate, waitText, paceNote, sentState, SENT_LABEL, patrolLate, bjD
     if (!rows.length) return null;
     return h("div", { class: "panel" },
       h("h3", null, "30 天前的评论需求(已去掉账号和原文)"),
-      h("div", { class: "list" }, ...rows.map((r) => h("div", { class: "li" },
+      dataList("needs", rows, (r) => h("div", { class: "li" },
         h("span", { class: "k" }, String(r.month || "").slice(2)),
         h("span", { class: "nm" }, r.need || "暂无明确需求"),
         h("span", { class: "pill " + (r.decision ? "ok" : "mute") }, r.decision || "没定"),
-        h("span", { class: "sub" }, [r.source, r.type, r.suggestion ? "我的建议:" + r.suggestion : ""].filter(Boolean).join(" · "))))));
+        h("span", { class: "sub" }, [r.source, r.type, r.suggestion ? "我的建议:" + r.suggestion : ""].filter(Boolean).join(" · ")))));
   }
 
   const CLOCK = { open: ["进行中", "hi"], read: ["已读", "mute"], canceled: ["取消", "mute"], void: ["作废", "mute"] };
@@ -1040,11 +1117,11 @@ import { capOf, gate, waitText, paceNote, sentState, SENT_LABEL, patrolLate, bjD
     if (!rows.length) return h("div", { class: "panel" }, h("h3", null, "项目变动线索"),
       h("p", { class: "empty" }, "还没有。监控每 6 小时跑一次,找到会影响「能不能取、怎么取」的变动就列在这里;我核过官方原文再写成帖子放进「待发」。"));
     return h("div", { class: "panel" }, h("h3", null, "项目变动线索(最近 " + rows.length + " 条)"),
-      h("div", { class: "list" }, ...rows.map((l) => h("div", { class: "li" },
+      dataList("leads", rows, (l) => h("div", { class: "li" },
         h("span", { class: "k" }, String(l.when || l.found_at || "").slice(5, 10)),
         h("span", { class: "nm" }, h("b", null, l.protocol || "?"), ":" + (l.text || "")),
         h("span", { class: "pill " + (LEAD_KIND[l.kind] || "mute") }, l.kind || "线索"),
-        h("span", { class: "sub" }, /^https:\/\//.test(String(l.source || "")) ? out(l.source, "来源 " + hostName(l.source) + " ↗") : "", l.site ? " · 官网 " + l.site : "", l.x ? " · " + l.x : "")))),
+        h("span", { class: "sub" }, /^https:\/\//.test(String(l.source || "")) ? out(l.source, "来源 " + hostName(l.source) + " ↗") : "", l.site ? " · 官网 " + l.site : "", l.x ? " · " + l.x : ""))),
       h("p", { class: "src" }, "都只是线索,不等于事实;我核过官方原文再写成帖子。"));
   }
 
@@ -1058,14 +1135,14 @@ import { capOf, gate, waitText, paceNote, sentState, SENT_LABEL, patrolLate, bjD
     const head = ["verified", "opened", "pending", "legacy"].filter((k) => k === "verified" || n(k)).map((k) => SENT_LABEL[k] + " " + n(k)).join(" · ");
     return h("div", { class: "panel" }, h("h3", null, "我们发的帖子和回复"),
       h("p", { class: "note" }, "最近 7 天点开的:" + head),
-      h("div", { class: "list" }, ...items.map((d) => {
+      dataList("mine", items, (d) => {
         const m = d.mine || {}, t = m.target || {}, x = statOf(d), url = sentUrl(d), ss = sentOf(d);
         return h("div", { class: "li" + (ss === "verified" ? "" : " muted") },
           h("span", { class: "k" }, isPost(d) ? "帖子" : "回复"),
           h("span", { class: "nm" }, isPost(d) ? (m.topic || d.id) : "回 @" + (t.handle || "?") + (t.protocol ? " · " + t.protocol : "")),
           h("span", { class: "pill " + (ss === "verified" ? (x ? (x.replies ? "warn" : "ok") : "mute") : SENT_PILL[ss] || "mute") }, ss !== "verified" ? SENT_LABEL[ss] || "—" : x ? statText(x) : "等读数"),
           h("span", { class: "sub" }, url ? out(url, mdhm(d.decided_at) + " 点开 ↗") : mdhm(d.decided_at) + " 点开"));
-      })),
+      }),
       h("p", { class: "src" }, "点「在 X 打开」只算「已打开」;我每半小时经 fxtwitter 去 X 上找你发的那条(项目号发的、回的是那条帖、正文对得上),找到才算「核实已发」,点开 6 小时还找不到的标「待核实」。有链接的 7 天内照帖子新旧轮着读浏览、点赞、回复(3 小时内的每 20 分钟读,越旧读得越少);别人接着回的进「收件」。"));
   }
 
@@ -1162,6 +1239,9 @@ import { capOf, gate, waitText, paceNote, sentState, SENT_LABEL, patrolLate, bjD
     });
     $("pace-ok").addEventListener("click", () => { $("pace").hidden = true; });
     $("reach-more").addEventListener("click", moreReach);
+    $("done-toggle").addEventListener("click", () => openUp("done", !opened.done));
+    $("reach-done-toggle").addEventListener("click", () => openUp("reach", !opened.reach));
+    $("nav-done").addEventListener("click", () => { if (!opened.done) openUp("done", true); }); // 点顶上的「已处理」:顺手展开
     $("logout").addEventListener("click", async () => { await api("logout", {}); show("login"); });
     $("logout-all").addEventListener("click", async () => { await api("logout-all", {}); show("login"); });
     document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && !$("desk").hidden) load(); });

@@ -1005,3 +1005,110 @@ test("巡检开关:刷新还在路上时点了「暂停巡检」,那次刷新晚
   const paths = d.calls.map(([p]) => p).filter((p) => p === "state" || p === "patrol");
   assert.deepEqual(paths.slice(-2), ["patrol", "state"]);
 });
+
+// 一页 10 张(老板 11-07「每页就展示10条」):待发多了分页;「已处理」「发过的」平时收着,展开记在这台浏览器里
+const btnsOf = (d, id) => d.$(id).children.filter((e) => e.tagName === "BUTTON");
+test("待发超过 10 条分页:先摆前 10 条,点「下一页」换后面的;第一页「上一页」点不了;不到 10 条不出翻页", async () => {
+  const outbox = Array.from({ length: 25 }, (_, i) => reply("p" + String(i).padStart(2, "0"), i, { mine: { kind: "post", topic: "t" + i, draft: "项目帖 " + i } }));
+  const d = await desk(base(outbox));
+  const ids = () => d.$("out-cards").children.map((e) => e.getAttribute("data-id"));
+  assert.equal(ids().length, 10);
+  assert.equal(ids()[0], "p00", "先送来的在上面");
+  assert.equal(d.$("out-pager").hidden, false);
+  assert.match(d.$("out-pager").textContent, /第 1 \/ 3 页 · 共 25 条/);
+  const [prev, next] = btnsOf(d, "out-pager");
+  assert.deepEqual([prev.disabled, next.disabled], [true, false]);
+  await next.fire("click");
+  assert.deepEqual([ids().length, ids()[0]], [10, "p10"]);
+  await btnsOf(d, "out-pager")[1].fire("click");
+  assert.deepEqual([ids().length, ids()[0], btnsOf(d, "out-pager")[1].disabled], [5, "p20", true]);
+  assert.equal(d.$("n-out").textContent, "25", "顶上的数还是全部");
+  const d2 = await desk(base(outbox.slice(0, 9)));
+  assert.equal(d2.$("out-pager").hidden, true);
+});
+
+test("「已处理」平时收着:按钮写「展开(几条)」,点了展开、每页 10 条,展开记在这台浏览器里;点顶上的「已处理」也展开;没有处理过的不出按钮", async () => {
+  const m = new Map();
+  globalThis.localStorage = { getItem: (k) => (m.has(k) ? m.get(k) : null), setItem: (k, v) => { m.set(k, String(v)); } };
+  try {
+    const done = Array.from({ length: 12 }, (_, i) => reply("s" + String(i).padStart(2, "0"), i, { status: "跳过", decided_at: ago(60 - i) }));
+    const d = await desk(base([reply("r1", 50), ...done]));
+    assert.deepEqual([d.$("done-body").hidden, d.$("done-toggle").hidden, d.$("done-toggle").textContent], [true, false, "展开(12 条)"]);
+    assert.equal(d.$("done-cards").children.length, 10, "收着也摆好第一页,点了「已发」挪过去的展开就在");
+    await d.$("done-toggle").fire("click");
+    assert.deepEqual([d.$("done-body").hidden, d.$("done-toggle").textContent, d.$("done-toggle").getAttribute("aria-expanded")], [false, "收起", "true"]);
+    assert.match(d.$("done-pager").textContent, /第 1 \/ 2 页 · 共 12 条/);
+    assert.equal(JSON.parse(m.get("dx-ops-open")).done, true);
+    const d2 = await desk(base(done));
+    assert.equal(d2.$("done-body").hidden, false, "下次打开还展开着");
+    await d2.$("done-toggle").fire("click");
+    assert.equal(d2.$("done-body").hidden, true);
+    await d2.$("nav-done").fire("click");
+    assert.equal(d2.$("done-body").hidden, false, "点顶上的「已处理」顺手展开");
+    m.clear();
+    const d3 = await desk(base([reply("r1", 50)]));
+    assert.deepEqual([d3.$("done-toggle").hidden, d3.$("done-empty").hidden], [true, false]);
+  } finally {
+    delete globalThis.localStorage;
+  }
+  const d4 = await desk(base([reply("s1", 1, { status: "跳过", decided_at: ago(5) })])); // 没有本地存储:照样收着,点了照样展开
+  assert.equal(d4.$("done-body").hidden, true);
+  await d4.$("done-toggle").fire("click");
+  assert.equal(d4.$("done-body").hidden, false);
+});
+
+test("宣传「发过的」收着、每页 10 条;「再看早一点的」只在最后一页出,翻出来的直接翻到它们那一页", async () => {
+  clipboard();
+  const sent = (n) => rc("o-s" + String(n).padStart(2, "0"), {}, { status: "已发", decided_at: ago(n) });
+  const state = { ...base([]), outreach: Array.from({ length: 12 }, (_, i) => sent(i + 1)), outreachMore: { handled: 3, after: { at: ago(12), id: "o-s12" } },
+    donePages: [{ ok: true, items: [sent(13), sent(14), sent(15)], more: 0, after: { at: ago(15), id: "o-s15" } }] };
+  const d = await desk(state);
+  assert.deepEqual([d.$("reach-done-body").hidden, d.$("reach-done-toggle").textContent, d.$("n-reach-done").textContent], [true, "展开(12+ 条)", "12+"]);
+  await d.$("reach-done-toggle").fire("click");
+  assert.equal(d.$("reach-done-body").hidden, false);
+  assert.deepEqual([doneIds(d).length, d.$("reach-more").hidden], [10, true], "第一页不出「再看早一点的」");
+  await btnsOf(d, "reach-done-pager")[1].fire("click");
+  assert.deepEqual([doneIds(d), d.$("reach-more").hidden], [["o-s11", "o-s12"], false]);
+  await d.$("reach-more").fire("click");
+  await tick();
+  assert.deepEqual([doneIds(d), d.$("reach-more").hidden], [["o-s11", "o-s12", "o-s13", "o-s14", "o-s15"], true], "15 张:第二页接着摆");
+});
+
+test("宣传「发过的」里正在写回音的那张,点「下一页」不被翻走(焦点到了按钮上也算正在改);宣传待发超过 10 张也分页,组上的数还是全部", async () => {
+  clipboard();
+  const sent = (n) => rc("o-s" + String(n).padStart(2, "0"), {}, { status: "已发", decided_at: ago(n) });
+  const d = await desk({ ...base([]), outreach: Array.from({ length: 12 }, (_, i) => sent(i + 1)) });
+  await d.$("reach-done-toggle").fire("click");
+  await d.rcard("o-s01").btn("有回音").fire("click");
+  d.rcard("o-s01").note.value = "编辑说下周发";
+  await btnsOf(d, "reach-done-pager")[1].fire("click");
+  assert.deepEqual(doneIds(d), ["o-s11", "o-s12", "o-s01"], "写了一半的那张接着摆在这一页最后");
+  assert.equal(d.rcard("o-s01").note.value, "编辑说下周发");
+  const pend = Array.from({ length: 25 }, (_, i) => rc("o-p" + String(i).padStart(2, "0"), { channel: i < 15 ? "media" : "project" }, { created_at: ago(200 - i) }));
+  const d2 = await desk({ ...base([]), outreach: pend });
+  const shown = () => d2.$("reach-cards").children.flatMap((g) => g.children.filter((x) => x.classList.contains("cards")).flatMap((b) => b.children.map((e) => e.getAttribute("data-id"))));
+  assert.equal(shown().length, 10);
+  assert.match(d2.$("reach-pager").textContent, /第 1 \/ 3 页 · 共 25 条/);
+  assert.deepEqual(d2.$("reach-cards").children.filter((g) => !g.hidden).map((g) => g.textContent.match(/(媒体投稿|项目团队)(\d+)/)?.slice(1).join("")).filter(Boolean), ["媒体投稿15"], "第一页只有媒体投稿那组,组上写全部 15");
+  await btnsOf(d2, "reach-pager")[1].fire("click");
+  assert.deepEqual([shown().length, shown()[0], shown()[5]], [10, "o-p10", "o-p15"]);
+  assert.equal(d2.$("n-reach").textContent, "25");
+});
+
+test("数据区的长列表一页 10 行:我们发的帖子和回复(最近 40 条)多了出翻页,点「下一页」只重画数据区", async () => {
+  const sentOut = Array.from({ length: 23 }, (_, i) => reply("s" + String(i).padStart(2, "0"), i, { status: "已发", decided_at: ago(i + 1) }));
+  const d = await desk(base(sentOut));
+  const panel = () => find(d.$("data-body"), (e) => e.classList.contains("panel") && e.textContent.startsWith("我们发的帖子和回复"));
+  const rows = () => find(panel(), (e) => e.classList.contains("list")).children.length;
+  const pager = () => find(panel(), (e) => e.classList.contains("pager"));
+  assert.equal(rows(), 10);
+  assert.match(pager().textContent, /第 1 \/ 3 页 · 共 23 条/);
+  const n = d.calls.length, first = d.$("data-body").children[0], same = panel();
+  await pager().children.filter((e) => e.tagName === "BUTTON")[1].fire("click");
+  assert.ok(d.$("data-body").children[0] === first && panel() === same, "翻页不重画整个数据区");
+  assert.match(pager().textContent, /第 2 \/ 3 页/);
+  assert.equal(d.calls.length, n, "翻页不重新读服务器");
+  assert.ok(find(d.$("data-body"), (e) => e === panel()), "只重画这一块,数据区别的东西不动");
+  await pager().children.filter((e) => e.tagName === "BUTTON")[1].fire("click");
+  assert.equal(rows(), 3);
+});
