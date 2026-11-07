@@ -486,3 +486,19 @@ test("体检结果页:最上面(结果概要前面)留着截止提醒的位置;�
     assert.match(h, /<ul id="due" hidden>(<li data-event="[^"]*"><\/li>)*<\/ul>/);
   }
 });
+
+test("网站地图:每种语言的首页、指南、截止日历、专题都在,不收录的体检页和 404 不列;robots.txt 写明地图在哪", () => {
+  build();
+  const xml = read("dist/sitemap.xml"), locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  assert.ok(xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'));
+  for (const u of ["/", "/en/", "/ja/deadlines/", "/topics/", "/en/topics/bridge-not-arrived/", "/en/r/hyperliquid/"]) assert.ok(locs.includes(`https://${site.domain}${u}`), "缺 " + u);
+  assert.ok(!locs.some((u) => u.includes("/check/") || u.includes("404")), "体检页、404 不列");
+  assert.equal(new Set(locs).size, locs.length, "没有重复");
+  for (const u of locs) {
+    assert.ok(u.startsWith(`https://${site.domain}/`) && u.endsWith("/"), u);
+    const f = "dist" + u.slice(`https://${site.domain}`.length) + "index.html";
+    assert.ok(existsSync(f), "地图里的页面要真有:" + f);
+    assert.ok(!read(f).includes('name="robots" content="noindex"'), "地图里不放不许收录的页面:" + f);
+  }
+  assert.equal(read("dist/robots.txt"), `User-agent: *\nAllow: /\nSitemap: https://${site.domain}/sitemap.xml\n`);
+});

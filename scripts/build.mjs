@@ -1271,7 +1271,12 @@ function buildAll(OUT, i18nRoot, langs, dtexts) {
   if (rules.length + 1 > 100) throw new Error(`_headers 有 ${rules.length + 1} 条规则,Cloudflare Pages 最多认 100 条`);
   const noTransform = rules.map((p) => `${p}\n  Cache-Control: public, max-age=0, must-revalidate, no-transform`).join("\n");
   write("_headers", "/*\n" + Object.entries(h).map(([k, v]) => `  ${k}: ${v}`).join("\n") + "\n" + noTransform + "\n");
-  write("robots.txt", "User-agent: *\nAllow: /\n");
+  // 网站地图:给搜索引擎的页面清单,每种语言的首页、指南、截止日历、专题(体检页和 404 本来就不许收录,不列)。
+  // 只列地址:语言之间的对应关系页面里的 hreflang 已经写了;不写 lastmod(写不准不如不写)。robots.txt 里写明地图在哪
+  const indexed = [...each("/"), ...recipes.flatMap((r) => each(`/r/${r.zh.id}/`)), ...each("/deadlines/"), ...each("/topics/"), ...topics.flatMap((T) => each(`/topics/${T.slug}/`))];
+  write("sitemap.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    + indexed.map((p) => `  <url><loc>${esc(`https://${site.domain}${p}`)}</loc></url>`).join("\n") + "\n</urlset>\n");
+  write("robots.txt", `User-agent: *\nAllow: /\nSitemap: https://${site.domain}/sitemap.xml\n`);
   console.log(`built ${recipes.length} recipe(s), ${D.events.length} deadline(s), ${topics.length} topic(s) × ${langs.length} languages (${langs.join(", ")}) → ${OUT === DIST ? "dist" : OUT}/`);
 }
 
